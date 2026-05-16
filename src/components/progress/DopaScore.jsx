@@ -7,6 +7,13 @@ const LABELS = {
   checkIn: 'Check-in',
 };
 
+const IMPROVEMENT_TIPS = {
+  sleep: 'Log sleep quality during daily check-in. Better recovery raises this category.',
+  nutrition: 'Log calories and macros in Nutrition so the score can credit your fueling.',
+  workout: 'Complete a workout or mobility session today to add workout points.',
+  checkIn: 'Submit the daily check-in. It takes 30 seconds and unlocks coach guidance.',
+};
+
 export function DopaScore({ score, color, breakdown = {} }) {
   const [open, setOpen] = useState(false);
   const pct = Math.max(0, Math.min(100, Number(score) || 0));
@@ -48,9 +55,14 @@ export function DopaScore({ score, color, breakdown = {} }) {
           <div style={{ width: '100%', maxWidth: 340, borderRadius: 24, border: '1px solid rgba(255,255,255,0.1)', background: '#111113', padding: 20 }}>
             <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 900 }}>Dopa Score breakdown</h3>
             {Object.entries(LABELS).map(([key, label]) => (
-              <div key={key} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                <span style={{ color: 'rgba(255,255,255,0.72)' }}>{label}</span>
-                <strong style={{ color }}>{breakdown[key] || 0} pts</strong>
+              <div key={key} style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+                  <span style={{ color: 'rgba(255,255,255,0.72)' }}>{label}</span>
+                  <strong style={{ color }}>{breakdown[key] || 0} pts</strong>
+                </div>
+                <p style={{ margin: '6px 0 0', color: 'rgba(255,255,255,0.42)', fontSize: 12, lineHeight: 1.45 }}>
+                  {IMPROVEMENT_TIPS[key]}
+                </p>
               </div>
             ))}
             <button type="button" onClick={() => setOpen(false)} style={{ marginTop: 16, width: '100%', padding: 13, borderRadius: 14, border: 'none', background: color, color: '#0A0A0A', fontWeight: 900 }}>

@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { isSpeaking } from '../../services/voiceService';
 import { useCoach } from '../../hooks/useCoach';
 
-export const CoachCard = ({ onOpenChat }) => {
+export const CoachCard = () => {
   const { coach, message, loadingMessage, personaId, speak, stopSpeaking } = useCoach();
   const [playing, setPlaying] = useState(false);
 
@@ -52,9 +53,9 @@ export const CoachCard = ({ onOpenChat }) => {
         <p className="m-0 text-sm leading-relaxed text-white">{message}</p>
       )}
 
-      <button type="button" onClick={onOpenChat} className="mt-3 border-0 bg-transparent p-0 text-xs font-medium text-[#CCFF00]">
+      <Link to="/coach" className="mt-3 inline-block text-xs font-medium text-[#CCFF00] no-underline">
         Reply to coach →
-      </button>
+      </Link>
     </div>
   );
 };

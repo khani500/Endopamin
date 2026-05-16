@@ -1,24 +1,71 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Bot, Mic, Send, Volume2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import { useCoach } from '../hooks/useCoach';
 
-const QUICK_PROMPTS = [
-  'What should I focus on today?',
-  'Build me a quick workout.',
-  'How should I recover tonight?',
-  'Give me a nutrition tip.',
+const QUICK_ACTIONS = [
+  { title: 'Plan workout', prompt: 'Plan my workout today based on my current goal.' },
+  { title: 'Nutrition advice', prompt: 'Give me nutrition advice for today.' },
+  { title: 'Recovery tips', prompt: 'Give me recovery tips for tonight.' },
+  { title: 'Progress review', prompt: 'Review my progress and tell me what to improve.' },
 ];
 
+const TONE_TO_PERSONA = {
+  motivational: 'maya',
+  calm: 'elias',
+  strict: 'rex',
+};
+
+const PERSONA_TO_TONE = {
+  maya: 'motivational',
+  elias: 'calm',
+  rex: 'strict',
+};
+
 export default function CoachPage() {
-  const { profile } = useAuth();
-  const { coach, coaches, personaId, setPersona, message, loadingMessage, speak, chat } = useCoach();
+  const { user, profile, setProfile } = useAuth();
+  const { coach, personaId, setPersona, message, loadingMessage, speak, chat } = useCoach();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedGender, setSelectedGender] = useState(profile?.gender === 'female' ? 'female' : 'male');
+  const [selectedTone, setSelectedTone] = useState(PERSONA_TO_TONE[personaId] || 'calm');
   const userName = profile?.display_name || 'Champion';
 
-  const coachOptions = useMemo(() => Object.values(coaches), [coaches]);
+  const settingsSummary = useMemo(() => {
+    const genderLabel = selectedGender === 'female' ? 'Female' : 'Male';
+    const toneLabel = selectedTone[0].toUpperCase() + selectedTone.slice(1);
+    return `${genderLabel} · ${toneLabel}`;
+  }, [selectedGender, selectedTone]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setSelectedGender(profile?.gender === 'female' ? 'female' : 'male');
+      setSelectedTone(PERSONA_TO_TONE[personaId] || 'calm');
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [personaId, profile?.gender]);
+
+  const saveCoachSettings = async (nextGender, nextTone) => {
+    setSelectedGender(nextGender);
+    setSelectedTone(nextTone);
+
+    const nextPersona = TONE_TO_PERSONA[nextTone] || 'elias';
+    await setPersona(nextPersona);
+
+    if (supabase && user?.id) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ gender: nextGender, coach_persona: nextPersona })
+        .eq('id', user.id);
+
+      if (!error) {
+        setProfile(prev => ({ ...prev, gender: nextGender, coach_persona: nextPersona }));
+      }
+    }
+  };
 
   const sendCoachMessage = async textOverride => {
     const text = (textOverride || input).trim();
@@ -71,7 +118,7 @@ export default function CoachPage() {
             <p className="text-xs font-black uppercase tracking-[0.2em] text-[#CCFF00]">AI Voice Coach</p>
             <h1 className="mt-1 text-2xl font-black tracking-[-0.04em]">{coach.name}</h1>
             <p className="mt-1 text-sm text-white/45">
-              {coach.title} · Voice matched to your persona
+              {coach.title} · {settingsSummary}
             </p>
           </div>
           <button
@@ -84,19 +131,42 @@ export default function CoachPage() {
           </button>
         </div>
 
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          {coachOptions.map(option => (
+        <div className="mt-5">
+          <p className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-white/35">Voice Gender</p>
+          <div className="grid grid-cols-2 gap-2">
+            {['male', 'female'].map(option => (
+              <button
+                key={option}
+                onClick={() => void saveCoachSettings(option, selectedTone)}
+                className={`rounded-2xl p-3 text-sm font-black ${
+                  selectedGender === option ? 'bg-[#CCFF00] text-black' : 'bg-white/[0.06] text-white/60'
+                }`}
+              >
+                {option === 'male' ? 'Male' : 'Female'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <p className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-white/35">Tone</p>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              ['motivational', 'Motivational'],
+              ['calm', 'Calm'],
+              ['strict', 'Strict'],
+            ].map(([id, label]) => (
             <button
-              key={option.id}
-              onClick={() => void setPersona(option.id)}
+              key={id}
+              onClick={() => void saveCoachSettings(selectedGender, id)}
               className={`rounded-2xl p-3 text-center text-xs font-black ${
-                personaId === option.id ? 'bg-[#CCFF00] text-black' : 'bg-white/[0.06] text-white/60'
+                selectedTone === id ? 'bg-[#CCFF00] text-black' : 'bg-white/[0.06] text-white/60'
               }`}
             >
-              <div className="mb-1 text-xl">{option.avatar}</div>
-              {option.name.replace('Coach ', '')}
+              {label}
             </button>
           ))}
+          </div>
         </div>
       </header>
 
@@ -129,13 +199,13 @@ export default function CoachPage() {
         </div>
 
         <div className="mb-3 grid grid-cols-2 gap-2">
-          {QUICK_PROMPTS.map(prompt => (
+          {QUICK_ACTIONS.map(action => (
             <button
-              key={prompt}
-              onClick={() => void sendCoachMessage(prompt)}
-              className="rounded-xl bg-white/[0.05] px-3 py-2 text-left text-xs font-bold text-white/70"
+              key={action.title}
+              onClick={() => void sendCoachMessage(action.prompt)}
+              className="rounded-xl bg-white/[0.05] px-3 py-3 text-left text-xs font-bold text-white/70"
             >
-              {prompt}
+              {action.title}
             </button>
           ))}
         </div>

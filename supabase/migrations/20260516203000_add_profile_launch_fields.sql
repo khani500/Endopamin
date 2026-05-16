@@ -1,0 +1,4 @@
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS gender TEXT DEFAULT 'male',
+  ADD COLUMN IF NOT EXISTS injuries TEXT DEFAULT '';
+

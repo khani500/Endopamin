@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import Progress from './pages/Progress';
 import GymPage from './pages/GymPage';
 import CoachPage from './pages/CoachPage';
-import PlaceholderPage from './pages/PlaceholderPage';
+import ProfilePage from './pages/ProfilePage';
 import { useAuth } from './context/AuthContext';
 import { checkUserAbsence, updateLastActive } from './services/absenceDetector';
 import { onForegroundMessage } from './lib/firebase';
@@ -107,7 +107,7 @@ function App() {
           <Route path="/scan" element={<Navigate to="/log/scan" replace />} />
           <Route path="/gym" element={<GymPage />} />
           <Route path="/progress" element={<Progress />} />
-          <Route path="/profile" element={<PlaceholderPage title="Profile" />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
 
         {toast && (

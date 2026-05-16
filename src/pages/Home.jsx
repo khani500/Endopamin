@@ -5,7 +5,6 @@ import { DailyCheckIn } from '../components/checkin/DailyCheckIn';
 import { DopaScore } from '../components/progress/DopaScore';
 import { ProPaywall } from '../components/paywall/ProPaywall';
 import { CoachCard } from '../components/coach/CoachCard';
-import { CoachChat } from '../components/coach/CoachChat';
 import { useAuth } from '../context/AuthContext';
 import { useDopaScore } from '../hooks/useDopaScore';
 import { supabase } from '../lib/supabase';
@@ -254,7 +253,6 @@ export default function Home() {
   const [todayWorkout, setTodayWorkout] = useState({ completed: false });
   const [showPaywall, setShowPaywall] = useState(false);
   const [paywallFeature, setPaywallFeature] = useState('DopaPeak Pro');
-  const [coachChatOpen, setCoachChatOpen] = useState(false);
   const [notificationPermissionAsked, setNotificationPermissionAsked] = useState(() => {
     try {
       return localStorage.getItem('dopapeak_notification_permission_asked') === '1';
@@ -298,15 +296,6 @@ export default function Home() {
   };
 
   const handleLoadDone = () => setPhase('dashboard');
-
-  const openCoachChat = () => {
-    if (userTier === 'free' && !FREE_LIMITS.coachChat) {
-      setPaywallFeature('AI Coach Chat');
-      setShowPaywall(true);
-      return;
-    }
-    setCoachChatOpen(true);
-  };
 
   const startSession = () => {
     if (userTier === 'free' && streak >= FREE_LIMITS.workoutsPerWeek) {
@@ -396,7 +385,7 @@ export default function Home() {
 
       <DopaScore score={dopaScore.score} color={dopaScore.color} breakdown={dopaScore.breakdown} />
 
-      <CoachCard onOpenChat={openCoachChat} />
+      <CoachCard />
 
       {/* Quick Start */}
       <div style={{ padding: '0 20px', marginBottom: 12 }}>
@@ -569,7 +558,6 @@ export default function Home() {
       </div>
 
       <DailyCheckIn onSubmit={handleCheckInSubmit} />
-      <CoachChat isOpen={coachChatOpen} onClose={() => setCoachChatOpen(false)} />
       <ProPaywall
         featureName={paywallFeature}
         isVisible={showPaywall}
