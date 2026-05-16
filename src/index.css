@@ -1,0 +1,34 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800&display=swap');
+
+@source "./**/*.{js,jsx,ts,tsx}";
+@source "../index.html";
+
+/* Nutrition / voice coach waveform */
+@keyframes dp-wave-bar {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+body {
+  margin: 0;
+  background: #050505;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+#root {
+  width: 390px;
+  max-width: 100%;
+  min-height: 100vh;
+  background: #0a0a0a;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
