@@ -1,6 +1,27 @@
+let currentAudio = null;
+
+const BEST_VOICES = {
+  elias: ['Daniel', 'Alex', 'Oliver', 'Arthur'],
+  maya: ['Samantha', 'Victoria', 'Karen', 'Moira'],
+  rex: ['Daniel', 'Fred', 'Gordon'],
+};
+
+const WEB_SPEECH_PROFILES = {
+  elias: { rate: 0.82, pitch: 0.88 },
+  maya: { rate: 1.18, pitch: 1.15 },
+  rex: { rate: 0.95, pitch: 0.72 },
+};
+
+const GOOGLE_VOICES = {
+  elias: 'en-US-Neural2-D',
+  maya: 'en-US-Neural2-F',
+  rex: 'en-US-Neural2-J',
+};
+
 export const speak = (text, coachId = 'elias', onEnd = null) => {
   return new Promise(resolve => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      if (onEnd) onEnd();
       resolve();
       return;
     }
@@ -16,42 +37,15 @@ export const speak = (text, coachId = 'elias', onEnd = null) => {
       const enUS = voices.filter(voice => voice.lang === 'en-US' || voice.lang === 'en_US');
       const enAll = voices.filter(voice => voice.lang?.startsWith('en'));
       const allEn = enUS.length > 0 ? enUS : enAll;
+      const preferredNames = BEST_VOICES[coachId] || BEST_VOICES.elias;
+      const selectedVoice =
+        preferredNames.map(name => allEn.find(voice => voice.name.includes(name))).find(Boolean) ||
+        allEn.find(voice => voice.name.includes('Male')) ||
+        allEn[0];
 
-      const voicePreferences = {
-        elias: [
-          allEn.find(voice => voice.name === 'Daniel'),
-          allEn.find(voice => voice.name === 'Alex'),
-          allEn.find(voice => voice.name === 'Google UK English Male'),
-          allEn.find(voice => voice.name.includes('Male')),
-          allEn[0],
-        ],
-        maya: [
-          allEn.find(voice => voice.name === 'Samantha'),
-          allEn.find(voice => voice.name === 'Victoria'),
-          allEn.find(voice => voice.name === 'Google US English'),
-          allEn.find(voice => voice.name.includes('Female')),
-          allEn[1] || allEn[0],
-        ],
-        rex: [
-          allEn.find(voice => voice.name === 'Fred'),
-          allEn.find(voice => voice.name === 'Daniel'),
-          allEn.find(voice => voice.name === 'Google UK English Male'),
-          allEn[0],
-        ],
-      };
+      if (selectedVoice) utterance.voice = selectedVoice;
 
-      const selectedVoice = (voicePreferences[coachId] || voicePreferences.elias).find(Boolean);
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-      }
-
-      const profiles = {
-        elias: { rate: 0.82, pitch: 0.88 },
-        maya: { rate: 1.18, pitch: 1.15 },
-        rex: { rate: 0.95, pitch: 0.72 },
-      };
-
-      const profile = profiles[coachId] || profiles.elias;
+      const profile = WEB_SPEECH_PROFILES[coachId] || WEB_SPEECH_PROFILES.elias;
       utterance.rate = profile.rate;
       utterance.pitch = profile.pitch;
 
@@ -68,9 +62,7 @@ export const speak = (text, coachId = 'elias', onEnd = null) => {
       window.speechSynthesis.speak(utterance);
 
       window.setTimeout(() => {
-        if (window.speechSynthesis.paused) {
-          window.speechSynthesis.resume();
-        }
+        if (window.speechSynthesis.paused) window.speechSynthesis.resume();
       }, 150);
     };
 
@@ -83,14 +75,72 @@ export const speak = (text, coachId = 'elias', onEnd = null) => {
   });
 };
 
+export const speakWithGoogleTTS = async (text, coachId = 'elias', onEnd = null) => {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) return speak(text, coachId, onEnd);
+
+  try {
+    stopSpeaking();
+
+    const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        input: { text },
+        voice: {
+          languageCode: 'en-US',
+          name: GOOGLE_VOICES[coachId] || GOOGLE_VOICES.elias,
+        },
+        audioConfig: {
+          audioEncoding: 'MP3',
+          speakingRate: coachId === 'maya' ? 1.2 : coachId === 'rex' ? 0.9 : 1.0,
+          pitch: coachId === 'maya' ? 2.0 : coachId === 'rex' ? -4.0 : 0.0,
+        },
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok || !data.audioContent) {
+      throw new Error(data.error?.message || 'Google TTS did not return audio.');
+    }
+
+    currentAudio = new Audio(`data:audio/mp3;base64,${data.audioContent}`);
+    return await new Promise(resolve => {
+      currentAudio.onended = () => {
+        currentAudio = null;
+        if (onEnd) onEnd();
+        resolve();
+      };
+      currentAudio.onerror = () => {
+        currentAudio = null;
+        resolve(speak(text, coachId, onEnd));
+      };
+      void currentAudio.play().catch(error => {
+        console.error('Audio playback error:', error);
+        currentAudio = null;
+        resolve(speak(text, coachId, onEnd));
+      });
+    });
+  } catch (error) {
+    console.error('Google TTS error:', error);
+    return speak(text, coachId, onEnd);
+  }
+};
+
 export const stopSpeaking = () => {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio = null;
+  }
+
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }
 };
 
 export const isSpeaking = () => {
-  return typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.speaking;
+  return Boolean(currentAudio) || (typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.speaking);
 };
 
 export const getAvailableVoices = () => {

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { COACHES, getCoach } from '../config/coaches';
 import { useAuth } from '../context/AuthContext';
 import { chatWithCoach, getDailyMessage } from '../services/coachAI';
-import { speak as speakText, stopSpeaking } from '../services/voiceService';
+import { speakWithGoogleTTS as speakText, stopSpeaking } from '../services/voiceService';
 
 export function useCoach() {
   const { user, profile, updateCoachPersona } = useAuth();

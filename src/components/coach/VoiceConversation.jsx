@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { getCoach } from '../../config/coaches';
 import { useAuth } from '../../context/AuthContext';
 import { askGemini } from '../../lib/gemini';
-import { speak, stopSpeaking } from '../../lib/voice';
+import { speakWithGoogleTTS, stopSpeaking } from '../../lib/voice';
 
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
@@ -80,7 +80,7 @@ Respond as ${coach.name} in 1-2 short sentences. Be conversational.`;
       setCoachReply(response);
       setStatus('speaking');
 
-      await speak(response, coachId, () => {
+      await speakWithGoogleTTS(response, coachId, () => {
         setStatus('idle');
         restartTimerRef.current = window.setTimeout(() => {
           if (isOpenRef.current) startListening();

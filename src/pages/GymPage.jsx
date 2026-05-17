@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { DeskBreakSession } from '../components/desk/DeskBreakSession';
@@ -7,7 +7,7 @@ import { DESK_BREAKS } from '../data/deskBreaks';
 import { EXERCISES } from '../data/exercises';
 import { supabase } from '../lib/supabase';
 
-const EQUIPMENT_LIST = [
+const EQUIPMENT = [
   { id: 'barbell', name: 'Barbell', emoji: '🏋️' },
   { id: 'dumbbell', name: 'Dumbbells', emoji: '💪' },
   { id: 'cables', name: 'Cable Machine', emoji: '🔗' },
@@ -15,12 +15,11 @@ const EQUIPMENT_LIST = [
   { id: 'bench', name: 'Bench', emoji: '🛋️' },
   { id: 'squat_rack', name: 'Squat Rack', emoji: '🔩' },
   { id: 'pull_up_bar', name: 'Pull-up Bar', emoji: '⬆️' },
-  { id: 'resistance_bands', name: 'Resistance Bands', emoji: '🎯' },
+  { id: 'resistance_bands', name: 'Bands', emoji: '🎯' },
   { id: 'kettlebell', name: 'Kettlebell', emoji: '🔔' },
   { id: 'treadmill', name: 'Treadmill', emoji: '🏃' },
-  { id: 'bike', name: 'Stationary Bike', emoji: '🚴' },
-  { id: 'rowing', name: 'Rowing Machine', emoji: '🚣' },
-  { id: 'bodyweight', name: 'Bodyweight Only', emoji: '🧍' },
+  { id: 'bike', name: 'Bike', emoji: '🚴' },
+  { id: 'bodyweight', name: 'Bodyweight', emoji: '🧍' },
 ];
 
 export default function GymPage() {
@@ -36,15 +35,30 @@ export default function GymPage() {
       return [];
     }
   });
-  const selectedEquipment = useMemo(
-    () => (Array.isArray(profile?.equipment) ? profile.equipment : ['bodyweight']),
-    [profile],
-  );
+  const [selectedEquipment, setSelectedEquipment] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('endopamin_equipment') || '["bodyweight"]');
+    } catch {
+      return ['bodyweight'];
+    }
+  });
   const compatibleExercises = useMemo(
     () => EXERCISES.filter(exercise => exercise.equipment.every(item => selectedEquipment.includes(item))),
     [selectedEquipment],
   );
   const currentBreakId = breakId || activeDeskBreak;
+
+  useEffect(() => {
+    if (Array.isArray(profile?.equipment) && profile.equipment.length > 0) {
+      const timer = window.setTimeout(() => {
+        setSelectedEquipment(profile.equipment);
+        localStorage.setItem('endopamin_equipment', JSON.stringify(profile.equipment));
+      }, 0);
+
+      return () => window.clearTimeout(timer);
+    }
+    return undefined;
+  }, [profile?.equipment]);
 
   if (currentBreakId) {
     return <DeskBreakSession breakId={currentBreakId} onComplete={() => (breakId ? navigate('/gym') : setActiveDeskBreak(null))} />;
@@ -104,29 +118,32 @@ export default function GymPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
-          {EQUIPMENT_LIST.map(item => {
+        <div>
+          <p className="mb-3 text-xs uppercase tracking-wider text-gray-400">Gym Equipment</p>
+          <div className="grid grid-cols-4 gap-2">
+          {EQUIPMENT.map(item => {
             const selected = selectedEquipment.includes(item.id);
             return (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => void toggleEquipment(item.id)}
-                className={`rounded-2xl border p-3 text-center text-xs font-black ${
-                  selected ? 'border-[#CCFF00] bg-[#CCFF00]/15 text-[#CCFF00]' : 'border-white/10 bg-white/[0.04] text-white/50'
+                className={`rounded-xl border p-2 text-center ${
+                  selected ? 'border-[#CCFF00] bg-[#CCFF00]/10' : 'border-[#2a2a2a] bg-[#1a1a1a]'
                 }`}
               >
-                <span className="block text-lg">{item.emoji}</span>
-                {item.name}
+                <div className="text-xl">{item.emoji}</div>
+                <p className="mt-1 text-[10px] text-gray-400">{item.name}</p>
               </button>
             );
           })}
+          </div>
         </div>
 
         <div className="mt-5 border-t border-white/10 pt-4">
           <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-white/40">Which machines are free right now?</p>
           <div className="flex flex-wrap gap-2">
-            {EQUIPMENT_LIST.filter(item => ['squat_rack', 'cables', 'bench'].includes(item.id)).map(item => {
+            {EQUIPMENT.filter(item => ['squat_rack', 'cables', 'bench'].includes(item.id)).map(item => {
               const isFree = availableNow.includes(item.id);
               return (
                 <button
@@ -171,6 +188,8 @@ export default function GymPage() {
       ? selectedEquipment.filter(item => item !== id)
       : [...selectedEquipment, id];
 
+    setSelectedEquipment(next);
+    localStorage.setItem('endopamin_equipment', JSON.stringify(next));
     setProfile(prev => ({ ...prev, equipment: next }));
     if (supabase && user?.id) {
       const { error } = await supabase.from('profiles').update({ equipment: next }).eq('id', user.id);
