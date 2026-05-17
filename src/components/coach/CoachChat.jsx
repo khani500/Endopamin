@@ -10,10 +10,10 @@ export const CoachChat = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const userName = profile?.display_name || 'Champion';
 
-  const sendMessage = async () => {
-    if (!input.trim() || loading) return;
+  const sendMessage = async (textOverride = input) => {
+    const text = String(textOverride || '').trim();
+    if (!text || loading) return;
 
-    const text = input;
     const userMsg = { role: 'user', content: text };
     const priorMessages = messages;
     setMessages(prev => [...prev, userMsg]);
@@ -34,8 +34,9 @@ export const CoachChat = ({ isOpen, onClose }) => {
           content: "I'm having trouble connecting right now. Try again in a moment.",
         },
       ]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (!isOpen) return null;
@@ -86,11 +87,21 @@ export const CoachChat = ({ isOpen, onClose }) => {
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && void sendMessage()}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && input.trim()) {
+                e.preventDefault();
+                void sendMessage();
+              }
+            }}
             placeholder="Ask your coach..."
             className="flex-1 rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] px-4 py-3 text-sm text-white outline-none"
           />
-          <button type="button" onClick={() => void sendMessage()} className="rounded-xl bg-[#CCFF00] px-4 py-3 text-sm font-bold text-black">
+          <button
+            type="button"
+            onClick={() => void sendMessage()}
+            disabled={loading || !input.trim()}
+            className="rounded-xl bg-[#CCFF00] px-4 py-3 text-sm font-bold text-black disabled:opacity-50"
+          >
             Send
           </button>
         </div>

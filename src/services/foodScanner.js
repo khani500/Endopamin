@@ -101,7 +101,7 @@ function normalizeFoodResult(raw) {
 
 export const analyzeFoodImage = async (base64Image, { mimeType = 'image/jpeg', signal } = {}) => {
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
-  const GEMINI_MODEL = 'gemini-2.0-flash';
+  const GEMINI_MODEL = 'gemini-2.5-flash';
   const requestDebug = {
     keyLoaded: Boolean(GEMINI_API_KEY),
     keyLength: GEMINI_API_KEY?.length || 0,

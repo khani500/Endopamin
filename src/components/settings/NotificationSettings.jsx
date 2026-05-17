@@ -16,7 +16,7 @@ const DEFAULT_SETTINGS = {
 const MORNING_DEFAULT_TIME = '08:00';
 const getNotificationEnabled = () => typeof Notification !== 'undefined' && Notification.permission === 'granted';
 
-export const NotificationSettings = () => {
+export const NotificationSettings = ({ showDeskBreaks = true, showGroupSession = true }) => {
   const { user } = useAuth();
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [notifEnabled, setNotifEnabled] = useState(getNotificationEnabled);
@@ -140,42 +140,46 @@ export const NotificationSettings = () => {
         )}
       </SettingRow>
 
-      <SettingRow
-        title="Desk Break Reminders"
-        subtitle="Stretch reminders for desk workers"
-        label="🪑"
-        enabled={settings.desk_breaks}
-        onToggle={() => toggle('desk_breaks')}
-      >
-        {settings.desk_breaks && (
-          <div className="mt-2">
-            <p className="mb-2 text-xs text-gray-400">Remind every:</p>
-            <div className="flex gap-2">
-              {[30, 45, 60, 90].map(min => (
-                <button
-                  key={min}
-                  onClick={() => setSettings(prev => ({ ...prev, desk_break_interval: min }))}
-                  className={`rounded-lg px-3 py-1 text-sm font-medium ${
-                    settings.desk_break_interval === min
-                      ? 'bg-[#CCFF00] text-black'
-                      : 'bg-[#2a2a2a] text-gray-400'
-                  }`}
-                >
-                  {min}min
-                </button>
-              ))}
+      {showDeskBreaks && (
+        <SettingRow
+          title="Desk Break Reminders"
+          subtitle="Stretch reminders for desk workers"
+          label="🪑"
+          enabled={settings.desk_breaks}
+          onToggle={() => toggle('desk_breaks')}
+        >
+          {settings.desk_breaks && (
+            <div className="mt-2">
+              <p className="mb-2 text-xs text-gray-400">Remind every:</p>
+              <div className="flex gap-2">
+                {[30, 45, 60, 90].map(min => (
+                  <button
+                    key={min}
+                    onClick={() => setSettings(prev => ({ ...prev, desk_break_interval: min }))}
+                    className={`rounded-lg px-3 py-1 text-sm font-medium ${
+                      settings.desk_break_interval === min
+                        ? 'bg-[#CCFF00] text-black'
+                        : 'bg-[#2a2a2a] text-gray-400'
+                    }`}
+                  >
+                    {min}min
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </SettingRow>
+          )}
+        </SettingRow>
+      )}
 
-      <SettingRow
-        title="Group Session Alerts"
-        subtitle="30 min before sessions start"
-        label="👥"
-        enabled={settings.group_session_reminder}
-        onToggle={() => toggle('group_session_reminder')}
-      />
+      {showGroupSession && (
+        <SettingRow
+          title="Group Session Alerts"
+          subtitle="30 min before sessions start"
+          label="👥"
+          enabled={settings.group_session_reminder}
+          onToggle={() => toggle('group_session_reminder')}
+        />
+      )}
 
       <button
         onClick={saveSettings}

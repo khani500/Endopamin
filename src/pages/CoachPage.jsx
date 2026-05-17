@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Bot, Mic, Send, Volume2 } from 'lucide-react';
+import { Bot, Send, Volume2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import { transcribeAudioWithGemini } from '../lib/gemini';
-import { startListening } from '../lib/microphone';
+import { VoiceConversation } from '../components/coach/VoiceConversation';
 import { useCoach } from '../hooks/useCoach';
 
 const QUICK_ACTIONS = [
@@ -26,18 +25,6 @@ const PERSONA_TO_TONE = {
   rex: 'strict',
 };
 
-const VOICE_MIME_OPTIONS = [
-  'audio/webm;codecs=opus',
-  'audio/webm',
-  'audio/mp4',
-  'audio/mpeg',
-];
-
-function getSupportedAudioMimeType() {
-  if (typeof MediaRecorder === 'undefined') return '';
-  return VOICE_MIME_OPTIONS.find(type => MediaRecorder.isTypeSupported(type)) || '';
-}
-
 export default function CoachPage() {
   const location = useLocation();
   const { user, profile, setProfile } = useAuth();
@@ -47,9 +34,9 @@ export default function CoachPage() {
   const [loading, setLoading] = useState(false);
   const [voiceError, setVoiceError] = useState('');
   const [voiceStatus, setVoiceStatus] = useState('');
+  const [voiceMode, setVoiceMode] = useState(false);
   const [listening, setListening] = useState(false);
-  const [micSupported, setMicSupported] = useState(true);
-  const [recognition, setRecognition] = useState(null);
+  const recognitionRef = useRef(null);
   const [selectedGender, setSelectedGender] = useState(profile?.gender === 'female' ? 'female' : 'male');
   const [selectedTone, setSelectedTone] = useState(PERSONA_TO_TONE[personaId] || 'calm');
   const userName = profile?.display_name || 'Champion';
@@ -96,8 +83,8 @@ export default function CoachPage() {
     }
   };
 
-  const sendCoachMessage = async textOverride => {
-    const text = (textOverride || input).trim();
+  const handleSend = async (textOverride = input) => {
+    const text = String(textOverride || '').trim();
     if (!text || loading) return;
 
     const userMessage = { role: 'user', content: text };
@@ -116,123 +103,66 @@ export default function CoachPage() {
         ...prev,
         { role: 'coach', content: "I'm having trouble connecting right now, but I'm still here with you." },
       ]);
-    }
-
-    setLoading(false);
-  };
-
-  const requestMicrophoneStream = async () => {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      throw new Error('This browser does not support microphone access.');
-    }
-
-    try {
-      return await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
-    } catch (error) {
-      if (error?.name === 'NotAllowedError' || error?.name === 'PermissionDeniedError') {
-        throw new Error('Microphone permission was denied. Allow microphone access in your browser settings and try again.', { cause: error });
-      }
-      if (error?.name === 'NotFoundError') {
-        throw new Error('No microphone was found on this device.', { cause: error });
-      }
-      if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-        throw new Error('Mobile browsers require HTTPS for microphone access. Open the app on HTTPS or use localhost.', { cause: error });
-      }
-      throw new Error(error instanceof Error ? error.message : 'Could not access microphone.', { cause: error });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const recordAndTranscribeAudio = async stream => {
-    if (typeof MediaRecorder === 'undefined') {
-      throw new Error('Voice recording is not supported in this mobile browser.');
+  const handleMic = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setInput('What should I focus on today?');
+      setVoiceStatus('');
+      setVoiceError('Voice input is not supported in this browser. Please type your message.');
+      return;
     }
 
-    const mimeType = getSupportedAudioMimeType();
-    const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-    const chunks = [];
-
-    recorder.ondataavailable = event => {
-      if (event.data?.size) chunks.push(event.data);
-    };
-
-    const finished = new Promise((resolve, reject) => {
-      recorder.onerror = event => reject(new Error(event.error?.message || 'Voice recording failed.'));
-      recorder.onstop = () => resolve(new Blob(chunks, { type: recorder.mimeType || mimeType || 'audio/webm' }));
-    });
-
-    recorder.start();
-    setVoiceStatus('Listening... speak now');
-    await new Promise(resolve => window.setTimeout(resolve, 4500));
-    if (recorder.state !== 'inactive') recorder.stop();
-
-    const audioBlob = await finished;
-    setVoiceStatus('Transcribing voice with Gemini...');
-    const transcript = await transcribeAudioWithGemini(audioBlob);
-    if (!transcript.trim()) throw new Error('No speech was detected in the recording.');
-    return transcript.trim();
-  };
-
-  const startVoiceInput = async () => {
-    if (listening && recognition) {
-      recognition.stop();
+    if (listening) {
+      recognitionRef.current?.stop();
       setListening(false);
       return;
     }
 
     setVoiceError('');
-    setVoiceStatus('Requesting microphone permission...');
-    setListening(true);
+    setVoiceStatus('Listening... speak now');
 
-    let stream;
     try {
-      const rec = await startListening(
-        text => {
-          setInput(text);
-          setListening(false);
-          setVoiceStatus(`Heard: "${text}"`);
-          void sendCoachMessage(text);
-        },
-        error => {
-          setListening(false);
-          if (error === 'mic_not_supported') {
-            setMicSupported(false);
-            setVoiceError('Voice input not supported on this browser. Please type your message.');
-            return;
-          }
-          setVoiceError(error === 'permission_denied' ? 'Microphone permission denied.' : String(error));
-        },
-      );
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.continuous = false;
+      recognition.interimResults = false;
 
-      setRecognition(rec);
-      if (rec) {
-        setVoiceStatus('Listening... speak now');
-        return;
-      }
+      recognition.onresult = event => {
+        const text = event.results?.[0]?.[0]?.transcript || '';
+        setInput(text);
+        setListening(false);
+        setVoiceStatus(text ? `Heard: "${text}"` : '');
+        if (text.trim()) void handleSend(text);
+      };
 
-      stream = await requestMicrophoneStream();
-      const transcript = await recordAndTranscribeAudio(stream);
-      setInput(transcript);
-      setVoiceStatus(`Heard: "${transcript}"`);
-      await sendCoachMessage(transcript);
+      recognition.onerror = () => {
+        setListening(false);
+        setVoiceStatus('');
+        setInput('What should I focus on today?');
+      };
+
+      recognition.onend = () => setListening(false);
+      recognitionRef.current = recognition;
+      recognition.start();
+      setListening(true);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Microphone failed.';
       console.error('Coach microphone error:', error);
-      setVoiceError(message);
+      setInput('What should I focus on today?');
       setVoiceStatus('');
-    } finally {
-      stream?.getTracks().forEach(track => track.stop());
       setListening(false);
     }
   };
 
   return (
     <main className="min-h-screen bg-[#0A0A0A] px-5 pb-28 pt-10 text-white">
+      <VoiceConversation isOpen={voiceMode} onClose={() => setVoiceMode(false)} />
+
       <header className="mb-5 rounded-3xl border border-white/10 bg-[#141416] p-5">
         <div className="flex items-center gap-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#CCFF00] bg-black text-3xl">
@@ -294,6 +224,14 @@ export default function CoachPage() {
         </div>
       </header>
 
+      <button
+        type="button"
+        onClick={() => setVoiceMode(true)}
+        className="mb-4 flex w-full items-center justify-center gap-3 rounded-2xl bg-[#CCFF00] py-4 text-lg font-bold text-black"
+      >
+        🎤 Start Voice Session
+      </button>
+
       <section className="mb-5 rounded-3xl border border-white/10 bg-[#141416] p-4">
         <div className="mb-4 flex items-center gap-2">
           <Bot size={18} className="text-[#CCFF00]" />
@@ -326,7 +264,7 @@ export default function CoachPage() {
           {QUICK_ACTIONS.map(action => (
             <button
               key={action.title}
-              onClick={() => void sendCoachMessage(action.prompt)}
+              onClick={() => void handleSend(action.prompt)}
               className="rounded-xl bg-white/[0.05] px-3 py-3 text-left text-xs font-bold text-white/70"
             >
               {action.title}
@@ -338,31 +276,27 @@ export default function CoachPage() {
           <input
             value={input}
             onChange={event => setInput(event.target.value)}
-            onKeyDown={event => event.key === 'Enter' && void sendCoachMessage()}
+            onKeyDown={event => {
+              if (event.key === 'Enter' && input.trim()) {
+                event.preventDefault();
+                void handleSend();
+              }
+            }}
             placeholder="Ask your coach..."
             className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-[#101012] px-4 py-3 text-sm text-white outline-none"
           />
-          {micSupported ? (
-            <button
-              type="button"
-              onClick={() => void startVoiceInput()}
-              disabled={loading}
-              className={`rounded-2xl p-3 text-white disabled:opacity-50 ${listening ? 'animate-pulse bg-red-500 text-white' : 'bg-white/[0.08]'}`}
-              aria-label="Speak to coach"
-            >
-              <Mic size={18} />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setInput('What should I focus on today?')}
-              className="rounded-2xl bg-white/[0.08] p-3 text-white"
-              aria-label="Use text prompt"
-            >
-              💬
-            </button>
-          )}
-          <button type="button" onClick={() => void sendCoachMessage()} className="rounded-2xl bg-[#CCFF00] p-3 text-black">
+          <button
+            type="button"
+            onClick={handleMic}
+            disabled={loading}
+            className={`flex h-10 w-10 items-center justify-center rounded-full transition-all disabled:opacity-50 ${
+              listening ? 'animate-pulse bg-red-500 text-white' : 'bg-[#2a2a2a] text-gray-400'
+            }`}
+            aria-label="Speak to coach"
+          >
+            🎤
+          </button>
+          <button type="button" onClick={() => void handleSend()} disabled={loading || !input.trim()} className="rounded-2xl bg-[#CCFF00] p-3 text-black disabled:opacity-50">
             <Send size={18} />
           </button>
         </div>

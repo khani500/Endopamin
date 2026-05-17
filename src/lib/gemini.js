@@ -1,8 +1,10 @@
+console.log('GEMINI KEY LOADED:', import.meta.env.VITE_GEMINI_API_KEY?.substring(0, 15));
+
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
-const GEMINI_MODEL = 'gemini-2.0-flash';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 function endpoint() {
-  return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+  return `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 }
 
 function assertConfigured() {
