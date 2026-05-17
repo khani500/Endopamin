@@ -93,11 +93,11 @@ export default function NutritionScanPage() {
       <FoodScanner
         onAnalyzed={r =>
           addFoodEntry({
-            name: r.label,
-            kcal: r.kcal,
-            protein: r.protein,
-            carbs: r.carbs,
-            fat: r.fat,
+            name: r?.name || r?.food_name || r?.label || 'Scanned meal',
+            kcal: Number(r?.kcal ?? r?.calories) || 0,
+            protein: Number(r?.protein ?? r?.protein_g) || 0,
+            carbs: Number(r?.carbs ?? r?.carbs_g) || 0,
+            fat: Number(r?.fat ?? r?.fat_g) || 0,
           })
         }
       />

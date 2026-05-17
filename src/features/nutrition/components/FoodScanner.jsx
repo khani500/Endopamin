@@ -3,18 +3,22 @@ import { Camera, ImagePlus, Loader2, Scan, X } from 'lucide-react';
 import { GlassCard } from './GlassCard';
 import { useAuth } from '../../../context/AuthContext';
 import { supabase } from '../../../lib/supabase';
-import { analyzeFoodImage, blobToBase64 } from '../../../services/foodScanner';
+import { imageToGeminiPayload, scanFood } from '../../../services/foodScanner';
 
 export function FoodScanner({ onAnalyzed }) {
   const { user } = useAuth();
   const videoRef = useRef(null);
   const streamRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
   const [cameraOn, setCameraOn] = useState(false);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [result, setResult] = useState(null);
   const [coachTip, setCoachTip] = useState('');
+  const [saveStatus, setSaveStatus] = useState('');
+  const [debugInfo, setDebugInfo] = useState(null);
   const abortRef = useRef(null);
 
   const stopCamera = useCallback(() => {
@@ -26,19 +30,51 @@ export function FoodScanner({ onAnalyzed }) {
 
   const startCamera = useCallback(async () => {
     setError(null);
+    setResult(null);
+
+    const canUseLiveCamera =
+      typeof navigator !== 'undefined' &&
+      navigator.mediaDevices?.getUserMedia &&
+      (window.isSecureContext || ['localhost', '127.0.0.1'].includes(window.location.hostname));
+
+    if (!canUseLiveCamera) {
+      setError('Live camera needs HTTPS on mobile. Opening your phone camera instead.');
+      cameraInputRef.current?.click();
+      return;
+    }
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' } },
-        audio: false,
-      });
+      const constraintOptions = [
+        { video: { facingMode: { exact: 'environment' } }, audio: false },
+        { video: { facingMode: { ideal: 'environment' } }, audio: false },
+        { video: true, audio: false },
+      ];
+
+      let stream = null;
+      let lastError = null;
+
+      for (const constraints of constraintOptions) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia(constraints);
+          break;
+        } catch (err) {
+          lastError = err;
+        }
+      }
+
+      if (!stream) throw lastError || new Error('Camera unavailable.');
+
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+        videoRef.current.setAttribute('playsinline', 'true');
+        await videoRef.current.play().catch(() => undefined);
       }
       setCameraOn(true);
-    } catch {
-      setError('Camera access denied or unavailable. Use Gallery instead.');
+    } catch (err) {
+      console.error('Camera start failed:', err);
+      setError('Camera access denied or unavailable. Opening your phone camera instead.');
+      cameraInputRef.current?.click();
     }
   }, []);
 
@@ -63,15 +99,38 @@ export function FoodScanner({ onAnalyzed }) {
     const { signal } = abortRef.current;
     setBusy(true);
     setError(null);
+    setSaveStatus('');
+    setDebugInfo(null);
     try {
       if (signal.aborted) return;
-      const base64 = await blobToBase64(blob);
-      const analyzed = await analyzeFoodImage(base64);
+      const { base64, mimeType, byteSize, originalMimeType } = await imageToGeminiPayload(blob);
+      setDebugInfo({
+        stage: 'Prepared image for Gemini',
+        originalMimeType,
+        mimeType,
+        byteSize,
+        base64Length: base64.length,
+      });
+      const analyzed = await scanFood(blob);
       if (!analyzed) throw new Error('Could not analyze food image.');
       setResult(analyzed);
+      setDebugInfo({
+        stage: 'Gemini response parsed',
+        originalMimeType,
+        mimeType,
+        base64Length: base64.length,
+      });
       setCoachTip(analyzed.protein_g >= 30 ? 'Good protein choice!' : 'Add a lean protein to balance this meal.');
     } catch (e) {
-      if (e.name !== 'AbortError') setError(String(e.message || e));
+      if (e.name !== 'AbortError') {
+        const message = e instanceof Error ? e.message : String(e);
+        setError(message);
+        setDebugInfo({
+          stage: 'Gemini scan failed',
+          ...(e.details || {}),
+          exactError: message,
+        });
+      }
     } finally {
       setBusy(false);
     }
@@ -104,9 +163,10 @@ export function FoodScanner({ onAnalyzed }) {
       fat: Number(result.fat_g) || 0,
     };
     onAnalyzed?.(entry);
+    setSaveStatus('Meal added to today’s macros.');
 
     if (supabase && user?.id) {
-      await supabase.from('nutrition_logs').insert({
+      const { error: saveError } = await supabase.from('nutrition_logs').insert({
         user_id: user.id,
         meal_name: result.food_name,
         calories: Number(result.calories) || 0,
@@ -115,12 +175,22 @@ export function FoodScanner({ onAnalyzed }) {
         fat_g: Number(result.fat_g) || 0,
         meal_type: 'snack',
       });
+      if (saveError) {
+        console.error('Failed to save nutrition log:', saveError);
+        setSaveStatus('Saved locally, but Supabase rejected the log.');
+      } else {
+        setSaveStatus('Meal logged to Supabase and macros updated.');
+      }
+    } else if (!user?.id) {
+      setSaveStatus('Meal added locally. Sign in to sync with Supabase.');
     }
   };
 
   const resetScan = () => {
     setResult(null);
     setCoachTip('');
+    setSaveStatus('');
+    setDebugInfo(null);
     setError(null);
     setPreviewUrl(prev => {
       if (prev) URL.revokeObjectURL(prev);
@@ -144,7 +214,14 @@ export function FoodScanner({ onAnalyzed }) {
 
       <div className="np-camera-box np-camera-box--scan">
         {previewUrl && !cameraOn && <img src={previewUrl} alt="Preview" />}
-        <video ref={videoRef} style={{ display: cameraOn ? 'block' : 'none' }} playsInline muted />
+        <video
+          ref={videoRef}
+          style={{ display: cameraOn ? 'block' : 'none' }}
+          playsInline
+          muted
+          autoPlay
+          onLoadedMetadata={() => videoRef.current?.play?.().catch(() => undefined)}
+        />
         {!cameraOn && !previewUrl && (
           <div className="np-camera-empty">
             <Camera size={42} color="#CCFF00" style={{ opacity: 0.72 }} />
@@ -160,6 +237,7 @@ export function FoodScanner({ onAnalyzed }) {
       </div>
 
       {error && <p className="np-error">{error}</p>}
+      {debugInfo && <ScannerDebugPanel info={debugInfo} />}
 
       {result && (
         <div className="mt-4 rounded-2xl border border-[#CCFF00]/25 bg-[#0A0A0A] p-4">
@@ -171,7 +249,9 @@ export function FoodScanner({ onAnalyzed }) {
           <MacroResult label="Carbs" value={`${result.carbs_g}g`} pct={48} />
           <MacroResult label="Fat" value={`${result.fat_g}g`} pct={24} />
           <p className="mt-3 text-xs font-bold text-white/50">Confidence: {result.confidence}</p>
+          {result.notes && <p className="mt-2 text-xs leading-5 text-white/40">{result.notes}</p>}
           <p className="mt-2 text-xs font-bold text-[#CCFF00]">Coach: {coachTip}</p>
+          {saveStatus && <p className="mt-2 text-xs font-bold text-white/50">{saveStatus}</p>}
           <div className="mt-4 grid grid-cols-2 gap-2">
             <button type="button" onClick={() => void logMeal()} className="rounded-xl bg-[#CCFF00] py-3 text-xs font-black text-black">
               Log This Meal
@@ -191,8 +271,18 @@ export function FoodScanner({ onAnalyzed }) {
         <label className="np-btn-outline">
           <ImagePlus size={18} />
           Gallery
-          <input type="file" accept="image/*" className="hidden" onChange={onFile} disabled={busy} style={{ display: 'none' }} />
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={onFile} disabled={busy} style={{ display: 'none' }} />
         </label>
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={onFile}
+          disabled={busy}
+          style={{ display: 'none' }}
+          aria-hidden="true"
+        />
       </div>
 
     </GlassCard>
@@ -207,6 +297,38 @@ function MacroResult({ label, value, pct }) {
       <span className="h-2 overflow-hidden rounded-full bg-white/10">
         <span className="block h-full rounded-full bg-[#CCFF00]" style={{ width: `${pct}%` }} />
       </span>
+    </div>
+  );
+}
+
+function ScannerDebugPanel({ info }) {
+  const rows = [
+    ['Stage', info.stage],
+    ['Gemini key loaded', info.keyLoaded === undefined ? 'not checked yet' : info.keyLoaded ? `yes (${info.keyLength} chars)` : 'no'],
+    ['Model', info.model],
+    ['Original MIME', info.originalMimeType],
+    ['Sent MIME', info.mimeType],
+    ['Image bytes', info.byteSize],
+    ['Base64 length', info.base64Length],
+    ['HTTP status', info.status ? `${info.status} ${info.statusText || ''}` : null],
+    ['Exact error', info.exactError || info.errorMessage],
+  ].filter(([, value]) => value !== undefined && value !== null && value !== '');
+
+  return (
+    <div className="mt-3 rounded-2xl border border-[#FF9500]/35 bg-[#FF9500]/10 p-3">
+      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#FF9500]">Scanner Debug</p>
+      <div className="mt-2 space-y-1">
+        {rows.map(([label, value]) => (
+          <p key={label} className="text-[11px] leading-5 text-white/65">
+            <span className="font-black text-white/85">{label}:</span> {String(value)}
+          </p>
+        ))}
+      </div>
+      {info.rawText && (
+        <p className="mt-2 max-h-24 overflow-auto rounded-xl bg-black/30 p-2 text-[10px] leading-4 text-white/45">
+          Raw Gemini text: {info.rawText.slice(0, 500)}
+        </p>
+      )}
     </div>
   );
 }

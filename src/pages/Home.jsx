@@ -113,6 +113,54 @@ function MultiRingCard({ title, rings, centerText, centerLabel }) {
   );
 }
 
+const StreakCard = ({ streak, level, xp, xpToNext }) => {
+  const isOnFire = streak >= 7;
+  const isMilestone = [7, 14, 30, 60, 100].includes(streak);
+  const xpPct = Math.min(100, Math.round((xp / xpToNext) * 100));
+
+  return (
+    <div className={`rounded-2xl p-4 ${isOnFire ? 'bg-gradient-to-r from-[#1a1a1a] to-[#1a2a00]' : 'bg-[#1a1a1a]'} border ${isOnFire ? 'border-[#CCFF00]/40' : 'border-[#2a2a2a]'}`}>
+      {isMilestone && (
+        <div className="mb-2 inline-block rounded-full bg-[#CCFF00] px-2 py-1 text-xs font-bold text-black">
+          🏆 {streak}-DAY MILESTONE!
+        </div>
+      )}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs uppercase tracking-wider text-gray-400">Day Streak</p>
+          <div className="flex items-end gap-2">
+            <span className="text-5xl font-black text-[#CCFF00]">{streak}</span>
+            {isOnFire && <span className="mb-1 text-2xl">🔥</span>}
+          </div>
+          <p className="mt-1 text-xs text-gray-500">
+            {streak === 0 ? 'Start today!' : streak < 7 ? `${7 - streak} days to first milestone` : streak < 30 ? 'Elite territory 💪' : 'LEGENDARY! 🏆'}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs uppercase text-gray-400">Dopa Level</p>
+          <p className="text-3xl font-bold text-white">Lv.{level}</p>
+          <p className="text-xs text-[#CCFF00]">{xp}/{xpToNext} XP</p>
+        </div>
+      </div>
+      <div className="mt-3">
+        <div className="h-2 overflow-hidden rounded-full bg-[#2a2a2a]">
+          <div className="h-full rounded-full bg-[#CCFF00] transition-all duration-500" style={{ width: `${xpPct}%` }} />
+        </div>
+        <div className="mt-1 flex justify-between">
+          <span className="text-xs text-gray-600">XP → LV.{level + 1}</span>
+          <span className="text-xs text-gray-600">{xpPct}%</span>
+        </div>
+      </div>
+      <div className="mt-3 flex gap-1">
+        {Array.from({ length: 7 }).map((_, index) => {
+          const dayWorkedOut = index < (streak % 7 || Math.min(streak, 7));
+          return <div key={index} className={`h-6 flex-1 rounded-md ${dayWorkedOut ? 'bg-[#CCFF00]' : 'bg-[#2a2a2a]'}`} />;
+        })}
+      </div>
+    </div>
+  );
+};
+
 function IconShell({ children, accent = '#C8FF00' }) {
   return (
     <div style={{ width: 38, height: 38, borderRadius: 14, display: 'grid', placeItems: 'center', background: 'rgba(200,255,0,0.08)', border: `1px solid ${accent}44` }}>
@@ -494,28 +542,12 @@ export default function Home() {
 
       {/* Streak + Level hero */}
       <div style={{ padding: '0 20px', marginBottom: 18 }}>
-        <div style={{ borderRadius: 30, padding: 22, border: `1px solid ${t.accentBorder}`, background: '#111', boxShadow: `0 18px 40px ${t.accentDim}, inset 0 0 0 1px rgba(255,255,255,0.02)` }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
-            <div style={{ borderRadius: 22, padding: 18, background: '#1E1E1E', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ fontSize: 10, letterSpacing: 1.6, textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)', marginBottom: 6 }}>Dopa Level</div>
-              <div style={{ fontSize: 56, fontWeight: 950, letterSpacing: -2.5, color: '#fff', lineHeight: 1 }}>Lv.4</div>
-            </div>
-            <div style={{ borderRadius: 22, padding: 18, background: '#1E1E1E', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ fontSize: 10, letterSpacing: 1.6, textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)', marginBottom: 6 }}>Streak</div>
-              <div style={{ fontSize: 56, fontWeight: 950, letterSpacing: -2.5, color: t.accent, lineHeight: 1 }}>{streak}</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.36)', marginTop: 2 }}>days strong</div>
-            </div>
-          </div>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>
-              <span style={{ color: t.accent }}>{t.dopaLabel}</span>
-              <span style={{ color: 'rgba(255,255,255,0.4)' }}>68% → Lv.5</span>
-            </div>
-            <div style={{ height: 5, background: 'rgba(255,255,255,0.08)', borderRadius: 99, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: '68%', background: t.gradFill, borderRadius: 99 }} />
-            </div>
-          </div>
-        </div>
+        <StreakCard
+          streak={profile?.streak_count || streak}
+          level={profile?.dopa_level || 4}
+          xp={profile?.dopa_xp || 340}
+          xpToNext={500}
+        />
       </div>
 
       <DopaScore score={dopaScore.score} color={dopaScore.color} breakdown={dopaScore.breakdown} />
@@ -587,8 +619,8 @@ export default function Home() {
             centerLabel="workouts"
             rings={[
               { label: 'Workouts', progress: 5 / 6, color: '#CCFF00' },
-              { label: 'Streak', progress: Math.min(streak / 14, 1), color: '#BF5AF2' },
-              { label: 'XP', progress: 0.68, color: '#FFD60A' },
+              { label: 'Streak', progress: Math.min(streak / 14, 1), color: '#FF9500' },
+              { label: 'XP', progress: 0.68, color: '#CCFF00' },
             ]}
           />
           <MultiRingCard
@@ -597,7 +629,7 @@ export default function Home() {
             centerLabel="complete"
             rings={[
               { label: 'Calories', progress: 0.72, color: '#CCFF00' },
-              { label: 'Protein', progress: 0.64, color: '#32ADE6' },
+              { label: 'Protein', progress: 0.64, color: '#FF9500' },
               { label: 'Workout', progress: todayWorkout.completed ? 1 : 0.35, color: '#FF9500' },
             ]}
           />

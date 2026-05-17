@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useCoach } from '../hooks/useCoach';
+import { useStreak } from '../hooks/useStreak';
 
 const WORKOUT_SESSIONS = {
   strength: {
@@ -55,6 +56,7 @@ export default function WorkoutSession({ planMode = false }) {
   const { type } = useParams();
   const { user } = useAuth();
   const { coach, speak } = useCoach();
+  const { updateStreak } = useStreak();
   const sessionType = planMode ? 'strength' : (type || 'strength').toLowerCase();
   const session = WORKOUT_SESSIONS[sessionType] || WORKOUT_SESSIONS.strength;
   const [exerciseIndex, setExerciseIndex] = useState(0);
@@ -80,7 +82,10 @@ export default function WorkoutSession({ planMode = false }) {
       }
 
       setFinished(true);
-      const message = `${coach.name} says: Session complete. Strong work today.`;
+      const streakResult = await updateStreak();
+      const message = streakResult
+        ? `${streakResult.xpGained} XP earned! ${streakResult.newStreak} day streak!`
+        : `${coach.name} says: Session complete. Strong work today.`;
       speak(message);
       if (supabase && user?.id) {
         await supabase.from('workout_logs').insert({

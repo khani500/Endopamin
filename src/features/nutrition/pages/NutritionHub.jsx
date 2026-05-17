@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Activity, Utensils, ChevronRight } from 'lucide-react';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { MacroRings } from '../../../components/nutrition/MacroRings';
 import { SupplementAdvisor } from '../../../components/nutrition/SupplementAdvisor';
 import { useAuth } from '../../../context/AuthContext';
@@ -8,6 +9,7 @@ import { askGemini } from '../../../lib/gemini';
 import { useNutritionStore } from '../store/nutritionStore';
 import { FoodScanner } from '../components/FoodScanner';
 import { MacroMatrixGrid, SmartMacroPieChart } from './NutritionScanPage';
+import '../nutritionShell.css';
 
 const MENU = [
   {
@@ -28,12 +30,12 @@ const MENU = [
 ];
 
 export default function NutritionHub() {
-  const { profile } = useAuth();
-  const onboardingComplete = useNutritionStore(s => s.onboardingComplete);
-  const targetCalories = useNutritionStore(s => s.targetCalories);
-  const targetProtein = useNutritionStore(s => s.targetProtein);
-  const targetCarbs = useNutritionStore(s => s.targetCarbs);
-  const targetFat = useNutritionStore(s => s.targetFat);
+  const { profile } = useAuth() || {};
+  const onboardingComplete = useNutritionStore(s => Boolean(s.onboardingComplete));
+  const targetCalories = useNutritionStore(s => Number(s.targetCalories) || 2200);
+  const targetProtein = useNutritionStore(s => Number(s.targetProtein) || 160);
+  const targetCarbs = useNutritionStore(s => Number(s.targetCarbs) || 220);
+  const targetFat = useNutritionStore(s => Number(s.targetFat) || 65);
   const addFoodEntry = useNutritionStore(s => s.addFoodEntry);
   const [plan, setPlan] = useState(null);
 
@@ -109,21 +111,30 @@ export default function NutritionHub() {
         </div>
       )}
 
-      <SupplementAdvisor />
+      <SafeNutritionBlock label="Supplement Advisor">
+        <SupplementAdvisor />
+      </SafeNutritionBlock>
 
-      <FoodScanner
-        onAnalyzed={result =>
-          addFoodEntry({
-            name: result.name,
-            kcal: result.kcal,
-            protein: result.protein,
-            carbs: result.carbs,
-            fat: result.fat,
-          })
-        }
-      />
-      <SmartMacroPieChart />
-      <MacroMatrixGrid />
+      <SafeNutritionBlock label="Food Scanner">
+        <FoodScanner
+          onAnalyzed={result => {
+            if (!result || typeof addFoodEntry !== 'function') return;
+            addFoodEntry({
+              name: result.name || result.food_name || 'Scanned meal',
+              kcal: Number(result.kcal ?? result.calories) || 0,
+              protein: Number(result.protein ?? result.protein_g) || 0,
+              carbs: Number(result.carbs ?? result.carbs_g) || 0,
+              fat: Number(result.fat ?? result.fat_g) || 0,
+            });
+          }}
+        />
+      </SafeNutritionBlock>
+      <SafeNutritionBlock label="Macro Pie Chart">
+        <SmartMacroPieChart />
+      </SafeNutritionBlock>
+      <SafeNutritionBlock label="Macro Matrix">
+        <MacroMatrixGrid />
+      </SafeNutritionBlock>
 
       <div className="np-hub-grid">
         {MENU.map(({ to, label, desc, Icon, iconClass, wide }) => (
@@ -140,5 +151,23 @@ export default function NutritionHub() {
         ))}
       </div>
     </main>
+  );
+}
+
+function SafeNutritionBlock({ label, children }) {
+  return (
+    <ErrorBoundary
+      label={label}
+      fallback={
+        <div className="np-card">
+          <p className="np-brand">{label}</p>
+          <p className="np-muted" style={{ marginTop: 8 }}>
+            This nutrition section could not load on this device. The rest of Nutrition is still available.
+          </p>
+        </div>
+      }
+    >
+      {children}
+    </ErrorBoundary>
   );
 }

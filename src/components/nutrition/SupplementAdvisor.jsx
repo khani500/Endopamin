@@ -5,7 +5,7 @@ import { askGemini } from '../../lib/gemini';
 import { getSupplementsForProfile } from '../../data/supplements';
 
 export function SupplementAdvisor() {
-  const { profile } = useAuth();
+  const { profile } = useAuth() || {};
   const [selected, setSelected] = useState(null);
   const [advice, setAdvice] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,8 +26,9 @@ export function SupplementAdvisor() {
       setAdvice(text || `Coach ${coach.name.replace('Coach ', '')} recommends this because it supports your ${goal} plan.`);
     } catch {
       setAdvice(`Coach ${coach.name.replace('Coach ', '')} recommends this because it supports your ${goal} plan.`);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -37,7 +38,7 @@ export function SupplementAdvisor() {
         Based on your level ({experience}) and goal ({goal.replace('_', ' ')}):
       </p>
       <div className="grid grid-cols-2 gap-2">
-        {supplements.map(item => (
+        {supplements.length ? supplements.map(item => (
           <button
             key={item.id}
             type="button"
@@ -47,7 +48,11 @@ export function SupplementAdvisor() {
             <p className="text-sm font-black text-white">{item.emoji} {item.name}</p>
             <p className="mt-1 text-[10px] font-bold text-[#CCFF00]">Tier {item.tier}</p>
           </button>
-        ))}
+        )) : (
+          <p className="col-span-2 rounded-2xl bg-[#101012] p-3 text-xs text-white/45">
+            Add your goal and experience in Profile to unlock supplement suggestions.
+          </p>
+        )}
       </div>
 
       {selected && (
@@ -58,8 +63,8 @@ export function SupplementAdvisor() {
               <h2 className="text-xl font-black">{selected.name}</h2>
               <span className="rounded-full bg-[#CCFF00] px-3 py-1 text-[10px] font-black text-black">Tier {selected.tier}</span>
             </div>
-            <p className="mt-4 text-sm text-white/55">Dose: {selected.dose[experience] || selected.dose.intermediate}</p>
-            <p className="mt-2 text-sm text-white/55">Timing: {selected.timing}</p>
+            <p className="mt-4 text-sm text-white/55">Dose: {selected.dose?.[experience] || selected.dose?.intermediate || 'Follow label guidance'}</p>
+            <p className="mt-2 text-sm text-white/55">Timing: {selected.timing || 'Daily with food'}</p>
             <p className="mt-4 rounded-2xl bg-[#1a1a1a] p-4 text-sm leading-6 text-white/75">
               {loading ? 'Coach is thinking...' : advice}
             </p>

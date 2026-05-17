@@ -9,7 +9,7 @@ export const CoachCard = ({ fallbackMessage = '' }) => {
   const [chatOpen, setChatOpen] = useState(false);
 
   const handleVoice = () => {
-    const voiceMessage = fallbackMessage || message;
+    const voiceMessage = message || fallbackMessage;
     if (!voiceMessage.trim()) return;
     if (playing || isSpeaking()) {
       stopSpeaking();
@@ -39,7 +39,7 @@ export const CoachCard = ({ fallbackMessage = '' }) => {
         <button
           type="button"
           onClick={handleVoice}
-          disabled={loadingMessage || !(fallbackMessage || message).trim()}
+          disabled={loadingMessage || !(message || fallbackMessage).trim()}
           className={`flex h-8 w-8 items-center justify-center rounded-full transition-all disabled:opacity-40 ${
             playing ? 'bg-[#CCFF00] text-black' : 'bg-[#2a2a2a] text-gray-400'
           }`}
@@ -52,7 +52,7 @@ export const CoachCard = ({ fallbackMessage = '' }) => {
       {loadingMessage && !fallbackMessage ? (
         <div className="h-12 animate-pulse rounded-lg bg-[#2a2a2a]" />
       ) : (
-        <p className="m-0 text-sm leading-relaxed text-white">{fallbackMessage || message}</p>
+        <p className="m-0 text-sm leading-relaxed text-white">{message || fallbackMessage}</p>
       )}
 
       <button

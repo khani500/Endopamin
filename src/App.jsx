@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import BottomNav from './components/BottomNav';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import Home from './pages/Home';
 import Progress from './pages/Progress';
 import GymPage from './pages/GymPage';
@@ -10,6 +11,7 @@ import OnboardingPage from './pages/OnboardingPage';
 import ExerciseLibrary from './pages/ExerciseLibrary';
 import WorkoutSession from './pages/WorkoutSession';
 import GroupSession from './pages/GroupSession';
+import DeskBreakSession from './pages/DeskBreakSession';
 import { useAuth } from './context/AuthContext';
 import { checkUserAbsence, updateLastActive } from './services/absenceDetector';
 import { onForegroundMessage } from './lib/firebase';
@@ -107,21 +109,25 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/coach" element={<CoachPage />} />
-          <Route path="/log" element={<NutritionLayout />}>
-            <Route index element={<NutritionHub />} />
+          <Route path="/log" element={<ErrorBoundary label="Nutrition route"><NutritionLayout /></ErrorBoundary>}>
+            <Route index element={<ErrorBoundary label="Nutrition hub"><NutritionHub /></ErrorBoundary>} />
             <Route path="overview" element={<NutritionOverviewPage />} />
             <Route path="scan" element={<NutritionScanPage />} />
             <Route path="plan" element={<NutritionPlanPage />} />
             <Route path="coach" element={<NutritionCoachPage />} />
           </Route>
+          <Route path="/nutrition" element={<NutritionLayout />}>
+            <Route index element={<ErrorBoundary label="Nutrition hub"><NutritionHub /></ErrorBoundary>} />
+          </Route>
           <Route path="/scan" element={<Navigate to="/log/scan" replace />} />
           <Route path="/gym" element={<GymPage />} />
           <Route path="/gym/desk-break/:breakId" element={<GymPage />} />
+          <Route path="/desk-break/:id" element={<DeskBreakSession />} />
           <Route path="/exercises" element={<ExerciseLibrary />} />
           <Route path="/exercises/:id" element={<ExerciseLibrary />} />
           <Route path="/workout/:type" element={<WorkoutSession />} />
           <Route path="/plan/workout" element={<WorkoutSession planMode />} />
-          <Route path="/plan/nutrition" element={<NutritionHub />} />
+          <Route path="/plan/nutrition" element={<ErrorBoundary label="Nutrition plan shortcut"><NutritionHub /></ErrorBoundary>} />
           <Route path="/group" element={<GroupSession />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/profile" element={<ProfilePage />} />

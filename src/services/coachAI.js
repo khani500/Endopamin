@@ -24,7 +24,12 @@ export const getDailyMessage = async (coachId, userContext) => {
     Do NOT start with "Hey" every time - vary the opening.
   `;
 
-  return askGemini(prompt, coach.personality);
+  try {
+    return await askGemini(prompt, coach.personality);
+  } catch (error) {
+    console.error('Gemini daily coach failed:', error);
+    return `${userName}, ${coach.name} is connected but Gemini is temporarily unavailable. Keep it simple today: one focused workout, one high-protein meal, and one win logged.`;
+  }
 };
 
 export const getCheckInResponse = async (coachId, userName, energy, sleep) => {
@@ -41,7 +46,12 @@ export const getCheckInResponse = async (coachId, userName, energy, sleep) => {
     If energy is 4-5: push for performance
   `;
 
-  return askGemini(prompt, coach.personality);
+  try {
+    return await askGemini(prompt, coach.personality);
+  } catch (error) {
+    console.error('Gemini check-in failed:', error);
+    return `${coach.name}: Start with ${energy <= 2 || !sleep ? 'mobility and recovery' : 'a focused strength session'} today. Keep it controlled and log the win.`;
+  }
 };
 
 export const getProgressInsight = async (coachId, userName, metrics) => {
@@ -58,7 +68,12 @@ export const getProgressInsight = async (coachId, userName, metrics) => {
     Give one specific insight and one actionable tip.
   `;
 
-  return askGemini(prompt, coach.personality);
+  try {
+    return await askGemini(prompt, coach.personality);
+  } catch (error) {
+    console.error('Gemini progress insight failed:', error);
+    return `${coach.name}: Your next move is consistency. Pick one metric, improve it today, and keep the streak alive.`;
+  }
 };
 
 export const generateWorkoutPlan = async (coachId, userProfile) => {
@@ -88,10 +103,11 @@ export const generateWorkoutPlan = async (coachId, userProfile) => {
     Return ONLY the JSON, no other text.
   `;
 
-  const response = await askGemini(prompt, coach.personality);
   try {
+    const response = await askGemini(prompt, coach.personality);
     return JSON.parse(response.replace(/```json|```/g, '').trim());
-  } catch {
+  } catch (error) {
+    console.error('Gemini workout plan failed:', error);
     return null;
   }
 };
@@ -115,6 +131,11 @@ export const chatWithCoach = async (coachId, userName, message, conversationHist
     User gender identity: ${gender || 'not specified'}.
   `;
 
-  return askGemini(prompt, coach.personality);
+  try {
+    return await askGemini(prompt, coach.personality);
+  } catch (error) {
+    console.error('Gemini coach chat failed:', error);
+    return `${coach.name}: I could not reach Gemini right now, but here is the coaching move: ${name}, focus on the next concrete action. If this is training, warm up and complete your first working set. If this is nutrition, get protein in first.`;
+  }
 };
 

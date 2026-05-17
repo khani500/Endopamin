@@ -82,10 +82,10 @@ export default function GymPage() {
             <button
               key={item.id}
               type="button"
-              onClick={() => navigate(`/gym/desk-break/${item.id}`)}
+              onClick={() => navigate(`/desk-break/${item.id}`)}
               className="rounded-xl border border-[#2a2a2a] bg-[#1a1a1a] p-3 text-center"
             >
-              <p className="text-lg font-bold text-[#CCFF00]">{item.duration}m</p>
+                <p className="text-lg font-bold text-[#CCFF00]">{item.emoji} {item.duration}m</p>
               <p className="mt-1 text-xs font-medium text-white">{item.title}</p>
               <p className="mt-0.5 text-[10px] text-gray-500">{item.exercises.length} moves</p>
             </button>

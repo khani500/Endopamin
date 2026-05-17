@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { Bot, Mic, Send, Volume2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+import { transcribeAudioWithGemini } from '../lib/gemini';
+import { startListening } from '../lib/microphone';
 import { useCoach } from '../hooks/useCoach';
 
 const QUICK_ACTIONS = [
@@ -24,6 +26,18 @@ const PERSONA_TO_TONE = {
   rex: 'strict',
 };
 
+const VOICE_MIME_OPTIONS = [
+  'audio/webm;codecs=opus',
+  'audio/webm',
+  'audio/mp4',
+  'audio/mpeg',
+];
+
+function getSupportedAudioMimeType() {
+  if (typeof MediaRecorder === 'undefined') return '';
+  return VOICE_MIME_OPTIONS.find(type => MediaRecorder.isTypeSupported(type)) || '';
+}
+
 export default function CoachPage() {
   const location = useLocation();
   const { user, profile, setProfile } = useAuth();
@@ -31,6 +45,11 @@ export default function CoachPage() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [voiceError, setVoiceError] = useState('');
+  const [voiceStatus, setVoiceStatus] = useState('');
+  const [listening, setListening] = useState(false);
+  const [micSupported, setMicSupported] = useState(true);
+  const [recognition, setRecognition] = useState(null);
   const [selectedGender, setSelectedGender] = useState(profile?.gender === 'female' ? 'female' : 'male');
   const [selectedTone, setSelectedTone] = useState(PERSONA_TO_TONE[personaId] || 'calm');
   const userName = profile?.display_name || 'Champion';
@@ -102,19 +121,114 @@ export default function CoachPage() {
     setLoading(false);
   };
 
-  const startVoiceInput = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
+  const requestMicrophoneStream = async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw new Error('This browser does not support microphone access.');
+    }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.onresult = event => {
-      const transcript = event.results?.[0]?.[0]?.transcript || '';
-      setInput(transcript);
-      void sendCoachMessage(transcript);
+    try {
+      return await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
+    } catch (error) {
+      if (error?.name === 'NotAllowedError' || error?.name === 'PermissionDeniedError') {
+        throw new Error('Microphone permission was denied. Allow microphone access in your browser settings and try again.', { cause: error });
+      }
+      if (error?.name === 'NotFoundError') {
+        throw new Error('No microphone was found on this device.', { cause: error });
+      }
+      if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+        throw new Error('Mobile browsers require HTTPS for microphone access. Open the app on HTTPS or use localhost.', { cause: error });
+      }
+      throw new Error(error instanceof Error ? error.message : 'Could not access microphone.', { cause: error });
+    }
+  };
+
+  const recordAndTranscribeAudio = async stream => {
+    if (typeof MediaRecorder === 'undefined') {
+      throw new Error('Voice recording is not supported in this mobile browser.');
+    }
+
+    const mimeType = getSupportedAudioMimeType();
+    const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    const chunks = [];
+
+    recorder.ondataavailable = event => {
+      if (event.data?.size) chunks.push(event.data);
     };
-    recognition.start();
+
+    const finished = new Promise((resolve, reject) => {
+      recorder.onerror = event => reject(new Error(event.error?.message || 'Voice recording failed.'));
+      recorder.onstop = () => resolve(new Blob(chunks, { type: recorder.mimeType || mimeType || 'audio/webm' }));
+    });
+
+    recorder.start();
+    setVoiceStatus('Listening... speak now');
+    await new Promise(resolve => window.setTimeout(resolve, 4500));
+    if (recorder.state !== 'inactive') recorder.stop();
+
+    const audioBlob = await finished;
+    setVoiceStatus('Transcribing voice with Gemini...');
+    const transcript = await transcribeAudioWithGemini(audioBlob);
+    if (!transcript.trim()) throw new Error('No speech was detected in the recording.');
+    return transcript.trim();
+  };
+
+  const startVoiceInput = async () => {
+    if (listening && recognition) {
+      recognition.stop();
+      setListening(false);
+      return;
+    }
+
+    setVoiceError('');
+    setVoiceStatus('Requesting microphone permission...');
+    setListening(true);
+
+    let stream;
+    try {
+      const rec = await startListening(
+        text => {
+          setInput(text);
+          setListening(false);
+          setVoiceStatus(`Heard: "${text}"`);
+          void sendCoachMessage(text);
+        },
+        error => {
+          setListening(false);
+          if (error === 'mic_not_supported') {
+            setMicSupported(false);
+            setVoiceError('Voice input not supported on this browser. Please type your message.');
+            return;
+          }
+          setVoiceError(error === 'permission_denied' ? 'Microphone permission denied.' : String(error));
+        },
+      );
+
+      setRecognition(rec);
+      if (rec) {
+        setVoiceStatus('Listening... speak now');
+        return;
+      }
+
+      stream = await requestMicrophoneStream();
+      const transcript = await recordAndTranscribeAudio(stream);
+      setInput(transcript);
+      setVoiceStatus(`Heard: "${transcript}"`);
+      await sendCoachMessage(transcript);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Microphone failed.';
+      console.error('Coach microphone error:', error);
+      setVoiceError(message);
+      setVoiceStatus('');
+    } finally {
+      stream?.getTracks().forEach(track => track.stop());
+      setListening(false);
+    }
   };
 
   return (
@@ -228,13 +342,35 @@ export default function CoachPage() {
             placeholder="Ask your coach..."
             className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-[#101012] px-4 py-3 text-sm text-white outline-none"
           />
-          <button type="button" onClick={startVoiceInput} className="rounded-2xl bg-white/[0.08] p-3 text-white">
-            <Mic size={18} />
-          </button>
+          {micSupported ? (
+            <button
+              type="button"
+              onClick={() => void startVoiceInput()}
+              disabled={loading}
+              className={`rounded-2xl p-3 text-white disabled:opacity-50 ${listening ? 'animate-pulse bg-red-500 text-white' : 'bg-white/[0.08]'}`}
+              aria-label="Speak to coach"
+            >
+              <Mic size={18} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setInput('What should I focus on today?')}
+              className="rounded-2xl bg-white/[0.08] p-3 text-white"
+              aria-label="Use text prompt"
+            >
+              💬
+            </button>
+          )}
           <button type="button" onClick={() => void sendCoachMessage()} className="rounded-2xl bg-[#CCFF00] p-3 text-black">
             <Send size={18} />
           </button>
         </div>
+        {(voiceStatus || voiceError) && (
+          <div className={`mt-3 rounded-2xl p-3 text-xs leading-5 ${voiceError ? 'bg-red-500/10 text-red-200' : 'bg-[#CCFF00]/10 text-[#CCFF00]'}`}>
+            {voiceError || voiceStatus}
+          </div>
+        )}
       </section>
     </main>
   );

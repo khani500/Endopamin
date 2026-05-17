@@ -11,7 +11,7 @@ const PAGE_TITLES = {
 
 export default function NutritionLayout() {
   const { pathname } = useLocation();
-  const isHub = pathname === '/log' || pathname === '/log/';
+  const isHub = pathname === '/log' || pathname === '/log/' || pathname === '/nutrition' || pathname === '/nutrition/';
   const title = PAGE_TITLES[pathname] ?? 'Nutrition';
 
   return (
