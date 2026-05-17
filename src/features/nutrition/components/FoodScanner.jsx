@@ -163,6 +163,7 @@ export function FoodScanner({ onAnalyzed }) {
 
       {result && (
         <div className="mt-4 rounded-2xl border border-[#CCFF00]/25 bg-[#0A0A0A] p-4">
+          <button type="button" onClick={() => window.history.back()} className="mb-3 text-xs font-black text-white/45">← Back</button>
           <p className="text-sm font-black text-white">✅ {result.food_name}</p>
           <p className="mt-1 text-xs text-white/45">Estimated serving: {result.serving_size}</p>
           <MacroResult label="Calories" value={`${result.calories} kcal`} pct={78} />

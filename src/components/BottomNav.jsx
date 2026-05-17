@@ -62,15 +62,15 @@ const BottomNav = () => {
   };
 
   return (
-    <nav className="fixed bottom-3 left-1/2 z-50 w-[min(390px,calc(100vw-24px))] -translate-x-1/2 rounded-[24px] border border-[#CCFF00]/25 bg-[#050505]/95 shadow-2xl shadow-black/60 backdrop-blur">
-      <div className="flex w-full items-center justify-around px-2 py-2">
+    <nav className="fixed bottom-0 left-1/2 z-50 h-16 w-[min(430px,100vw)] -translate-x-1/2 rounded-t-[22px] border border-[#CCFF00]/25 bg-[#050505]/95 shadow-2xl shadow-black/60 backdrop-blur">
+      <div className="flex h-full w-full items-center justify-around px-2">
         {tabs.map(tab => (
           <NavLink
             key={tab.to}
             to={tab.to}
             end={tab.end}
             className={({ isActive }) =>
-              `flex min-w-[62px] flex-col items-center rounded-2xl px-2 py-2 transition-all ${
+              `flex min-w-[58px] flex-col items-center rounded-2xl px-2 py-1.5 transition-all ${
                 isTabActive(tab, isActive)
                   ? 'bg-[#CCFF00]/10 text-[#CCFF00]'
                   : 'text-gray-400'

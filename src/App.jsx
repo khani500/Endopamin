@@ -8,6 +8,8 @@ import CoachPage from './pages/CoachPage';
 import ProfilePage from './pages/ProfilePage';
 import OnboardingPage from './pages/OnboardingPage';
 import ExerciseLibrary from './pages/ExerciseLibrary';
+import WorkoutSession from './pages/WorkoutSession';
+import GroupSession from './pages/GroupSession';
 import { useAuth } from './context/AuthContext';
 import { checkUserAbsence, updateLastActive } from './services/absenceDetector';
 import { onForegroundMessage } from './lib/firebase';
@@ -101,7 +103,7 @@ function App() {
 
   return (
     <Router>
-      <div className="flex min-h-screen w-full flex-col bg-[#0A0A0A] pb-20">
+      <div className="mx-auto flex min-h-screen w-full max-w-[430px] flex-col bg-[#0A0A0A] pb-16">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/coach" element={<CoachPage />} />
@@ -117,6 +119,10 @@ function App() {
           <Route path="/gym/desk-break/:breakId" element={<GymPage />} />
           <Route path="/exercises" element={<ExerciseLibrary />} />
           <Route path="/exercises/:id" element={<ExerciseLibrary />} />
+          <Route path="/workout/:type" element={<WorkoutSession />} />
+          <Route path="/plan/workout" element={<WorkoutSession planMode />} />
+          <Route path="/plan/nutrition" element={<NutritionHub />} />
+          <Route path="/group" element={<GroupSession />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Routes>

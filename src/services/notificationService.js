@@ -27,6 +27,42 @@ export const sendNotification = (title, body, data = {}) => {
   new Notification(title, { body, icon: '/logo.png', data });
 };
 
+export const ABSENCE_MESSAGES = {
+  day1: [
+    { title: '👀 We see you... hiding', body: 'Your streak misses you. Come back before it gets awkward.' },
+    { title: '🤔 Did you forget something?', body: "Oh right — your gains. They're waiting." },
+    { title: '📱 Your coach called...', body: "Coach said: 'I'm not mad, just disappointed.'" },
+  ],
+  day2: [
+    { title: '😤 Two days? Really?', body: 'Your muscles are literally shrinking. (Okay maybe not, but still.)' },
+    { title: '🦥 Sloth mode: ACTIVATED', body: 'Your fitness app is judging you. Gently. But judging.' },
+    { title: '⚠️ Streak Alert', body: "Your {streak}-day streak is about to become history. Don't let it." },
+  ],
+  day5: [
+    { title: '🚨 Emergency Broadcast', body: 'This is your gains speaking. We are in DANGER. Please report to gym ASAP.' },
+    { title: "💔 It's been 5 days", body: 'Your barbell is covered in dust. Your coach is in therapy. Come back.' },
+    { title: '🏳️ We accept your surrender', body: 'Just kidding. Champions come back. Are you a champion?' },
+  ],
+  motivational: [
+    { title: '⚡ One rep is all it takes', body: 'Start with one. The rest follows. You know this.' },
+    { title: '🔥 Your streak was {streak} days', body: 'Build it back. Day 1 starts now.' },
+    { title: '💪 Coach Maya says:', body: "'COME ON! I BELIEVE IN YOU MORE THAN YOU BELIEVE IN YOURSELF!'" },
+  ],
+};
+
+export const getAbsenceMessage = (daysMissed, streakCount = 0) => {
+  let pool;
+  if (daysMissed === 1) pool = ABSENCE_MESSAGES.day1;
+  else if (daysMissed <= 3) pool = ABSENCE_MESSAGES.day2;
+  else pool = ABSENCE_MESSAGES.day5;
+
+  const msg = pool[Math.floor(Math.random() * pool.length)];
+  return {
+    title: msg.title.replace('{streak}', streakCount),
+    body: msg.body.replace('{streak}', streakCount),
+  };
+};
+
 export const getNotificationSettings = async userId => {
   if (!supabase || !userId) return null;
 

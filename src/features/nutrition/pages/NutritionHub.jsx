@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Activity, Utensils, ChevronRight } from 'lucide-react';
 import { MacroRings } from '../../../components/nutrition/MacroRings';
 import { SupplementAdvisor } from '../../../components/nutrition/SupplementAdvisor';
+import { useAuth } from '../../../context/AuthContext';
+import { askGemini } from '../../../lib/gemini';
 import { useNutritionStore } from '../store/nutritionStore';
 import { FoodScanner } from '../components/FoodScanner';
 import { MacroMatrixGrid, SmartMacroPieChart } from './NutritionScanPage';
@@ -25,12 +28,61 @@ const MENU = [
 ];
 
 export default function NutritionHub() {
+  const { profile } = useAuth();
   const onboardingComplete = useNutritionStore(s => s.onboardingComplete);
   const targetCalories = useNutritionStore(s => s.targetCalories);
+  const targetProtein = useNutritionStore(s => s.targetProtein);
+  const targetCarbs = useNutritionStore(s => s.targetCarbs);
+  const targetFat = useNutritionStore(s => s.targetFat);
   const addFoodEntry = useNutritionStore(s => s.addFoodEntry);
+  const [plan, setPlan] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fallback = {
+      headline: 'High protein day',
+      breakfast: 'Oats + egg whites',
+      lunch: 'Chicken + sweet potato',
+      dinner: 'Salmon + rice + greens',
+      snack: 'Greek yogurt + berries',
+    };
+
+    const loadPlan = async () => {
+      try {
+        const text = await askGemini(
+          `Create a concise nutrition day plan for goal ${profile?.goal || 'strength_gain'}. Return JSON only with headline, breakfast, lunch, dinner, snack.`,
+        );
+        const clean = text.replace(/```json|```/g, '').trim();
+        const parsed = JSON.parse(clean);
+        if (!cancelled) setPlan({ ...fallback, ...parsed });
+      } catch {
+        if (!cancelled) setPlan(fallback);
+      }
+    };
+
+    void loadPlan();
+    return () => {
+      cancelled = true;
+    };
+  }, [profile?.goal]);
 
   return (
     <main className="np-main">
+      <div className="np-card">
+        <p className="np-brand">My Nutrition Plan</p>
+        <div style={{ height: 1, background: '#3f3f46', margin: '10px 0 12px' }} />
+        <p className="text-sm font-black text-white">Today: {plan?.headline || 'Loading plan...'}</p>
+        <div className="mt-3 space-y-1 text-xs leading-5 text-white/65">
+          <p>Breakfast: {plan?.breakfast || '...'}</p>
+          <p>Lunch: {plan?.lunch || '...'}</p>
+          <p>Dinner: {plan?.dinner || '...'}</p>
+          <p>Snack: {plan?.snack || '...'}</p>
+        </div>
+        <p className="mt-3 text-xs font-bold text-[#CCFF00]">
+          Targets: {targetCalories} kcal | P:{targetProtein}g | C:{targetCarbs}g | F:{targetFat}g
+        </p>
+      </div>
+
       {!onboardingComplete && (
         <div className="np-card" style={{ borderColor: 'rgba(57,255,20,0.4)', background: 'rgba(57,255,20,0.08)' }}>
           <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#bbf7d0' }}>

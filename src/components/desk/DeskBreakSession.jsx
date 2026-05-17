@@ -58,9 +58,11 @@ export const DeskBreakSession = ({ breakId = 'quick_5', onComplete }) => {
 
   if (phase === 'intro') {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#111] p-6">
+      <div className="mx-auto flex min-h-screen w-full max-w-[430px] flex-col bg-[#111] p-4">
+        <button type="button" onClick={onComplete} className="mb-4 flex h-8 w-8 items-center justify-center text-gray-400">←</button>
+        <div className="flex flex-1 flex-col items-center justify-center">
         <div className="mb-4 text-6xl">🪑</div>
-        <h1 className="mb-2 text-2xl font-bold text-white">{breakData.title}</h1>
+        <h1 className="mb-2 text-xl font-bold text-white">{breakData.title}</h1>
         <p className="mb-1 text-sm text-gray-400">
           {breakData.duration} min · {breakData.exercises.length} exercises
         </p>
@@ -82,23 +84,24 @@ export const DeskBreakSession = ({ breakId = 'quick_5', onComplete }) => {
 
         <button
           onClick={startSession}
-          className="w-full rounded-2xl bg-[#CCFF00] px-8 py-4 text-lg font-bold text-black"
+          className="w-full rounded-2xl bg-[#CCFF00] px-8 py-4 text-sm font-bold text-black"
         >
           Start Break
         </button>
+        </div>
       </div>
     );
   }
 
   if (phase === 'complete') {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#111] p-6">
+      <div className="mx-auto flex min-h-screen w-full max-w-[430px] flex-col items-center justify-center bg-[#111] p-4">
         <div className="mb-4 text-6xl">✅</div>
-        <h1 className="mb-2 text-2xl font-bold text-[#CCFF00]">Break Complete!</h1>
+        <h1 className="mb-2 text-xl font-bold text-[#CCFF00]">Break Complete!</h1>
         <p className="mb-8 text-sm text-gray-400">+{breakData.exercises.length * 5} XP earned</p>
         <button
           onClick={onComplete}
-          className="w-full rounded-2xl bg-[#CCFF00] px-8 py-4 text-lg font-bold text-black"
+          className="w-full rounded-2xl bg-[#CCFF00] px-8 py-4 text-sm font-bold text-black"
         >
           Back to Work
         </button>
@@ -110,7 +113,8 @@ export const DeskBreakSession = ({ breakId = 'quick_5', onComplete }) => {
   const circumference = 2 * Math.PI * 56;
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#111] p-6">
+    <div className="mx-auto flex min-h-screen w-full max-w-[430px] flex-col bg-[#111] p-4">
+      <button type="button" onClick={onComplete} className="mb-4 flex h-8 w-8 items-center justify-center text-gray-400">←</button>
       <div className="mb-6 flex gap-1">
         {breakData.exercises.map((item, index) => (
           <div
@@ -128,7 +132,7 @@ export const DeskBreakSession = ({ breakId = 'quick_5', onComplete }) => {
 
       <div className="flex flex-1 flex-col items-center justify-center">
         <div className="mb-6 animate-bounce text-8xl">{exercise.gif}</div>
-        <h2 className="mb-2 text-2xl font-bold text-white">{exercise.name}</h2>
+        <h2 className="mb-2 text-xl font-bold text-white">{exercise.name}</h2>
         <p className="mb-8 px-4 text-center text-sm text-gray-400">{exercise.instruction}</p>
 
         <div className="relative mb-8 h-32 w-32">

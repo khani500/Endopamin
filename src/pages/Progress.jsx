@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom';
 import { ShareCard } from '../components/progress/ShareCard';
 import { PRTracker } from '../components/progress/PRTracker';
 import { WorkoutHistory } from '../components/progress/WorkoutHistory';
-import { ProPaywall } from '../components/paywall/ProPaywall';
-import { FREE_LIMITS, userTier } from '../config/tiers';
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -81,67 +81,59 @@ function WorkoutStreakCalendar() {
   );
 }
 
-function GroupIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="9" cy="8" r="3" stroke="#CCFF00" strokeWidth="1.8" />
-      <circle cx="17" cy="9" r="2.4" stroke="#CCFF00" strokeWidth="1.6" opacity="0.75" />
-      <path d="M4 19c.8-3.4 2.7-5 5-5s4.2 1.6 5 5" stroke="#CCFF00" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M14 16c.8-1.2 1.9-1.8 3.1-1.8 1.8 0 3.2 1.2 3.9 3.8" stroke="#CCFF00" strokeWidth="1.6" strokeLinecap="round" opacity="0.75" />
-    </svg>
-  );
-}
+function BodyProgressPhotos() {
+  const { user } = useAuth();
+  const [photos, setPhotos] = useState([
+    { label: 'Before', date: 'May 1', icon: '📷' },
+    { label: 'Week 4', date: 'May 22', icon: '📷' },
+    { label: 'Now', date: 'Today', icon: '📷' },
+  ]);
 
-function GroupSessions() {
-  const [showPaywall, setShowPaywall] = useState(false);
-  const sessions = [
-    'Session 1: Powerlifting with Sarah & Mike - ActiveNow',
-    'Session 2: Morning Cardio with Team Delta - 7 AM Tomorrow',
-  ];
+  const handlePhotoUpload = async file => {
+    if (!file || !user?.id || !supabase) return;
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+    const { data, error } = await supabase.storage.from('progress-photos').upload(fileName, file);
 
-  const openGroupSessions = () => {
-    if (userTier === 'free' && !FREE_LIMITS.groupSessions) {
-      setShowPaywall(true);
-      return;
+    if (!error) {
+      await supabase.from('body_metrics').insert({
+        user_id: user.id,
+        photo_url: data.path,
+        recorded_at: new Date().toISOString(),
+      });
+      setPhotos(prev => prev.map((item, index) => (index === 2 ? { ...item, icon: '✅' } : item)));
     }
-    console.log('Group sessions coming soon');
   };
 
   return (
     <section className="rounded-[22px] border border-white/10 bg-[#141416] p-4 text-white">
-      <div className="mb-4 flex items-center gap-3">
-        <div className="grid h-10 w-10 place-items-center rounded-2xl border border-[#CCFF00]/35 bg-[#CCFF00]/10">
-          <GroupIcon />
-        </div>
+      <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <p className="m-0 text-sm font-black text-white">Group Sessions</p>
-          <p className="mt-1 text-xs text-white/40">Train with your crew.</p>
+          <p className="m-0 text-[11px] font-black uppercase tracking-[0.18em] text-white/40">Body Progress Photos</p>
+          <p className="mt-1 text-xs text-white/40">Swipe to compare your visual progress.</p>
         </div>
+        <label className="rounded-2xl bg-[#CCFF00] px-3 py-2 text-xs font-black text-black">
+          + Add Photo Today
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={event => void handlePhotoUpload(event.target.files?.[0])}
+            style={{ display: 'none' }}
+          />
+        </label>
       </div>
 
-      <button
-        type="button"
-        onClick={openGroupSessions}
-        className="mb-3 w-full rounded-2xl bg-[#CCFF00] py-3 text-sm font-black text-black"
-      >
-        Join/Create a Group Workout
-      </button>
-
-      <div className="space-y-2">
-        {sessions.map(session => (
-          <div key={session} className="flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-[#101012] p-3">
-            <GroupIcon />
-            <p className="m-0 text-xs font-bold leading-5 text-white/70">{session}</p>
+      <div className="grid grid-cols-3 gap-2">
+        {photos.map(photo => (
+          <div key={photo.label} className="rounded-2xl border border-white/[0.07] bg-[#101012] p-3 text-center">
+            <p className="text-xs font-black text-white/60">{photo.label}</p>
+            <div className="my-3 grid aspect-square place-items-center rounded-xl bg-black/40 text-3xl">{photo.icon}</div>
+            <p className="text-[10px] font-bold text-white/35">{photo.date}</p>
           </div>
         ))}
       </div>
-
-      <ProPaywall
-        featureName="Group Sessions"
-        isVisible={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        onSubscribe={() => console.log('Payment integration coming soon')}
-      />
+      <p className="mt-3 text-center text-xs text-white/35">← swipe to compare →</p>
     </section>
   );
 }
@@ -160,9 +152,9 @@ export default function Progress() {
       <div className="space-y-4">
         <WeightChart />
         <PRTracker />
+        <BodyProgressPhotos />
         <WorkoutStreakCalendar />
         <WorkoutHistory />
-        <GroupSessions />
       </div>
 
       <Link to="/" className="mt-6 block rounded-2xl bg-[#CCFF00] py-3 text-center text-sm font-black text-black no-underline">

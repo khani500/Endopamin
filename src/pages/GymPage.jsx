@@ -52,7 +52,7 @@ export default function GymPage() {
 
   if (showRestDay) {
     return (
-      <main className="min-h-screen bg-[#0A0A0A] px-5 pb-28 pt-10 text-white">
+      <main className="mx-auto min-h-screen w-full max-w-[430px] bg-[#0A0A0A] px-4 pb-24 pt-8 text-white">
         <RestDayProtocol />
         <button
           type="button"
@@ -66,10 +66,10 @@ export default function GymPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0A0A0A] px-5 pb-28 pt-10 text-white">
+    <main className="mx-auto min-h-screen w-full max-w-[430px] bg-[#0A0A0A] px-4 pb-24 pt-8 text-white">
       <header className="mb-6">
         <p className="text-xs font-black uppercase tracking-[0.24em] text-[#CCFF00]">Gym Mode</p>
-        <h1 className="mt-2 text-3xl font-black tracking-[-0.04em]">Train smarter today</h1>
+        <h1 className="mt-2 text-2xl font-black tracking-[-0.04em]">Train smarter today</h1>
         <p className="mt-2 text-sm leading-6 text-white/45">
           Strength, mobility, and recovery tools built around your lifestyle.
         </p>
@@ -93,7 +93,7 @@ export default function GymPage() {
         </div>
       </section>
 
-      <section className="mb-6 rounded-3xl border border-white/10 bg-[#141416] p-5">
+      <section className="mb-6 rounded-3xl border border-white/10 bg-[#141416] p-4">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.2em] text-[#CCFF00]">Gym Setup</p>
@@ -145,7 +145,7 @@ export default function GymPage() {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-white/10 bg-[#141416] p-5">
+      <section className="rounded-3xl border border-white/10 bg-[#141416] p-4">
         <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-white/40">Today</p>
         <div className="grid grid-cols-2 gap-3">
           {(compatibleExercises.length ? compatibleExercises.slice(0, 4).map(item => [item.name, item.level]) : [

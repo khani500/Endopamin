@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { NOTIFICATION_TEMPLATES } from './notificationService';
+import { NOTIFICATION_TEMPLATES, getAbsenceMessage } from './notificationService';
 
 function coachDisplayName(persona) {
   return {
@@ -24,11 +24,11 @@ export const checkUserAbsence = async (_userId, userProfile) => {
       return NOTIFICATION_TEMPLATES.streakRisk(userName, userProfile.streak_count || 0, coachName);
     }
   } else if (daysDiff === 1) {
-    return NOTIFICATION_TEMPLATES.checkInReminder(userName);
+    return { ...getAbsenceMessage(1, userProfile.streak_count || 0), type: 'missed_1_day' };
   } else if (daysDiff === 2) {
-    return NOTIFICATION_TEMPLATES.missedTwoDays(userName, coachName);
+    return { ...getAbsenceMessage(2, userProfile.streak_count || 0), type: 'missed_2_days' };
   } else if (daysDiff === 5) {
-    return NOTIFICATION_TEMPLATES.missedFiveDays(userName, coachName);
+    return { ...getAbsenceMessage(5, userProfile.streak_count || 0), type: 'missed_5_days' };
   } else if (daysDiff > 7) {
     return {
       title: `We saved your progress, ${userName}`,

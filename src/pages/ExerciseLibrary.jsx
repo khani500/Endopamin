@@ -32,8 +32,9 @@ function ExerciseList() {
   );
 
   return (
-    <main className="min-h-screen bg-[#0A0A0A] px-5 pb-28 pt-10 text-white">
+    <main className="mx-auto min-h-screen w-full max-w-[430px] bg-[#0A0A0A] px-4 pb-24 pt-8 text-white">
       <header className="mb-5">
+        <button type="button" onClick={() => navigate(-1)} className="mb-3 flex h-8 w-8 items-center justify-center text-gray-400">←</button>
         <p className="text-xs font-black uppercase tracking-[0.22em] text-[#CCFF00]">Training</p>
         <h1 className="mt-2 text-3xl font-black tracking-[-0.04em]">Exercise Library</h1>
         <input
@@ -90,7 +91,7 @@ function ExerciseDetail({ id }) {
   const coachPrompt = `Tell me everything about ${exercise.name} for my ${profile?.goal || 'strength_gain'} goal as an ${profile?.experience || 'intermediate'} level athlete`;
 
   return (
-    <main className="min-h-screen bg-[#0A0A0A] px-5 pb-28 pt-10 text-white">
+    <main className="mx-auto min-h-screen w-full max-w-[430px] bg-[#0A0A0A] px-4 pb-24 pt-8 text-white">
       <button type="button" onClick={() => navigate('/exercises')} className="mb-5 text-sm font-black text-[#CCFF00]">← Back</button>
       <h1 className="text-3xl font-black uppercase tracking-[-0.04em]">{exercise.name}</h1>
 

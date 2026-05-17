@@ -54,6 +54,65 @@ function getDayOfYear(date = new Date()) {
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
+function MultiRing({ rings, centerText, centerLabel }) {
+  const size = 120;
+  const cx = size / 2;
+  const cy = size / 2;
+  const radii = [50, 40, 30];
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={centerLabel}>
+      {rings.map((ring, index) => {
+        const radius = radii[index];
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference * (1 - ring.progress);
+        return (
+          <g key={ring.label}>
+            <circle cx={cx} cy={cy} r={radius} fill="none" stroke="#2a2a2a" strokeWidth="6" />
+            <circle
+              cx={cx}
+              cy={cy}
+              r={radius}
+              fill="none"
+              stroke={ring.color}
+              strokeWidth="6"
+              strokeDasharray={circumference}
+              strokeDashoffset={offset}
+              strokeLinecap="round"
+              transform={`rotate(-90 ${cx} ${cy})`}
+              style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+            />
+          </g>
+        );
+      })}
+      <text x={cx} y={cy - 4} textAnchor="middle" fill="white" fontSize="18" fontWeight="bold">
+        {centerText}
+      </text>
+      <text x={cx} y={cy + 14} textAnchor="middle" fill="#888" fontSize="8">
+        {centerLabel}
+      </text>
+    </svg>
+  );
+}
+
+function MultiRingCard({ title, rings, centerText, centerLabel }) {
+  return (
+    <div style={{ borderRadius: 18, padding: 12, background: '#1E1E1E', border: '1px solid rgba(204,255,0,0.22)' }}>
+      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.4, textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)', marginBottom: 8 }}>{title}</div>
+      <div style={{ display: 'grid', placeItems: 'center' }}>
+        <MultiRing rings={rings} centerText={centerText} centerLabel={centerLabel} />
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+        {rings.map(ring => (
+          <span key={ring.label} style={{ fontSize: 9, color: 'rgba(255,255,255,0.48)', fontWeight: 700 }}>
+            <span style={{ color: ring.color }}>●</span> {ring.label}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function IconShell({ children, accent = '#C8FF00' }) {
   return (
     <div style={{ width: 38, height: 38, borderRadius: 14, display: 'grid', placeItems: 'center', background: 'rgba(200,255,0,0.08)', border: `1px solid ${accent}44` }}>
@@ -107,16 +166,6 @@ function HiiTIcon({ accent = '#C8FF00' }) {
       <path d="M13 2L6 13h5l-1 9 8-13h-5l1-7Z" fill={accent} opacity="0.9" />
       <circle cx="17" cy="17" r="4" stroke={accent} strokeWidth="1.6" />
       <path d="M17 15v2l1.4 1" stroke="#0A0A0A" strokeWidth="1.4" strokeLinecap="round" />
-    </IconShell>
-  );
-}
-
-function TargetIcon({ accent = '#C8FF00' }) {
-  return (
-    <IconShell accent={accent}>
-      <circle cx="11" cy="13" r="6" stroke={accent} strokeWidth="1.7" />
-      <circle cx="11" cy="13" r="2" fill={accent} />
-      <path d="M15 9l4-4M16 5h3v3" stroke={accent} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
     </IconShell>
   );
 }
@@ -421,13 +470,6 @@ export default function Home() {
     { name: 'HIIT', sub: '20–40 min' },
   ];
 
-  const glass = {
-    background: 'rgba(255,255,255,0.04)',
-    backdropFilter: 'blur(12px)',
-    WebkitBackdropFilter: 'blur(12px)',
-    border: '1px solid rgba(255,255,255,0.08)',
-  };
-
   if (phase === 'onboard') return <Onboarding onComplete={handleOnboardComplete} />;
   if (phase === 'loading') return <LoadingScreen gender={gender} onDone={handleLoadDone} />;
 
@@ -487,12 +529,12 @@ export default function Home() {
           {QUICK.map(q => (
             <button
               key={q.name}
-              onClick={() => startSession(q.name)}
+              onClick={() => navigate(`/workout/${q.name.toLowerCase()}`)}
               style={{
                 background: '#1E1E1E',
                 border: `1px solid ${t.accentBorder}`,
                 borderRadius: gender === 'female' ? 18 : 14,
-                padding: '14px 8px 12px',
+                padding: '10px 6px',
                 textAlign: 'center',
                 cursor: 'pointer',
                 color: '#fff',
@@ -513,70 +555,60 @@ export default function Home() {
         </div>
       </div>
 
-      {showDeskBreakCard && (
-        <div style={{ padding: '0 20px', marginBottom: 14 }}>
-          <div style={{ borderRadius: 20, padding: 16, background: '#111', border: `1px solid ${t.accentBorder}`, borderLeft: `4px solid ${t.accent}` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 900, letterSpacing: 1.5, textTransform: 'uppercase', color: t.accent }}>🪑 Desk Break</div>
-                <div style={{ marginTop: 4, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>Next break in: 47 min</div>
-              </div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 12 }}>
-              {[
-                ['quick', 'Quick Reset', '5m'],
-                ['deep', 'Deep Relief', '10m'],
-                ['energy', 'Energy Spike', '3m'],
-              ].map(([id, label, duration]) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => navigate(`/gym/desk-break/${id}`)}
-                  style={{
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    background: 'rgba(255,255,255,0.05)',
-                    color: '#fff',
-                    borderRadius: 14,
-                    padding: '10px 8px',
-                    fontSize: 10,
-                    fontWeight: 900,
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    cursor: 'pointer',
-                  }}
-                >
-                  {label} {duration}
-                </button>
-              ))}
-            </div>
-          </div>
+      <Link
+        to="/group"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          margin: '0 20px 14px',
+          padding: 14,
+          borderRadius: 18,
+          background: '#141416',
+          border: `1px solid ${t.accentBorder}`,
+          color: '#fff',
+          textDecoration: 'none',
+          fontFamily: "'Space Grotesk', sans-serif",
+        }}
+      >
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 900, letterSpacing: 1.5, textTransform: 'uppercase', color: t.accent }}>👥 Train Together</div>
+          <div style={{ marginTop: 3, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>Workout with friends anywhere</div>
         </div>
-      )}
+        <span style={{ color: t.accent, fontSize: 20 }}>→</span>
+      </Link>
 
       {/* Core Stats + Activity Log */}
       <div style={{ padding: '0 20px', marginBottom: 12 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <div style={{ ...glass, borderRadius: 18, padding: 16, background: '#1E1E1E', border: `1px solid ${t.accentBorder}` }}>
-            <BarbellIcon accent={t.accent} />
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginTop: 12, marginBottom: 8 }}>This Week</div>
-            <div style={{ fontSize: 46, fontWeight: 950, letterSpacing: -2, lineHeight: 1 }}>5</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>workouts logged</div>
-          </div>
-          <div style={{ ...glass, borderRadius: 18, padding: 16, background: '#1E1E1E', border: `1px solid ${t.accentBorder}` }}>
-            <TargetIcon accent={t.accent} />
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginTop: 12, marginBottom: 8 }}>Today's Goal</div>
-            <div style={{ fontSize: 46, fontWeight: 950, letterSpacing: -2, lineHeight: 1 }}>65%</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 4, marginBottom: 12 }}>of daily target</div>
-            <div style={{ height: 3, background: 'rgba(255,255,255,0.08)', borderRadius: 99 }}>
-              <div style={{ height: '100%', width: '65%', background: t.gradFill, borderRadius: 99 }} />
-            </div>
-          </div>
+          <MultiRingCard
+            title="This Week"
+            centerText="5"
+            centerLabel="workouts"
+            rings={[
+              { label: 'Workouts', progress: 5 / 6, color: '#CCFF00' },
+              { label: 'Streak', progress: Math.min(streak / 14, 1), color: '#BF5AF2' },
+              { label: 'XP', progress: 0.68, color: '#FFD60A' },
+            ]}
+          />
+          <MultiRingCard
+            title="Today's Goal"
+            centerText="65%"
+            centerLabel="complete"
+            rings={[
+              { label: 'Calories', progress: 0.72, color: '#CCFF00' },
+              { label: 'Protein', progress: 0.64, color: '#32ADE6' },
+              { label: 'Workout', progress: todayWorkout.completed ? 1 : 0.35, color: '#FF9500' },
+            ]}
+          />
         </div>
       </div>
 
       {/* Plan action card */}
-      <div style={{ padding: '0 20px', marginBottom: 14, display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+      <div style={{ padding: '0 20px', marginBottom: 14, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         {[
-          { label: 'My Plan', sub: 'Today map', to: '/log/plan', Icon: PlanIcon },
+          { label: 'Workout Plan', sub: 'Today map', to: '/plan/workout', Icon: BarbellIcon },
+          { label: 'Nutrition Plan', sub: "Today's meals", to: '/plan/nutrition', Icon: PlanIcon },
         ].map(({ label, sub, to, Icon }) => (
           <Link
             key={label}
@@ -642,31 +674,9 @@ export default function Home() {
       <div style={{ padding: '16px 20px 0', marginBottom: 8 }}>
         <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 10 }}>Choose Workout</p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <Link
-            to="/gym"
-            style={{
-              textDecoration: 'none',
-              color: '#fff',
-              borderRadius: 20,
-              padding: 14,
-              background: '#1E1E1E',
-              border: `1px solid ${t.accentBorder}`,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 10,
-              minHeight: 116,
-            }}
-          >
-            <BarbellIcon accent={t.accent} />
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: -0.2 }}>Gym Workout</div>
-              <div style={{ marginTop: 3, fontSize: 11, color: 'rgba(255,255,255,0.42)' }}>Machines · weights</div>
-            </div>
-          </Link>
-
           <button
             type="button"
-            onClick={() => startSession('home')}
+            onClick={() => navigate('/workout/mobility')}
             style={{
               textDecoration: 'none',
               color: '#fff',
@@ -685,11 +695,60 @@ export default function Home() {
           >
             <RunnerIcon accent={t.accent} />
             <div>
-              <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: -0.2 }}>Home Workout</div>
+              <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: -0.2 }}>🏠 Home Workout</div>
               <div style={{ marginTop: 3, fontSize: 11, color: 'rgba(255,255,255,0.42)' }}>Bodyweight · quick</div>
             </div>
           </button>
+
+          <Link
+            to="/gym"
+            style={{
+              textDecoration: 'none',
+              color: '#fff',
+              borderRadius: 20,
+              padding: 14,
+              background: '#1E1E1E',
+              border: `1px solid ${t.accentBorder}`,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 10,
+              minHeight: 116,
+            }}
+          >
+            <BarbellIcon accent={t.accent} />
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: -0.2 }}>🏋️ Gym Workout</div>
+              <div style={{ marginTop: 3, fontSize: 11, color: 'rgba(255,255,255,0.42)' }}>Machines · weights</div>
+            </div>
+          </Link>
         </div>
+        {showDeskBreakCard && (
+          <button
+            type="button"
+            onClick={() => navigate('/gym/desk-break/quick_5')}
+            style={{
+              width: '100%',
+              marginTop: 10,
+              border: `1px solid ${t.accentBorder}`,
+              background: '#111',
+              color: '#fff',
+              borderRadius: 20,
+              padding: 14,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              textAlign: 'left',
+              fontFamily: "'Space Grotesk', sans-serif",
+              cursor: 'pointer',
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 900, color: t.accent }}>🪑 Desk Break — Quick Reset 5min</div>
+              <div style={{ marginTop: 4, fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>Next break in 47 min</div>
+            </div>
+            <span style={{ borderRadius: 999, background: t.accent, color: t.btnTextColor, padding: '8px 12px', fontSize: 11, fontWeight: 900 }}>Start</span>
+          </button>
+        )}
       </div>
 
       <DailyCheckIn onSubmit={handleCheckInSubmit} />
