@@ -56,8 +56,9 @@ export const SUPPLEMENTS = [
 ];
 
 export function getSupplementsForProfile(profile = {}) {
-  const experience = String(profile.experience || 'beginner').toLowerCase();
-  const goal = String(profile.goal || 'strength_gain').toLowerCase().replace(/\s+/g, '_');
+  const safeProfile = profile || {};
+  const experience = String(safeProfile.experience || 'beginner').toLowerCase();
+  const goal = String(safeProfile.goal || 'strength_gain').toLowerCase().replace(/\s+/g, '_');
   const maxTier = experience === 'advanced' ? 3 : experience === 'intermediate' ? 2 : 1;
   return SUPPLEMENTS.filter(item => item.tier <= maxTier && item.goals.includes(goal));
 }
