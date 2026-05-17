@@ -34,7 +34,7 @@ export function HomeScreen({ onOpenMe }: { onOpenMe: () => void }) {
     <ScreenContainer>
       <View className="mb-6 flex-row items-center justify-between">
         <View>
-          <Text className="text-xs font-black uppercase tracking-[3px] text-accent">DopaPeak</Text>
+          <Text className="text-xs font-black uppercase tracking-[3px] text-accent">ENDOPAMIN</Text>
           <Text className="mt-1 text-2xl font-black text-white">
             Hi, {user?.firstName ?? 'Athlete'}
           </Text>

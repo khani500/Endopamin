@@ -72,7 +72,7 @@ export function MeScreen({ onBackHome }: { onBackHome: () => void }) {
       });
 
       const init = await initPaymentSheet({
-        merchantDisplayName: 'DopaPeak',
+        merchantDisplayName: 'ENDOPAMIN',
         customerId: payment.customerId,
         customerEphemeralKeySecret: payment.ephemeralKeySecret,
         paymentIntentClientSecret: payment.paymentIntentClientSecret,
@@ -82,7 +82,7 @@ export function MeScreen({ onBackHome }: { onBackHome: () => void }) {
       if (init.error) throw new Error(init.error.message);
       const result = await presentPaymentSheet();
       if (result.error) throw new Error(result.error.message);
-      Alert.alert('Elite unlocked', 'Your Dopa Elite subscription is active.');
+      Alert.alert('Elite unlocked', 'Your Endo Elite subscription is active.');
     } catch (error) {
       Alert.alert('Payment failed', error instanceof Error ? error.message : 'Please try again.');
     } finally {
@@ -122,7 +122,7 @@ export function MeScreen({ onBackHome }: { onBackHome: () => void }) {
         </View>
       ) : (
         <View className="rounded-3xl border border-accent/25 bg-secondary p-5">
-          <Text className="text-xl font-black text-white">Dopa Elite Mode</Text>
+          <Text className="text-xl font-black text-white">Endo Elite Mode</Text>
           <Text className="mt-2 text-sm leading-6 text-white/50">
             Unlock Analytics & Unlimited Plans with Stripe-powered subscription billing.
           </Text>

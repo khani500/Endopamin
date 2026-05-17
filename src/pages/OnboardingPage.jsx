@@ -80,7 +80,12 @@ export default function OnboardingPage() {
 
         {step === 1 && (
           <div className="space-y-4">
-            <h1 className="text-2xl font-black">Welcome to DopaPeak</h1>
+            <h1 className="text-2xl font-black">Welcome to ENDOPAMIN</h1>
+            <div className="rounded-2xl border border-[#CCFF00]/20 bg-[#CCFF00]/10 p-3 text-sm leading-6 text-white/70">
+              <p>Your body produces endorphins when you train.</p>
+              <p>Your brain releases dopamine when you achieve.</p>
+              <p>ENDOPAMIN is where both happen.</p>
+            </div>
             <TextInput label="Display name" value={form.display_name} onChange={value => updateField('display_name', value)} />
             <TextInput label="Age" type="number" value={form.age} onChange={value => updateField('age', value)} />
             <OptionRow

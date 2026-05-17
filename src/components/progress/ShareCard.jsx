@@ -33,7 +33,7 @@ export function ShareCard({ streak = 12, level = 4, weeklyWorkouts = 5, highligh
     const canvas = await renderPng();
     if (!canvas) return;
     const link = document.createElement('a');
-    link.download = 'dopapeak-story.png';
+    link.download = 'endopamin-story.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
   };
@@ -43,9 +43,9 @@ export function ShareCard({ streak = 12, level = 4, weeklyWorkouts = 5, highligh
     if (!canvas) return;
     canvas.toBlob(async blob => {
       if (!blob) return;
-      const file = new File([blob], 'dopapeak-story.png', { type: 'image/png' });
+      const file = new File([blob], 'endopamin-story.png', { type: 'image/png' });
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'DopaPeak', text: `${streak}-day streak` });
+        await navigator.share({ files: [file], title: 'ENDOPAMIN', text: `${streak}-day streak` });
         return;
       }
       await savePng();
@@ -126,7 +126,7 @@ function StoryCardContent({ streak, level, weeklyWorkouts, highlight }) {
   return (
     <>
       <div style={{ fontSize: 64, fontWeight: 900, letterSpacing: -2 }}>
-        DOPA<span style={{ color: '#CCFF00' }}>PEAK</span>
+        ENDO<span style={{ color: '#CCFF00' }}>PAMIN</span>
       </div>
       <div style={{ marginTop: 330, textAlign: 'center' }}>
         <div style={{ fontSize: 260, fontWeight: 900, lineHeight: 1 }}>
@@ -145,7 +145,7 @@ function StoryCardContent({ streak, level, weeklyWorkouts, highlight }) {
       <div style={{ marginTop: 220, borderLeft: '10px solid #CCFF00', paddingLeft: 28, fontSize: 52, fontWeight: 800 }}>
         &quot;{highlight}&quot;
       </div>
-      <div style={{ position: 'absolute', right: 92, bottom: 92, fontSize: 44, color: 'rgba(255,255,255,0.5)' }}>@dopapeak</div>
+      <div style={{ position: 'absolute', right: 92, bottom: 92, fontSize: 44, color: 'rgba(255,255,255,0.5)' }}>@endopamin</div>
     </>
   );
 }

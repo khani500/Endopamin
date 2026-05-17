@@ -24,7 +24,7 @@ import NutritionPlanPage from './features/nutrition/pages/NutritionPlanPage';
 import NutritionCoachPage from './features/nutrition/pages/NutritionCoachPage';
 
 function App() {
-  const { user, profile, loading } = useAuth();
+  const { user, profile } = useAuth();
   const [toast, setToast] = useState(null);
   const absenceCheckKeyRef = useRef('');
 
@@ -39,7 +39,7 @@ function App() {
     onForegroundMessage(payload => {
       const notification = payload.notification || {};
       showInAppNotification({
-        title: notification.title || 'DopaPeak',
+        title: notification.title || 'ENDOPAMIN',
         body: notification.body || 'You have a new update.',
         type: payload.data?.type || 'fcm_foreground',
       });
@@ -97,12 +97,6 @@ function App() {
     };
   }, [user?.id, profile?.job_type]);
 
-  const needsOnboarding = user && !loading && (!profile || !profile.display_name);
-
-  if (needsOnboarding) {
-    return <OnboardingPage />;
-  }
-
   return (
     <Router>
       <div className="mx-auto flex min-h-screen w-full max-w-[430px] flex-col bg-[#0A0A0A] pb-16">
@@ -131,6 +125,7 @@ function App() {
           <Route path="/group" element={<GroupSession />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
         </Routes>
 
         {toast && (

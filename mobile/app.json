@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "DopaPeak",
-    "slug": "dopapeak-mobile",
+    "name": "ENDOPAMIN",
+    "slug": "endopamin-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "scheme": "dopapeak",
+    "scheme": "endopamin",
     "assetBundlePatterns": [
       "**/*"
     ],

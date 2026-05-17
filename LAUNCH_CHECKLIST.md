@@ -1,4 +1,4 @@
-# DopaPeak Launch Checklist
+# Endopamin Launch Checklist
 
 ## Technical
 

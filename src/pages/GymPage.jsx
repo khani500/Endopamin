@@ -31,7 +31,7 @@ export default function GymPage() {
   const [showRestDay, setShowRestDay] = useState(() => new Date().getDay() === 0);
   const [availableNow, setAvailableNow] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem('dopapeak_available_equipment') || '[]');
+      return JSON.parse(localStorage.getItem('endopamin_available_equipment') || '[]');
     } catch {
       return [];
     }
@@ -181,7 +181,7 @@ export default function GymPage() {
   function toggleAvailableNow(id) {
     setAvailableNow(prev => {
       const next = prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id];
-      localStorage.setItem('dopapeak_available_equipment', JSON.stringify(next));
+      localStorage.setItem('endopamin_available_equipment', JSON.stringify(next));
       return next;
     });
   }

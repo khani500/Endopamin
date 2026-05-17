@@ -113,6 +113,17 @@ function MultiRingCard({ title, rings, centerText, centerLabel }) {
   );
 }
 
+const Logo = () => (
+  <div className="flex flex-col">
+    <span className="text-2xl font-black tracking-tight text-white">
+      ENDO<span className="text-[#CCFF00]">PAMIN</span>
+    </span>
+    <span className="text-[9px] uppercase tracking-widest text-gray-500">
+      Endorphin · Dopamine
+    </span>
+  </div>
+);
+
 const StreakCard = ({ streak, level, xp, xpToNext }) => {
   const isOnFire = streak >= 7;
   const isMilestone = [7, 14, 30, 60, 100].includes(streak);
@@ -137,7 +148,7 @@ const StreakCard = ({ streak, level, xp, xpToNext }) => {
           </p>
         </div>
         <div className="text-right">
-          <p className="text-xs uppercase text-gray-400">Dopa Level</p>
+          <p className="text-xs uppercase text-gray-400">Endo Level</p>
           <p className="text-3xl font-bold text-white">Lv.{level}</p>
           <p className="text-xs text-[#CCFF00]">{xp}/{xpToNext} XP</p>
         </div>
@@ -252,9 +263,9 @@ function Onboarding({ onComplete }) {
   return (
     <div style={{ minHeight: '100vh', background: '#0A0A0A', color: '#fff', fontFamily: "'Space Grotesk', sans-serif", padding: '40px 20px' }}>
       <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: -1, marginBottom: 4 }}>
-        DOPA<span style={{ color: t.accent }}>PEAK</span>
+        ENDO<span style={{ color: t.accent }}>PAMIN</span>
       </h1>
-      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginBottom: 36 }}>US High-Performance Fitness</p>
+      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginBottom: 36 }}>Endorphin meets Dopamine</p>
 
       <p style={{ fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 10 }}>{stepLabel}</p>
       <div style={{ height: 4, borderRadius: 99, background: 'rgba(255,255,255,0.08)', marginBottom: 24, overflow: 'hidden' }}>
@@ -386,7 +397,7 @@ function Onboarding({ onComplete }) {
 function LoadingScreen({ gender, onDone }) {
   const t = THEMES[gender];
   const [msgIdx, setMsgIdx] = useState(0);
-  const msgs = ['Analyzing your biometrics', 'Calculating your 1RM baseline', 'Building your 12-week plan', 'Calibrating Dopamine Engine', 'Almost ready...'];
+  const msgs = ['Analyzing your biometrics', 'Calculating your 1RM baseline', 'Building your 12-week plan', 'Calibrating Endopamin Engine', 'Almost ready...'];
 
   useState(() => {
     let i = 0;
@@ -408,7 +419,7 @@ function LoadingScreen({ gender, onDone }) {
         marginBottom: 28,
       }} />
       <div style={{ fontSize: 22, fontWeight: 700, textAlign: 'center', marginBottom: 8, letterSpacing: -0.5 }}>
-        Generating your<br />Dopamine-Core Plan...
+        Generating your<br />Endo Core Plan...
       </div>
       <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 28 }}>{msgs[msgIdx]}</div>
       <div style={{ width: 200, height: 3, background: 'rgba(255,255,255,0.08)', borderRadius: 99, overflow: 'hidden' }}>
@@ -434,10 +445,10 @@ export default function Home() {
   const [checkIn, setCheckIn] = useState(null);
   const [todayWorkout, setTodayWorkout] = useState({ completed: false });
   const [showPaywall, setShowPaywall] = useState(false);
-  const [paywallFeature, setPaywallFeature] = useState('DopaPeak Pro');
+  const [paywallFeature, setPaywallFeature] = useState('Endopamin Pro');
   const [notificationPermissionAsked, setNotificationPermissionAsked] = useState(() => {
     try {
-      return localStorage.getItem('dopapeak_notification_permission_asked') === '1';
+      return localStorage.getItem('endopamin_notification_permission_asked') === '1';
     } catch {
       return false;
     }
@@ -504,7 +515,7 @@ export default function Home() {
       await requestNotificationPermission();
       setNotificationPermissionAsked(true);
       try {
-        localStorage.setItem('dopapeak_notification_permission_asked', '1');
+        localStorage.setItem('endopamin_notification_permission_asked', '1');
       } catch {
         /* ignore */
       }
@@ -532,10 +543,8 @@ export default function Home() {
       {/* Header */}
       <div style={{ padding: '40px 20px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: -0.5, margin: 0 }}>
-            DOPA<span style={{ color: t.accent }}>PEAK</span>
-          </h1>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Hi, {displayName}</p>
+          <Logo />
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 6 }}>Hi, {displayName}</p>
         </div>
         <div style={{ width: 40, height: 40, borderRadius: '50%', border: `1.5px solid ${t.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: t.accent, background: '#111' }}>{initials}</div>
       </div>

@@ -22,7 +22,7 @@ function MissingConfigScreen() {
   return (
     <ScreenContainer>
       <SectionHeader
-        eyebrow="DopaPeak"
+        eyebrow="ENDOPAMIN"
         title="Service keys required"
         subtitle="Add the Expo public keys to mobile/.env before running Clerk, Supabase, and Stripe."
       />
@@ -68,7 +68,7 @@ export default function App() {
   return (
     <DopaThemeProvider>
       <ClerkProvider publishableKey={env.clerkPublishableKey} tokenCache={tokenCache}>
-        <StripeProvider publishableKey={env.stripePublishableKey} merchantIdentifier="merchant.com.dopapeak">
+        <StripeProvider publishableKey={env.stripePublishableKey} merchantIdentifier="merchant.com.endopamin">
           <StatusBar style="light" backgroundColor="#000000" />
           <AuthGate>
             <MobileShell />

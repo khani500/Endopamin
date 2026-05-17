@@ -27,7 +27,7 @@ export function ProPaywall({ featureName = 'This feature', isVisible, onClose, o
         </div>
 
         <div className="mt-4 rounded-2xl border border-[#CCFF00]/25 bg-[#0f0f10] p-4">
-          <p className="m-0 text-[11px] font-black uppercase tracking-[0.18em] text-[#CCFF00]">DopaPeak Pro</p>
+          <p className="m-0 text-[11px] font-black uppercase tracking-[0.18em] text-[#CCFF00]">Endopamin Pro</p>
           <p className="m-0 mt-2 text-2xl font-black">$9.99 <span className="text-sm text-white/45">/ month</span></p>
 
           <div className="mt-4 rounded-2xl border border-yellow-400/35 bg-yellow-400/10 p-3">

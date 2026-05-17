@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { FREE_LIMITS, userTier } from '../../config/tiers';
 import { ProPaywall } from '../paywall/ProPaywall';
 
-const STORAGE_KEY = 'dopapeak_prs';
+const STORAGE_KEY = 'endopamin_prs';
 const DEFAULT_PRS = [
   { exercise: 'Bench', weight: 85, previous: 80, date: '2026-05-12', unit: 'kg' },
   { exercise: 'Squat', weight: 100, previous: 100, date: '2026-05-08', unit: 'kg' },

@@ -24,7 +24,7 @@ export default function NutritionLayout() {
             {isHub ? 'Home' : 'Nutrition'}
           </Link>
         </div>
-        <p className="np-brand">Dopa Peak</p>
+        <p className="np-brand">Endopamin</p>
         <h1 className="np-title">{title}</h1>
         {!isHub && <p className="np-subtitle">Smart nutrition & AI coaching</p>}
       </header>

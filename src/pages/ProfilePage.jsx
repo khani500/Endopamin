@@ -110,7 +110,26 @@ export default function ProfilePage() {
 
     if (error) {
       console.error('Profile save failed:', error);
-      setStatus('Could not save profile. Run the profile column migration and check RLS.');
+      const fallbackPayload = {
+        id: user.id,
+        display_name: payload.display_name,
+        age: payload.age,
+        experience: payload.experience,
+        goal: payload.goal,
+        days_per_week: payload.days_per_week,
+      };
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from('profiles')
+        .upsert(fallbackPayload, { onConflict: 'id' })
+        .select('*')
+        .single();
+
+      if (fallbackError) {
+        setStatus('Could not save profile. Check Supabase RLS and profile columns.');
+      } else {
+        setProfile(fallbackData);
+        setStatus('Core profile saved. Run the latest migration to save injuries, gender, and job type.');
+      }
     } else {
       setProfile(data);
       setStatus('Profile saved.');

@@ -1,4 +1,4 @@
--- DopaPeak Phase 5 — Supabase initial production schema.
+-- Endopamin Phase 5 — Supabase initial production schema.
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 

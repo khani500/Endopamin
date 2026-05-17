@@ -24,23 +24,32 @@ export default function AuthPage({ embedded = false }) {
 
     try {
       if (mode === 'signup') {
+        const nextDisplayName = displayName.trim() || email.split('@')[0];
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: { display_name: displayName.trim() || email.split('@')[0] },
+            data: { display_name: nextDisplayName },
           },
         });
 
         if (error) throw error;
 
-        if (data.user) {
-          const { error: profileError } = await supabase.from('profiles').insert({
+        if (data.user && data.session) {
+          const { error: profileError } = await supabase.from('profiles').upsert({
             id: data.user.id,
+            display_name: nextDisplayName,
+            goal: 'strength_gain',
+            experience: 'intermediate',
+            gender: 'male',
+            job_type: 'mixed',
+            days_per_week: 4,
             created_at: new Date().toISOString(),
-          });
+          }, { onConflict: 'id' });
 
-          if (profileError && profileError.code !== '23505') throw profileError;
+          if (profileError) {
+            console.warn('Profile bootstrap skipped:', profileError.message);
+          }
         }
 
         if (data.user && !data.session) {
@@ -131,9 +140,10 @@ export default function AuthPage({ embedded = false }) {
     <section className="w-full max-w-[390px] rounded-3xl border border-white/10 bg-[#141416] p-5 shadow-2xl shadow-black/50">
         <div className="mb-7 text-center">
           <h1 className="text-3xl font-black tracking-[-0.05em]">
-            DOPA<span className="text-[#CCFF00]">PEAK</span>
+            ENDO<span className="text-[#CCFF00]">PAMIN</span>
           </h1>
-          <p className="mt-2 text-sm text-white/45">Sign in to sync your coach, profile, and progress.</p>
+          <p className="mt-2 text-sm text-white/45">Endorphin meets Dopamine.</p>
+          <p className="mt-1 text-sm text-white/45">Sign in to activate your performance coach.</p>
         </div>
 
         <div className="mb-5 grid grid-cols-2 rounded-2xl bg-black/40 p-1">

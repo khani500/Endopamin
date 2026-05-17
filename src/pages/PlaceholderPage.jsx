@@ -18,7 +18,7 @@ export default function PlaceholderPage({ title }) {
     >
       <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8 }}>{title}</h1>
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, marginBottom: 28 }}>
-        {isProfile ? 'Manage your Dopa Peak account.' : 'Coming soon in Dopa Peak.'}
+        {isProfile ? 'Manage your Endopamin account.' : 'Coming soon in Endopamin.'}
       </p>
       {isProfile && (
         <div style={{ maxWidth: 390, margin: '0 auto 24px' }}>

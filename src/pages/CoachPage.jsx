@@ -169,7 +169,7 @@ export default function CoachPage() {
             {coach.avatar}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#CCFF00]">AI Voice Coach</p>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#CCFF00]">ENDO-COACH AI</p>
             <h1 className="mt-1 text-2xl font-black tracking-[-0.04em]">{coach.name}</h1>
             <p className="mt-1 text-sm text-white/45">
               {coach.title} · {settingsSummary}

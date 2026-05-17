@@ -14,7 +14,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       <SignedOut>
         <ScreenContainer>
           <SectionHeader
-            eyebrow="DopaPeak"
+            eyebrow="ENDOPAMIN"
             title={mode === 'sign-in' ? 'Welcome back' : 'Create your account'}
             subtitle="Clerk powers secure authentication for the mobile app."
           />

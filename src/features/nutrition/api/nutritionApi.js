@@ -1,5 +1,5 @@
 /**
- * Dopa Peak — Nutrition & AI coach API adapters.
+ * Endopamin — Nutrition & AI coach API adapters.
  * Replace implementations with your backend / OpenAI / vision endpoints.
  * All functions accept optional AbortSignal for cancellation.
  */

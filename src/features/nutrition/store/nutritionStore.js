@@ -99,7 +99,7 @@ export const useNutritionStore = create(
         })),
     }),
     {
-      name: 'dopa-peak-nutrition',
+      name: 'endopamin-nutrition',
       partialize: s => ({
         onboardingComplete: s.onboardingComplete,
         goal: s.goal,

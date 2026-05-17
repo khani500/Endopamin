@@ -84,7 +84,7 @@ async function generateAudioContent({ audioBase64, mimeType, prompt }) {
 }
 
 export const testConnection = async () => {
-  const data = await generateContent({ prompt: 'Say: DopaPeak connected!' });
+  const data = await generateContent({ prompt: 'Say: ENDOPAMIN connected!' });
   console.log('Gemini Test:', extractText(data));
   return data;
 };

@@ -35,7 +35,7 @@ export function DopaScore({ score, color, breakdown = {} }) {
           cursor: 'pointer',
         }}
       >
-        <p style={{ margin: '0 0 10px', fontSize: 10, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)' }}>Dopa Score</p>
+        <p style={{ margin: '0 0 10px', fontSize: 10, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)' }}>Endo Score</p>
         <div style={{ textAlign: 'center', fontSize: 64, lineHeight: 1, fontWeight: 900, color }}>{pct}</div>
         <div style={{ height: 8, marginTop: 14, borderRadius: 999, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
           <div style={{ width: `${pct}%`, height: '100%', borderRadius: 999, background: color }} />
@@ -53,7 +53,7 @@ export function DopaScore({ score, color, breakdown = {} }) {
       {open ? (
         <div style={{ position: 'fixed', inset: 0, zIndex: 70, display: 'grid', placeItems: 'center', background: 'rgba(0,0,0,0.62)', padding: 20 }}>
           <div style={{ width: '100%', maxWidth: 340, borderRadius: 24, border: '1px solid rgba(255,255,255,0.1)', background: '#111113', padding: 20 }}>
-            <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 900 }}>Dopa Score breakdown</h3>
+            <h3 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 900 }}>Endo Score breakdown</h3>
             {Object.entries(LABELS).map(([key, label]) => (
               <div key={key} style={{ padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>

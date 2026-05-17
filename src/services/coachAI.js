@@ -14,7 +14,7 @@ export const getDailyMessage = async (coachId, userContext) => {
     Generate a personalized daily motivation message for ${userName}.
     Context:
     - Current streak: ${streak} days
-    - Dopa Level: ${level}
+    - Endo Level: ${level}
     - Last workout: ${lastWorkout || 'yesterday'}
     - Fitness goal: ${goal}
     - Today's energy (1-5): ${energy || 'unknown'}

@@ -31,16 +31,54 @@ export const AuthProvider = ({ children }) => {
   const ensureProfile = useCallback(async sessionUser => {
     if (!supabase || !sessionUser?.id) return;
     const existing = await loadProfile(sessionUser.id);
-    if (existing) return;
+    const metadataName = sessionUser.user_metadata?.display_name;
+
+    if (existing) {
+      if (!existing.display_name && metadataName) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .update({ display_name: metadataName })
+          .eq('id', sessionUser.id)
+          .select('*')
+          .single();
+
+        if (!error) setProfile(data);
+      }
+      return;
+    }
+
+    const profileDefaults = {
+      id: sessionUser.id,
+      display_name: metadataName || sessionUser.email?.split('@')[0] || 'Athlete',
+      goal: 'strength_gain',
+      experience: 'intermediate',
+      gender: 'male',
+      job_type: 'mixed',
+      days_per_week: 4,
+      created_at: new Date().toISOString(),
+    };
 
     const { data, error } = await supabase
       .from('profiles')
-      .upsert({ id: sessionUser.id, created_at: new Date().toISOString() }, { onConflict: 'id' })
+      .upsert(profileDefaults, { onConflict: 'id' })
       .select('*')
       .single();
 
     if (error) {
       console.error('Failed to create profile:', error);
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: sessionUser.id,
+          display_name: profileDefaults.display_name,
+          created_at: profileDefaults.created_at,
+        }, { onConflict: 'id' })
+        .select('*')
+        .single();
+
+      if (!fallbackError) {
+        setProfile(fallbackData);
+      }
       return;
     }
     setProfile(data);
