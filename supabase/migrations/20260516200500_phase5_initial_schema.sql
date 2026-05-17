@@ -1,5 +1,7 @@
 -- DopaPeak Phase 5 — Supabase initial production schema.
 
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 CREATE TABLE IF NOT EXISTS profiles (
   id UUID REFERENCES auth.users PRIMARY KEY,
   display_name TEXT,
@@ -84,6 +86,18 @@ CREATE TABLE IF NOT EXISTS notification_settings (
   desk_break_interval INTEGER DEFAULT 60,
   group_session_reminder BOOLEAN DEFAULT true
 );
+
+CREATE INDEX IF NOT EXISTS workout_logs_user_logged_at_idx
+  ON workout_logs (user_id, logged_at DESC);
+
+CREATE INDEX IF NOT EXISTS nutrition_logs_user_logged_at_idx
+  ON nutrition_logs (user_id, logged_at DESC);
+
+CREATE INDEX IF NOT EXISTS daily_checkins_user_date_idx
+  ON daily_checkins (user_id, checkin_date DESC);
+
+CREATE INDEX IF NOT EXISTS body_metrics_user_recorded_at_idx
+  ON body_metrics (user_id, recorded_at DESC);
 
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE workout_logs ENABLE ROW LEVEL SECURITY;

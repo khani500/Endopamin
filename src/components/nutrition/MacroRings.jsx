@@ -1,7 +1,7 @@
 const MACROS = [
   { label: 'Protein', grams: 145, pct: 73, color: '#CCFF00' },
   { label: 'Carbs', grams: 220, pct: 55, color: '#00BFFF' },
-  { label: 'Fat', grams: 65, pct: 80, color: '#FF6B35' },
+  { label: 'Fat', grams: 65, pct: 80, color: '#CCFF00' },
 ];
 
 function MacroRing({ label, grams, pct, color }) {

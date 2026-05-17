@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Flame, ChevronRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { DailyCheckIn } from '../components/checkin/DailyCheckIn';
 import { DopaScore } from '../components/progress/DopaScore';
 import { ProPaywall } from '../components/paywall/ProPaywall';
@@ -41,6 +40,94 @@ const THEMES = {
   },
 };
 
+const coachMessages = [
+  "You're on a {streak}-day streak — elite territory.",
+  'Your upper body pull shows a 14% strength gain.',
+  'Recovery score looks good. Time to push.',
+  'Consistency is your superpower. {streak} days strong.',
+  'Based on last session, try adding 2.5kg today.',
+];
+
+function getDayOfYear(date = new Date()) {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date - start;
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+function IconShell({ children, accent = '#C8FF00' }) {
+  return (
+    <div style={{ width: 38, height: 38, borderRadius: 14, display: 'grid', placeItems: 'center', background: 'rgba(200,255,0,0.08)', border: `1px solid ${accent}44` }}>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        {children}
+      </svg>
+    </div>
+  );
+}
+
+function PlanIcon({ accent = '#C8FF00' }) {
+  return (
+    <IconShell accent={accent}>
+      <path d="M7 5h8l3 3v11H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke={accent} strokeWidth="1.8" />
+      <path d="M15 5v4h4M8 12h7M8 16h5" stroke={accent} strokeWidth="1.8" strokeLinecap="round" />
+    </IconShell>
+  );
+}
+
+function RunnerIcon({ accent = '#C8FF00' }) {
+  return (
+    <IconShell accent={accent}>
+      <circle cx="14.5" cy="4.5" r="2" fill={accent} />
+      <path d="M12 8l-3 4 4 2 2-3 3 2" stroke={accent} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M11 15l-3 5M15 14l3 5M8 12H5" stroke={accent} strokeWidth="1.8" strokeLinecap="round" />
+    </IconShell>
+  );
+}
+
+function BarbellIcon({ accent = '#C8FF00' }) {
+  return (
+    <IconShell accent={accent}>
+      <path d="M3 12h18M6 8v8M9 10v4M15 10v4M18 8v8" stroke={accent} strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M9 18c1.4 1.4 4.6 1.4 6 0" stroke={accent} strokeWidth="1.8" strokeLinecap="round" />
+    </IconShell>
+  );
+}
+
+function YogaIcon({ accent = '#C8FF00' }) {
+  return (
+    <IconShell accent={accent}>
+      <circle cx="12" cy="5" r="2" fill={accent} />
+      <path d="M12 8v5M8 12l4 2 4-2M7 18h10M9 18l3-4 3 4" stroke={accent} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </IconShell>
+  );
+}
+
+function HiiTIcon({ accent = '#C8FF00' }) {
+  return (
+    <IconShell accent={accent}>
+      <path d="M13 2L6 13h5l-1 9 8-13h-5l1-7Z" fill={accent} opacity="0.9" />
+      <circle cx="17" cy="17" r="4" stroke={accent} strokeWidth="1.6" />
+      <path d="M17 15v2l1.4 1" stroke="#0A0A0A" strokeWidth="1.4" strokeLinecap="round" />
+    </IconShell>
+  );
+}
+
+function TargetIcon({ accent = '#C8FF00' }) {
+  return (
+    <IconShell accent={accent}>
+      <circle cx="11" cy="13" r="6" stroke={accent} strokeWidth="1.7" />
+      <circle cx="11" cy="13" r="2" fill={accent} />
+      <path d="M15 9l4-4M16 5h3v3" stroke={accent} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </IconShell>
+  );
+}
+
+const quickIconMap = {
+  Cardio: RunnerIcon,
+  Strength: BarbellIcon,
+  Mobility: YogaIcon,
+  HIIT: HiiTIcon,
+};
+
 // ─── Onboarding ──────────────────────────────────────────────────────────────
 function Onboarding({ onComplete }) {
   const [step, setStep] = useState(1);
@@ -51,8 +138,8 @@ function Onboarding({ onComplete }) {
     goal: 'strength_gain',
     daysPerWeek: '4',
     timeAvailable: '30-45min',
-    jobType: 'mixed',
     coach: 'maya',
+    jobType: 'mixed',
   });
 
   const t = THEMES.male;
@@ -139,7 +226,7 @@ function Onboarding({ onComplete }) {
             </div>
           </div>
           <div>
-            <p style={{ fontSize: 10, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 10 }}>Your lifestyle</p>
+            <p style={{ fontSize: 14, fontWeight: 800, color: '#fff', marginBottom: 10 }}>Your lifestyle:</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
               {[
                 { id: 'desk_worker', label: 'Desk Job', emoji: '💻' },
@@ -150,19 +237,17 @@ function Onboarding({ onComplete }) {
                   key={opt.id}
                   onClick={() => setForm(p => ({ ...p, jobType: opt.id }))}
                   style={{
-                    padding: '12px 8px',
+                    padding: 12,
                     borderRadius: 12,
+                    textAlign: 'center',
                     border: `1px solid ${form.jobType === opt.id ? t.accentBorder : 'rgba(255,255,255,0.08)'}`,
-                    background: form.jobType === opt.id ? t.gradBtn : 'rgba(255,255,255,0.04)',
+                    background: form.jobType === opt.id ? t.gradBtn : '#1a1a1a',
                     color: form.jobType === opt.id ? t.btnTextColor : '#fff',
                     fontFamily: "'Space Grotesk', sans-serif",
-                    fontSize: 12,
-                    fontWeight: 700,
-                    textAlign: 'center',
                   }}
                 >
-                  <div style={{ fontSize: 22, marginBottom: 4 }}>{opt.emoji}</div>
-                  <div>{opt.label}</div>
+                  <div style={{ fontSize: 24, marginBottom: 4 }}>{opt.emoji}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>{opt.label}</div>
                 </button>
               ))}
             </div>
@@ -243,12 +328,12 @@ function LoadingScreen({ gender, onDone }) {
 
 // ─── Main Dashboard ──────────────────────────────────────────────────────────
 export default function Home() {
-  const { user, setProfile } = useAuth() || {};
+  const { user, profile, setProfile } = useAuth() || {};
+  const navigate = useNavigate();
   const [phase, setPhase] = useState('dashboard'); // 'onboard' | 'loading' | 'dashboard'
   const [gender, setGender] = useState('male');
   const [, setUserData] = useState({});
   const [streak, setStreak] = useState(12);
-  const [activeTab, setActiveTab] = useState('home');
   const [checkIn, setCheckIn] = useState(null);
   const [todayWorkout, setTodayWorkout] = useState({ completed: false });
   const [showPaywall, setShowPaywall] = useState(false);
@@ -266,6 +351,15 @@ export default function Home() {
     caloriesLogged: 2223,
     todayWorkout,
   });
+  const dailyCoachMessage = coachMessages[getDayOfYear() % coachMessages.length].replace('{streak}', streak);
+  const displayName = profile?.display_name || 'Taher';
+  const showDeskBreakCard = profile?.job_type === 'desk_worker' || profile?.job_type === 'mixed';
+  const initials = displayName
+    .split(/\s+/)
+    .map(part => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || 'TA';
 
   const handleOnboardComplete = async (g, form) => {
     setGender(g);
@@ -279,8 +373,8 @@ export default function Home() {
         goal: form.goal,
         days_per_week: Number(form.daysPerWeek) || null,
         time_available: form.timeAvailable,
-        job_type: form.jobType,
         coach_persona: form.coach,
+        job_type: form.jobType,
       };
       const { data, error } = await supabase
         .from('profiles')
@@ -321,13 +415,11 @@ export default function Home() {
   };
 
   const QUICK = [
-    { icon: '🏃‍♂️', name: 'Cardio', sub: '20–45 min' },
-    { icon: '🏋️', name: 'Strength', sub: '30–60 min' },
-    { icon: '🧘', name: 'Mobility', sub: '15–30 min' },
-    { icon: '⚡', name: 'HIIT', sub: '20–40 min' },
+    { name: 'Cardio', sub: '20–45 min' },
+    { name: 'Strength', sub: '30–60 min' },
+    { name: 'Mobility', sub: '15–30 min' },
+    { name: 'HIIT', sub: '20–40 min' },
   ];
-
-  const DAYS = ['S','M','T','W','T','F','S'];
 
   const glass = {
     background: 'rgba(255,255,255,0.04)',
@@ -353,22 +445,23 @@ export default function Home() {
           <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: -0.5, margin: 0 }}>
             DOPA<span style={{ color: t.accent }}>PEAK</span>
           </h1>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Good morning, Taher</p>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Hi, {displayName}</p>
         </div>
-        <div style={{ width: 40, height: 40, borderRadius: '50%', border: `1.5px solid ${t.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: t.accent }}>TK</div>
+        <div style={{ width: 40, height: 40, borderRadius: '50%', border: `1.5px solid ${t.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 800, color: t.accent, background: '#111' }}>{initials}</div>
       </div>
 
-      {/* Streak Hero */}
-      <div style={{ padding: '0 20px', marginBottom: 16 }}>
-        <div style={{ borderRadius: 24, padding: '30px 24px 26px', border: `1px solid ${t.accentBorder}`, background: t.gradHero }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ fontSize: 88, fontWeight: 800, letterSpacing: -4, lineHeight: 0.95, color: t.accent }}>{streak}</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 4, marginBottom: 16 }}>Day Streak · Don't break the chain</div>
+      {/* Streak + Level hero */}
+      <div style={{ padding: '0 20px', marginBottom: 18 }}>
+        <div style={{ borderRadius: 30, padding: 22, border: `1px solid ${t.accentBorder}`, background: '#111', boxShadow: `0 18px 40px ${t.accentDim}, inset 0 0 0 1px rgba(255,255,255,0.02)` }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
+            <div style={{ borderRadius: 22, padding: 18, background: '#1E1E1E', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ fontSize: 10, letterSpacing: 1.6, textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)', marginBottom: 6 }}>Dopa Level</div>
+              <div style={{ fontSize: 56, fontWeight: 950, letterSpacing: -2.5, color: '#fff', lineHeight: 1 }}>Lv.4</div>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 10, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Dopa Level</div>
-              <div style={{ fontSize: 36, fontWeight: 800 }}>Lv.4</div>
+            <div style={{ borderRadius: 22, padding: 18, background: '#1E1E1E', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ fontSize: 10, letterSpacing: 1.6, textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)', marginBottom: 6 }}>Streak</div>
+              <div style={{ fontSize: 56, fontWeight: 950, letterSpacing: -2.5, color: t.accent, lineHeight: 1 }}>{streak}</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.36)', marginTop: 2 }}>days strong</div>
             </div>
           </div>
           <div>
@@ -385,21 +478,21 @@ export default function Home() {
 
       <DopaScore score={dopaScore.score} color={dopaScore.color} breakdown={dopaScore.breakdown} />
 
-      <CoachCard />
+      <CoachCard fallbackMessage={dailyCoachMessage} />
 
       {/* Quick Start */}
       <div style={{ padding: '0 20px', marginBottom: 12 }}>
         <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 10 }}>Quick Start</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-          {QUICK.map((q, i) => (
+          {QUICK.map(q => (
             <button
-              key={i}
+              key={q.name}
               onClick={() => startSession(q.name)}
               style={{
-                background: i === 0 ? t.accentDim : 'rgba(255,255,255,0.04)',
-                border: `1px solid ${i === 0 ? t.accentBorder : 'rgba(255,255,255,0.08)'}`,
+                background: '#1E1E1E',
+                border: `1px solid ${t.accentBorder}`,
                 borderRadius: gender === 'female' ? 18 : 14,
-                padding: '14px 8px',
+                padding: '14px 8px 12px',
                 textAlign: 'center',
                 cursor: 'pointer',
                 color: '#fff',
@@ -407,7 +500,12 @@ export default function Home() {
                 transition: 'all 0.2s',
               }}
             >
-              <div style={{ fontSize: 20, marginBottom: 6 }}>{q.icon}</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+                {(() => {
+                  const Icon = quickIconMap[q.name];
+                  return <Icon accent={t.accent} />;
+                })()}
+              </div>
               <div style={{ fontSize: 11, fontWeight: 600 }}>{q.name}</div>
               <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{q.sub}</div>
             </button>
@@ -415,45 +513,95 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Core Stats + Activity Log */}
-      <div style={{ padding: '0 20px', marginBottom: 12 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <div style={{ ...glass, borderRadius: 18, padding: 16 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>This Week</div>
-            <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: -1, lineHeight: 1 }}>5</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 4, marginBottom: 12 }}>workouts logged</div>
-            <div style={{ display: 'flex', gap: 4 }}>
-              {[1,1,1,1,1,0,0].map((v, i) => (
-                <div key={i} style={{ flex: 1, height: 3, borderRadius: 99, background: v ? t.accent : 'rgba(255,255,255,0.1)' }} />
+      {showDeskBreakCard && (
+        <div style={{ padding: '0 20px', marginBottom: 14 }}>
+          <div style={{ borderRadius: 20, padding: 16, background: '#111', border: `1px solid ${t.accentBorder}`, borderLeft: `4px solid ${t.accent}` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 900, letterSpacing: 1.5, textTransform: 'uppercase', color: t.accent }}>🪑 Desk Break</div>
+                <div style={{ marginTop: 4, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>Next break in: 47 min</div>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 12 }}>
+              {[
+                ['quick', 'Quick Reset', '5m'],
+                ['deep', 'Deep Relief', '10m'],
+                ['energy', 'Energy Spike', '3m'],
+              ].map(([id, label, duration]) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => navigate(`/gym/desk-break/${id}`)}
+                  style={{
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#fff',
+                    borderRadius: 14,
+                    padding: '10px 8px',
+                    fontSize: 10,
+                    fontWeight: 900,
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    cursor: 'pointer',
+                  }}
+                >
+                  {label} {duration}
+                </button>
               ))}
             </div>
           </div>
-          <div style={{ ...glass, borderRadius: 18, padding: 16 }}>
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>Today's Goal</div>
-            <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: -1, lineHeight: 1 }}>65%</div>
+        </div>
+      )}
+
+      {/* Core Stats + Activity Log */}
+      <div style={{ padding: '0 20px', marginBottom: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div style={{ ...glass, borderRadius: 18, padding: 16, background: '#1E1E1E', border: `1px solid ${t.accentBorder}` }}>
+            <BarbellIcon accent={t.accent} />
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginTop: 12, marginBottom: 8 }}>This Week</div>
+            <div style={{ fontSize: 46, fontWeight: 950, letterSpacing: -2, lineHeight: 1 }}>5</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>workouts logged</div>
+          </div>
+          <div style={{ ...glass, borderRadius: 18, padding: 16, background: '#1E1E1E', border: `1px solid ${t.accentBorder}` }}>
+            <TargetIcon accent={t.accent} />
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginTop: 12, marginBottom: 8 }}>Today's Goal</div>
+            <div style={{ fontSize: 46, fontWeight: 950, letterSpacing: -2, lineHeight: 1 }}>65%</div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 4, marginBottom: 12 }}>of daily target</div>
             <div style={{ height: 3, background: 'rgba(255,255,255,0.08)', borderRadius: 99 }}>
               <div style={{ height: '100%', width: '65%', background: t.gradFill, borderRadius: 99 }} />
             </div>
           </div>
-          <div
-            onClick={() => {
-              setPaywallFeature('DopaPeak Pro');
-              setShowPaywall(true);
-            }}
-            style={{ ...glass, borderRadius: 18, padding: 16, gridColumn: 'span 2', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-          >
-            <div>
-              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>Dopa Premium</div>
-              <div style={{ fontSize: 16, fontWeight: 700 }}>Unlock Elite Mode</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>AI Coach · Unlimited plans · Analytics</div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ fontSize: 24, fontWeight: 800, color: t.accent }}>$99</span>
-              <ChevronRight size={16} color="rgba(255,255,255,0.3)" />
-            </div>
-          </div>
         </div>
+      </div>
+
+      {/* Plan action card */}
+      <div style={{ padding: '0 20px', marginBottom: 14, display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+        {[
+          { label: 'My Plan', sub: 'Today map', to: '/log/plan', Icon: PlanIcon },
+        ].map(({ label, sub, to, Icon }) => (
+          <Link
+            key={label}
+            to={to}
+            style={{
+              textDecoration: 'none',
+              color: '#fff',
+              borderRadius: 20,
+              padding: 14,
+              background: '#1E1E1E',
+              border: `1px solid ${t.accentBorder}`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              minHeight: 88,
+            }}
+          >
+            <Icon accent={t.accent} />
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: -0.2 }}>{label}</div>
+              <div style={{ marginTop: 3, fontSize: 11, color: 'rgba(255,255,255,0.42)' }}>{sub}</div>
+            </div>
+            <span style={{ marginLeft: 'auto', color: 'rgba(255,255,255,0.32)', fontSize: 18 }}>›</span>
+          </Link>
+        ))}
       </div>
 
       {/* Nutrition + AI coach hub (see /log) */}
@@ -477,75 +625,8 @@ export default function Home() {
           <div style={{ fontSize: 13, fontWeight: 800, color: '#39FF14', letterSpacing: -0.3 }}>Smart Nutrition</div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 3 }}>Food scan · Daily overview · Meal plan</div>
         </div>
-        <ChevronRight size={22} style={{ color: '#39FF14', flexShrink: 0 }} />
+        <span style={{ color: '#39FF14', flexShrink: 0, fontSize: 22 }}>›</span>
       </Link>
-
-      {/* World Tabs */}
-      <div style={{ padding: '0 20px', marginBottom: 16 }}>
-        <div style={{ display: 'flex', gap: 6, background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: 4 }}>
-          {['home', 'gym', 'outdoor'].map(tab => (
-            tab === 'gym' ? (
-              <Link
-                key={tab}
-                to="/gym"
-                style={{
-                  flex: 1, padding: '10px 6px', textAlign: 'center', borderRadius: 10,
-                  fontSize: 12, fontWeight: 600, cursor: 'pointer', letterSpacing: 0.3,
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  background: activeTab === tab ? t.accentDim : 'transparent',
-                  border: activeTab === tab ? `1px solid ${t.accentBorder}` : '1px solid transparent',
-                  color: activeTab === tab ? t.accent : 'rgba(255,255,255,0.4)',
-                  transition: 'all 0.2s',
-                  textDecoration: 'none',
-                }}
-              >
-                🏋️ Gym
-              </Link>
-            ) : (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                style={{
-                  flex: 1, padding: '10px 6px', textAlign: 'center', borderRadius: 10,
-                  fontSize: 12, fontWeight: 600, cursor: 'pointer', letterSpacing: 0.3,
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  background: activeTab === tab ? t.accentDim : 'transparent',
-                  border: activeTab === tab ? `1px solid ${t.accentBorder}` : '1px solid transparent',
-                  color: activeTab === tab ? t.accent : 'rgba(255,255,255,0.4)',
-                  transition: 'all 0.2s',
-                }}
-              >
-                {tab === 'home' ? '🏠 Home' : '🌲 Outdoor'}
-              </button>
-            )
-          ))}
-        </div>
-      </div>
-
-      {/* Week Row */}
-      <div style={{ padding: '0 20px', marginBottom: 12 }}>
-        <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 10 }}>This Week</p>
-        <div style={{ ...glass, borderRadius: 18, padding: '16px 12px', display: 'flex', justifyContent: 'space-between' }}>
-          {DAYS.map((d, i) => {
-            const isToday = i === 5;
-            const isDone = i < 5;
-            return (
-              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontWeight: 500 }}>{d}</span>
-                <div style={{
-                  width: 32, height: 32, borderRadius: gender === 'female' ? '50%' : 8,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
-                  background: isToday ? t.accent : isDone ? t.accentDim : 'rgba(255,255,255,0.06)',
-                  border: !isToday && isDone ? `1px solid ${t.accentBorder}` : 'none',
-                  color: isToday ? t.btnTextColor : isDone ? t.accent : 'rgba(255,255,255,0.2)',
-                }}>
-                  {isDone || isToday ? <Flame size={14} /> : '—'}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
 
       {/* CTA */}
       <div style={{ padding: '0 20px' }}>
@@ -555,6 +636,60 @@ export default function Home() {
         >
           {gender === 'male' ? '⚡' : '✦'} Start Today's Session
         </button>
+      </div>
+
+      {/* Workout choice cards */}
+      <div style={{ padding: '16px 20px 0', marginBottom: 8 }}>
+        <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 10 }}>Choose Workout</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <Link
+            to="/gym"
+            style={{
+              textDecoration: 'none',
+              color: '#fff',
+              borderRadius: 20,
+              padding: 14,
+              background: '#1E1E1E',
+              border: `1px solid ${t.accentBorder}`,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 10,
+              minHeight: 116,
+            }}
+          >
+            <BarbellIcon accent={t.accent} />
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: -0.2 }}>Gym Workout</div>
+              <div style={{ marginTop: 3, fontSize: 11, color: 'rgba(255,255,255,0.42)' }}>Machines · weights</div>
+            </div>
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => startSession('home')}
+            style={{
+              textDecoration: 'none',
+              color: '#fff',
+              borderRadius: 20,
+              padding: 14,
+              background: '#1E1E1E',
+              border: `1px solid ${t.accentBorder}`,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 10,
+              minHeight: 116,
+              textAlign: 'left',
+              cursor: 'pointer',
+              fontFamily: "'Space Grotesk', sans-serif",
+            }}
+          >
+            <RunnerIcon accent={t.accent} />
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: -0.2 }}>Home Workout</div>
+              <div style={{ marginTop: 3, fontSize: 11, color: 'rgba(255,255,255,0.42)' }}>Bodyweight · quick</div>
+            </div>
+          </button>
+        </div>
       </div>
 
       <DailyCheckIn onSubmit={handleCheckInSubmit} />

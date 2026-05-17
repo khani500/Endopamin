@@ -1,21 +1,23 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { isSpeaking } from '../../services/voiceService';
 import { useCoach } from '../../hooks/useCoach';
+import { CoachChat } from './CoachChat';
 
-export const CoachCard = () => {
+export const CoachCard = ({ fallbackMessage = '' }) => {
   const { coach, message, loadingMessage, personaId, speak, stopSpeaking } = useCoach();
   const [playing, setPlaying] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const handleVoice = () => {
-    if (!message.trim()) return;
+    const voiceMessage = fallbackMessage || message;
+    if (!voiceMessage.trim()) return;
     if (playing || isSpeaking()) {
       stopSpeaking();
       setPlaying(false);
       return;
     }
     setPlaying(true);
-    speak(message, () => setPlaying(false));
+    speak(voiceMessage, () => setPlaying(false));
   };
 
   const borderColor = {
@@ -37,7 +39,7 @@ export const CoachCard = () => {
         <button
           type="button"
           onClick={handleVoice}
-          disabled={loadingMessage || !message.trim()}
+          disabled={loadingMessage || !(fallbackMessage || message).trim()}
           className={`flex h-8 w-8 items-center justify-center rounded-full transition-all disabled:opacity-40 ${
             playing ? 'bg-[#CCFF00] text-black' : 'bg-[#2a2a2a] text-gray-400'
           }`}
@@ -47,15 +49,21 @@ export const CoachCard = () => {
         </button>
       </div>
 
-      {loadingMessage ? (
+      {loadingMessage && !fallbackMessage ? (
         <div className="h-12 animate-pulse rounded-lg bg-[#2a2a2a]" />
       ) : (
-        <p className="m-0 text-sm leading-relaxed text-white">{message}</p>
+        <p className="m-0 text-sm leading-relaxed text-white">{fallbackMessage || message}</p>
       )}
 
-      <Link to="/coach" className="mt-3 inline-block text-xs font-medium text-[#CCFF00] no-underline">
+      <button
+        type="button"
+        onClick={() => setChatOpen(true)}
+        className="mt-3 border-0 bg-transparent p-0 text-xs font-medium text-[#CCFF00]"
+      >
         Reply to coach →
-      </Link>
+      </button>
+
+      <CoachChat isOpen={chatOpen} onClose={() => setChatOpen(false)} />
     </div>
   );
 };

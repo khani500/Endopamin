@@ -5,6 +5,21 @@ function getVoices() {
   return window.speechSynthesis.getVoices();
 }
 
+function pickVoice(coachId, voices) {
+  const lowerName = voice => voice.name.toLowerCase();
+  const englishVoices = voices.filter(voice => voice.lang?.toLowerCase().startsWith('en'));
+
+  if (coachId === 'maya') {
+    return englishVoices.find(voice => /samantha|karen|victoria|female|zira/.test(lowerName(voice))) || englishVoices[0];
+  }
+
+  if (coachId === 'rex') {
+    return englishVoices.find(voice => /fred|gordon|daniel|male|alex/.test(lowerName(voice))) || englishVoices[0];
+  }
+
+  return englishVoices.find(voice => /daniel|alex|aaron|male/.test(lowerName(voice))) || englishVoices[0];
+}
+
 export const speak = (text, coachId = 'elias', onEnd = null) => {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
     console.warn('TTS not supported');
@@ -21,16 +36,8 @@ export const speak = (text, coachId = 'elias', onEnd = null) => {
   utterance.volume = 1.0;
   utterance.lang = 'en-US';
 
-  const voices = getVoices();
-  const voiceMap = {
-    elias: voices.find(v => v.name.includes('Daniel') || v.name.includes('Alex') || v.lang === 'en-US'),
-    maya: voices.find(v => v.name.includes('Samantha') || v.name.includes('Karen')),
-    rex: voices.find(v => v.name.includes('Fred') || v.name.includes('Gordon')),
-  };
-
-  if (voiceMap[coachId]) {
-    utterance.voice = voiceMap[coachId];
-  }
+  const voice = pickVoice(coachId, getVoices());
+  if (voice) utterance.voice = voice;
 
   if (onEnd) utterance.onend = onEnd;
 

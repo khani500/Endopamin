@@ -11,7 +11,7 @@ const IMPROVEMENT_TIPS = {
   sleep: 'Log sleep quality during daily check-in. Better recovery raises this category.',
   nutrition: 'Log calories and macros in Nutrition so the score can credit your fueling.',
   workout: 'Complete a workout or mobility session today to add workout points.',
-  checkIn: 'Submit the daily check-in. It takes 30 seconds and unlocks coach guidance.',
+  checkIn: 'Save the daily check-in. It takes 30 seconds and unlocks coach guidance.',
 };
 
 export function DopaScore({ score, color, breakdown = {} }) {

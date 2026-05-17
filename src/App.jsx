@@ -6,6 +6,8 @@ import Progress from './pages/Progress';
 import GymPage from './pages/GymPage';
 import CoachPage from './pages/CoachPage';
 import ProfilePage from './pages/ProfilePage';
+import OnboardingPage from './pages/OnboardingPage';
+import ExerciseLibrary from './pages/ExerciseLibrary';
 import { useAuth } from './context/AuthContext';
 import { checkUserAbsence, updateLastActive } from './services/absenceDetector';
 import { onForegroundMessage } from './lib/firebase';
@@ -18,7 +20,7 @@ import NutritionPlanPage from './features/nutrition/pages/NutritionPlanPage';
 import NutritionCoachPage from './features/nutrition/pages/NutritionCoachPage';
 
 function App() {
-  const { user, profile } = useAuth();
+  const { user, profile, loading } = useAuth();
   const [toast, setToast] = useState(null);
   const absenceCheckKeyRef = useRef('');
 
@@ -91,6 +93,12 @@ function App() {
     };
   }, [user?.id, profile?.job_type]);
 
+  const needsOnboarding = user && !loading && (!profile || !profile.display_name);
+
+  if (needsOnboarding) {
+    return <OnboardingPage />;
+  }
+
   return (
     <Router>
       <div className="flex min-h-screen w-full flex-col bg-[#0A0A0A] pb-20">
@@ -106,6 +114,9 @@ function App() {
           </Route>
           <Route path="/scan" element={<Navigate to="/log/scan" replace />} />
           <Route path="/gym" element={<GymPage />} />
+          <Route path="/gym/desk-break/:breakId" element={<GymPage />} />
+          <Route path="/exercises" element={<ExerciseLibrary />} />
+          <Route path="/exercises/:id" element={<ExerciseLibrary />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Routes>

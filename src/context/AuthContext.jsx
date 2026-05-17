@@ -33,10 +33,9 @@ export const AuthProvider = ({ children }) => {
     const existing = await loadProfile(sessionUser.id);
     if (existing) return;
 
-    const displayName = sessionUser.user_metadata?.display_name || sessionUser.email?.split('@')[0] || 'Athlete';
     const { data, error } = await supabase
       .from('profiles')
-      .upsert({ id: sessionUser.id, display_name: displayName }, { onConflict: 'id' })
+      .upsert({ id: sessionUser.id, created_at: new Date().toISOString() }, { onConflict: 'id' })
       .select('*')
       .single();
 
@@ -79,9 +78,11 @@ export const AuthProvider = ({ children }) => {
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        void ensureProfile(session.user);
+        setLoading(true);
+        void ensureProfile(session.user).finally(() => setLoading(false));
       } else {
         setProfile(null);
+        setLoading(false);
       }
     });
 
@@ -103,7 +104,7 @@ export const AuthProvider = ({ children }) => {
     [user, profile, loading, loadProfile, updateCoachPersona],
   );
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

@@ -102,7 +102,7 @@ export const NotificationSettings = () => {
       <SettingRow
         title="Streak Reminder"
         subtitle="Alert when your streak is at risk"
-        label="Fire"
+        label="🔥"
         enabled={settings.streak_reminder}
         onToggle={() => toggle('streak_reminder')}
       >
@@ -118,7 +118,7 @@ export const NotificationSettings = () => {
       <SettingRow
         title="Morning Coach"
         subtitle="Daily message from your coach"
-        label="AM"
+        label="☀️"
         enabled={settings.morning_coach}
         onToggle={() => toggle('morning_coach')}
       >
@@ -143,7 +143,7 @@ export const NotificationSettings = () => {
       <SettingRow
         title="Desk Break Reminders"
         subtitle="Stretch reminders for desk workers"
-        label="Desk"
+        label="🪑"
         enabled={settings.desk_breaks}
         onToggle={() => toggle('desk_breaks')}
       >
@@ -172,7 +172,7 @@ export const NotificationSettings = () => {
       <SettingRow
         title="Group Session Alerts"
         subtitle="30 min before sessions start"
-        label="Team"
+        label="👥"
         enabled={settings.group_session_reminder}
         onToggle={() => toggle('group_session_reminder')}
       />

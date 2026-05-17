@@ -17,7 +17,7 @@
 - [ ] Coach AI returns real Gemini messages.
 - [ ] Voice playback works on iOS and Android.
 - [ ] Notifications permission request appears at the right moment.
-- [ ] Desk Break timer completes a full session.
+- [x] Desk Break timer completes a full session.
 - [ ] Share Card downloads successfully.
 
 ## Business

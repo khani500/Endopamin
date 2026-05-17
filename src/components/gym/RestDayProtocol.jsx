@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 const BREATHING = [
   { label: 'IN', seconds: 4 },
   { label: 'HOLD', seconds: 4 },
-  { label: 'OUT', seconds: 4 },
+  { label: 'EXHALE', seconds: 4 },
   { label: 'HOLD', seconds: 4 },
 ];
 
@@ -43,7 +43,14 @@ export function RestDayProtocol() {
             <span className="text-sm font-bold text-white/60">{current.seconds}s</span>
           </div>
         </div>
-        <button type="button" onClick={() => setBreathing(v => !v)} className="w-full rounded-2xl bg-[#CCFF00] py-3 text-sm font-black text-black">
+        <button
+          type="button"
+          onClick={() => {
+            setPhase(0);
+            setBreathing(v => !v);
+          }}
+          className="w-full rounded-2xl bg-[#CCFF00] py-3 text-sm font-black text-black"
+        >
           {breathing ? 'Pause Breathing' : 'Start Breathing'}
         </button>
       </div>

@@ -1,0 +1,7 @@
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS weight_kg DECIMAL,
+  ADD COLUMN IF NOT EXISTS height_cm DECIMAL,
+  ADD COLUMN IF NOT EXISTS weight_unit TEXT DEFAULT 'lb',
+  ADD COLUMN IF NOT EXISTS height_unit TEXT DEFAULT 'ft',
+  ADD COLUMN IF NOT EXISTS plan_setup JSONB DEFAULT '{}'::jsonb;
+

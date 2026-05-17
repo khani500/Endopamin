@@ -155,10 +155,10 @@
   border: 1px solid rgba(167, 139, 250, 0.35);
 }
 
-.np-hub-icon--orange {
-  background: rgba(251, 146, 60, 0.15);
-  color: #fb923c;
-  border: 1px solid rgba(251, 146, 60, 0.35);
+.np-hub-icon--coach {
+  background: #1a1a1a;
+  color: #CCFF00;
+  border: 1px solid rgba(204, 255, 0, 0.35);
 }
 
 .np-hub-label {
@@ -251,6 +251,82 @@
   font-size: 10px;
   color: #71717a;
   margin-top: 2px;
+}
+
+.np-pie-wrap {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.np-pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.np-pie-legend-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: #f4f4f5;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.np-pie-legend-row strong {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.np-pie-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 14px currentColor;
+}
+
+.np-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.np-matrix-card {
+  border: 1px solid;
+  border-radius: 16px;
+  background: #1e1e1e;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.np-matrix-card p {
+  margin: 0 0 8px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  font-weight: 900;
+}
+
+.np-matrix-card strong {
+  display: block;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.np-matrix-card span {
+  display: block;
+  margin-top: 6px;
+  color: #a1a1aa;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .np-chart-title-row {
@@ -499,6 +575,13 @@
   border: 1px solid #3f3f46;
   background: #0c0c0e;
   overflow: hidden;
+}
+
+.np-camera-box--scan {
+  border: 1.5px dashed rgba(204, 255, 0, 0.62);
+  background:
+    radial-gradient(circle at 50% 35%, rgba(204, 255, 0, 0.08), transparent 34%),
+    #0a0a0a;
 }
 
 .np-camera-box video,

@@ -16,7 +16,7 @@ export function VoiceCoachSetup() {
   return (
     <GlassCard>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-        <div className="np-hub-icon np-hub-icon--orange">
+        <div className="np-hub-icon np-hub-icon--coach">
           <Mic2 size={20} />
         </div>
         <div>

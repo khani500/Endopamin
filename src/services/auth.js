@@ -35,6 +35,16 @@ export const signInWithGoogle = async () => {
   return data;
 };
 
+export const signInWithApple = async () => {
+  const client = requireSupabase();
+  const { data, error } = await client.auth.signInWithOAuth({
+    provider: 'apple',
+    options: { redirectTo: window.location.origin },
+  });
+  if (error) throw error;
+  return data;
+};
+
 export const signOut = async () => {
   const client = requireSupabase();
   await client.auth.signOut();

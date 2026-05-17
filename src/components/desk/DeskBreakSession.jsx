@@ -28,8 +28,7 @@ export const DeskBreakSession = ({ breakId = 'quick_5', onComplete }) => {
     setIsRunning(false);
     setPhase('complete');
     speak('Great work! Break complete. Back to it!', coachId);
-    onComplete?.();
-  }, [breakData.exercises, coachId, currentExercise, onComplete]);
+  }, [breakData.exercises, coachId, currentExercise]);
 
   const startSession = () => {
     const messages = DESK_BREAK_COACH_MESSAGES[coachId] || DESK_BREAK_COACH_MESSAGES.elias;

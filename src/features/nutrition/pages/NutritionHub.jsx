@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
-import { Activity, ScanLine, Utensils, Mic, ChevronRight } from 'lucide-react';
+import { Activity, Utensils, ChevronRight } from 'lucide-react';
+import { MacroRings } from '../../../components/nutrition/MacroRings';
+import { SupplementAdvisor } from '../../../components/nutrition/SupplementAdvisor';
 import { useNutritionStore } from '../store/nutritionStore';
+import { FoodScanner } from '../components/FoodScanner';
+import { MacroMatrixGrid, SmartMacroPieChart } from './NutritionScanPage';
 
 const MENU = [
   {
@@ -12,31 +16,18 @@ const MENU = [
     wide: true,
   },
   {
-    to: '/log/scan',
-    label: 'Food Scanner',
-    desc: 'Camera scan & macro estimate',
-    Icon: ScanLine,
-    iconClass: 'np-hub-icon--blue',
-  },
-  {
     to: '/log/plan',
     label: 'Meal Plan',
     desc: 'Goal-based daily meals',
     Icon: Utensils,
     iconClass: 'np-hub-icon--purple',
   },
-  {
-    to: '/log/coach',
-    label: 'AI Voice Coach',
-    desc: '24/7 voice guidance',
-    Icon: Mic,
-    iconClass: 'np-hub-icon--orange',
-  },
 ];
 
 export default function NutritionHub() {
   const onboardingComplete = useNutritionStore(s => s.onboardingComplete);
   const targetCalories = useNutritionStore(s => s.targetCalories);
+  const addFoodEntry = useNutritionStore(s => s.addFoodEntry);
 
   return (
     <main className="np-main">
@@ -62,8 +53,25 @@ export default function NutritionHub() {
           <p className="np-stat-big">
             {targetCalories} <span style={{ fontSize: 16, color: '#71717a' }}>kcal</span>
           </p>
+          <MacroRings />
         </div>
       )}
+
+      <SupplementAdvisor />
+
+      <FoodScanner
+        onAnalyzed={result =>
+          addFoodEntry({
+            name: result.name,
+            kcal: result.kcal,
+            protein: result.protein,
+            carbs: result.carbs,
+            fat: result.fat,
+          })
+        }
+      />
+      <SmartMacroPieChart />
+      <MacroMatrixGrid />
 
       <div className="np-hub-grid">
         {MENU.map(({ to, label, desc, Icon, iconClass, wide }) => (

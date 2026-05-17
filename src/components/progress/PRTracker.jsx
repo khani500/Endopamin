@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { FREE_LIMITS, userTier } from '../../config/tiers';
+import { ProPaywall } from '../paywall/ProPaywall';
 
 const STORAGE_KEY = 'dopapeak_prs';
 const DEFAULT_PRS = [
@@ -19,14 +21,16 @@ function loadPrs() {
 
 function trend(pr) {
   const diff = Number(pr.weight) - Number(pr.previous || pr.weight);
-  if (diff > 0) return { label: `+${diff}kg ↑`, color: '#CCFF00' };
-  if (diff < 0) return { label: `${diff}kg ↓`, color: '#FF4444' };
+  const unit = pr.unit || 'kg';
+  if (diff > 0) return { label: `+${diff}${unit} ↑`, color: '#CCFF00' };
+  if (diff < 0) return { label: `${diff}${unit} ↓`, color: '#FF4444' };
   return { label: '= same', color: 'rgba(255,255,255,0.45)' };
 }
 
 export function PRTracker() {
   const [prs, setPrs] = useState(loadPrs);
   const [open, setOpen] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
   const [draft, setDraft] = useState({ exercise: 'Bench', weight: '', unit: 'kg', date: new Date().toISOString().slice(0, 10) });
 
   useEffect(() => {
@@ -72,7 +76,17 @@ export function PRTracker() {
         })}
       </div>
 
-      <button type="button" onClick={() => setOpen(true)} className="mt-3 w-full rounded-2xl bg-[#CCFF00] py-3 text-sm font-black text-black">
+      <button
+        type="button"
+        onClick={() => {
+          if (userTier === 'free' && !FREE_LIMITS.prTracker) {
+            setShowPaywall(true);
+            return;
+          }
+          setOpen(true);
+        }}
+        className="mt-3 w-full rounded-2xl bg-[#CCFF00] py-3 text-sm font-black text-black"
+      >
         + Add PR
       </button>
 
@@ -100,6 +114,13 @@ export function PRTracker() {
           </div>
         </div>
       ) : null}
+
+      <ProPaywall
+        featureName="PR Tracker"
+        isVisible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onSubscribe={() => console.log('Payment integration coming soon')}
+      />
     </section>
   );
 }

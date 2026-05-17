@@ -1,15 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Camera, ImagePlus, Loader2, Scan, X } from 'lucide-react';
-import { analyzeFoodImage, analyzeFoodImageDemo } from '../api/nutritionApi';
 import { GlassCard } from './GlassCard';
+import { useAuth } from '../../../context/AuthContext';
+import { supabase } from '../../../lib/supabase';
+import { analyzeFoodImage, blobToBase64 } from '../../../services/foodScanner';
 
 export function FoodScanner({ onAnalyzed }) {
+  const { user } = useAuth();
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const [cameraOn, setCameraOn] = useState(false);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [result, setResult] = useState(null);
+  const [coachTip, setCoachTip] = useState('');
   const abortRef = useRef(null);
 
   const stopCamera = useCallback(() => {
@@ -59,13 +64,12 @@ export function FoodScanner({ onAnalyzed }) {
     setBusy(true);
     setError(null);
     try {
-      let result;
-      try {
-        result = await analyzeFoodImage(blob, signal);
-      } catch {
-        result = await analyzeFoodImageDemo(blob, signal);
-      }
-      onAnalyzed?.(result);
+      if (signal.aborted) return;
+      const base64 = await blobToBase64(blob);
+      const analyzed = await analyzeFoodImage(base64);
+      if (!analyzed) throw new Error('Could not analyze food image.');
+      setResult(analyzed);
+      setCoachTip(analyzed.protein_g >= 30 ? 'Good protein choice!' : 'Add a lean protein to balance this meal.');
     } catch (e) {
       if (e.name !== 'AbortError') setError(String(e.message || e));
     } finally {
@@ -90,6 +94,40 @@ export function FoodScanner({ onAnalyzed }) {
     await runAnalysis(file);
   };
 
+  const logMeal = async () => {
+    if (!result) return;
+    const entry = {
+      name: result.food_name,
+      kcal: Number(result.calories) || 0,
+      protein: Number(result.protein_g) || 0,
+      carbs: Number(result.carbs_g) || 0,
+      fat: Number(result.fat_g) || 0,
+    };
+    onAnalyzed?.(entry);
+
+    if (supabase && user?.id) {
+      await supabase.from('nutrition_logs').insert({
+        user_id: user.id,
+        meal_name: result.food_name,
+        calories: Number(result.calories) || 0,
+        protein_g: Number(result.protein_g) || 0,
+        carbs_g: Number(result.carbs_g) || 0,
+        fat_g: Number(result.fat_g) || 0,
+        meal_type: 'snack',
+      });
+    }
+  };
+
+  const resetScan = () => {
+    setResult(null);
+    setCoachTip('');
+    setError(null);
+    setPreviewUrl(prev => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+  };
+
   return (
     <GlassCard>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -104,24 +142,45 @@ export function FoodScanner({ onAnalyzed }) {
         )}
       </div>
 
-      <div className="np-camera-box">
+      <div className="np-camera-box np-camera-box--scan">
         {previewUrl && !cameraOn && <img src={previewUrl} alt="Preview" />}
         <video ref={videoRef} style={{ display: cameraOn ? 'block' : 'none' }} playsInline muted />
         {!cameraOn && !previewUrl && (
           <div className="np-camera-empty">
-            <Camera size={40} color="#39ff14" style={{ opacity: 0.5 }} />
+            <Camera size={42} color="#CCFF00" style={{ opacity: 0.72 }} />
             <p>Open the camera or pick an image from your gallery.</p>
           </div>
         )}
         {busy && (
           <div className="np-camera-overlay">
-            <Loader2 size={32} color="#39ff14" className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+            <Loader2 size={32} color="#CCFF00" className="spin" style={{ animation: 'spin 1s linear infinite' }} />
             <span>Estimating portion & macros…</span>
           </div>
         )}
       </div>
 
       {error && <p className="np-error">{error}</p>}
+
+      {result && (
+        <div className="mt-4 rounded-2xl border border-[#CCFF00]/25 bg-[#0A0A0A] p-4">
+          <p className="text-sm font-black text-white">✅ {result.food_name}</p>
+          <p className="mt-1 text-xs text-white/45">Estimated serving: {result.serving_size}</p>
+          <MacroResult label="Calories" value={`${result.calories} kcal`} pct={78} />
+          <MacroResult label="Protein" value={`${result.protein_g}g`} pct={82} />
+          <MacroResult label="Carbs" value={`${result.carbs_g}g`} pct={48} />
+          <MacroResult label="Fat" value={`${result.fat_g}g`} pct={24} />
+          <p className="mt-3 text-xs font-bold text-white/50">Confidence: {result.confidence}</p>
+          <p className="mt-2 text-xs font-bold text-[#CCFF00]">Coach: {coachTip}</p>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <button type="button" onClick={() => void logMeal()} className="rounded-xl bg-[#CCFF00] py-3 text-xs font-black text-black">
+              Log This Meal
+            </button>
+            <button type="button" onClick={resetScan} className="rounded-xl border border-white/10 bg-white/[0.06] py-3 text-xs font-black text-white/60">
+              Re-scan
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="np-btn-row" style={{ marginTop: 12 }}>
         <button type="button" className="np-btn-primary" onClick={cameraOn ? onShutter : startCamera} disabled={busy}>
@@ -135,9 +194,18 @@ export function FoodScanner({ onAnalyzed }) {
         </label>
       </div>
 
-      <p className="np-hint" style={{ marginTop: 12 }}>
-        Wire <strong style={{ color: '#39ff14' }}>analyzeFoodImage</strong> in nutritionApi.js. Demo mode runs if the API fails.
-      </p>
     </GlassCard>
+  );
+}
+
+function MacroResult({ label, value, pct }) {
+  return (
+    <div className="mt-3 grid grid-cols-[80px_70px_1fr] items-center gap-2 text-xs">
+      <span className="font-bold text-white/55">{label}</span>
+      <strong className="text-white">{value}</strong>
+      <span className="h-2 overflow-hidden rounded-full bg-white/10">
+        <span className="block h-full rounded-full bg-[#CCFF00]" style={{ width: `${pct}%` }} />
+      </span>
+    </div>
   );
 }

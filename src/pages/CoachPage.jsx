@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Bot, Mic, Send, Volume2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -24,6 +25,7 @@ const PERSONA_TO_TONE = {
 };
 
 export default function CoachPage() {
+  const location = useLocation();
   const { user, profile, setProfile } = useAuth();
   const { coach, personaId, setPersona, message, loadingMessage, speak, chat } = useCoach();
   const [input, setInput] = useState('');
@@ -47,6 +49,14 @@ export default function CoachPage() {
 
     return () => window.clearTimeout(timer);
   }, [personaId, profile?.gender]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (location.state?.prefill) setInput(location.state.prefill);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [location.state]);
 
   const saveCoachSettings = async (nextGender, nextTone) => {
     setSelectedGender(nextGender);

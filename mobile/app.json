@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "DopaPeak",
+    "slug": "dopapeak-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "scheme": "dopapeak",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#000000"
+      }
+    },
+    "plugins": [
+      "expo-secure-store",
+      "@stripe/stripe-react-native"
+    ]
+  }
+}
