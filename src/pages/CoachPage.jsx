@@ -153,15 +153,19 @@ const WORKOUTS = {
 
 const DIFF = { easy: '#CCFF00', medium: '#FFA53C', hard: '#FF6B6B' };
 
+function getCoachById(coachId) {
+  return COACHES.find(c => c.id === coachId) || COACHES[0];
+}
+
 export default function CoachPage() {
-  const { profile } = useAuth() || {};
+  const { profile, updateCoachPersona } = useAuth() || {};
   const {
     messages,
     switchCoach,
     setCoachMessages,
     getCoachMessages,
   } = useCoachSession();
-  const [coach, setCoach] = useState(COACHES[0]);
+  const [coach, setCoach] = useState(() => getCoachById(profile?.coach_persona));
   const [view, setView] = useState('chat');
   const [location, setLocation] = useState('gym');
   const [equipment, setEquipment] = useState(['barbell','dumbbell','bench','squat_rack','pull_up']);
@@ -180,6 +184,20 @@ export default function CoachPage() {
   const audioRef = coachAudioRef;
   const sendingRef = useRef(false);
   const userXp = profile?.dopa_xp || 0;
+
+  useEffect(() => {
+    if (!profile?.coach_persona) return;
+    const profileCoach = getCoachById(profile.coach_persona);
+    setCoach(prev => (prev.id === profileCoach.id ? prev : profileCoach));
+  }, [profile?.coach_persona]);
+
+  const handleSelectCoach = useCallback(async selectedCoach => {
+    setCoach(selectedCoach);
+    setView('chat');
+    if (profile?.coach_persona !== selectedCoach.id) {
+      await updateCoachPersona?.(selectedCoach.id);
+    }
+  }, [profile?.coach_persona, updateCoachPersona]);
 
   useEffect(() => {
     if (view !== 'chat') return undefined;
@@ -262,7 +280,7 @@ export default function CoachPage() {
     setInput('');
     setLoading(true);
 
-    const userMsg = { role: 'user', text };
+    const userMsg = { role: 'user', text, timestamp: new Date().toISOString() };
     const currentHistory = getCoachMessages(coach.id);
     const historyWithUser = [...currentHistory, userMsg];
     setCoachMessages(coach.id, historyWithUser);
@@ -286,7 +304,7 @@ export default function CoachPage() {
               onToken?.(_chunk, fullText);
               setCoachMessages(coach.id, [
                 ...historyWithUser,
-                { role: 'assistant', text: fullText },
+                { role: 'assistant', text: fullText, timestamp: new Date().toISOString() },
               ]);
             },
           })
@@ -297,14 +315,14 @@ export default function CoachPage() {
       const reply = sanitizeCoachResponse(rawReply, coach.name);
 
       if (reply) {
-        const assistantMsg = { role: 'assistant', text: reply };
+        const assistantMsg = { role: 'assistant', text: reply, timestamp: new Date().toISOString() };
         setCoachMessages(coach.id, [...historyWithUser, assistantMsg]);
       }
       return reply;
     } catch (err) {
       if (err?.name === 'AbortError') return null;
       console.error('processUserMessage error:', err);
-      const errMsg = { role: 'assistant', text: 'Connection issue. Try again.' };
+      const errMsg = { role: 'assistant', text: 'Connection issue. Try again.', timestamp: new Date().toISOString() };
       setCoachMessages(coach.id, [...historyWithUser, errMsg]);
       return null;
     } finally {
@@ -334,6 +352,22 @@ export default function CoachPage() {
 
   // Back-compat alias — mic button and older bundles reference toggleVoice
   const toggleVoice = toggleVoiceSession;
+
+  const isVoiceBusy =
+    voiceState === VOICE_SESSION_STATE.SPEAKING
+    || voiceState === VOICE_SESSION_STATE.PROCESSING
+    || isSpeaking();
+
+  const handleMicPress = useCallback(() => {
+    if (isVoiceBusy || (voiceSessionActive && loading)) {
+      pauseCoachSpeech();
+      sendingRef.current = false;
+      setLoading(false);
+      return;
+    }
+
+    toggleVoiceSession();
+  }, [isVoiceBusy, voiceSessionActive, loading, pauseCoachSpeech, toggleVoiceSession]);
 
   useEffect(() => () => stopVoiceSession(), [stopVoiceSession]);
 
@@ -456,7 +490,7 @@ export default function CoachPage() {
                       {unlocked && <p className="text-[11px] italic mt-0.5" style={{ color: `${c.color}80` }}>"{c.tagline}"</p>}
                     </div>
                     {unlocked && (
-                      <button type="button" onClick={() => { setCoach(c); setView('chat'); }}
+                      <button type="button" onClick={() => { void handleSelectCoach(c); }}
                         className="px-3 py-1.5 rounded-[10px] font-bold text-[11px] transition-all active:scale-95"
                         style={{ background: coach.id === c.id ? c.color : `${c.color}20`, color: coach.id === c.id ? '#000' : c.color }}>
                         {coach.id === c.id ? 'Active' : 'Select'}
@@ -715,17 +749,25 @@ export default function CoachPage() {
                 Pause
               </button>
             )}
-            <button type="button" onClick={toggleVoice}
-              aria-label={voiceSessionActive ? 'End voice session' : 'Start voice session'}
+            <button type="button" onClick={handleMicPress}
+              aria-label={
+                isVoiceBusy
+                  ? 'Interrupt coach'
+                  : voiceSessionActive
+                    ? 'End voice session'
+                    : 'Start voice session'
+              }
               aria-pressed={voiceSessionActive}
               className="w-13 h-13 rounded-full flex items-center justify-center transition-all active:scale-90 flex-shrink-0"
               style={{
                 width: 52, height: 52,
                 background: voiceSessionActive ? coach.color : `${coach.color}15`,
                 border: `2px solid ${coach.color}50`,
-                boxShadow: voiceSessionActive
-                  ? `0 0 0 6px ${coach.color}20, 0 0 0 12px ${coach.color}08, 0 0 28px ${coach.color}60`
-                  : `0 0 14px ${coach.color}20`,
+                boxShadow: isVoiceBusy
+                  ? `0 0 0 6px ${coach.color}35, 0 0 28px ${coach.color}70`
+                  : voiceSessionActive
+                    ? `0 0 0 6px ${coach.color}20, 0 0 0 12px ${coach.color}08, 0 0 28px ${coach.color}60`
+                    : `0 0 14px ${coach.color}20`,
               }}>
               <svg viewBox="0 0 24 24" fill="none" stroke={voiceSessionActive ? '#000' : coach.color}
                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
@@ -766,6 +808,11 @@ export default function CoachPage() {
                     ? { background: 'rgba(255,255,255,0.08)', borderRadius: '16px 16px 4px 16px' }
                     : { background: `${coach.color}10`, border: `1px solid ${coach.color}20`, borderRadius: '16px 16px 16px 4px' }}>
                   <p className="text-[13px] leading-relaxed text-white whitespace-pre-wrap break-words">{msg.text}</p>
+                  <span style={{ fontSize: 9, color: '#444', marginTop: 2, display: 'block' }}>
+                    {msg.timestamp
+                      ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                      : ''}
+                  </span>
                 </div>
               </div>
             ))}
