@@ -3,6 +3,10 @@ const TTS_ENDPOINT = 'https://texttospeech.googleapis.com/v1/text:synthesize';
 /** iOS Safari stops SpeechRecognition after the first session unless recreated. */
 export const IOS_SPEECH_RESTART_DELAY_MS = 300;
 
+export const IOS_SPEECH_HINT = 'Tap mic and speak clearly';
+
+let sharedAudioContext = null;
+
 export function isIOSDevice() {
   return typeof navigator !== 'undefined'
     && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -45,9 +49,60 @@ export function destroySpeechRecognition(recognition) {
  * Create a fresh SpeechRecognition instance.
  * iOS: non-continuous + caller restarts on `onend` after IOS_SPEECH_RESTART_DELAY_MS.
  */
+/** Resume/create AudioContext inside a user gesture (required on iOS Safari). */
+export async function resumeAudioContextOnUserGesture() {
+  if (typeof window === 'undefined') return null;
+
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return null;
+
+  if (!sharedAudioContext || sharedAudioContext.state === 'closed') {
+    sharedAudioContext = new AudioCtx();
+  }
+
+  if (sharedAudioContext.state === 'suspended') {
+    await sharedAudioContext.resume();
+  }
+
+  return sharedAudioContext;
+}
+
+/**
+ * Unlock mic + audio on tap (iOS blocks SpeechRecognition without a gesture chain).
+ */
+export async function prepareSpeechInputOnUserGesture() {
+  await resumeAudioContextOnUserGesture();
+
+  if (!navigator.mediaDevices?.getUserMedia) {
+    throw new Error('Microphone API unavailable');
+  }
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+    },
+  });
+
+  stream.getTracks().forEach(track => track.stop());
+}
+
+export function extractSpeechTranscript(event, { finalOnly = false } = {}) {
+  if (!event?.results?.length) return '';
+
+  let text = '';
+  for (let i = 0; i < event.results.length; i += 1) {
+    const result = event.results[i];
+    if (finalOnly && !result.isFinal) continue;
+    const chunk = result[0]?.transcript || '';
+    if (chunk) text = chunk;
+  }
+  return text.trim();
+}
+
 export function createSpeechRecognition({
   lang = 'en-US',
-  interimResults = true,
+  interimResults,
   continuous,
   onResult,
   onError,
@@ -56,10 +111,12 @@ export function createSpeechRecognition({
   const SR = getSpeechRecognitionClass();
   if (!SR) return null;
 
+  const ios = isIOSDevice();
   const recognition = new SR();
   recognition.lang = lang;
-  recognition.interimResults = interimResults;
-  recognition.continuous = continuous ?? !isIOSDevice();
+  recognition.interimResults = interimResults ?? !ios;
+  recognition.continuous = continuous ?? false;
+  recognition.maxAlternatives = 1;
 
   if (onResult) recognition.onresult = onResult;
   if (onError) recognition.onerror = onError;
@@ -184,6 +241,8 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
 
   stopCoachAudio();
   const playGeneration = playbackGeneration;
+
+  await resumeAudioContextOnUserGesture();
 
   const audio = new Audio(`data:audio/mp3;base64,${data.audioContent}`);
   coachAudioRef.current = audio;
