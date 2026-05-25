@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { askGeminiChat } from '../../lib/gemini';
 import {
   buildCoachSystemPrompt,
+  buildProfileContext,
   sanitizeCoachResponse,
   sanitizeTranscript,
   toGeminiContents,
@@ -12,45 +13,49 @@ import {
   clearSpeechRecognitionRestart,
   destroySpeechRecognition,
   extractSpeechTranscript,
+  IOS_SPEECH_HINT,
   isIOSDevice,
   isSpeechRecognitionSupported,
+  prepareSpeechInputOnUserGesture,
+  resumeAudioContextOnUserGesture,
   scheduleSpeechRecognitionRestart,
   createSpeechRecognition,
   stopCoachAudio,
   playCoachAudio,
 } from '../../lib/voice';
 
+const TTS_POST_END_DELAY_MS = 500;
+const WELCOME_TRIGGER =
+  '[VOICE_SESSION_START] The athlete just opened voice chat. Greet them by first name. Ask only today energy and mood. Max 3 sentences. Plain spoken text.';
+
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
   const [status, setStatus] = useState('idle');
   const [transcript, setTranscript] = useState('');
-  const [textInput, setTextInput] = useState('');
   const [coachReply, setCoachReply] = useState('');
+  const [listenHint, setListenHint] = useState('');
   const [conversation, setConversation] = useState([]);
   const recognitionRef = useRef(null);
   const restartTimerRef = useRef(null);
+  const postTtsTimerRef = useRef(null);
+  const isSpeakingRef = useRef(false);
   const isOpenRef = useRef(isOpen);
   const listeningActiveRef = useRef(false);
+  const welcomeRanRef = useRef(false);
+  const sessionTranscriptRef = useRef('');
+  const iosSubmittedRef = useRef(false);
   const statusRef = useRef(status);
   const conversationRef = useRef(conversation);
-  const textInputRef = useRef(null);
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
   const ios = isIOSDevice();
 
-  const statusLabels = ios
-    ? {
-        idle: 'Type a message below',
-        listening: 'Listening...',
-        thinking: 'Coach is thinking...',
-        speaking: `${coach.name} is speaking...`,
-      }
-    : {
-        idle: 'Tap to speak',
-        listening: 'Listening...',
-        thinking: 'Coach is thinking...',
-        speaking: `${coach.name} is speaking...`,
-      };
+  const statusLabels = {
+    idle: ios ? 'Tap mic to record' : 'Tap to speak',
+    listening: 'Listening...',
+    thinking: 'Coach is thinking...',
+    speaking: `${coach.name} is speaking...`,
+  };
 
   const statusColors = {
     idle: 'bg-[#1a1a1a] border-[#2a2a2a]',
@@ -69,6 +74,13 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     conversationRef.current = conversation;
   }, [conversation]);
 
+  const clearPostTtsTimer = () => {
+    if (postTtsTimerRef.current) {
+      window.clearTimeout(postTtsTimerRef.current);
+      postTtsTimerRef.current = null;
+    }
+  };
+
   const clearRestartTimer = () => {
     if (restartTimerRef.current) {
       clearSpeechRecognitionRestart(restartTimerRef.current);
@@ -81,9 +93,51 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     recognitionRef.current = null;
   };
 
+  /** Stop recognition immediately — abort on iOS, destroy instance. */
+  const haltRecognitionForTTS = () => {
+    listeningActiveRef.current = false;
+    clearRestartTimer();
+    destroyCurrentRecognition();
+  };
+
+  const canAcceptSpeechInput = () =>
+    !isSpeakingRef.current
+    && statusRef.current !== 'thinking'
+    && statusRef.current !== 'speaking';
+
+  const onCoachTTSStart = () => {
+    isSpeakingRef.current = true;
+    haltRecognitionForTTS();
+  };
+
+  const enableMicAfterTTS = () => {
+    clearPostTtsTimer();
+    postTtsTimerRef.current = window.setTimeout(() => {
+      postTtsTimerRef.current = null;
+      isSpeakingRef.current = false;
+
+      if (!isOpenRef.current) return;
+
+      setStatus('idle');
+
+      if (ios) {
+        destroyCurrentRecognition();
+        return;
+      }
+
+      if (isSpeechRecognitionSupported()) {
+        void startListening();
+      }
+    }, TTS_POST_END_DELAY_MS);
+  };
+
   const stopVoiceSession = () => {
     clearRestartTimer();
+    clearPostTtsTimer();
     listeningActiveRef.current = false;
+    isSpeakingRef.current = false;
+    iosSubmittedRef.current = false;
+    sessionTranscriptRef.current = '';
     destroyCurrentRecognition();
     stopCoachAudio();
   };
@@ -93,16 +147,103 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     setStatus('idle');
   };
 
-  const handleUserSpeech = async text => {
-    const cleanText = sanitizeTranscript(String(text || '').trim());
+  const getProfileContext = () =>
+    buildProfileContext(profile, profile?.session_duration, profile?.location, []);
+
+  const speakCoachReply = async text => {
+    const reply = String(text || '').trim();
+    if (!reply) return;
+
+    onCoachTTSStart();
+    setCoachReply(reply);
+    setStatus('speaking');
+
+    try {
+      await resumeAudioContextOnUserGesture();
+      await playCoachAudio(reply, coachId, {
+        onEnd: enableMicAfterTTS,
+      });
+    } catch (error) {
+      console.error('Coach TTS error:', error);
+      isSpeakingRef.current = false;
+      setStatus('idle');
+      destroyCurrentRecognition();
+    }
+  };
+
+  const fetchCoachReply = async historyMessages => {
+    const systemPrompt = buildCoachSystemPrompt(
+      coach.personality,
+      { name: coach.name },
+      historyMessages,
+      getProfileContext(),
+    );
+
+    return sanitizeCoachResponse(
+      await askGeminiChat({
+        messages: toGeminiContents(historyMessages),
+        systemPrompt,
+      }),
+      coach.name,
+    );
+  };
+
+  const runAutoWelcome = async () => {
+    if (welcomeRanRef.current || !isOpenRef.current) return;
+    welcomeRanRef.current = true;
+
+    setStatus('thinking');
+    setListenHint('');
+    haltRecognitionForTTS();
+
+    try {
+      const response = await fetchCoachReply([
+        { role: 'user', text: WELCOME_TRIGGER },
+      ]);
+
+      const coachMsg = { role: 'coach', content: response };
+      setConversation([coachMsg]);
+      await speakCoachReply(response);
+    } catch (error) {
+      console.error('Auto welcome failed:', error);
+      isSpeakingRef.current = false;
+      setStatus('idle');
+    }
+  };
+
+  const finishIOSRecording = async rawText => {
+    if (iosSubmittedRef.current || isSpeakingRef.current) return;
+    iosSubmittedRef.current = true;
+    listeningActiveRef.current = false;
+    destroyCurrentRecognition();
+
+    const cleanText = sanitizeTranscript(String(rawText || '').trim());
+    sessionTranscriptRef.current = '';
+
     if (!cleanText) {
       setStatus('idle');
+      showListenHint();
       return;
     }
 
+    clearListenHint();
+    setTranscript(cleanText);
+    await handleUserSpeech(cleanText);
+  };
+
+  const handleUserSpeech = async text => {
+    if (isSpeakingRef.current) return;
+
+    const cleanText = sanitizeTranscript(String(text || '').trim());
+    if (!cleanText) {
+      setStatus('idle');
+      if (ios) showListenHint();
+      return;
+    }
+
+    haltRecognitionForTTS();
     setStatus('thinking');
     setCoachReply('');
-    if (ios) setTextInput('');
 
     const userMsg = { role: 'user', content: cleanText };
     const newConversation = [...conversationRef.current, userMsg];
@@ -114,62 +255,75 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         text: m.content,
       }));
 
-      const systemPrompt = buildCoachSystemPrompt(
-        coach.personality,
-        { name: coach.name },
-        historyMessages,
-        `Name: ${profile?.display_name || 'Athlete'}`,
-      );
-
-      const response = sanitizeCoachResponse(
-        await askGeminiChat({
-          messages: toGeminiContents(historyMessages),
-          systemPrompt,
-        }),
-        coach.name,
-      );
+      const response = await fetchCoachReply(historyMessages);
       const coachMsg = { role: 'coach', content: response };
 
       setConversation(prev => [...prev, coachMsg]);
-      setCoachReply(response);
-      setStatus('speaking');
-
-      await playCoachAudio(response, coachId, {
-        onEnd: () => {
-          setStatus('idle');
-          if (ios) {
-            textInputRef.current?.focus();
-            return;
-          }
-          restartTimerRef.current = scheduleSpeechRecognitionRestart(() => {
-            restartTimerRef.current = null;
-            if (isOpenRef.current) void startListening();
-          }, 800);
-        },
-      });
+      await speakCoachReply(response);
     } catch (error) {
       console.error('Voice conversation error:', error);
+      isSpeakingRef.current = false;
       setStatus('idle');
     }
   };
 
-  const handleSendText = () => {
-    if (isBusy) return;
-    const message = textInput.trim();
-    if (!message) return;
-    setTranscript(message);
-    void handleUserSpeech(message);
-  };
+  const beginIOSRecordingSession = () => {
+    if (!listeningActiveRef.current || !isOpenRef.current || !canAcceptSpeechInput()) return;
 
-  const handleTextKeyDown = event => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      handleSendText();
+    destroyCurrentRecognition();
+    iosSubmittedRef.current = false;
+    sessionTranscriptRef.current = '';
+
+    const recognition = createSpeechRecognition({
+      lang: 'en-US',
+      interimResults: false,
+      continuous: false,
+      onResult: event => {
+        if (!canAcceptSpeechInput()) return;
+
+        const text = extractSpeechTranscript(event);
+        if (!text) return;
+        sessionTranscriptRef.current = text;
+        setTranscript(text);
+      },
+      onError: event => {
+        if (event?.error === 'aborted' || isSpeakingRef.current) return;
+        listeningActiveRef.current = false;
+        destroyCurrentRecognition();
+        setStatus('idle');
+        showListenHint();
+      },
+      onEnd: () => {
+        recognitionRef.current = null;
+        if (isSpeakingRef.current || iosSubmittedRef.current || !listeningActiveRef.current) {
+          return;
+        }
+        void finishIOSRecording(sessionTranscriptRef.current);
+      },
+    });
+
+    if (!recognition) {
+      listeningActiveRef.current = false;
+      setStatus('idle');
+      showListenHint();
+      return;
+    }
+
+    recognitionRef.current = recognition;
+
+    try {
+      recognition.start();
+    } catch (error) {
+      console.error('iOS speech recognition start failed:', error);
+      listeningActiveRef.current = false;
+      destroyCurrentRecognition();
+      setStatus('idle');
+      showListenHint();
     }
   };
 
   const beginDesktopRecognitionSession = () => {
-    if (!listeningActiveRef.current || !isOpenRef.current) return;
+    if (!listeningActiveRef.current || !isOpenRef.current || !canAcceptSpeechInput()) return;
 
     destroyCurrentRecognition();
 
@@ -180,6 +334,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       interimResults: true,
       continuous: true,
       onResult: event => {
+        if (!canAcceptSpeechInput()) return;
+
         const text = extractSpeechTranscript(event);
         setTranscript(text);
 
@@ -191,7 +347,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
           void handleUserSpeech(text);
         }
       },
-      onError: () => {
+      onError: event => {
+        if (event?.error === 'aborted' || isSpeakingRef.current) return;
         if (!heardFinalResult && listeningActiveRef.current) {
           listeningActiveRef.current = false;
           setStatus('idle');
@@ -202,8 +359,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       onEnd: () => {
         recognitionRef.current = null;
 
-        if (heardFinalResult || !listeningActiveRef.current) {
-          if (!heardFinalResult) {
+        if (isSpeakingRef.current || heardFinalResult || !listeningActiveRef.current) {
+          if (!heardFinalResult && !isSpeakingRef.current) {
             listeningActiveRef.current = false;
             setStatus('idle');
           }
@@ -213,7 +370,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         if (statusRef.current === 'listening') {
           restartTimerRef.current = scheduleSpeechRecognitionRestart(() => {
             restartTimerRef.current = null;
-            if (listeningActiveRef.current && statusRef.current === 'listening') {
+            if (listeningActiveRef.current && canAcceptSpeechInput()) {
               beginDesktopRecognitionSession();
             }
           });
@@ -240,7 +397,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   };
 
   const startListening = async () => {
-    if (ios) return;
+    if (!canAcceptSpeechInput()) return;
 
     if (!isSpeechRecognitionSupported()) {
       window.alert('Voice not supported. Please use Chrome or Safari.');
@@ -248,19 +405,40 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
 
     clearRestartTimer();
+    clearPostTtsTimer();
     destroyCurrentRecognition();
     stopCoachAudio();
 
     listeningActiveRef.current = true;
     setStatus('listening');
     setTranscript('');
+    clearListenHint();
+
+    if (ios) {
+      try {
+        await prepareSpeechInputOnUserGesture();
+        beginIOSRecordingSession();
+      } catch (error) {
+        console.error('iOS microphone unlock failed:', error);
+        listeningActiveRef.current = false;
+        setStatus('idle');
+        showListenHint();
+      }
+      return;
+    }
 
     beginDesktopRecognitionSession();
   };
 
   const handleMicPress = () => {
+    if (isSpeakingRef.current || status === 'thinking' || status === 'speaking') return;
+
     if (status === 'listening') {
-      handleStop();
+      if (ios) {
+        void finishIOSRecording(sessionTranscriptRef.current);
+      } else {
+        handleStop();
+      }
       return;
     }
 
@@ -269,14 +447,22 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
   };
 
+  const showListenHint = (message = IOS_SPEECH_HINT) => {
+    setListenHint(message);
+  };
+
+  const clearListenHint = () => setListenHint('');
+
   useEffect(() => {
     isOpenRef.current = isOpen;
-    if (!isOpen) stopVoiceSession();
-    if (isOpen && ios) {
-      const timer = window.setTimeout(() => textInputRef.current?.focus(), 300);
-      return () => window.clearTimeout(timer);
+    if (!isOpen) {
+      stopVoiceSession();
+      welcomeRanRef.current = false;
+      return;
     }
-  }, [isOpen, ios]);
+
+    void runAutoWelcome();
+  }, [isOpen]);
 
   useEffect(() => () => stopVoiceSession(), []);
 
@@ -297,7 +483,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       </button>
 
       <div className="relative mb-6 flex items-center justify-center">
-        {!ios && status === 'listening' && (
+        {status === 'listening' && (
           <>
             <span className="absolute h-32 w-32 animate-ping rounded-full bg-red-500/30" />
             <span className="absolute h-28 w-28 animate-pulse rounded-full border-4 border-red-500 bg-red-500/25" />
@@ -319,21 +505,15 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       </div>
 
       <p className="mb-1 text-xl font-bold text-white">{coach.name}</p>
-      <p className="mb-4 text-sm text-gray-400">{coach.title}</p>
-
-      {ios && (
-        <p className="mb-6 max-w-sm text-center text-sm text-gray-500">
-          Voice input coming soon — type your message
-        </p>
-      )}
+      <p className="mb-8 text-sm text-gray-400">{coach.title}</p>
 
       <div className={`mb-4 rounded-full border px-4 py-2 transition-all ${statusColors[status]}`}>
-        <p className={`text-sm font-medium ${status === 'idle' ? 'text-gray-400' : 'text-white'}`}>
+        <p className={`text-sm font-medium ${status === 'idle' && !listenHint ? 'text-gray-400' : 'text-white'}`}>
           {statusLabels[status]}
         </p>
       </div>
 
-      {!ios && status === 'listening' && (
+      {status === 'listening' && (
         <div className="relative mb-4 flex h-16 w-16 items-center justify-center">
           <span className="absolute inset-0 animate-ping rounded-full bg-red-500/40" />
           <span className="absolute inset-1 animate-pulse rounded-full border-2 border-red-400 bg-red-500/30" />
@@ -341,8 +521,11 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         </div>
       )}
 
-      <div className="mb-6 min-h-16 w-full max-w-sm text-center">
-        {!ios && status === 'listening' && transcript && (
+      <div className="mb-8 min-h-16 w-full max-w-sm text-center">
+        {listenHint && status === 'idle' && (
+          <p className="text-sm text-red-400">{listenHint}</p>
+        )}
+        {status === 'listening' && transcript && (
           <p className="text-sm italic text-white">&quot;{transcript}&quot;</p>
         )}
         {(status === 'thinking' || status === 'speaking') && coachReply && (
@@ -350,59 +533,38 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         )}
       </div>
 
-      {ios ? (
-        <div className="w-full max-w-sm">
-          <div className="flex items-end gap-2 rounded-2xl border border-[#2a2a2a] bg-[#141414] p-2 shadow-inner">
-            <textarea
-              ref={textInputRef}
-              value={textInput}
-              onChange={event => setTextInput(event.target.value)}
-              onKeyDown={handleTextKeyDown}
-              placeholder="Message your coach..."
-              rows={1}
-              disabled={isBusy}
-              enterKeyHint="send"
-              autoComplete="off"
-              autoCorrect="on"
-              className="max-h-28 min-h-[44px] flex-1 resize-none rounded-xl bg-transparent px-3 py-2.5 text-base text-white placeholder:text-gray-500 focus:outline-none disabled:opacity-50"
-              style={{ WebkitAppearance: 'none' }}
-            />
-            <button
-              type="button"
-              onClick={handleSendText}
-              disabled={isBusy || !textInput.trim()}
-              className="mb-0.5 flex h-11 min-w-[44px] shrink-0 items-center justify-center rounded-xl bg-[#CCFF00] px-4 text-sm font-semibold text-black transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
-              aria-label="Send message"
-            >
-              Send
-            </button>
-          </div>
-        </div>
-      ) : (
-        <>
-          <button
-            type="button"
-            onClick={handleMicPress}
-            className={`relative flex h-20 w-20 items-center justify-center rounded-full text-3xl transition-all duration-300 ${
-              status === 'idle'
-                ? 'bg-[#CCFF00] text-black'
-                : status === 'listening'
-                  ? 'bg-red-500 text-white'
-                  : 'bg-[#2a2a2a] text-gray-400'
-            }`}
-            aria-label={status === 'idle' ? 'Tap to record your message' : 'Stop recording'}
-          >
-            {status === 'listening' && (
-              <span className="absolute inset-0 animate-ping rounded-full bg-red-400/50" />
-            )}
-            <span className="relative">{status === 'idle' ? '🎤' : status === 'listening' ? '⏹' : '⏳'}</span>
-          </button>
+      <button
+        type="button"
+        onClick={handleMicPress}
+        disabled={isBusy}
+        className={`relative flex h-20 w-20 items-center justify-center rounded-full text-3xl transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40 ${
+          status === 'idle'
+            ? 'bg-[#CCFF00] text-black'
+            : status === 'listening'
+              ? 'bg-red-500 text-white'
+              : 'bg-[#2a2a2a] text-gray-400'
+        }`}
+        aria-label={
+          isBusy
+            ? 'Coach is speaking'
+            : status === 'idle'
+              ? 'Tap to record your message'
+              : 'Stop recording'
+        }
+      >
+        {status === 'listening' && (
+          <span className="absolute inset-0 animate-ping rounded-full bg-red-400/50" />
+        )}
+        <span className="relative">{status === 'idle' ? '🎤' : status === 'listening' ? '⏹' : '⏳'}</span>
+      </button>
 
-          <p className="mt-4 text-xs text-gray-600">
-            {status === 'idle' ? 'Tap to start' : 'Tap to stop'}
-          </p>
-        </>
-      )}
+      <p className="mt-4 text-xs text-gray-600">
+        {isBusy
+          ? 'Listen to your coach...'
+          : status === 'idle'
+            ? (ios ? 'Tap mic, speak, then wait' : 'Tap to start')
+            : (ios ? 'Tap stop when finished' : 'Tap to stop')}
+      </p>
 
       {conversation.length > 0 && (
         <div className="mt-6 max-h-32 w-full max-w-sm space-y-2 overflow-y-auto">
