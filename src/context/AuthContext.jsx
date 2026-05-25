@@ -84,6 +84,23 @@ export const AuthProvider = ({ children }) => {
     setProfile(data);
   }, [loadProfile]);
 
+  const signOut = useCallback(async () => {
+    if (!supabase) {
+      setUser(null);
+      setProfile(null);
+      return;
+    }
+
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Sign out failed:', error);
+      throw error;
+    }
+
+    setUser(null);
+    setProfile(null);
+  }, []);
+
   const updateCoachPersona = useCallback(async persona => {
     if (!supabase || !user?.id) return { error: null };
 
@@ -136,10 +153,11 @@ export const AuthProvider = ({ children }) => {
       profile,
       loading,
       setProfile,
+      signOut,
       updateCoachPersona,
       refreshProfile: () => loadProfile(user?.id),
     }),
-    [user, profile, loading, loadProfile, updateCoachPersona],
+    [user, profile, loading, loadProfile, signOut, updateCoachPersona],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

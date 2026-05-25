@@ -222,7 +222,7 @@ const DEFAULT = {
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { user, profile, setProfile } = useAuth();
+  const { user, profile, setProfile, signOut } = useAuth();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(DEFAULT);
   const [isLoading, setIsLoading] = useState(false);
@@ -589,15 +589,28 @@ export default function ProfilePage() {
 
   return (
     <main style={{ minHeight: '100vh', background: '#0A0A0A', color: '#fff', padding: '52px 20px 110px', fontFamily: 'inherit' }}>
-      {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 10, color: '#CCFF00', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}>Profile</div>
-        <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-0.04em', marginTop: 4, textTransform: 'uppercase' }}>
-          Athlete Setup
-        </h1>
-        <p style={{ fontSize: 13, color: '#555', marginTop: 4 }}>
-          Your coach reads this data — no more repeated questions.
-        </p>
+      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <div style={{ fontSize: 10, color: '#CCFF00', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}>Profile</div>
+          <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-0.04em', marginTop: 4, textTransform: 'uppercase' }}>
+            Athlete Setup
+          </h1>
+          <p style={{ fontSize: 13, color: '#555', marginTop: 4 }}>
+            Your coach reads this data — no more repeated questions.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={async () => { await signOut(); navigate('/auth', { replace: true }); }}
+          style={{
+            background: 'transparent', border: '0.5px solid #2a2a2a', borderRadius: 10,
+            color: '#555', fontSize: 11, padding: '8px 12px', cursor: 'pointer',
+            fontFamily: 'inherit', fontWeight: 600, letterSpacing: '0.05em',
+            textTransform: 'uppercase', marginTop: 4,
+          }}
+        >
+          Log out
+        </button>
       </div>
 
       {/* Progress Bar */}
