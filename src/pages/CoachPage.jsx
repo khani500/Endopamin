@@ -165,7 +165,9 @@ export default function CoachPage() {
     setCoachMessages,
     getCoachMessages,
   } = useCoachSession();
-  const [coach, setCoach] = useState(() => getCoachById(profile?.coach_persona));
+  const [coach, setCoach] = useState(() =>
+    getCoachById(profile?.coach_persona) || getCoachById('elias'),
+  );
   const [view, setView] = useState('chat');
   const [location, setLocation] = useState('gym');
   const [equipment, setEquipment] = useState(['barbell','dumbbell','bench','squat_rack','pull_up']);
@@ -186,10 +188,11 @@ export default function CoachPage() {
   const userXp = profile?.dopa_xp || 0;
 
   useEffect(() => {
-    if (!profile?.coach_persona) return;
-    const profileCoach = getCoachById(profile.coach_persona);
-    setCoach(prev => (prev.id === profileCoach.id ? prev : profileCoach));
-  }, [profile?.coach_persona]);
+    const personaId = profile?.coach_persona;
+    if (!personaId) return;
+    const profileCoach = getCoachById(personaId);
+    if (profileCoach && profileCoach.id !== coach.id) setCoach(profileCoach);
+  }, [profile?.coach_persona, coach.id]);
 
   const handleSelectCoach = useCallback(async selectedCoach => {
     setCoach(selectedCoach);

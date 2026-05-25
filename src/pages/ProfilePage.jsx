@@ -320,10 +320,14 @@ export default function ProfilePage() {
     }, LOADING_DELAY_MS);
   };
 
-  const next = () => {
+  const next = async () => {
     if (isLoading) return;
-    if (step < STEPS.length - 1) setStep(s => s + 1);
-    else buildPlan();
+    if (step < STEPS.length - 1) {
+      void persistProfile();
+      setStep(s => s + 1);
+    } else {
+      buildPlan();
+    }
   };
   const back = () => {
     if (isLoading) return;

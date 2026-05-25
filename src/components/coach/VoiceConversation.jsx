@@ -16,6 +16,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const [conversation, setConversation] = useState([]);
   const sessionRef = useRef(null);
   const welcomeSentRef = useRef(false);
+  const isSpeakingRef = useRef(false);
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
 
@@ -65,6 +66,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       },
       onStatusChange: s => {
         setStatus(s);
+        isSpeakingRef.current = s === 'speaking' || s === 'thinking';
 
         if (s === 'ready' && !welcomeSentRef.current) {
           welcomeSentRef.current = true;
@@ -95,6 +97,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   };
 
   const stopSession = () => {
+    isSpeakingRef.current = false;
     sessionRef.current?.disconnect();
     sessionRef.current = null;
     welcomeSentRef.current = false;
@@ -104,7 +107,11 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   };
 
   const handleMicPress = () => {
-    if (isBusy) return;
+    if (status === 'thinking' || status === 'speaking' || isSpeakingRef.current) {
+      stopSession();
+      setStatus('idle');
+      return;
+    }
 
     if (canStartMic) {
       void startSession();
@@ -199,8 +206,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       <button
         type="button"
         onClick={handleMicPress}
-        disabled={isBusy}
-        className={`relative flex h-20 w-20 items-center justify-center rounded-full text-3xl transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40 ${
+        className={`relative flex h-20 w-20 items-center justify-center rounded-full text-3xl transition-all duration-300 ${
           canStartMic
             ? 'bg-[#CCFF00] text-black'
             : status === 'listening'
