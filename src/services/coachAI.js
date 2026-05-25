@@ -15,7 +15,8 @@ function buildProfileContext(profile = {}, name) {
   const {
     goal, experience, gender, streak_count, dopa_level,
     energy_level, days_per_week, equipment, age, weight, height,
-    coach_persona, created_at
+    injuries, session_duration, location, diet,
+    coach_persona, created_at,
   } = profile;
 
   const daysSinceJoined = created_at
@@ -23,22 +24,48 @@ function buildProfileContext(profile = {}, name) {
     : 0;
 
   return `
-ATHLETE PROFILE:
+ATHLETE PROFILE (confirmed facts — do not ask again):
 - Name: ${name}
 - Goal: ${goal || 'general fitness'}
-- Experience level: ${experience || 'intermediate'}
+- Experience: ${experience || 'intermediate'}
+- Injuries / restrictions: ${injuries || 'none reported'}
+- Session duration: ${session_duration || 45} min
+- Location: ${location || 'not specified'}
+- Equipment: ${Array.isArray(equipment) ? equipment.join(', ') : equipment || 'full gym'}
+- Diet: ${diet || 'none specified'}
 - Age: ${age || 'unknown'}
-- Weight: ${weight ? weight + 'kg' : 'unknown'}
-- Height: ${height ? height + 'cm' : 'unknown'}
+- Weight: ${weight ? `${weight}kg` : 'unknown'}
+- Height: ${height ? `${height}cm` : 'unknown'}
 - Gender: ${gender || 'not specified'}
 - Training days/week: ${days_per_week || 3}
-- Equipment: ${Array.isArray(equipment) ? equipment.join(', ') : equipment || 'full gym'}
-- Current streak: ${streak_count || 0} days
+- Streak: ${streak_count || 0} days
 - Endo level: ${dopa_level || 1}
-- Energy today (1-5): ${energy_level || 'unknown'}
 - Days since joined: ${daysSinceJoined}
 `.trim();
 }
+
+/** Core chat instructions — merged into buildCoachSystemPrompt via chatWithCoach. */
+export const COACH_CHAT_INSTRUCTIONS = `COACH VOICE — HOW TO REPLY:
+
+LENGTH: Maximum 3 to 4 short sentences. Never write long paragraphs or full workout plans unless the user explicitly asks for a full plan.
+
+PERSONALITY: Motivational, short, punchy. Sound like a real coach in the gym — not a textbook, blog post, or AI essay.
+
+USE PROFILE: Read goal, experience, injuries, session_duration, equipment, and location from ATHLETE PROFILE. They are already confirmed. Never ask for information that is already in the profile.
+
+ONLY ASK (if missing from the user's message): Today's energy level and mood or how they feel today. Nothing else.
+
+NO MARKDOWN: Plain text only. No asterisks, hashtags, bullets, numbered lists, or special formatting. TTS will read your reply aloud.
+
+STYLE EXAMPLE: "Good energy Taher. Let's hit chest today — 4 sets bench press, then cable flys. You ready?"
+
+RULES:
+- Use the athlete's first name naturally when it fits.
+- Give today's direction in one line: muscle group or session type plus 2 to 3 key exercises with sets — not a full program.
+- Skip warm-ups, cooldowns, and long exercise lists unless the user asks for a full workout.
+- Never open with filler: no "Great question", "Absolutely", "Of course".
+- If energy or mood today is unclear, ask in one short sentence — then stop and wait.
+- If the user explicitly asks for a full workout plan or detailed program, you may go longer — still plain text, no markdown.`;
 
 // Smart monthly assessment trigger
 function shouldTriggerAssessment(profile = {}) {
@@ -103,16 +130,7 @@ export const chatWithCoach = async (coachId, userName, message, conversationHist
 
 ${assessmentNote}
 
-INSTRUCTIONS:
-- Professional Coach tone: direct, action-oriented, no small talk or filler
-- ATHLETE CONTEXT is confirmed — never re-ask medical history, surgery, goals, or profile details already listed
-- Plain spoken text only (TTS): no Markdown, asterisks, bullets, or special formatting characters
-- If the user asks HOW to do something, teach with exact technique cues in short sentences
-- Always give specific numbers (sets, reps, rest, RPE) in spoken form
-- NEVER say "Great question!", "Of course!", "Absolutely!" or any filler opening
-- Reference profile facts as given; only ask today's energy, sleep, or new pain if missing
-- Keep response under 150 words unless prescribing a full workout plan
-- If asked for a workout plan, give a complete plan with sets, reps, RPE and progression`;
+${COACH_CHAT_INSTRUCTIONS}`;
 
   const systemPrompt = buildCoachSystemPrompt(
     basePrompt,
@@ -151,12 +169,12 @@ ${name} just checked in:
 - Energy level: ${energy}/5
 - Sleep quality: ${sleep ? 'good' : 'poor'}
 
-Give a personalized response AND specific workout recommendation:
-- Energy 1-2 or poor sleep: mobility/recovery protocol with exact movements
-- Energy 3: moderate workout with exact exercises
-- Energy 4-5 good sleep: performance session with exact protocol
+Give a punchy coach reply in 3 to 4 sentences max:
+- Energy 1-2 or poor sleep: recovery focus plus 1 to 2 light movements
+- Energy 3: moderate session with 2 key exercises and sets
+- Energy 4-5: performance session with 2 to 3 exercises and sets
 
-Keep it under 100 words. Be specific, not generic.
+Plain text only. No markdown. Use profile goal, injuries, and session duration. Do not ask profile questions.
 `.trim();
 
   try {
