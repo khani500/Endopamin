@@ -1,149 +1,234 @@
-let currentAudio = null;
+const TTS_ENDPOINT = 'https://texttospeech.googleapis.com/v1/text:synthesize';
 
-const BEST_VOICES = {
-  elias: ['Daniel', 'Alex', 'Oliver', 'Arthur'],
-  maya: ['Samantha', 'Victoria', 'Karen', 'Moira'],
-  rex: ['Daniel', 'Fred', 'Gordon'],
-};
+/** Shared HTML5 Audio ref — stop/play targets this everywhere (mic, VAD, pause). */
+export const coachAudioRef = { current: null };
 
-const WEB_SPEECH_PROFILES = {
-  elias: { rate: 0.82, pitch: 0.88 },
-  maya: { rate: 1.18, pitch: 1.15 },
-  rex: { rate: 0.95, pitch: 0.72 },
-};
+let playbackGeneration = 0;
 
-const GOOGLE_VOICES = {
+const DEFAULT_NEURAL_VOICE = 'en-US-Neural2-F';
+
+const COACH_NEURAL_VOICES = {
+  aria: 'en-US-Neural2-F',
+  zara: 'en-US-Neural2-F',
+  nova: 'en-US-Neural2-F',
+  blaze: 'en-US-Neural2-J',
+  kane: 'en-US-Neural2-D',
   elias: 'en-US-Neural2-D',
   maya: 'en-US-Neural2-F',
   rex: 'en-US-Neural2-J',
 };
 
-export const speak = (text, coachId = 'elias', onEnd = null) => {
-  return new Promise(resolve => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      if (onEnd) onEnd();
-      resolve();
-      return;
+function getTtsApiKey() {
+  return import.meta.env.VITE_GOOGLE_TTS_API_KEY?.trim()
+    || import.meta.env.VITE_GEMINI_API_KEY?.trim()
+    || '';
+}
+
+function getCoachVoiceName(coachId) {
+  return COACH_NEURAL_VOICES[coachId] || DEFAULT_NEURAL_VOICE;
+}
+
+/** Immediately stop any coach audio (HTML5 + browser TTS fallback). */
+export function stopCoachAudio() {
+  playbackGeneration += 1;
+
+  const audio = coachAudioRef.current;
+  if (audio) {
+    try {
+      if (!audio.paused) audio.pause();
+      audio.currentTime = 0;
+    } catch {
+      // ignore
     }
-
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.volume = 1.0;
-
-    const trySpeak = () => {
-      const voices = window.speechSynthesis.getVoices();
-      const enUS = voices.filter(voice => voice.lang === 'en-US' || voice.lang === 'en_US');
-      const enAll = voices.filter(voice => voice.lang?.startsWith('en'));
-      const allEn = enUS.length > 0 ? enUS : enAll;
-      const preferredNames = BEST_VOICES[coachId] || BEST_VOICES.elias;
-      const selectedVoice =
-        preferredNames.map(name => allEn.find(voice => voice.name.includes(name))).find(Boolean) ||
-        allEn.find(voice => voice.name.includes('Male')) ||
-        allEn[0];
-
-      if (selectedVoice) utterance.voice = selectedVoice;
-
-      const profile = WEB_SPEECH_PROFILES[coachId] || WEB_SPEECH_PROFILES.elias;
-      utterance.rate = profile.rate;
-      utterance.pitch = profile.pitch;
-
-      utterance.onend = () => {
-        if (onEnd) onEnd();
-        resolve();
-      };
-      utterance.onerror = event => {
-        console.error('TTS:', event.error);
-        if (onEnd) onEnd();
-        resolve();
-      };
-
-      window.speechSynthesis.speak(utterance);
-
-      window.setTimeout(() => {
-        if (window.speechSynthesis.paused) window.speechSynthesis.resume();
-      }, 150);
-    };
-
-    const voices = window.speechSynthesis.getVoices();
-    if (voices.length > 0) {
-      trySpeak();
-    } else {
-      window.speechSynthesis.addEventListener('voiceschanged', trySpeak, { once: true });
-    }
-  });
-};
-
-export const speakWithGoogleTTS = async (text, coachId = 'elias', onEnd = null) => {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  if (!apiKey) return speak(text, coachId, onEnd);
-
-  try {
-    stopSpeaking();
-
-    const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        input: { text },
-        voice: {
-          languageCode: 'en-US',
-          name: GOOGLE_VOICES[coachId] || GOOGLE_VOICES.elias,
-        },
-        audioConfig: {
-          audioEncoding: 'MP3',
-          speakingRate: coachId === 'maya' ? 1.2 : coachId === 'rex' ? 0.9 : 1.0,
-          pitch: coachId === 'maya' ? 2.0 : coachId === 'rex' ? -4.0 : 0.0,
-        },
-      }),
-    });
-
-    const data = await response.json();
-    if (!response.ok || !data.audioContent) {
-      throw new Error(data.error?.message || 'Google TTS did not return audio.');
-    }
-
-    currentAudio = new Audio(`data:audio/mp3;base64,${data.audioContent}`);
-    return await new Promise(resolve => {
-      currentAudio.onended = () => {
-        currentAudio = null;
-        if (onEnd) onEnd();
-        resolve();
-      };
-      currentAudio.onerror = () => {
-        currentAudio = null;
-        resolve(speak(text, coachId, onEnd));
-      };
-      void currentAudio.play().catch(error => {
-        console.error('Audio playback error:', error);
-        currentAudio = null;
-        resolve(speak(text, coachId, onEnd));
-      });
-    });
-  } catch (error) {
-    console.error('Google TTS error:', error);
-    return speak(text, coachId, onEnd);
-  }
-};
-
-export const stopSpeaking = () => {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    currentAudio = null;
+    coachAudioRef.current = null;
   }
 
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }
-};
+}
+
+export const stopSpeaking = stopCoachAudio;
+
+/**
+ * Synthesize and play coach speech via Google Cloud TTS (Neural2).
+ * Always stops overlapping audio before fetching or playing a new clip.
+ */
+export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } = {}) {
+  const trimmed = String(text || '').trim();
+  if (!trimmed) return;
+
+  stopCoachAudio();
+
+  if (signal?.aborted) {
+    throw new DOMException('Aborted', 'AbortError');
+  }
+
+  const apiKey = getTtsApiKey();
+  if (!apiKey) {
+    console.warn('Google TTS API key missing — set VITE_GOOGLE_TTS_API_KEY in .env.local');
+    return;
+  }
+
+  const generation = playbackGeneration;
+
+  const response = await fetch(`${TTS_ENDPOINT}?key=${apiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      input: { text: trimmed },
+      voice: {
+        languageCode: 'en-US',
+        name: getCoachVoiceName(coachId),
+      },
+      audioConfig: {
+        audioEncoding: 'MP3',
+        speakingRate: 1.0,
+        pitch: 0.0,
+      },
+    }),
+    signal,
+  });
+
+  const data = await response.json();
+  if (!response.ok || !data.audioContent) {
+    throw new Error(data.error?.message || 'Google TTS did not return audio.');
+  }
+
+  if (signal?.aborted || generation !== playbackGeneration) {
+    throw new DOMException('Aborted', 'AbortError');
+  }
+
+  stopCoachAudio();
+  const playGeneration = playbackGeneration;
+
+  const audio = new Audio(`data:audio/mp3;base64,${data.audioContent}`);
+  coachAudioRef.current = audio;
+
+  return new Promise((resolve, reject) => {
+    const cleanup = () => {
+      signal?.removeEventListener('abort', onAbort);
+    };
+
+    const onAbort = () => {
+      stopCoachAudio();
+      cleanup();
+      reject(new DOMException('Aborted', 'AbortError'));
+    };
+
+    signal?.addEventListener('abort', onAbort, { once: true });
+
+    audio.onended = () => {
+      cleanup();
+      if (playGeneration !== playbackGeneration) {
+        resolve();
+        return;
+      }
+      if (coachAudioRef.current === audio) coachAudioRef.current = null;
+      onEnd?.();
+      resolve();
+    };
+
+    audio.onerror = () => {
+      cleanup();
+      if (coachAudioRef.current === audio) coachAudioRef.current = null;
+      reject(new Error('Coach audio playback failed.'));
+    };
+
+    void audio.play().catch(error => {
+      cleanup();
+      if (coachAudioRef.current === audio) coachAudioRef.current = null;
+      reject(error);
+    });
+  });
+}
+
+export const speak = playCoachAudio;
+export const speakWithGoogleTTS = playCoachAudio;
 
 export const isSpeaking = () => {
-  return Boolean(currentAudio) || (typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.speaking);
+  const audio = coachAudioRef.current;
+  return Boolean(audio && !audio.paused && !audio.ended)
+    || (typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.speaking);
 };
 
 export const getAvailableVoices = () => {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return [];
   return window.speechSynthesis.getVoices();
 };
+
+function extractReadySentence(spokenIndex, text) {
+  const slice = text.slice(spokenIndex);
+  const match = slice.match(/^[\s\S]*?[.!?](?:\s+|$)/);
+  if (!match) return null;
+  const sentence = match[0].trim();
+  if (!sentence) return null;
+  return {
+    sentence,
+    nextIndex: spokenIndex + match[0].length,
+  };
+}
+
+export function speakCancellable(text, coachId = 'aria', signal) {
+  if (!text?.trim()) return Promise.resolve();
+  if (signal?.aborted) {
+    return Promise.reject(new DOMException('Aborted', 'AbortError'));
+  }
+
+  return playCoachAudio(text, coachId, { signal }).catch(err => {
+    if (err?.name === 'AbortError') throw err;
+    console.error('speakCancellable error:', err);
+  });
+}
+
+/** Speak a streaming Gemini reply sentence-by-sentence with Google TTS. */
+export async function speakStreamingText(getText, coachId = 'aria', {
+  signal,
+  isComplete,
+  onSentenceStart,
+  onSpeechStart,
+  speakSentence,
+  pollMs = 45,
+} = {}) {
+  let spokenChars = 0;
+  let speechStarted = false;
+  const say = speakSentence
+    ? (sentence, abortSignal) => speakSentence(sentence, abortSignal)
+    : (sentence, abortSignal) => speakCancellable(sentence, coachId, abortSignal);
+
+  const speakReady = async () => {
+    const text = getText() || '';
+    while (true) {
+      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+
+      const ready = extractReadySentence(spokenChars, text);
+      if (!ready) break;
+
+      if (!speechStarted) {
+        speechStarted = true;
+        onSpeechStart?.();
+      }
+
+      spokenChars = ready.nextIndex;
+      onSentenceStart?.(ready.sentence, text);
+      await say(ready.sentence, signal);
+    }
+  };
+
+  while (!isComplete?.()) {
+    await speakReady();
+    await new Promise(resolve => window.setTimeout(resolve, pollMs));
+  }
+
+  await speakReady();
+
+  const tail = (getText() || '').slice(spokenChars).trim();
+  if (tail) {
+    if (!speechStarted) {
+      speechStarted = true;
+      onSpeechStart?.();
+    }
+    onSentenceStart?.(tail, getText());
+    await say(tail, signal);
+  }
+}

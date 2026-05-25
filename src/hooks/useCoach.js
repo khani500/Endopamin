@@ -50,8 +50,8 @@ export function useCoach() {
 
   const speak = useCallback((text, onEnd) => speakText(text, personaId, onEnd), [personaId]);
 
-  const chat = useCallback(async (text, history = []) => {
-    return chatWithCoach(personaId, profile?.display_name || 'Champion', text, history, profile?.gender);
+  const chat = useCallback(async (text, history = [], userName) => {
+   return chatWithCoach(personaId, userName || profile?.display_name || 'Champion', text, history, profile?.gender);
   }, [personaId, profile?.display_name, profile?.gender]);
 
   const setPersona = useCallback(async persona => {

@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import BottomNav from './components/BottomNav';
+import ProtectedRoute from './components/ProtectedRoute';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import Home from './pages/Home';
 import Progress from './pages/Progress';
 import GymPage from './pages/GymPage';
 import CoachPage from './pages/CoachPage';
 import ProfilePage from './pages/ProfilePage';
+import AuthPage from './pages/AuthPage';
 import OnboardingPage from './pages/OnboardingPage';
 import ExerciseLibrary from './pages/ExerciseLibrary';
 import WorkoutSession from './pages/WorkoutSession';
@@ -69,7 +71,9 @@ function App() {
   }, [user?.id, profile]);
 
   useEffect(() => {
-    if (!user?.id || profile?.job_type !== 'desk_worker') return undefined;
+    if (!user?.id) return undefined;
+    const isDeskWorker = !profile?.job_type || profile?.job_type === 'desk_worker' || profile?.job_type === 'mixed';
+    if (!isDeskWorker) return undefined;
     let intervalId;
     let cancelled = false;
 
@@ -101,20 +105,19 @@ function App() {
     <Router>
       <div className="mx-auto flex min-h-screen w-full max-w-[430px] flex-col bg-[#0A0A0A] pb-16">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/coach" element={<CoachPage />} />
-          <Route path="/log" element={<ErrorBoundary label="Nutrition route"><NutritionLayout /></ErrorBoundary>}>
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/coach" element={<ProtectedRoute><CoachPage /></ProtectedRoute>} />
+          <Route path="/log" element={<ProtectedRoute><ErrorBoundary label="Nutrition route"><NutritionLayout /></ErrorBoundary></ProtectedRoute>}>
             <Route index element={<ErrorBoundary label="Nutrition hub"><NutritionHub /></ErrorBoundary>} />
             <Route path="overview" element={<NutritionOverviewPage />} />
             <Route path="scan" element={<NutritionScanPage />} />
             <Route path="plan" element={<NutritionPlanPage />} />
             <Route path="coach" element={<NutritionCoachPage />} />
           </Route>
-          <Route path="/nutrition" element={<NutritionLayout />}>
-            <Route index element={<ErrorBoundary label="Nutrition hub"><NutritionHub /></ErrorBoundary>} />
-          </Route>
+          <Route path="/nutrition" element={<Navigate to="/log" replace />} />
           <Route path="/scan" element={<Navigate to="/log/scan" replace />} />
-          <Route path="/gym" element={<GymPage />} />
+          <Route path="/gym" element={<ProtectedRoute><GymPage /></ProtectedRoute>} />
           <Route path="/gym/desk-break/:breakId" element={<GymPage />} />
           <Route path="/desk-break/:id" element={<DeskBreakSession />} />
           <Route path="/exercises" element={<ExerciseLibrary />} />
@@ -123,8 +126,8 @@ function App() {
           <Route path="/plan/workout" element={<WorkoutSession planMode />} />
           <Route path="/plan/nutrition" element={<ErrorBoundary label="Nutrition plan shortcut"><NutritionHub /></ErrorBoundary>} />
           <Route path="/group" element={<GroupSession />} />
-          <Route path="/progress" element={<Progress />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/onboarding" element={<OnboardingPage />} />
         </Routes>
 

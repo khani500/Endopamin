@@ -1,2 +1,13 @@
-export { getAvailableVoices, isSpeaking, speak, speakWithGoogleTTS, stopSpeaking } from '../lib/voice';
+export {
+  coachAudioRef,
+  getAvailableVoices,
+  isSpeaking,
+  playCoachAudio,
+  speak,
+  speakCancellable,
+  speakStreamingText,
+  speakWithGoogleTTS,
+  stopCoachAudio,
+  stopSpeaking,
+} from '../lib/voice';
 

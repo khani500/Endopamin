@@ -1,10 +1,12 @@
-console.log('GEMINI KEY LOADED:', import.meta.env.VITE_GEMINI_API_KEY?.substring(0, 15));
-
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
 const GEMINI_MODEL = 'gemini-2.5-flash';
 
-function endpoint() {
-  return `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+function endpoint(action = 'generateContent') {
+  return `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:${action}?key=${GEMINI_API_KEY}`;
+}
+
+function streamEndpoint() {
+  return `${endpoint('streamGenerateContent')}&alt=sse`;
 }
 
 function assertConfigured() {
@@ -26,10 +28,17 @@ async function blobToBase64(blob) {
   });
 }
 
-async function generateContent({ prompt, systemPrompt = '' }) {
+const COACH_GENERATION_CONFIG = {
+  temperature: 0.1,
+  topP: 0.85,
+  topK: 20,
+  maxOutputTokens: 512,
+};
+
+async function generateContent({ prompt, systemPrompt = '', generationConfig = {} }) {
   const body = {
     contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.8, maxOutputTokens: 512 },
+    generationConfig: { ...COACH_GENERATION_CONFIG, ...generationConfig },
   };
 
   if (systemPrompt) {
@@ -42,9 +51,36 @@ async function generateContent({ prompt, systemPrompt = '' }) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
+    signal: generationConfig.signal,
   });
   const data = await response.json();
-  console.log('📡 Gemini response status:', response.status);
+  if (!response.ok || data.error) {
+    const message = data.error?.message || `Gemini request failed with status ${response.status}`;
+    throw new Error(`${message} [model: ${GEMINI_MODEL}]`);
+  }
+  return data;
+}
+
+/** Multi-turn chat with full conversation history for coach sessions. */
+async function generateChatContent({ contents, systemPrompt = '', signal } = {}) {
+  const body = {
+    contents,
+    generationConfig: COACH_GENERATION_CONFIG,
+  };
+
+  if (systemPrompt) {
+    body.system_instruction = {
+      parts: [{ text: systemPrompt }],
+    };
+  }
+
+  const response = await fetch(endpoint(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal,
+  });
+  const data = await response.json();
   if (!response.ok || data.error) {
     const message = data.error?.message || `Gemini request failed with status ${response.status}`;
     throw new Error(`${message} [model: ${GEMINI_MODEL}]`);
@@ -90,26 +126,127 @@ export const testConnection = async () => {
 };
 
 export const askGemini = async (prompt, systemPrompt = '') => {
-  console.log('🔑 Key exists:', Boolean(GEMINI_API_KEY));
-  console.log('🔑 Key prefix:', GEMINI_API_KEY?.substring(0, 8));
-
   if (!GEMINI_API_KEY) {
-    console.error('❌ No Gemini API key found!');
     return 'Coach is offline — API key missing';
   }
 
   try {
     const data = await generateContent({ prompt, systemPrompt });
-    if (data.error) {
-      console.error('❌ Gemini error:', data.error);
-      return `Coach says: I need a moment (${data.error.message})`;
-    }
     return extractText(data) || 'No response';
   } catch (err) {
-    console.error('❌ Gemini fetch error:', err);
+    console.error('Gemini fetch error:', err.message);
     return 'Coach is having connection issues. Try again.';
   }
 };
+
+/**
+ * Coach chat with full multi-turn history.
+ * @param {{ messages: { role: 'user'|'assistant', text: string }[], systemPrompt?: string }} params
+ */
+export const askGeminiChat = async ({ messages, systemPrompt = '', signal } = {}) => {
+  if (!GEMINI_API_KEY) {
+    return 'Coach is offline — API key missing';
+  }
+
+  try {
+    const data = await generateChatContent({ contents: messages, systemPrompt, signal });
+    return extractText(data) || 'No response';
+  } catch (err) {
+    if (err.name === 'AbortError') throw err;
+    console.error('Gemini chat error:', err.message);
+    return 'Coach is having connection issues. Try again.';
+  }
+};
+
+function parseSseJsonPayload(line) {
+  const trimmed = String(line || '').trim();
+  if (!trimmed.startsWith('data:')) return null;
+  const payload = trimmed.slice(5).trim();
+  if (!payload || payload === '[DONE]') return null;
+  try {
+    return JSON.parse(payload);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Stream Gemini chat tokens over SSE for low-latency voice replies.
+ * @param {{ messages: object[], systemPrompt?: string, signal?: AbortSignal, onToken?: (chunk: string, fullText: string) => void }} params
+ */
+export async function askGeminiChatStream({
+  messages,
+  systemPrompt = '',
+  signal,
+  onToken,
+} = {}) {
+  assertConfigured();
+
+  const body = {
+    contents: messages,
+    generationConfig: COACH_GENERATION_CONFIG,
+  };
+
+  if (systemPrompt) {
+    body.system_instruction = {
+      parts: [{ text: systemPrompt }],
+    };
+  }
+
+  const response = await fetch(streamEndpoint(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal,
+  });
+
+  if (!response.ok) {
+    let message = `Gemini stream failed with status ${response.status}`;
+    try {
+      const errData = await response.json();
+      message = errData.error?.message || message;
+    } catch {
+      // ignore
+    }
+    throw new Error(`${message} [model: ${GEMINI_MODEL}]`);
+  }
+
+  if (!response.body) {
+    throw new Error('Gemini stream returned no body.');
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullText = '';
+
+  while (true) {
+    if (signal?.aborted) {
+      await reader.cancel();
+      throw new DOMException('Aborted', 'AbortError');
+    }
+
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+
+    for (const line of lines) {
+      const data = parseSseJsonPayload(line);
+      if (!data) continue;
+
+      const chunk = extractText(data);
+      if (!chunk) continue;
+
+      fullText += chunk;
+      onToken?.(chunk, fullText);
+    }
+  }
+
+  return fullText.trim() || 'No response';
+}
 
 export const askGeminiWithImage = async (base64Image, prompt) => {
   if (!GEMINI_API_KEY) return null;

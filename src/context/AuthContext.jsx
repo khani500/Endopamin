@@ -52,8 +52,8 @@ export const AuthProvider = ({ children }) => {
       display_name: metadataName || sessionUser.email?.split('@')[0] || 'Athlete',
       goal: 'strength_gain',
       experience: 'intermediate',
-      gender: 'male',
-      job_type: 'mixed',
+      gender: null,
+      job_type: null,
       days_per_week: 4,
       created_at: new Date().toISOString(),
     };

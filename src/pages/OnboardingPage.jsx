@@ -1,196 +1,665 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
+// ── Coaches ────────────────────────────────────────────────────────────────
+const COACHES = [
+  {
+    id: 'aria',
+    name: 'Aria',
+    role: 'Wellness · Science',
+    color: '#CCFF00',
+    bg: '#0d1a00',
+    img: '/coaches/aria.jpg',
+    tagline: 'Data-driven. Warm. Always on your side.',
+    badge: 'FREE',
+    badgeBg: '#0d1a00',
+  },
+  {
+    id: 'kane',
+    name: 'Kane',
+    role: 'Elite · Demanding',
+    color: '#FFA53C',
+    bg: '#1f0e00',
+    img: '/coaches/kane.jpg',
+    tagline: 'No excuses. Brutal honesty. Real results.',
+    badge: 'FREE',
+    badgeBg: '#1f0e00',
+  },
+  {
+    id: 'blaze',
+    name: 'Blaze',
+    role: 'Gen-Z · Hype',
+    color: '#FF6B6B',
+    bg: '#1f0808',
+    img: '/coaches/blaze.png',
+    tagline: 'Hyped up. High energy. Never boring.',
+    badge: 'LV 5',
+    badgeBg: '#1f0808',
+  },
+  {
+    id: 'nova',
+    name: 'Nova',
+    role: 'Balance · Flow',
+    color: '#A064FF',
+    bg: '#120a1f',
+    img: '/coaches/nova.jpg',
+    tagline: 'Mind-body balance. Sustainable growth.',
+    badge: '7-DAY STK',
+    badgeBg: '#120a1f',
+  },
+  {
+    id: 'zara',
+    name: 'Zara',
+    role: 'Fierce · Warm',
+    color: '#FF4DBA',
+    bg: '#1f0015',
+    img: '/coaches/zara.png',
+    tagline: 'Fierce outside. Warm inside. Gets results.',
+    badge: '10 WRK',
+    badgeBg: '#1f0015',
+  },
+];
+
 const GOALS = [
-  ['weight_loss', 'Weight Loss'],
-  ['strength_gain', 'Strength Gain'],
-  ['maintenance', 'Maintenance'],
+  { id: 'fat_loss', label: 'Burn Fat & Lose Weight', icon: '🔥' },
+  { id: 'muscle', label: 'Build Muscle & Get Bigger', icon: '💪' },
+  { id: 'endurance', label: 'Athletic Performance', icon: '⚡' },
+  { id: 'health', label: 'Stay Healthy & Feel Better', icon: '✨' },
 ];
 
 const EXPERIENCE = [
-  ['beginner', 'Beginner'],
-  ['intermediate', 'Intermediate'],
-  ['advanced', 'Advanced'],
+  { id: 'beginner', label: 'Beginner', sub: 'Just starting out', color: '#666' },
+  { id: 'intermediate', label: 'Intermediate', sub: '6 mo – 2 years', color: '#FFA53C' },
+  { id: 'advanced', label: 'Advanced', sub: '2+ years', color: '#FF6B6B' },
+  { id: 'athlete', label: 'Athlete', sub: 'Competitive level', color: '#CCFF00' },
 ];
 
-const COACHES = [
-  ['elias', 'Elias', 'Calm coach for steady progress.'],
-  ['maya', 'Maya', 'High-energy coach for big momentum.'],
-  ['rex', 'Rex', 'Military precision and strict structure.'],
-];
+// ── Animation variants ─────────────────────────────────────────────────────
+const slideVariants = {
+  enter: (dir) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
+  center: { x: 0, opacity: 1, transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] } },
+  exit: (dir) => ({ x: dir > 0 ? '-100%' : '100%', opacity: 0, transition: { duration: 0.28 } }),
+};
 
+// ── Main Component ─────────────────────────────────────────────────────────
 export default function OnboardingPage() {
   const { user, setProfile } = useAuth();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
+  const [dir, setDir] = useState(1);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [initDone, setInitDone] = useState(false);
   const [form, setForm] = useState({
     display_name: '',
     age: '',
     gender: 'male',
-    goal: 'strength_gain',
-    experience: 'beginner',
-    days_per_week: '4',
-    coach_persona: 'elias',
+    weight: '',
+    weight_unit: 'kg',
+    height: '',
+    height_unit: 'cm',
+    goal: 'fat_loss',
+    experience: 'intermediate',
+    coach_persona: 'aria',
+    injuries: '',
   });
 
-  const updateField = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
+  const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
 
-  const saveProfile = async () => {
-    if (!user?.id || !supabase) return;
+  const next = () => { setDir(1); setStep(s => s + 1); };
+  const back = () => { setDir(-1); setStep(s => s - 1); };
+
+  const save = async () => {
+    if (!user || !supabase) { next(); return; }
     setSaving(true);
-    setError('');
-
     const payload = {
       id: user.id,
-      display_name: form.display_name.trim() || user.email?.split('@')[0] || 'Athlete',
+      display_name: form.display_name || 'Athlete',
       age: form.age ? Number(form.age) : null,
       gender: form.gender,
+      weight: form.weight ? Number(form.weight) : null,
+      weight_unit: form.weight_unit,
+      height: form.height ? Number(form.height) : null,
+      height_unit: form.height_unit,
       goal: form.goal,
       experience: form.experience,
-      days_per_week: Number(form.days_per_week) || null,
       coach_persona: form.coach_persona,
-      created_at: new Date().toISOString(),
+      injuries: form.injuries,
     };
-
-    const { data, error: saveError } = await supabase
-      .from('profiles')
-      .upsert(payload, { onConflict: 'id' })
-      .select('*')
-      .single();
-
-    if (saveError) {
-      setError(saveError.message);
-    } else {
-      setProfile(data);
-    }
+    const { data, error } = await supabase
+      .from('profiles').upsert(payload, { onConflict: 'id' }).select('*').single();
     setSaving(false);
+    if (!error && data) setProfile(data);
+    // show init screen
+    next();
+    setTimeout(() => setInitDone(true), 2800);
   };
 
+  const STEPS = [
+    <SplashScreen onStart={next} key="splash" />,
+    <CoachScreen form={form} set={set} onNext={next} onBack={back} key="coach" />,
+    <GoalScreen form={form} set={set} onNext={next} onBack={back} key="goal" />,
+    <StatsScreen form={form} set={set} onNext={save} onBack={back} saving={saving} key="stats" />,
+    <InitScreen form={form} done={initDone} key="init" />,
+  ];
+
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0A0A0A] px-5 py-10 text-white">
-      <section className="w-full max-w-[390px] rounded-3xl border border-white/10 bg-[#141416] p-5">
-        <div className="mb-5">
-          <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#CCFF00]">Step {step} of 3</p>
-          <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/10">
-            <div className="h-full rounded-full bg-[#CCFF00]" style={{ width: `${(step / 3) * 100}%` }} />
-          </div>
-        </div>
-
-        {step === 1 && (
-          <div className="space-y-4">
-            <h1 className="text-2xl font-black">Welcome to ENDOPAMIN</h1>
-            <div className="rounded-2xl border border-[#CCFF00]/20 bg-[#CCFF00]/10 p-3 text-sm leading-6 text-white/70">
-              <p>Your body produces endorphins when you train.</p>
-              <p>Your brain releases dopamine when you achieve.</p>
-              <p>ENDOPAMIN is where both happen.</p>
-            </div>
-            <TextInput label="Display name" value={form.display_name} onChange={value => updateField('display_name', value)} />
-            <TextInput label="Age" type="number" value={form.age} onChange={value => updateField('age', value)} />
-            <OptionRow
-              label="Gender"
-              options={[
-                ['male', 'Male'],
-                ['female', 'Female'],
-                ['non_binary', 'Non-binary'],
-              ]}
-              value={form.gender}
-              onChange={value => updateField('gender', value)}
-            />
-            <PrimaryButton onClick={() => setStep(2)}>Continue</PrimaryButton>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="space-y-4">
-            <h1 className="text-2xl font-black">Your Goal</h1>
-            <OptionRow label="Goal" options={GOALS} value={form.goal} onChange={value => updateField('goal', value)} />
-            <OptionRow label="Experience" options={EXPERIENCE} value={form.experience} onChange={value => updateField('experience', value)} />
-            <OptionRow
-              label="Days per week"
-              options={['3', '4', '5', '6'].map(value => [value, value])}
-              value={form.days_per_week}
-              onChange={value => updateField('days_per_week', value)}
-            />
-            <PrimaryButton onClick={() => setStep(3)}>Continue</PrimaryButton>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="space-y-4">
-            <h1 className="text-2xl font-black">Choose Your Coach</h1>
-            <div className="space-y-3">
-              {COACHES.map(([id, name, desc]) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => updateField('coach_persona', id)}
-                  className={`w-full rounded-3xl border p-4 text-left ${
-                    form.coach_persona === id ? 'border-[#CCFF00] bg-[#CCFF00]/10' : 'border-white/10 bg-[#101012]'
-                  }`}
-                >
-                  <p className="text-base font-black text-white">{name}</p>
-                  <p className="mt-1 text-sm text-white/45">{desc}</p>
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={saveProfile}
-              disabled={saving}
-              className="w-full rounded-2xl bg-[#CCFF00] px-4 py-4 text-sm font-black text-black disabled:opacity-60"
-            >
-              {saving ? 'Saving...' : '← Start Training'}
-            </button>
-            {error && <p className="text-center text-xs font-bold text-red-300">{error}</p>}
-          </div>
-        )}
-      </section>
-    </main>
+    <div style={{
+      minHeight: '100vh', background: '#060608', color: '#fff',
+      overflow: 'hidden', position: 'relative',
+    }}>
+      <AnimatePresence custom={dir} mode="wait">
+        <motion.div
+          key={step}
+          custom={dir}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          style={{ minHeight: '100vh' }}
+        >
+          {STEPS[step]}
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 }
 
-function TextInput({ label, value, onChange, type = 'text' }) {
+// ── Screen 1: Splash ───────────────────────────────────────────────────────
+function SplashScreen({ onStart }) {
   return (
-    <label className="block">
-      <span className="mb-2 block text-[11px] font-black uppercase tracking-[0.18em] text-white/35">{label}</span>
-      <input
-        value={value}
-        type={type}
-        onChange={event => onChange(event.target.value)}
-        className="w-full rounded-2xl border border-white/10 bg-[#101012] px-4 py-3 text-sm text-white outline-none"
-      />
-    </label>
-  );
-}
-
-function OptionRow({ label, options, value, onChange }) {
-  return (
-    <div>
-      <p className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-white/35">{label}</p>
-      <div className="grid grid-cols-3 gap-2">
-        {options.map(([id, text]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => onChange(id)}
-            className={`rounded-2xl px-2 py-3 text-xs font-black ${
-              value === id ? 'bg-[#CCFF00] text-black' : 'bg-white/[0.06] text-white/60'
-            }`}
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+      {/* Hero Image */}
+      <div style={{ position: 'relative', flex: 1, minHeight: 420 }}>
+        <img
+          src="/coaches/athlete-couple.jpg"
+          alt="athletes"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
+          onError={e => { e.target.style.display = 'none'; }}
+        />
+        {/* Gradient overlay */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to bottom, rgba(6,6,8,0.3) 0%, rgba(6,6,8,0.1) 40%, rgba(6,6,8,0.95) 85%, #060608 100%)',
+        }} />
+        {/* Logo */}
+        <div style={{ position: 'absolute', top: 56, left: 0, right: 0, textAlign: 'center' }}>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
           >
-            {text}
-          </button>
-        ))}
+            <div style={{ fontSize: 11, color: '#CCFF00', letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 6 }}>
+              ∃NDOPAMIN
+            </div>
+            <div style={{ fontSize: 10, color: '#444', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+              Endorphin · Dopamine
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Bottom content */}
+      <div style={{ padding: '0 24px 48px', background: '#060608' }}>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <h1 style={{
+            fontSize: 36, fontWeight: 900, letterSpacing: '-0.05em',
+            textTransform: 'uppercase', lineHeight: 1.0, marginBottom: 8,
+          }}>
+            UNLOCK YOUR<br /><span style={{ color: '#CCFF00' }}>INNER ATHLETE</span>
+          </h1>
+          <p style={{ fontSize: 13, color: '#555', marginBottom: 28, lineHeight: 1.6 }}>
+            Your dopamine. Your discipline. Your evolution.
+          </p>
+
+          {/* Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 24 }}>
+            {[['47k', 'Athletes'], ['4.9★', 'Rating'], ['92%', 'Streak']].map(([n, l]) => (
+              <div key={l} style={{ background: '#0e0e0e', borderRadius: 10, padding: '10px 6px', textAlign: 'center' }}>
+                <div style={{ fontSize: 16, fontWeight: 900, color: '#CCFF00' }}>{n}</div>
+                <div style={{ fontSize: 9, color: '#444', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 2 }}>{l}</div>
+              </div>
+            ))}
+          </div>
+
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={onStart}
+            style={{
+              width: '100%', background: '#CCFF00', color: '#060608',
+              fontSize: 14, fontWeight: 900, padding: '15px', borderRadius: 14,
+              border: 'none', cursor: 'pointer', letterSpacing: '0.05em',
+              fontFamily: 'inherit',
+            }}
+          >
+            I'M READY →
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );
 }
 
-function PrimaryButton({ children, onClick }) {
+// ── Screen 2: Coach ────────────────────────────────────────────────────────
+function CoachScreen({ form, set, onNext, onBack }) {
+  const selected = COACHES.find(c => c.id === form.coach_persona);
   return (
-    <button type="button" onClick={onClick} className="w-full rounded-2xl bg-[#CCFF00] px-4 py-4 text-sm font-black text-black">
-      {children}
-    </button>
+    <div style={{ minHeight: '100vh', padding: '52px 20px 40px', display: 'flex', flexDirection: 'column' }}>
+      <StepHeader step={1} total={3} label="Choose Your Coach" sub="Your AI coach — always available, always honest" />
+
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+        {COACHES.map(coach => {
+          const sel = form.coach_persona === coach.id;
+          return (
+            <motion.div
+              key={coach.id}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => set('coach_persona', coach.id)}
+              style={{
+                background: sel ? coach.bg : '#0e0e0e',
+                border: `0.5px solid ${sel ? coach.color : '#1e1e1e'}`,
+                borderRadius: 14,
+                padding: '12px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              {/* Avatar */}
+              <div style={{
+                width: 52, height: 52, borderRadius: '50%', overflow: 'hidden', flexShrink: 0,
+                border: `1.5px solid ${sel ? coach.color : '#2a2a2a'}`,
+              }}>
+                <img
+                  src={coach.img}
+                  alt={coach.name}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={e => {
+                    e.target.style.display = 'none';
+                    e.target.parentNode.style.background = coach.bg;
+                    e.target.parentNode.style.display = 'flex';
+                    e.target.parentNode.style.alignItems = 'center';
+                    e.target.parentNode.style.justifyContent = 'center';
+                    e.target.parentNode.innerHTML = `<span style="font-size:18px;font-weight:900;color:${coach.color}">${coach.name[0]}</span>`;
+                  }}
+                />
+              </div>
+              {/* Info */}
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: sel ? coach.color : '#fff' }}>{coach.name}</span>
+                  <span style={{
+                    fontSize: 8, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
+                    background: sel ? coach.color : '#1e1e1e', color: sel ? '#060608' : '#555',
+                  }}>{coach.badge}</span>
+                </div>
+                <div style={{ fontSize: 10, color: sel ? coach.color : '#555', opacity: 0.8, marginBottom: 2 }}>{coach.role}</div>
+                {sel && (
+                  <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                    style={{ fontSize: 10, color: '#888' }}>
+                    "{coach.tagline}"
+                  </motion.div>
+                )}
+              </div>
+              {/* Check */}
+              {sel && (
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0 }}>
+                  <circle cx="9" cy="9" r="8" stroke={coach.color} strokeWidth="1"/>
+                  <path d="M5.5 9l2.5 2.5 4.5-4.5" stroke={coach.color} strokeWidth="1.4" strokeLinecap="round"/>
+                </svg>
+              )}
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <Buttons onNext={onNext} onBack={onBack} showBack={false} label="CHOOSE & NEXT →" />
+    </div>
+  );
+}
+
+// ── Screen 3: Goal ─────────────────────────────────────────────────────────
+function GoalScreen({ form, set, onNext, onBack }) {
+  return (
+    <div style={{ minHeight: '100vh', padding: '52px 20px 40px', display: 'flex', flexDirection: 'column' }}>
+      <StepHeader step={2} total={3} label="What's Your Mission?" sub="Pick one — your coach adapts everything around it" />
+
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 16 }}>
+        {GOALS.map(g => {
+          const sel = form.goal === g.id;
+          return (
+            <motion.div
+              key={g.id}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => set('goal', g.id)}
+              style={{
+                background: sel ? '#111900' : '#0e0e0e',
+                border: `0.5px solid ${sel ? '#CCFF00' : '#1e1e1e'}`,
+                borderRadius: 14, padding: '14px 16px',
+                display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer',
+              }}
+            >
+              <div style={{ fontSize: 22 }}>{g.icon}</div>
+              <span style={{ fontSize: 14, fontWeight: 600, color: sel ? '#CCFF00' : '#888' }}>{g.label}</span>
+              {sel && (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ marginLeft: 'auto', flexShrink: 0 }}>
+                  <circle cx="8" cy="8" r="7" stroke="#CCFF00" strokeWidth="1"/>
+                  <path d="M5 8l2 2 4-4" stroke="#CCFF00" strokeWidth="1.3" strokeLinecap="round"/>
+                </svg>
+              )}
+            </motion.div>
+          );
+        })}
+
+        {/* Experience */}
+        <div style={{ marginTop: 8 }}>
+          <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+            Training Experience
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
+            {EXPERIENCE.map(e => {
+              const sel = form.experience === e.id;
+              return (
+                <motion.div
+                  key={e.id}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => set('experience', e.id)}
+                  style={{
+                    background: sel ? '#111900' : '#0e0e0e',
+                    border: `0.5px solid ${sel ? e.color : '#1e1e1e'}`,
+                    borderRadius: 12, padding: '10px 10px', cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: sel ? e.color : '#333', marginBottom: 5 }} />
+                  <div style={{ fontSize: 12, fontWeight: 600, color: sel ? e.color : '#888' }}>{e.label}</div>
+                  <div style={{ fontSize: 9, color: '#444', marginTop: 2 }}>{e.sub}</div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <Buttons onNext={onNext} onBack={onBack} label="CONTINUE →" />
+    </div>
+  );
+}
+
+// ── Screen 4: Stats ────────────────────────────────────────────────────────
+function StatsScreen({ form, set, onNext, onBack, saving }) {
+  return (
+    <div style={{ minHeight: '100vh', padding: '52px 20px 40px', display: 'flex', flexDirection: 'column' }}>
+      <StepHeader step={3} total={3} label="Initialize Biometrics" sub="Your coach uses this to personalize everything" />
+
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {/* Name */}
+        <div>
+          <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Your Name</div>
+          <div style={{ background: '#0e0e0e', border: '0.5px solid #1e1e1e', borderRadius: 10 }}>
+            <input
+              type="text" value={form.display_name}
+              onChange={e => set('display_name', e.target.value)}
+              placeholder="Athlete name"
+              style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: 15, padding: '11px 12px', width: '100%', outline: 'none', fontFamily: 'inherit' }}
+            />
+          </div>
+        </div>
+
+        {/* Age + Gender */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <div>
+            <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Age</div>
+            <div style={{ background: '#0e0e0e', border: '0.5px solid #1e1e1e', borderRadius: 10 }}>
+              <input
+                type="number" value={form.age}
+                onChange={e => set('age', e.target.value)}
+                placeholder="28"
+                style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: 15, padding: '11px 12px', width: '100%', outline: 'none', fontFamily: 'inherit' }}
+              />
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Gender</div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {[['male', 'M'], ['female', 'F']].map(([v, l]) => (
+                <motion.button key={v} whileTap={{ scale: 0.96 }} onClick={() => set('gender', v)}
+                  style={{
+                    flex: 1, padding: '11px 4px', borderRadius: 10, border: '0.5px solid',
+                    borderColor: form.gender === v ? '#CCFF00' : '#1e1e1e',
+                    background: form.gender === v ? '#111900' : '#0e0e0e',
+                    color: form.gender === v ? '#CCFF00' : '#666',
+                    fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+                  }}>{l}</motion.button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Weight */}
+        <UnitInput
+          label="Current Weight" value={form.weight} onChange={v => set('weight', v)}
+          placeholder={form.weight_unit === 'kg' ? '80' : '176'}
+          unit={form.weight_unit} unitOptions={['kg', 'lb']}
+          onUnitChange={u => set('weight_unit', u)}
+        />
+
+        {/* Height */}
+        <UnitInput
+          label="Height" value={form.height} onChange={v => set('height', v)}
+          placeholder={form.height_unit === 'cm' ? '175' : '69'}
+          unit={form.height_unit} unitOptions={['cm', 'in']}
+          onUnitChange={u => set('height_unit', u)}
+        />
+
+        {/* Injuries */}
+        <div>
+          <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>
+            Injuries / Health Notes <span style={{ color: '#333' }}>(optional)</span>
+          </div>
+          <textarea
+            value={form.injuries} onChange={e => set('injuries', e.target.value)}
+            placeholder="e.g. knee pain, back disc — or leave blank"
+            rows={2}
+            style={{
+              width: '100%', background: '#0e0e0e', border: '0.5px solid #1e1e1e',
+              borderRadius: 10, color: '#aaa', fontSize: 12, padding: '10px 12px',
+              fontFamily: 'inherit', outline: 'none', resize: 'none', lineHeight: 1.6,
+            }}
+          />
+        </div>
+      </div>
+
+      <Buttons onNext={onNext} onBack={onBack} label={saving ? 'INITIALIZING...' : "LET'S BUILD YOUR PLAN →"} disabled={saving} />
+    </div>
+  );
+}
+
+// ── Screen 5: Init ─────────────────────────────────────────────────────────
+function InitScreen({ form, done }) {
+  const coach = COACHES.find(c => c.id === form.coach_persona) || COACHES[0];
+  return (
+    <div style={{
+      minHeight: '100vh', display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center',
+    }}>
+      {!done ? (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          {/* Spinning ring */}
+          <div style={{ position: 'relative', width: 100, height: 100, margin: '0 auto 28px' }}>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+              style={{
+                position: 'absolute', inset: 0, borderRadius: '50%',
+                border: `2px solid transparent`,
+                borderTopColor: '#CCFF00',
+                borderRightColor: '#CCFF00',
+              }}
+            />
+            <div style={{
+              position: 'absolute', inset: 8, borderRadius: '50%',
+              border: `1px solid #1a1a1a`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <img src={coach.img} alt={coach.name}
+                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                onError={e => { e.target.style.display = 'none'; }}
+              />
+            </div>
+          </div>
+
+          <div style={{ fontSize: 11, color: '#CCFF00', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8 }}>
+            {coach.name} is building your plan
+          </div>
+          <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.03em', textTransform: 'uppercase', marginBottom: 24 }}>
+            AI IS CUSTOMIZING<br />YOUR PLAN...
+          </div>
+
+          {/* Loading steps */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, textAlign: 'left', maxWidth: 240 }}>
+            {['Analyzing your profile', 'Optimizing workout split', 'Personalizing coach style'].map((t, i) => (
+              <motion.div key={t}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.6 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+              >
+                <motion.div
+                  animate={{ scale: [1, 1.3, 1] }}
+                  transition={{ delay: i * 0.6 + 0.2, duration: 0.4 }}
+                  style={{ width: 6, height: 6, borderRadius: '50%', background: '#CCFF00', flexShrink: 0 }}
+                />
+                <span style={{ fontSize: 12, color: '#666' }}>{t}</span>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Progress bar */}
+          <div style={{ width: '100%', maxWidth: 240, height: 2, background: '#111', borderRadius: 1, margin: '24px auto 0', overflow: 'hidden' }}>
+            <motion.div
+              initial={{ width: '0%' }}
+              animate={{ width: '100%' }}
+              transition={{ duration: 2.6, ease: 'easeInOut' }}
+              style={{ height: '100%', background: '#CCFF00', borderRadius: 1 }}
+            />
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+          {/* Done */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+            style={{
+              width: 80, height: 80, borderRadius: '50%',
+              border: '2px solid #CCFF00', margin: '0 auto 24px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <path d="M9 18l6 6 12-12" stroke="#CCFF00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <div style={{ fontSize: 11, color: '#CCFF00', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8 }}>
+              🔥 STREAK ACTIVATED — DAY 1
+            </div>
+            <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.04em', textTransform: 'uppercase', marginBottom: 6 }}>
+              LET'S ACHIEVE<br /><span style={{ color: '#CCFF00' }}>{form.goal?.replace('_', ' ').toUpperCase()}</span>
+            </div>
+            <p style={{ fontSize: 13, color: '#555', marginBottom: 32 }}>
+              {COACHES.find(c => c.id === form.coach_persona)?.name} is ready. You're 30 mins away from your first session.
+            </p>
+
+            {/* XP badge */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: '#0d1a00', border: '0.5px solid #CCFF00',
+              borderRadius: 20, padding: '8px 16px', marginBottom: 24,
+            }}>
+              <span style={{ fontSize: 18 }}>⚡</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#CCFF00' }}>+100 ENDO SCORE</span>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+// ── Shared Components ──────────────────────────────────────────────────────
+function StepHeader({ step, total, label, sub }) {
+  return (
+    <div style={{ marginBottom: 24 }}>
+      {/* Progress bar */}
+      <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
+        {Array.from({ length: total }, (_, i) => (
+          <div key={i} style={{
+            flex: 1, height: 2, borderRadius: 1,
+            background: i < step ? '#CCFF00' : i === step - 1 ? '#CCFF00' : '#1a1a1a',
+            transition: 'background 0.3s',
+          }} />
+        ))}
+      </div>
+      <div style={{ fontSize: 10, color: '#CCFF00', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 6 }}>
+        Step {step} of {total}
+      </div>
+      <h1 style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.04em', textTransform: 'uppercase', marginBottom: 4 }}>
+        {label}
+      </h1>
+      <p style={{ fontSize: 12, color: '#555' }}>{sub}</p>
+    </div>
+  );
+}
+
+function UnitInput({ label, value, onChange, placeholder, unit, unitOptions, onUnitChange }) {
+  return (
+    <div>
+      <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>{label}</div>
+      <div style={{ display: 'flex', background: '#0e0e0e', border: '0.5px solid #1e1e1e', borderRadius: 10, overflow: 'hidden', alignItems: 'center' }}>
+        <input
+          type="number" value={value} onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: 15, padding: '11px 12px', width: '100%', outline: 'none', fontFamily: 'inherit' }}
+        />
+        <div style={{ display: 'flex', borderLeft: '0.5px solid #1e1e1e' }}>
+          {unitOptions.map(u => (
+            <button key={u} onClick={() => onUnitChange(u)}
+              style={{
+                fontSize: 10, padding: '6px 9px', background: 'transparent', border: 'none',
+                color: unit === u ? '#CCFF00' : '#444',
+                fontWeight: unit === u ? 700 : 400, cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >{u}</button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Buttons({ onNext, onBack, showBack = true, label = 'CONTINUE →', disabled = false }) {
+  return (
+    <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+      {showBack && (
+        <motion.button whileTap={{ scale: 0.97 }} onClick={onBack}
+          style={{
+            flex: 1, padding: '14px', borderRadius: 14, border: '0.5px solid #1e1e1e',
+            background: '#0e0e0e', color: '#666', fontSize: 13, fontWeight: 700,
+            cursor: 'pointer', fontFamily: 'inherit',
+          }}>Back</motion.button>
+      )}
+      <motion.button whileTap={{ scale: 0.97 }} onClick={onNext} disabled={disabled}
+        style={{
+          flex: 2, padding: '14px', borderRadius: 14, border: 'none',
+          background: '#CCFF00', color: '#060608', fontSize: 13, fontWeight: 900,
+          cursor: 'pointer', fontFamily: 'inherit', opacity: disabled ? 0.6 : 1,
+          letterSpacing: '0.03em',
+        }}>{label}</motion.button>
+    </div>
   );
 }

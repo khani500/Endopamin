@@ -1,8 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { getCoach } from '../../config/coaches';
 import { useAuth } from '../../context/AuthContext';
-import { askGemini } from '../../lib/gemini';
-import { speakWithGoogleTTS, stopSpeaking } from '../../lib/voice';
+import { askGeminiChat } from '../../lib/gemini';
+import {
+  buildCoachSystemPrompt,
+  sanitizeCoachResponse,
+  sanitizeTranscript,
+  toGeminiContents,
+} from '../../lib/coachChat';
+import { playCoachAudio, stopCoachAudio } from '../../lib/voice';
 
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
@@ -38,7 +44,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
 
     recognitionRef.current?.stop();
     recognitionRef.current = null;
-    stopSpeaking();
+    stopCoachAudio();
   };
 
   const handleStop = () => {
@@ -47,7 +53,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   };
 
   const handleUserSpeech = async text => {
-    const cleanText = String(text || '').trim();
+    const cleanText = sanitizeTranscript(String(text || '').trim());
     if (!cleanText) {
       setStatus('idle');
       return;
@@ -61,30 +67,38 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     setConversation(newConversation);
 
     try {
-      const historyText = newConversation
-        .slice(-6)
-        .map(message => `${message.role === 'user' ? 'User' : coach.name}: ${message.content}`)
-        .join('\n');
+      const historyMessages = newConversation.map(m => ({
+        role: m.role === 'coach' ? 'assistant' : 'user',
+        text: m.content,
+      }));
 
-      const prompt = `Conversation so far:
-${historyText}
+      const systemPrompt = buildCoachSystemPrompt(
+        coach.personality,
+        { name: coach.name },
+        historyMessages,
+        `Name: ${profile?.display_name || 'Athlete'}`,
+      );
 
-User just said: "${cleanText}"
-
-Respond as ${coach.name} in 1-2 short sentences. Be conversational.`;
-
-      const response = await askGemini(prompt, coach.personality);
+      const response = sanitizeCoachResponse(
+        await askGeminiChat({
+          messages: toGeminiContents(historyMessages),
+          systemPrompt,
+        }),
+        coach.name,
+      );
       const coachMsg = { role: 'coach', content: response };
 
       setConversation(prev => [...prev, coachMsg]);
       setCoachReply(response);
       setStatus('speaking');
 
-      await speakWithGoogleTTS(response, coachId, () => {
-        setStatus('idle');
-        restartTimerRef.current = window.setTimeout(() => {
-          if (isOpenRef.current) startListening();
-        }, 800);
+      await playCoachAudio(response, coachId, {
+        onEnd: () => {
+          setStatus('idle');
+          restartTimerRef.current = window.setTimeout(() => {
+            if (isOpenRef.current) startListening();
+          }, 800);
+        },
       });
     } catch (error) {
       console.error('Voice conversation error:', error);

@@ -1,166 +1,325 @@
-import { Link } from 'react-router-dom';
-import { ShareCard } from '../components/progress/ShareCard';
-import { PRTracker } from '../components/progress/PRTracker';
-import { WorkoutHistory } from '../components/progress/WorkoutHistory';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../lib/supabase';
 
-const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const RANGES = ['1W', '1M', '3M', '6M', '1Y', 'All'];
 
-function WeightChart() {
-  const points = [82.8, 82.6, 82.2, 82.1, 81.9, 81.6, 81.5];
-  const labels = ['May 9', 'May 10', 'May 11', 'May 12', 'May 13', 'May 14', 'May 15'];
-  const min = Math.min(...points);
-  const max = Math.max(...points);
-  const width = 330;
-  const height = 160;
-  const padX = 18;
-  const padY = 18;
-  const coords = points.map((kg, index) => {
-    const x = padX + (index / (points.length - 1)) * (width - padX * 2);
-    const y = height - padY - ((kg - min) / (max - min || 1)) * (height - padY * 2);
-    return { x, y, kg };
-  });
-  const linePath = coords.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ');
+const DATA = [
+  {
+    streak: 14, workouts: 5, time: '8h',
+    chartTitle: 'Weekly Activity', chartVal: '5 / 7 days',
+    segs: 14, xp: 340, lv: 4, rings: [75, 70, 80], chainCount: '14 days strong',
+    bars: [
+      { h: 65, t: 'done', d: 'Mo' }, { h: 80, t: 'done', d: 'Tu' },
+      { h: 15, t: 'rest', d: 'We' }, { h: 70, t: 'done', d: 'Th' },
+      { h: 90, t: 'done', d: 'Fr' }, { h: 55, t: 'today', d: 'Sa', act: true },
+      { h: 10, t: 'rest', d: 'Su' },
+    ],
+  },
+  {
+    streak: 21, workouts: 18, time: '24h',
+    chartTitle: 'This Month', chartVal: '18 / 30 days',
+    segs: 16, xp: 380, lv: 4, rings: [68, 72, 75], chainCount: '21 days best',
+    bars: [
+      { h: 60, t: 'done', d: 'W1' }, { h: 75, t: 'done', d: 'W2' },
+      { h: 40, t: 'miss', d: 'W3' }, { h: 85, t: 'today', d: 'W4', act: true },
+      { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' },
+    ],
+  },
+  {
+    streak: 21, workouts: 52, time: '68h',
+    chartTitle: 'Last 3 Months', chartVal: '52 workouts',
+    segs: 17, xp: 420, lv: 4, rings: [72, 65, 78], chainCount: '21 days best',
+    bars: [
+      { h: 50, t: 'done', d: 'Feb' }, { h: 70, t: 'done', d: 'Mar' },
+      { h: 85, t: 'today', d: 'Apr', act: true }, { h: 55, t: 'done', d: 'May' },
+      { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' },
+    ],
+  },
+  {
+    streak: 21, workouts: 98, time: '124h',
+    chartTitle: 'Last 6 Months', chartVal: '98 workouts',
+    segs: 18, xp: 450, lv: 4, rings: [80, 68, 82], chainCount: '21 days best',
+    bars: [
+      { h: 30, t: 'done', d: 'Nov' }, { h: 45, t: 'done', d: 'Dec' },
+      { h: 60, t: 'done', d: 'Jan' }, { h: 50, t: 'done', d: 'Feb' },
+      { h: 70, t: 'done', d: 'Mar' }, { h: 85, t: 'done', d: 'Apr' },
+      { h: 90, t: 'today', d: 'May', act: true },
+    ],
+  },
+  {
+    streak: 21, workouts: 180, time: '230h',
+    chartTitle: 'This Year', chartVal: '180 workouts',
+    segs: 19, xp: 480, lv: 4, rings: [85, 72, 88], chainCount: '21 days best',
+    bars: [
+      { h: 20, t: 'done', d: 'Q1' }, { h: 45, t: 'done', d: 'Q2' },
+      { h: 60, t: 'done', d: 'Q3' }, { h: 90, t: 'today', d: 'Q4', act: true },
+      { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' },
+    ],
+  },
+  {
+    streak: 21, workouts: 340, time: '440h',
+    chartTitle: 'All Time', chartVal: '340 workouts',
+    segs: 20, xp: 500, lv: 5, rings: [90, 80, 92], chainCount: '21 days best',
+    bars: [
+      { h: 15, t: 'done', d: 'Y1' }, { h: 40, t: 'done', d: 'Y2' },
+      { h: 75, t: 'today', d: 'Y3', act: true }, { h: 0, t: 'rest', d: '' },
+      { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' },
+    ],
+  },
+];
 
+const BAR_COLORS = {
+  done: 'bg-[#CCFF00]',
+  today: 'bg-[#CCFF00]',
+  rest: 'bg-white/[0.07]',
+  miss: 'bg-[#FF6B6B]/25',
+};
+
+const RING_CIRCS = [233, 163, 94];
+
+function RingSvg({ rings }) {
   return (
-    <section className="rounded-[22px] border border-white/10 bg-[#141416] p-4 text-white">
-      <div className="mb-3 flex items-end justify-between gap-3">
-        <div>
-          <p className="m-0 text-[11px] font-black uppercase tracking-[0.18em] text-white/40">Weekly Weight Trend</p>
-          <p className="mt-1 text-xs font-bold text-white/45">kg · last 7 logs</p>
-        </div>
-        <p className="m-0 text-2xl font-black text-[#007AFF]">{points.at(-1)}kg</p>
-      </div>
-      <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-black/35 p-2">
-        <svg viewBox={`0 0 ${width} ${height}`} className="h-44 w-full" role="img" aria-label="Weekly weight trend graph">
-          {[0, 1, 2, 3].map(row => {
-            const y = padY + row * ((height - padY * 2) / 3);
-            return <line key={row} x1="0" x2={width} y1={y} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="1" />;
-          })}
-          {coords.map(point => (
-            <line key={`v-${point.x}`} x1={point.x} x2={point.x} y1={padY} y2={height - padY} stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
-          ))}
-          <path d={linePath} fill="none" stroke="#007AFF" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-          {coords.map((point, index) => (
-            <g key={`${point.kg}-${index}`}>
-              <circle cx={point.x} cy={point.y} r="5.5" fill="#007AFF" />
-              <circle cx={point.x} cy={point.y} r="9" fill="rgba(0,122,255,0.14)" />
-            </g>
-          ))}
-        </svg>
-        <div className="grid grid-cols-7 gap-1 px-1 pb-1">
-          {labels.map(label => (
-            <span key={label} className="text-center text-[9px] font-bold text-white/30">{label.replace('May ', '')}</span>
-          ))}
-        </div>
-      </div>
-    </section>
+    <svg width="90" height="90" viewBox="0 0 90 90">
+      {[
+        { r: 37, color: '#CCFF00', idx: 0 },
+        { r: 26, color: '#5088FF', idx: 1 },
+        { r: 15, color: '#A064FF', idx: 2 },
+      ].map(ring => (
+        <g key={ring.r}>
+          <circle cx="45" cy="45" r={ring.r} fill="none" stroke={`${ring.color}12`} strokeWidth="6" />
+          <circle cx="45" cy="45" r={ring.r} fill="none" stroke={ring.color} strokeWidth="6"
+            strokeLinecap="round"
+            strokeDasharray={RING_CIRCS[ring.idx]}
+            strokeDashoffset={RING_CIRCS[ring.idx] * (1 - rings[ring.idx] / 100)}
+            transform="rotate(-90 45 45)"
+            style={{ transition: 'stroke-dashoffset 0.6s cubic-bezier(0.4,0,0.2,1)' }} />
+        </g>
+      ))}
+    </svg>
   );
 }
 
-function WorkoutStreakCalendar() {
+const PR_DATA = [
+  { name: 'Barbell Squat', date: 'May 18, 2026', kg: 120, badge: '↑ NEW PR', badgeColor: '#FFA53C', iconColor: '#CCFF00', iconBg: 'rgba(204,255,0,0.1)' },
+  { name: 'Bench Press', date: 'May 15, 2026', kg: 90, badge: '↑ +5 kg', badgeColor: '#5088FF', iconColor: '#5088FF', iconBg: 'rgba(80,136,255,0.1)' },
+  { name: 'Deadlift', date: 'May 10, 2026', kg: 140, badge: '↑ +10 kg', badgeColor: '#FF6B6B', iconColor: '#FF6B6B', iconBg: 'rgba(255,107,107,0.1)' },
+];
+
+export default function Progress() {
+  const { profile } = useAuth() || {};
+  const [rangeIdx, setRangeIdx] = useState(0);
+  const d = DATA[rangeIdx];
+  const pct = Math.round((rangeIdx / 5) * 100);
+
+  const streak = profile?.streak_count ?? d.streak;
+  const xp = profile?.dopa_xp ?? d.xp;
+  const lv = profile?.dopa_level ?? d.lv;
+
   return (
-    <section className="rounded-[22px] border border-white/10 bg-[#141416] p-4 text-white">
-      <p className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-white/40">Workout Streak</p>
-      <div className="flex justify-between gap-2">
-        {DAYS.map((day, index) => {
-          const done = index < 5;
-          return (
-            <div key={`${day}-${index}`} className="flex flex-1 flex-col items-center gap-2">
-              <span className="text-[10px] font-bold text-white/35">{day}</span>
-              <div className={`flex h-8 w-8 items-center justify-center rounded-full border ${done ? 'border-[#CCFF00]/45 bg-[#CCFF00] text-black' : 'border-white/10 bg-black/30 text-white/25'}`}>
-                {done ? '✓' : '—'}
-              </div>
+    <main className="min-h-screen bg-[#080808] text-white pb-28 overflow-x-hidden">
+      <div className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-72 h-48 rounded-full bg-[#CCFF00] opacity-[0.03] blur-3xl" />
+
+      {/* Header */}
+      <div className="px-5 pt-14 pb-4 flex justify-between items-end">
+        <div>
+          <div className="font-['Orbitron',monospace] font-black text-[14px] tracking-[3px] mb-1">
+            <span className="text-[#CCFF00]">∃</span>NDO <span className="text-white/30 text-[11px]">/ Progress</span>
+          </div>
+          <h1 className="text-[24px] font-bold tracking-tight">Your Progress</h1>
+          <p className="text-[11px] text-white/35 mt-0.5 italic">Every rep counts. Every day matters.</p>
+        </div>
+        <button type="button" className="w-9 h-9 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+            <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Timeline */}
+      <div className="px-5 mb-5">
+        <div className="flex gap-1.5 mb-3">
+          {RANGES.map((r, i) => (
+            <button key={r} type="button" onClick={() => setRangeIdx(i)}
+              className="flex-1 py-1.5 text-center text-[10px] font-bold uppercase tracking-wider rounded-[8px] border transition-all active:scale-95"
+              style={{
+                background: rangeIdx === i ? 'rgba(204,255,0,0.1)' : 'rgba(255,255,255,0.03)',
+                borderColor: rangeIdx === i ? 'rgba(204,255,0,0.3)' : 'rgba(255,255,255,0.08)',
+                color: rangeIdx === i ? '#CCFF00' : 'rgba(255,255,255,0.3)',
+              }}>
+              {r}
+            </button>
+          ))}
+        </div>
+        <div className="relative h-[3px] bg-white/[0.07] rounded-full">
+          <div className="h-full bg-[#CCFF00] rounded-full transition-all duration-500"
+            style={{ width: `${pct}%`, boxShadow: '0 0 8px rgba(204,255,0,0.4)' }} />
+          <div className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-[#CCFF00] border-2 border-[#080808] transition-all duration-500"
+            style={{ left: `${pct}%`, transform: 'translate(-50%,-50%)', boxShadow: '0 0 10px rgba(204,255,0,0.6)' }} />
+          <input type="range" min="0" max="5" step="1" value={rangeIdx}
+            onChange={e => setRangeIdx(parseInt(e.target.value))}
+            className="absolute inset-0 w-full opacity-0 cursor-pointer" style={{ height: '100%' }} />
+        </div>
+      </div>
+
+      {/* Endopamin Charge */}
+      <div className="mx-5 mb-4 rounded-[22px] border p-4 relative overflow-hidden"
+        style={{ borderColor: 'rgba(204,255,0,0.22)', background: 'linear-gradient(135deg,rgba(204,255,0,0.08),rgba(204,255,0,0.02))', boxShadow: '0 0 30px rgba(204,255,0,0.06),0 8px 28px rgba(0,0,0,0.5)' }}>
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#CCFF00]/40 to-transparent" />
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center gap-1.5 text-[9px] tracking-[2px] uppercase text-white/40 font-bold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            Endopamin Charge
+          </div>
+          <span className="text-[9px] text-[#CCFF00] font-bold bg-[#CCFF00]/12 border border-[#CCFF00]/25 px-2 py-0.5 rounded-full">
+            Level {lv} · {Math.round(d.segs / 20 * 100)}%
+          </span>
+        </div>
+        <div className="flex gap-[3px] mb-2">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div key={i} className="flex-1 h-[8px] rounded-[3px] transition-all duration-500"
+              style={{ background: i < d.segs ? '#CCFF00' : 'rgba(255,255,255,0.06)', boxShadow: i < d.segs ? '0 0 6px rgba(204,255,0,0.4)' : 'none' }} />
+          ))}
+        </div>
+        <div className="flex justify-between text-[10px]">
+          <span className="text-white/30">{xp} XP · {lv < 5 ? `${500 - xp} to Level ${lv + 1}` : 'Max level!'}</span>
+          <span className="text-[#CCFF00] font-bold">Lv.{lv + 1} →</span>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="px-5 grid grid-cols-3 gap-2.5 mb-4">
+        {[
+          { icon: <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>, val: streak, lbl: 'Day Streak', color: '#CCFF00' },
+          { icon: <><path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/></>, val: d.workouts, lbl: 'Workouts', color: '#5088FF' },
+          { icon: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>, val: d.time, lbl: 'Total Time', color: '#FFA53C' },
+        ].map((s, i) => (
+          <div key={i} className="rounded-[18px] border border-white/[0.06] p-3 bg-white/[0.025] text-center"
+            style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}>
+            <div className="flex justify-center mb-1.5">
+              <svg viewBox="0 0 24 24" fill="none" stroke={s.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                {s.icon}
+              </svg>
             </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function BodyProgressPhotos() {
-  const { user } = useAuth();
-  const [photos, setPhotos] = useState([
-    { label: 'Before', date: 'May 1', icon: '📷' },
-    { label: 'Week 4', date: 'May 22', icon: '📷' },
-    { label: 'Now', date: 'Today', icon: '📷' },
-  ]);
-
-  const handlePhotoUpload = async file => {
-    if (!file || !user?.id || !supabase) return;
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-    const { data, error } = await supabase.storage.from('progress-photos').upload(fileName, file);
-
-    if (!error) {
-      await supabase.from('body_metrics').insert({
-        user_id: user.id,
-        photo_url: data.path,
-        recorded_at: new Date().toISOString(),
-      });
-      setPhotos(prev => prev.map((item, index) => (index === 2 ? { ...item, icon: '✅' } : item)));
-    }
-  };
-
-  return (
-    <section className="rounded-[22px] border border-white/10 bg-[#141416] p-4 text-white">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div>
-          <p className="m-0 text-[11px] font-black uppercase tracking-[0.18em] text-white/40">Body Progress Photos</p>
-          <p className="mt-1 text-xs text-white/40">Swipe to compare your visual progress.</p>
-        </div>
-        <label className="rounded-2xl bg-[#CCFF00] px-3 py-2 text-xs font-black text-black">
-          + Add Photo Today
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={event => void handlePhotoUpload(event.target.files?.[0])}
-            style={{ display: 'none' }}
-          />
-        </label>
-      </div>
-
-      <div className="grid grid-cols-3 gap-2">
-        {photos.map(photo => (
-          <div key={photo.label} className="rounded-2xl border border-white/[0.07] bg-[#101012] p-3 text-center">
-            <p className="text-xs font-black text-white/60">{photo.label}</p>
-            <div className="my-3 grid aspect-square place-items-center rounded-xl bg-black/40 text-3xl">{photo.icon}</div>
-            <p className="text-[10px] font-bold text-white/35">{photo.date}</p>
+            <div className="text-[18px] font-bold transition-all duration-500" style={{ color: s.color }}>{s.val}</div>
+            <div className="text-[8px] uppercase tracking-[1.5px] text-white/30 mt-0.5 font-bold">{s.lbl}</div>
           </div>
         ))}
       </div>
-      <p className="mt-3 text-center text-xs text-white/35">← swipe to compare →</p>
-    </section>
-  );
-}
 
-export default function Progress() {
-  return (
-    <main className="mx-auto min-h-screen max-w-[390px] bg-[#0A0A0A] px-5 pb-28 pt-10 text-white">
-      <header className="mb-5 flex items-start justify-between gap-3">
-        <div>
-          <h1 className="m-0 text-[26px] font-black tracking-tight">Progress</h1>
-          <p className="mt-1 text-sm text-white/45">Streaks, PRs, and workout history.</p>
+      {/* Weekly Chart */}
+      <div className="mx-5 mb-4 rounded-[22px] border border-white/[0.07] p-4"
+        style={{ background: 'rgba(255,255,255,0.025)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-[9px] tracking-[2px] uppercase text-white/40 font-bold">{d.chartTitle}</span>
+          <span className="text-[10px] text-[#CCFF00] font-bold">{d.chartVal}</span>
         </div>
-        <ShareCard />
-      </header>
-
-      <div className="space-y-4">
-        <WeightChart />
-        <PRTracker />
-        <BodyProgressPhotos />
-        <WorkoutStreakCalendar />
-        <WorkoutHistory />
+        <div className="flex items-end gap-1.5 h-[70px]">
+          {d.bars.filter(b => b.d || b.h > 0).map((b, i) => (
+            <div key={i} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+              <div className={`w-full rounded-t-[4px] transition-all duration-500 ${BAR_COLORS[b.t]}`}
+                style={{ height: `${b.h}%`, boxShadow: (b.t === 'done' || b.t === 'today') ? '0 0 8px rgba(204,255,0,0.3)' : 'none' }} />
+              <span className={`text-[8px] font-bold ${b.act ? 'text-[#CCFF00]' : 'text-white/30'}`}>{b.d}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <Link to="/" className="mt-6 block rounded-2xl bg-[#CCFF00] py-3 text-center text-sm font-black text-black no-underline">
-        Back to Home
-      </Link>
+      {/* Streak Chain */}
+      <div className="mx-5 mb-4 rounded-[22px] border border-white/[0.07] p-4"
+        style={{ background: 'rgba(255,255,255,0.025)' }}>
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center gap-1.5 text-[9px] tracking-[2px] uppercase text-white/40 font-bold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FFA53C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+              <path d="M12 2c0 0-5 4-5 9a5 5 0 0010 0c0-5-5-9-5-9z"/>
+            </svg>
+            Streak Chain — May
+          </div>
+          <span className="text-[10px] text-[#FFA53C] font-bold">{d.chainCount}</span>
+        </div>
+        <div className="flex flex-wrap gap-1">
+          {Array.from({ length: 31 }).map((_, i) => {
+            const day = i + 1;
+            const cls = day === 22 ? 'today' : day === 4 ? 'miss' : day >= 2 && day <= 22 ? 'done' : 'empty';
+            const styles = {
+              done: { bg: 'rgba(204,255,0,0.15)', border: 'rgba(204,255,0,0.3)', color: '#CCFF00' },
+              today: { bg: '#CCFF00', border: '#CCFF00', color: '#000' },
+              miss: { bg: 'rgba(255,107,107,0.1)', border: 'rgba(255,107,107,0.2)', color: 'rgba(255,107,107,0.6)' },
+              empty: { bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.15)' },
+            }[cls];
+            return (
+              <div key={i} className="w-[26px] h-[26px] rounded-[7px] flex items-center justify-center text-[8px] font-bold border"
+                style={{ background: styles.bg, borderColor: styles.border, color: styles.color, boxShadow: cls === 'today' ? '0 0 10px rgba(204,255,0,0.5)' : 'none' }}>
+                {day}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Activity Rings */}
+      <div className="mx-5 mb-4 rounded-[22px] border border-white/[0.07] p-4 flex items-center gap-4"
+        style={{ background: 'rgba(255,255,255,0.025)' }}>
+        <div className="relative flex-shrink-0 w-[90px] h-[90px]">
+          <RingSvg rings={d.rings} />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </div>
+        </div>
+        <div className="flex-1 space-y-2.5">
+          {[
+            { label: 'Workout', color: '#CCFF00', idx: 0 },
+            { label: 'Nutrition', color: '#5088FF', idx: 1 },
+            { label: 'Recovery', color: '#A064FF', idx: 2 },
+          ].map(ring => (
+            <div key={ring.label} className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: ring.color, boxShadow: `0 0 5px ${ring.color}` }} />
+              <span className="text-[10px] text-white/40 flex-1">{ring.label}</span>
+              <span className="text-[12px] font-bold transition-all duration-500" style={{ color: ring.color }}>
+                {d.rings[ring.idx]}%
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* PR Tracker */}
+      <div className="mx-5 mb-4 rounded-[22px] border border-white/[0.07] p-4"
+        style={{ background: 'rgba(255,255,255,0.025)' }}>
+        <div className="flex justify-between items-center mb-1">
+          <div className="flex items-center gap-1.5 text-[9px] tracking-[2px] uppercase text-white/40 font-bold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+              <path d="M8 21H5a2 2 0 01-2-2v-2a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 01-2 2h-3"/><path d="M12 3v13M8 7l4-4 4 4"/>
+            </svg>
+            Personal Records
+          </div>
+          <span className="text-[10px] text-[#CCFF00] font-bold cursor-pointer">+ Add</span>
+        </div>
+        {PR_DATA.map((pr, i) => (
+          <div key={i} className="flex items-center justify-between py-2.5 border-b border-white/[0.05] last:border-0">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-[11px] flex items-center justify-center flex-shrink-0 border"
+                style={{ background: pr.iconBg, borderColor: pr.iconBg }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke={pr.iconColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-[12px] font-bold text-white">{pr.name}</p>
+                <p className="text-[9px] text-white/30 mt-0.5">{pr.date}</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[14px] font-bold text-[#CCFF00]">{pr.kg} kg</p>
+              <p className="text-[9px] font-bold" style={{ color: pr.badgeColor }}>{pr.badge}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
     </main>
   );
 }
-
