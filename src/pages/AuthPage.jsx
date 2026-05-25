@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 export const AuthPage = ({ embedded = false }) => {
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [mode, setMode] = useState('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -10,6 +14,12 @@ export const AuthPage = ({ embedded = false }) => {
   const [message, setMessage] = useState('');
 
   const configured = isSupabaseConfigured();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate('/', { replace: true });
+    }
+  }, [user, authLoading, navigate]);
 
   const handleSignUp = async () => {
     if (!name.trim() || !email.trim() || !password) {
@@ -54,7 +64,13 @@ export const AuthPage = ({ embedded = false }) => {
       }
     }
 
-    setMessage(data.session ? 'Account created!' : 'Check your email to confirm your account!');
+    if (data.session) {
+      navigate('/', { replace: true });
+      setLoading(false);
+      return;
+    }
+
+    setMessage('Check your email to confirm your account!');
     setLoading(false);
   };
 
@@ -73,8 +89,13 @@ export const AuthPage = ({ embedded = false }) => {
     setMessage('');
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setMessage(error.message);
+    if (error) {
+      setMessage(error.message);
+      setLoading(false);
+      return;
+    }
 
+    navigate('/', { replace: true });
     setLoading(false);
   };
 

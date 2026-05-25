@@ -25,6 +25,13 @@ import NutritionScanPage from './features/nutrition/pages/NutritionScanPage';
 import NutritionPlanPage from './features/nutrition/pages/NutritionPlanPage';
 import NutritionCoachPage from './features/nutrition/pages/NutritionCoachPage';
 
+function RootRedirect() {
+  const { profile, loading } = useAuth();
+  if (loading) return null; // wait for auth + profile to load
+  if (!profile?.height && !profile?.weight) return <Navigate to="/onboarding" replace />;
+  return <Home />;
+}
+
 function App() {
   const { user, profile } = useAuth();
   const [toast, setToast] = useState(null);
@@ -106,7 +113,7 @@ function App() {
       <div className="mx-auto flex min-h-screen w-full max-w-[430px] flex-col bg-[#0A0A0A] pb-16">
         <Routes>
           <Route path="/auth" element={<AuthPage />} />
-          <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/" element={<ProtectedRoute><RootRedirect /></ProtectedRoute>} />
           <Route path="/coach" element={<ProtectedRoute><CoachPage /></ProtectedRoute>} />
           <Route path="/log" element={<ProtectedRoute><ErrorBoundary label="Nutrition route"><NutritionLayout /></ErrorBoundary></ProtectedRoute>}>
             <Route index element={<ErrorBoundary label="Nutrition hub"><NutritionHub /></ErrorBoundary>} />
