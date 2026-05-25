@@ -60,6 +60,7 @@ export function useVoiceSession({ processUtterance, speakReply }) {
               signal,
               streaming: true,
               voiceTurn: true,
+              fromVoice: true,
               onToken: (_chunk, fullText) => {
                 streamState.text = fullText;
               },

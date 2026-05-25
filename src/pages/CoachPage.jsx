@@ -253,7 +253,7 @@ export default function CoachPage() {
   const speak = speakCoachText;
 
   const processUserMessage = useCallback(async (rawText, options = {}) => {
-    const { signal, streaming = false, onToken } = options;
+    const { signal, streaming = false, onToken, fromVoice = false } = options;
     const text = sanitizeTranscript(String(rawText || '').trim());
     if (!text || (!options.voiceTurn && sendingRef.current)) return null;
     if (signal?.aborted) return null;
@@ -313,10 +313,10 @@ export default function CoachPage() {
     }
   }, [coach, profile, workoutTime, location, equipment, getCoachMessages, setCoachMessages]);
 
-  const sendMessage = useCallback(async (rawText) => {
+  const sendMessage = useCallback(async (rawText, { fromVoice = false } = {}) => {
     stopCoachAudio();
-    const reply = await processUserMessage(rawText);
-    if (reply) await speak(reply);
+    const reply = await processUserMessage(rawText, { fromVoice });
+    if (reply && fromVoice) await speak(reply);
   }, [processUserMessage, speak]);
 
   const {
@@ -329,7 +329,7 @@ export default function CoachPage() {
     VOICE_SESSION_STATE,
   } = useVoiceSession({
     processUtterance: processUserMessage,
-    speakReply: speak,
+    speakReply: (text, options) => speak(text, options),
   });
 
   // Back-compat alias — mic button and older bundles reference toggleVoice
@@ -790,10 +790,10 @@ export default function CoachPage() {
               style={{ background:'rgba(255,255,255,0.04)', borderColor:'rgba(255,255,255,0.09)' }}>
               <input type="text" value={input}
                 onChange={e => setInput(e.target.value)}
-                onKeyDown={e => e.key==='Enter' && sendMessage(input)}
+                onKeyDown={e => e.key === 'Enter' && sendMessage(input, { fromVoice: false })}
                 placeholder={`Ask ${coach.name}...`}
                 className="flex-1 bg-transparent text-[13px] text-white placeholder-white/25 outline-none px-2" />
-              <button type="button" onClick={() => sendMessage(input)}
+              <button type="button" onClick={() => sendMessage(input, { fromVoice: false })}
                 disabled={!input.trim()||loading}
                 className="w-9 h-9 rounded-[11px] flex items-center justify-center transition-all active:scale-90 flex-shrink-0"
                 style={{ background:input.trim()?coach.color:'rgba(255,255,255,0.06)' }}>
