@@ -1,5 +1,88 @@
 const TTS_ENDPOINT = 'https://texttospeech.googleapis.com/v1/text:synthesize';
 
+/** iOS Safari stops SpeechRecognition after the first session unless recreated. */
+export const IOS_SPEECH_RESTART_DELAY_MS = 300;
+
+export function isIOSDevice() {
+  return typeof navigator !== 'undefined'
+    && /iPad|iPhone|iPod/.test(navigator.userAgent);
+}
+
+export function isSpeechRecognitionSupported() {
+  return typeof window !== 'undefined'
+    && Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
+}
+
+export function getSpeechRecognitionClass() {
+  if (typeof window === 'undefined') return null;
+  return window.SpeechRecognition || window.webkitSpeechRecognition || null;
+}
+
+/** Fully tear down an instance (required on iOS before starting a new session). */
+export function destroySpeechRecognition(recognition) {
+  if (!recognition) return;
+
+  recognition.onresult = null;
+  recognition.onerror = null;
+  recognition.onend = null;
+  recognition.onstart = null;
+  recognition.onspeechstart = null;
+  recognition.onspeechend = null;
+
+  try {
+    recognition.abort();
+  } catch {
+    // ignore
+  }
+  try {
+    recognition.stop();
+  } catch {
+    // ignore
+  }
+}
+
+/**
+ * Create a fresh SpeechRecognition instance.
+ * iOS: non-continuous + caller restarts on `onend` after IOS_SPEECH_RESTART_DELAY_MS.
+ */
+export function createSpeechRecognition({
+  lang = 'en-US',
+  interimResults = true,
+  continuous,
+  onResult,
+  onError,
+  onEnd,
+} = {}) {
+  const SR = getSpeechRecognitionClass();
+  if (!SR) return null;
+
+  const recognition = new SR();
+  recognition.lang = lang;
+  recognition.interimResults = interimResults;
+  recognition.continuous = continuous ?? !isIOSDevice();
+
+  if (onResult) recognition.onresult = onResult;
+  if (onError) recognition.onerror = onError;
+  if (onEnd) recognition.onend = onEnd;
+
+  return recognition;
+}
+
+/** Delay before starting a new recognition session (iOS needs ~300ms). */
+export function getSpeechRecognitionRestartDelay(extraMs = 0) {
+  return (isIOSDevice() ? IOS_SPEECH_RESTART_DELAY_MS : 0) + extraMs;
+}
+
+export function scheduleSpeechRecognitionRestart(callback, extraMs = 0) {
+  const delay = getSpeechRecognitionRestartDelay(extraMs);
+  if (typeof window === 'undefined') return null;
+  return window.setTimeout(callback, delay);
+}
+
+export function clearSpeechRecognitionRestart(timerId) {
+  if (timerId != null) window.clearTimeout(timerId);
+}
+
 /** Shared HTML5 Audio ref — stop/play targets this everywhere (mic, VAD, pause). */
 export const coachAudioRef = { current: null };
 

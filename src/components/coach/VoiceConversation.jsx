@@ -8,7 +8,16 @@ import {
   sanitizeTranscript,
   toGeminiContents,
 } from '../../lib/coachChat';
-import { playCoachAudio, stopCoachAudio } from '../../lib/voice';
+import {
+  clearSpeechRecognitionRestart,
+  destroySpeechRecognition,
+  isIOSDevice,
+  isSpeechRecognitionSupported,
+  scheduleSpeechRecognitionRestart,
+  createSpeechRecognition,
+  stopCoachAudio,
+  playCoachAudio,
+} from '../../lib/voice';
 
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
@@ -18,7 +27,10 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const [conversation, setConversation] = useState([]);
   const recognitionRef = useRef(null);
   const restartTimerRef = useRef(null);
+  const iosRestartTimerRef = useRef(null);
   const isOpenRef = useRef(isOpen);
+  const listeningActiveRef = useRef(false);
+  const statusRef = useRef(status);
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
 
@@ -36,14 +48,30 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     speaking: 'bg-[#CCFF00]/20 border-[#CCFF00]',
   };
 
-  const stopVoiceSession = () => {
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
+
+  const clearAllRestartTimers = () => {
     if (restartTimerRef.current) {
       window.clearTimeout(restartTimerRef.current);
       restartTimerRef.current = null;
     }
+    if (iosRestartTimerRef.current) {
+      clearSpeechRecognitionRestart(iosRestartTimerRef.current);
+      iosRestartTimerRef.current = null;
+    }
+  };
 
-    recognitionRef.current?.stop();
+  const destroyCurrentRecognition = () => {
+    destroySpeechRecognition(recognitionRef.current);
     recognitionRef.current = null;
+  };
+
+  const stopVoiceSession = () => {
+    clearAllRestartTimers();
+    listeningActiveRef.current = false;
+    destroyCurrentRecognition();
     stopCoachAudio();
   };
 
@@ -95,9 +123,11 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       await playCoachAudio(response, coachId, {
         onEnd: () => {
           setStatus('idle');
-          restartTimerRef.current = window.setTimeout(() => {
+          const postSpeechDelay = isIOSDevice() ? 0 : 800;
+          restartTimerRef.current = scheduleSpeechRecognitionRestart(() => {
+            restartTimerRef.current = null;
             if (isOpenRef.current) startListening();
-          }, 800);
+          }, postSpeechDelay);
         },
       });
     } catch (error) {
@@ -106,50 +136,109 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
   };
 
-  const startListening = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const beginRecognitionSession = () => {
+    if (!listeningActiveRef.current || !isOpenRef.current) return;
 
-    if (!SpeechRecognition) {
-      window.alert('Voice not supported. Please use Chrome.');
+    destroyCurrentRecognition();
+
+    let heardFinalResult = false;
+
+    const recognition = createSpeechRecognition({
+      lang: 'en-US',
+      interimResults: true,
+      onResult: event => {
+        const text = Array.from(event.results)
+          .map(result => result[0].transcript)
+          .join('');
+
+        setTranscript(text);
+
+        const lastResult = event.results[event.results.length - 1];
+        if (lastResult?.isFinal) {
+          heardFinalResult = true;
+          listeningActiveRef.current = false;
+          destroyCurrentRecognition();
+          void handleUserSpeech(text);
+        }
+      },
+      onError: () => {
+        if (!heardFinalResult && listeningActiveRef.current) {
+          listeningActiveRef.current = false;
+          setStatus('idle');
+          setTranscript('');
+        }
+        destroyCurrentRecognition();
+      },
+      onEnd: () => {
+        recognitionRef.current = null;
+
+        if (heardFinalResult || !listeningActiveRef.current) {
+          if (!heardFinalResult) {
+            listeningActiveRef.current = false;
+            setStatus('idle');
+          }
+          return;
+        }
+
+        // iOS Safari: restart strategy — new instance after a short delay
+        if (isIOSDevice() && statusRef.current === 'listening') {
+          iosRestartTimerRef.current = scheduleSpeechRecognitionRestart(() => {
+            iosRestartTimerRef.current = null;
+            if (listeningActiveRef.current && statusRef.current === 'listening') {
+              beginRecognitionSession();
+            }
+          });
+          return;
+        }
+
+        if (!heardFinalResult) {
+          listeningActiveRef.current = false;
+          setStatus('idle');
+        }
+      },
+    });
+
+    if (!recognition) {
+      listeningActiveRef.current = false;
+      setStatus('idle');
       return;
     }
 
-    handleStop();
+    recognitionRef.current = recognition;
+
+    try {
+      recognition.start();
+    } catch (error) {
+      console.error('Speech recognition start failed:', error);
+      destroyCurrentRecognition();
+
+      if (isIOSDevice() && listeningActiveRef.current) {
+        iosRestartTimerRef.current = scheduleSpeechRecognitionRestart(() => {
+          iosRestartTimerRef.current = null;
+          beginRecognitionSession();
+        });
+      } else {
+        listeningActiveRef.current = false;
+        setStatus('idle');
+      }
+    }
+  };
+
+  const startListening = () => {
+    if (!isSpeechRecognitionSupported()) {
+      window.alert('Voice not supported. Please use Chrome or Safari.');
+      return;
+    }
+
+    clearAllRestartTimers();
+    destroyCurrentRecognition();
+    stopCoachAudio();
+
+    listeningActiveRef.current = true;
     setStatus('listening');
     setTranscript('');
 
-    const recognition = new SpeechRecognition();
-    let heardFinalResult = false;
-    recognition.lang = 'en-US';
-    recognition.continuous = false;
-    recognition.interimResults = true;
-
-    recognition.onresult = event => {
-      const text = Array.from(event.results)
-        .map(result => result[0].transcript)
-        .join('');
-
-      setTranscript(text);
-
-      const lastResult = event.results[event.results.length - 1];
-      if (lastResult?.isFinal) {
-        heardFinalResult = true;
-        recognition.stop();
-        void handleUserSpeech(text);
-      }
-    };
-
-    recognition.onerror = () => {
-      setStatus('idle');
-      setTranscript('');
-    };
-
-    recognition.onend = () => {
-      if (!heardFinalResult) setStatus('idle');
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
+    beginRecognitionSession();
   };
 
   useEffect(() => {
