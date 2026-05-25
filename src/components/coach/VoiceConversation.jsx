@@ -12,10 +12,8 @@ import {
   clearSpeechRecognitionRestart,
   destroySpeechRecognition,
   extractSpeechTranscript,
-  IOS_SPEECH_HINT,
   isIOSDevice,
   isSpeechRecognitionSupported,
-  prepareSpeechInputOnUserGesture,
   scheduleSpeechRecognitionRestart,
   createSpeechRecognition,
   stopCoachAudio,
@@ -26,25 +24,24 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
   const [status, setStatus] = useState('idle');
   const [transcript, setTranscript] = useState('');
+  const [textInput, setTextInput] = useState('');
   const [coachReply, setCoachReply] = useState('');
-  const [listenHint, setListenHint] = useState('');
   const [conversation, setConversation] = useState([]);
   const recognitionRef = useRef(null);
   const restartTimerRef = useRef(null);
-  const sessionTranscriptRef = useRef('');
-  const iosSubmittedRef = useRef(false);
   const isOpenRef = useRef(isOpen);
   const listeningActiveRef = useRef(false);
   const statusRef = useRef(status);
   const conversationRef = useRef(conversation);
+  const textInputRef = useRef(null);
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
   const ios = isIOSDevice();
 
   const statusLabels = ios
     ? {
-        idle: 'Tap mic to record',
-        listening: 'Recording…',
+        idle: 'Type a message below',
+        listening: 'Listening...',
         thinking: 'Coach is thinking...',
         speaking: `${coach.name} is speaking...`,
       }
@@ -62,6 +59,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     speaking: 'bg-[#CCFF00]/20 border-[#CCFF00]',
   };
 
+  const isBusy = status === 'thinking' || status === 'speaking';
+
   useEffect(() => {
     statusRef.current = status;
   }, [status]);
@@ -69,13 +68,6 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   useEffect(() => {
     conversationRef.current = conversation;
   }, [conversation]);
-
-  const showListenHint = (message = IOS_SPEECH_HINT) => {
-    setListenHint(message);
-    setTranscript('');
-  };
-
-  const clearListenHint = () => setListenHint('');
 
   const clearRestartTimer = () => {
     if (restartTimerRef.current) {
@@ -92,8 +84,6 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const stopVoiceSession = () => {
     clearRestartTimer();
     listeningActiveRef.current = false;
-    iosSubmittedRef.current = false;
-    sessionTranscriptRef.current = '';
     destroyCurrentRecognition();
     stopCoachAudio();
   };
@@ -103,36 +93,16 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     setStatus('idle');
   };
 
-  const finishIOSRecording = async rawText => {
-    if (iosSubmittedRef.current) return;
-    iosSubmittedRef.current = true;
-    listeningActiveRef.current = false;
-    destroyCurrentRecognition();
-
-    const cleanText = sanitizeTranscript(String(rawText || '').trim());
-    sessionTranscriptRef.current = '';
-
-    if (!cleanText) {
-      setStatus('idle');
-      showListenHint();
-      return;
-    }
-
-    clearListenHint();
-    setTranscript(cleanText);
-    await handleUserSpeech(cleanText);
-  };
-
   const handleUserSpeech = async text => {
     const cleanText = sanitizeTranscript(String(text || '').trim());
     if (!cleanText) {
       setStatus('idle');
-      if (ios) showListenHint();
       return;
     }
 
     setStatus('thinking');
     setCoachReply('');
+    if (ios) setTextInput('');
 
     const userMsg = { role: 'user', content: cleanText };
     const newConversation = [...conversationRef.current, userMsg];
@@ -167,7 +137,10 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       await playCoachAudio(response, coachId, {
         onEnd: () => {
           setStatus('idle');
-          if (ios) return;
+          if (ios) {
+            textInputRef.current?.focus();
+            return;
+          }
           restartTimerRef.current = scheduleSpeechRecognitionRestart(() => {
             restartTimerRef.current = null;
             if (isOpenRef.current) void startListening();
@@ -180,59 +153,21 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
   };
 
-  /** iOS: single utterance per tap; auto-send when recognition ends. */
-  const beginIOSRecordingSession = () => {
-    if (!listeningActiveRef.current || !isOpenRef.current) return;
+  const handleSendText = () => {
+    if (isBusy) return;
+    const message = textInput.trim();
+    if (!message) return;
+    setTranscript(message);
+    void handleUserSpeech(message);
+  };
 
-    destroyCurrentRecognition();
-    iosSubmittedRef.current = false;
-    sessionTranscriptRef.current = '';
-
-    const recognition = createSpeechRecognition({
-      lang: 'en-US',
-      interimResults: false,
-      continuous: false,
-      onResult: event => {
-        const text = extractSpeechTranscript(event);
-        if (!text) return;
-        sessionTranscriptRef.current = text;
-        setTranscript(text);
-      },
-      onError: event => {
-        if (event?.error === 'aborted') return;
-        listeningActiveRef.current = false;
-        destroyCurrentRecognition();
-        setStatus('idle');
-        showListenHint();
-      },
-      onEnd: () => {
-        recognitionRef.current = null;
-        if (!listeningActiveRef.current || iosSubmittedRef.current) return;
-        void finishIOSRecording(sessionTranscriptRef.current);
-      },
-    });
-
-    if (!recognition) {
-      listeningActiveRef.current = false;
-      setStatus('idle');
-      showListenHint();
-      return;
-    }
-
-    recognitionRef.current = recognition;
-
-    try {
-      recognition.start();
-    } catch (error) {
-      console.error('iOS speech recognition start failed:', error);
-      listeningActiveRef.current = false;
-      destroyCurrentRecognition();
-      setStatus('idle');
-      showListenHint();
+  const handleTextKeyDown = event => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      handleSendText();
     }
   };
 
-  /** Desktop: interim results + optional restart while still listening. */
   const beginDesktopRecognitionSession = () => {
     if (!listeningActiveRef.current || !isOpenRef.current) return;
 
@@ -305,6 +240,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   };
 
   const startListening = async () => {
+    if (ios) return;
+
     if (!isSpeechRecognitionSupported()) {
       window.alert('Voice not supported. Please use Chrome or Safari.');
       return;
@@ -313,35 +250,17 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     clearRestartTimer();
     destroyCurrentRecognition();
     stopCoachAudio();
-    clearListenHint();
 
     listeningActiveRef.current = true;
     setStatus('listening');
     setTranscript('');
-
-    if (ios) {
-      try {
-        await prepareSpeechInputOnUserGesture();
-        beginIOSRecordingSession();
-      } catch (error) {
-        console.error('iOS microphone unlock failed:', error);
-        listeningActiveRef.current = false;
-        setStatus('idle');
-        showListenHint();
-      }
-      return;
-    }
 
     beginDesktopRecognitionSession();
   };
 
   const handleMicPress = () => {
     if (status === 'listening') {
-      if (ios) {
-        void finishIOSRecording(sessionTranscriptRef.current);
-      } else {
-        handleStop();
-      }
+      handleStop();
       return;
     }
 
@@ -353,7 +272,11 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   useEffect(() => {
     isOpenRef.current = isOpen;
     if (!isOpen) stopVoiceSession();
-  }, [isOpen]);
+    if (isOpen && ios) {
+      const timer = window.setTimeout(() => textInputRef.current?.focus(), 300);
+      return () => window.clearTimeout(timer);
+    }
+  }, [isOpen, ios]);
 
   useEffect(() => () => stopVoiceSession(), []);
 
@@ -374,7 +297,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       </button>
 
       <div className="relative mb-6 flex items-center justify-center">
-        {status === 'listening' && (
+        {!ios && status === 'listening' && (
           <>
             <span className="absolute h-32 w-32 animate-ping rounded-full bg-red-500/30" />
             <span className="absolute h-28 w-28 animate-pulse rounded-full border-4 border-red-500 bg-red-500/25" />
@@ -396,15 +319,21 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       </div>
 
       <p className="mb-1 text-xl font-bold text-white">{coach.name}</p>
-      <p className="mb-8 text-sm text-gray-400">{coach.title}</p>
+      <p className="mb-4 text-sm text-gray-400">{coach.title}</p>
+
+      {ios && (
+        <p className="mb-6 max-w-sm text-center text-sm text-gray-500">
+          Voice input coming soon — type your message
+        </p>
+      )}
 
       <div className={`mb-4 rounded-full border px-4 py-2 transition-all ${statusColors[status]}`}>
-        <p className={`text-sm font-medium ${status === 'idle' && !listenHint ? 'text-gray-400' : 'text-white'}`}>
+        <p className={`text-sm font-medium ${status === 'idle' ? 'text-gray-400' : 'text-white'}`}>
           {statusLabels[status]}
         </p>
       </div>
 
-      {status === 'listening' && (
+      {!ios && status === 'listening' && (
         <div className="relative mb-4 flex h-16 w-16 items-center justify-center">
           <span className="absolute inset-0 animate-ping rounded-full bg-red-500/40" />
           <span className="absolute inset-1 animate-pulse rounded-full border-2 border-red-400 bg-red-500/30" />
@@ -412,11 +341,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         </div>
       )}
 
-      <div className="mb-8 min-h-16 w-full max-w-sm text-center">
-        {listenHint && status === 'idle' && (
-          <p className="text-sm text-red-400">{listenHint}</p>
-        )}
-        {status === 'listening' && transcript && (
+      <div className="mb-6 min-h-16 w-full max-w-sm text-center">
+        {!ios && status === 'listening' && transcript && (
           <p className="text-sm italic text-white">&quot;{transcript}&quot;</p>
         )}
         {(status === 'thinking' || status === 'speaking') && coachReply && (
@@ -424,29 +350,59 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={handleMicPress}
-        className={`relative flex h-20 w-20 items-center justify-center rounded-full text-3xl transition-all duration-300 ${
-          status === 'idle'
-            ? 'bg-[#CCFF00] text-black'
-            : status === 'listening'
-              ? 'bg-red-500 text-white'
-              : 'bg-[#2a2a2a] text-gray-400'
-        }`}
-        aria-label={status === 'idle' ? 'Tap to record your message' : 'Stop recording'}
-      >
-        {status === 'listening' && (
-          <span className="absolute inset-0 animate-ping rounded-full bg-red-400/50" />
-        )}
-        <span className="relative">{status === 'idle' ? '🎤' : status === 'listening' ? '⏹' : '⏳'}</span>
-      </button>
+      {ios ? (
+        <div className="w-full max-w-sm">
+          <div className="flex items-end gap-2 rounded-2xl border border-[#2a2a2a] bg-[#141414] p-2 shadow-inner">
+            <textarea
+              ref={textInputRef}
+              value={textInput}
+              onChange={event => setTextInput(event.target.value)}
+              onKeyDown={handleTextKeyDown}
+              placeholder="Message your coach..."
+              rows={1}
+              disabled={isBusy}
+              enterKeyHint="send"
+              autoComplete="off"
+              autoCorrect="on"
+              className="max-h-28 min-h-[44px] flex-1 resize-none rounded-xl bg-transparent px-3 py-2.5 text-base text-white placeholder:text-gray-500 focus:outline-none disabled:opacity-50"
+              style={{ WebkitAppearance: 'none' }}
+            />
+            <button
+              type="button"
+              onClick={handleSendText}
+              disabled={isBusy || !textInput.trim()}
+              className="mb-0.5 flex h-11 min-w-[44px] shrink-0 items-center justify-center rounded-xl bg-[#CCFF00] px-4 text-sm font-semibold text-black transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="Send message"
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <button
+            type="button"
+            onClick={handleMicPress}
+            className={`relative flex h-20 w-20 items-center justify-center rounded-full text-3xl transition-all duration-300 ${
+              status === 'idle'
+                ? 'bg-[#CCFF00] text-black'
+                : status === 'listening'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-[#2a2a2a] text-gray-400'
+            }`}
+            aria-label={status === 'idle' ? 'Tap to record your message' : 'Stop recording'}
+          >
+            {status === 'listening' && (
+              <span className="absolute inset-0 animate-ping rounded-full bg-red-400/50" />
+            )}
+            <span className="relative">{status === 'idle' ? '🎤' : status === 'listening' ? '⏹' : '⏳'}</span>
+          </button>
 
-      <p className="mt-4 text-xs text-gray-600">
-        {status === 'idle'
-          ? (ios ? 'Tap mic, speak, then wait' : 'Tap to start')
-          : (ios ? 'Tap stop when finished' : 'Tap to stop')}
-      </p>
+          <p className="mt-4 text-xs text-gray-600">
+            {status === 'idle' ? 'Tap to start' : 'Tap to stop'}
+          </p>
+        </>
+      )}
 
       {conversation.length > 0 && (
         <div className="mt-6 max-h-32 w-full max-w-sm space-y-2 overflow-y-auto">
