@@ -5,7 +5,7 @@ import { buildCoachSystemPrompt, buildProfileContext } from '../../lib/coachChat
 import { GeminiLiveSession } from '../../lib/geminiLive';
 
 const WELCOME_TRIGGER =
-  '[VOICE_SESSION_START] Greet the athlete by first name. Ask only about their energy and mood today. Max 2 sentences. Spoken text only.';
+  '[VOICE_SESSION_START] Greet the athlete by first name in fluent Persian. Ask only about energy and mood today. Max 2 sentences. Plain spoken Farsi for TTS.';
 
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
