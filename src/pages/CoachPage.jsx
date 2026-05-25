@@ -9,6 +9,7 @@ import {
   speakStreamingText,
   stopCoachAudio,
   isSpeaking,
+  isIOSDevice,
 } from '../lib/voice';
 import {
   buildCoachSystemPrompt,
@@ -214,19 +215,42 @@ export default function CoachPage() {
     }
   }, [view, location]);
 
-  const speak = useCallback(async (text, options = {}) => {
-    if (options?.stream) {
+  const speakCoachText = useCallback(async (text, options = {}) => {
+    const isStreaming = options?.stream || typeof options?.getText === 'function';
+
+    if (isIOSDevice()) {
+      if (isStreaming && typeof options?.getText === 'function') {
+        while (!options.isComplete?.()) {
+          if (options.signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+          await new Promise(resolve => window.setTimeout(resolve, 45));
+        }
+
+        const fullText = options.getText();
+        if (!fullText?.trim()) return;
+        options.onSpeechStart?.();
+        return playCoachAudio(fullText.trim(), coach.id, { signal: options.signal });
+      }
+
+      const fullText = text || options?.text || '';
+      if (!fullText?.trim()) return Promise.resolve();
+      return playCoachAudio(fullText.trim(), coach.id, { signal: options?.signal });
+    }
+
+    if (isStreaming && typeof options?.getText === 'function') {
       return speakStreamingText(options.getText, coach.id, {
         signal: options.signal,
         isComplete: options.isComplete,
         onSpeechStart: options.onSpeechStart,
-        speakSentence: (sentence, abortSignal) => playCoachAudio(sentence, coach.id, { signal: abortSignal }),
+        speakSentence: (sentence, abortSignal) =>
+          playCoachAudio(sentence, coach.id, { signal: abortSignal }),
       });
     }
 
     if (!text?.trim()) return Promise.resolve();
     return playCoachAudio(text, coach.id, { signal: options?.signal });
   }, [coach.id]);
+
+  const speak = speakCoachText;
 
   const processUserMessage = useCallback(async (rawText, options = {}) => {
     const { signal, streaming = false, onToken } = options;
