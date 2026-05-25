@@ -157,6 +157,12 @@ function getCoachById(coachId) {
   return COACHES.find(c => c.id === coachId) || COACHES[0];
 }
 
+function getCoachImageSrc(coachId) {
+  const pngIds = new Set(['blaze', 'zara']);
+  const ext = pngIds.has(coachId) ? 'png' : 'jpg';
+  return `/coaches/${coachId}.${ext}`;
+}
+
 export default function CoachPage() {
   const { profile, updateCoachPersona } = useAuth() || {};
   const {
@@ -404,12 +410,35 @@ export default function CoachPage() {
   };
 
   const CoachAvatar = ({ c = coach, size = 48 }) => (
-    <div className="rounded-full flex items-center justify-center font-black flex-shrink-0 transition-all duration-300"
-      style={{ width: size, height: size, fontSize: size * 0.26,
+    <div
+      className="relative rounded-full flex items-center justify-center font-black flex-shrink-0 overflow-hidden transition-all duration-300"
+      style={{
+        width: size,
+        height: size,
+        fontSize: size * 0.26,
         background: `linear-gradient(135deg,${c.color}28,${c.color}08)`,
-        border: `2px solid ${c.color}45`, color: c.color,
-        boxShadow: `0 0 16px ${c.color}20` }}>
-      {c.name.slice(0,2).toUpperCase()}
+        border: `2px solid ${c.color}45`,
+        color: c.color,
+        boxShadow: `0 0 16px ${c.color}20`,
+      }}
+    >
+      <span className="relative z-0">{c.name.slice(0, 2).toUpperCase()}</span>
+      <img
+        src={getCoachImageSrc(c.id)}
+        alt={c.name}
+        onError={e => {
+          e.currentTarget.style.display = 'none';
+        }}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          borderRadius: '50%',
+          zIndex: 1,
+        }}
+      />
     </div>
   );
 

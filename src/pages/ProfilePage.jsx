@@ -309,15 +309,18 @@ export default function ProfilePage() {
     return profileData;
   };
 
-  const buildPlan = () => {
+  const buildPlan = async () => {
     if (isLoading) return;
 
     setIsLoading(true);
-    void persistProfile();
 
-    window.setTimeout(() => {
-      navigate('/coach', { replace: true });
-    }, LOADING_DELAY_MS);
+    try {
+      await persistProfile();
+    } catch (err) {
+      console.error('Profile save failed:', err);
+    }
+
+    navigate('/coach', { replace: true });
   };
 
   const next = async () => {
@@ -326,7 +329,7 @@ export default function ProfilePage() {
       void persistProfile();
       setStep(s => s + 1);
     } else {
-      buildPlan();
+      void buildPlan();
     }
   };
   const back = () => {
