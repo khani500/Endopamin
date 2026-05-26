@@ -30,8 +30,10 @@ function RootRedirect() {
   if (loading) return null;
 
   const localDone = localStorage.getItem('onboarding_done') === 'true';
+  const profileDone = profile?.onboarding_completed === true;
+  const hasProfile = Boolean(profile?.goal && profile?.experience);
 
-  if (!profile?.onboarding_completed && !localDone) {
+  if (!profileDone && !localDone && !hasProfile) {
     return <Navigate to="/onboarding" replace />;
   }
   return <Home />;

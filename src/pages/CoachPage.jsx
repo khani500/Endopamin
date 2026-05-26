@@ -22,6 +22,18 @@ import { getExerciseData } from '../lib/exerciseDB';
 
 const COACHES = [
   {
+    id: 'elias', name: 'Elias', role: 'Science · Longevity', color: '#6366f1',
+    unlocked: true, tagline: 'Measured. Evidence-based. Long-game focus.',
+    greeting: "Elias here. Quick check-in — how's your energy, sleep quality, and any soreness today?",
+    systemPrompt: `You are Elias, the Science and Longevity coach for the ENDOPAMIN app. Your goal is to guide the user dynamically without waiting for them to prompt every single step.
+
+PERSONALITY ARCHETYPE: Calm / Scientific Coach
+- Tone: Measured, calm, deeply knowledgeable, with dry wit when it fits.
+- Style: Explain mechanisms — why a protocol works, not just what to do.
+- Reference physiology, recovery windows, and progressive overload with precision.
+- Treat the athlete as a peer with training literacy.`,
+  },
+  {
     id: 'aria', name: 'Aria', role: 'Science Coach', color: '#CCFF00',
     unlocked: true, tagline: 'Data-driven. Precise. Proven.',
     greeting: "Aria here. I'll build your program from the science — quick check-in first: how's your energy, sleep, and any soreness today?",
@@ -32,7 +44,9 @@ PERSONALITY ARCHETYPE: Serious / Analytical Coach
 - Style: Focus on form, biomechanics, physiology, precise numbers, and the exact science behind every exercise.
 - Explain WHY each exercise is chosen (muscle activation, joint angles, recovery windows).
 - Reference RPE, volume landmarks, and progressive overload with clinical clarity.
-- Stay warm but never fluffy — you teach like a professor who also trains athletes.`,
+- Stay warm but never fluffy — you teach like a professor who also trains athletes.
+
+Aria is warm, motivating, and science-driven. She celebrates small wins, uses encouraging language, and delivers evidence-based advice with enthusiasm. She checks in on the athlete's wellbeing before jumping to exercise recommendations.`,
   },
   {
     id: 'kane', name: 'Kane', role: 'Hardcore Trainer', color: '#FFA53C',
@@ -153,8 +167,16 @@ const WORKOUTS = {
 
 const DIFF = { easy: '#CCFF00', medium: '#FFA53C', hard: '#FF6B6B' };
 
+const COACH_PERSONA_ALIASES = {
+  rex: 'kane',
+  maya: 'nova',
+};
+
 function getCoachById(coachId) {
-  return COACHES.find(c => c.id === coachId) || COACHES[0];
+  const resolvedId = COACH_PERSONA_ALIASES[coachId] || coachId;
+  return COACHES.find(c => c.id === resolvedId)
+    || COACHES.find(c => c.id === 'elias')
+    || COACHES[0];
 }
 
 function getCoachImageSrc(coachId) {
@@ -327,6 +349,12 @@ export default function CoachPage() {
         const assistantMsg = { role: 'assistant', text: reply, timestamp: new Date().toISOString() };
         setCoachMessages(coach.id, [...historyWithUser, assistantMsg]);
       }
+
+      if (fromVoice && reply && !streaming) {
+        options.onSpeechStart?.();
+        await speakCoachText(reply, { signal, onSpeechStart: options.onSpeechStart });
+      }
+
       return reply;
     } catch (err) {
       if (err?.name === 'AbortError') return null;
@@ -338,7 +366,7 @@ export default function CoachPage() {
       sendingRef.current = false;
       setLoading(false);
     }
-  }, [coach, profile, workoutTime, location, equipment, getCoachMessages, setCoachMessages]);
+  }, [coach, profile, workoutTime, location, equipment, getCoachMessages, setCoachMessages, speakCoachText]);
 
   /** Text input only — updates chat, never triggers TTS. */
   const handleSendText = useCallback(async rawText => {
@@ -348,12 +376,10 @@ export default function CoachPage() {
   const sendMessage = useCallback(async (rawText, { fromVoice = false } = {}) => {
     if (fromVoice) {
       stopCoachAudio();
-      const reply = await processUserMessage(rawText, { fromVoice: true });
-      if (reply) await speak(reply);
-      return reply;
+      return processUserMessage(rawText, { fromVoice: true });
     }
     return handleSendText(rawText);
-  }, [processUserMessage, speak, handleSendText]);
+  }, [processUserMessage, handleSendText]);
 
   const {
     voiceState,

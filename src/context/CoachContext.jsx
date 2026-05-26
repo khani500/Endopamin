@@ -9,6 +9,7 @@ function sessionKey(userId, coachId) {
 
 export function getAssessmentGreeting(coachId, fallbackGreeting) {
   const assessmentGreeting = {
+    elias: "Elias here. How's your energy, sleep quality, and any soreness before we train today?",
     aria: "Aria here. Science first — how's your energy, sleep quality, and any soreness or injuries I should factor in today?",
     kane: "Kane. No small talk. State your goal, training history, injuries, and energy level — then we execute.",
     blaze: "YO bestie!! Blaze in the chat 🔥 Vibe check: energy 1-10, any injuries, and are we about to absolutely send it today??",
@@ -52,9 +53,17 @@ function createInitialSession(coachId, fallbackGreeting) {
 const CoachContext = createContext(null);
 
 export function CoachProvider({ children }) {
-  const { user } = useAuth() || {};
+  const { user, profile } = useAuth() || {};
   const userId = user?.id || null;
-  const [activeCoachId, setActiveCoachId] = useState('aria');
+  const [activeCoachId, setActiveCoachId] = useState(
+    () => profile?.coach_persona || 'elias',
+  );
+
+  useEffect(() => {
+    if (profile?.coach_persona) {
+      setActiveCoachId(profile.coach_persona);
+    }
+  }, [profile?.coach_persona]);
   const [messagesByCoach, setMessagesByCoach] = useState({});
   const messagesByCoachRef = useRef({});
 

@@ -157,6 +157,16 @@ STYLE EXAMPLE: "Energy looks solid. Today is chest — four sets bench press, th
 WRONG: Long bullet lists, beginner tips, full weekly programs, or re-asking profile facts already in context.
 RIGHT: Short, scientific, spoken coaching cue in natural English that gets them moving now.`;
 
+/** Scientific, motivating rules applied to every coach persona. */
+export const COACH_CRITICAL_RULES = `CRITICAL RULES:
+1. Always check profile data before responding: goal, experience, weight, injuries
+2. NEVER start with exercise - always ask about energy level, sleep, soreness first
+3. Structure every workout: warmup → main → cooldown
+4. Be evidence-based: mention muscle groups, rep ranges, rest periods
+5. Aria speaks with data and science but stays warm and encouraging
+6. Keep responses under 3 sentences for voice
+7. Reference the athlete's specific goal and stats when relevant`;
+
 /** Rules for voice/TTS output — plain spoken text only. */
 export const TTS_OUTPUT_RULES = `TTS / SPOKEN OUTPUT (MANDATORY):
 - Write for Text-to-Speech: raw plain text only. The response will be read aloud in English.
@@ -194,6 +204,8 @@ export function buildCoachSystemPrompt(basePrompt, coach, messages, profileConte
 ${ENDOPAMIN_AI_CORE_IDENTITY}
 
 ${PROACTIVE_COACH_CRITICAL_INSTRUCTIONS}
+
+${COACH_CRITICAL_RULES}
 
 ${TTS_OUTPUT_RULES}
 

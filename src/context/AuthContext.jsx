@@ -24,8 +24,13 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
 
-    setProfile(data);
-    return data;
+    const localDone = typeof window !== 'undefined'
+      && localStorage.getItem('onboarding_done') === 'true';
+    const merged = data && localDone && !data.onboarding_completed
+      ? { ...data, onboarding_completed: true }
+      : data;
+    setProfile(merged);
+    return merged;
   }, []);
 
   const ensureProfile = useCallback(async sessionUser => {

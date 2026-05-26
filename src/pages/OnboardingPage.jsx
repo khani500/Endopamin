@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -85,6 +86,7 @@ const slideVariants = {
 
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function OnboardingPage() {
+  const navigate = useNavigate();
   const { user, setProfile } = useAuth();
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
@@ -106,6 +108,12 @@ export default function OnboardingPage() {
 
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
 
+  useEffect(() => {
+    if (!initDone) return;
+    const timer = window.setTimeout(() => navigate('/', { replace: true }), 1200);
+    return () => window.clearTimeout(timer);
+  }, [initDone, navigate]);
+
   const next = () => { setDir(1); setStep(s => s + 1); };
   const back = () => { setDir(-1); setStep(s => s - 1); };
 
@@ -114,6 +122,7 @@ export default function OnboardingPage() {
     setSaving(true);
     const payload = {
       id: user.id,
+      onboarding_completed: true,
       display_name: form.display_name || 'Athlete',
       age: form.age ? Number(form.age) : null,
       gender: form.gender,
@@ -129,7 +138,9 @@ export default function OnboardingPage() {
     const { data, error } = await supabase
       .from('profiles').upsert(payload, { onConflict: 'id' }).select('*').single();
     setSaving(false);
-    if (!error && data) setProfile(data);
+    const profileData = data || { ...payload };
+    setProfile(profileData);
+    localStorage.setItem('onboarding_done', 'true');
     // show init screen
     next();
     setTimeout(() => setInitDone(true), 2800);

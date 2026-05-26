@@ -51,51 +51,25 @@ export function useVoiceSession({ processUtterance, speakReply }) {
             return;
           }
 
-          const streamState = { text: '', done: false };
-
           sessionRef.current?.beginProcessing();
 
           try {
-            const replyPromise = processUtteranceRef.current(text, {
+            const reply = await processUtteranceRef.current(text, {
               signal,
-              streaming: true,
-              voiceTurn: true,
               fromVoice: true,
-              onToken: (_chunk, fullText) => {
-                streamState.text = fullText;
-              },
-            });
-
-            const speechPromise = speakReplyRef.current(null, {
-              stream: true,
-              getText: () => streamState.text,
-              isComplete: () => streamState.done,
-              signal,
               onSpeechStart: () => {
                 sessionRef.current?.beginSpeaking();
               },
-            }).catch(err => {
-              if (err?.name !== 'AbortError') throw err;
             });
-
-            const reply = await replyPromise;
             if (turnId !== turnIdRef.current || !sessionRef.current?.isActive()) return;
 
-            streamState.done = true;
-
-            if (reply && speechPromise) {
-              await speechPromise;
-            } else if (reply) {
-              sessionRef.current.beginSpeaking();
-              await speakReplyRef.current(reply, { signal }).catch(err => {
-                if (err?.name !== 'AbortError') throw err;
-              });
+            if (reply) {
+              sessionRef.current?.beginSpeaking();
             }
           } catch (err) {
             if (err?.name === 'AbortError') return;
             console.error('Voice session utterance error:', err);
           } finally {
-            streamState.done = true;
             if (turnId === turnIdRef.current) {
               sessionRef.current?.resumeListening();
               setLiveTranscript('');
