@@ -220,7 +220,7 @@ export default function CoachPage() {
     if (!personaId) return;
     const profileCoach = getCoachById(personaId);
     if (profileCoach && profileCoach.id !== coach.id) setCoach(profileCoach);
-  }, [profile?.coach_persona, coach.id]);
+  }, [profile?.coach_persona]);
 
   const handleSelectCoach = useCallback(async selectedCoach => {
     setCoach(selectedCoach);
