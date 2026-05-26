@@ -183,7 +183,30 @@ export function getConversationPhase(messages) {
   return 'coaching';
 }
 
-export function buildCoachSystemPrompt(basePrompt, coach, messages, profileContext) {
+/** Kane-specific rules — no global scientific identity overlay. */
+export const KANE_COACH_INSTRUCTIONS = `CRITICAL INSTRUCTIONS — KANE MODE:
+
+LENGTH: 3 to 4 sentences maximum. Short, punchy, commands not lectures.
+
+TONE: Direct, strict, high-discipline, tough love. Challenge excuses, respect effort. No soft science-speak or generic motivation.
+
+PROFILE = GIVEN FACTS:
+- ATHLETE CONTEXT is complete. Use goal, experience, age, injuries, session_duration, equipment, and location without asking.
+- NEVER re-ask goals, experience, injuries, equipment, medical history, age, weight, diet, or session length if already in context.
+
+ONLY ASK IF MISSING: Today's energy level and mood or how they feel today. One short question max, in English.
+
+TODAY'S SESSION:
+- After energy and mood are clear, give today's focus in one punchy spoken line: target area plus 2 to 3 key moves with sets and rest.
+- Respect injuries and session_duration from profile.
+
+STYLE EXAMPLE: "Energy's low? Good — we train anyway. Four sets squats, ninety seconds rest. Move."
+
+WRONG: Soft peer coaching, long explanations, beginner tips, or re-asking profile facts already in context.
+RIGHT: Hardcore spoken coaching cue that gets them moving now.`;
+
+export function buildCoachSystemPrompt(basePrompt, coach, messages, profileContext, options = {}) {
+  const preservePersona = options.preservePersona ?? coach.id === 'kane';
   const phase = getConversationPhase(messages);
 
   const phaseRules = {
@@ -199,22 +222,29 @@ export function buildCoachSystemPrompt(basePrompt, coach, messages, profileConte
 - Full workout detail only if user explicitly requests it.`,
   }[phase];
 
-  return `${basePrompt}
+  const personaBlocks = preservePersona
+    ? `${KANE_COACH_INSTRUCTIONS}
 
-${ENDOPAMIN_AI_CORE_IDENTITY}
+${TTS_OUTPUT_RULES}`
+    : `${ENDOPAMIN_AI_CORE_IDENTITY}
 
 ${PROACTIVE_COACH_CRITICAL_INSTRUCTIONS}
 
 ${COACH_CRITICAL_RULES}
 
-${TTS_OUTPUT_RULES}
+${TTS_OUTPUT_RULES}`;
 
-ATHLETE CONTEXT (treat as confirmed facts — do not re-ask):
-${profileContext}
-
-${phaseRules}
-
-STRICT OUTPUT RULES:
+  const strictOutputRules = preservePersona
+    ? `STRICT OUTPUT RULES:
+- Respond ONLY as ${coach.name}. Never mention or speak as other coaches.
+- ALWAYS reply in fluent, natural English — direct and commanding.
+- HARD LIMIT: 3 to 4 sentences unless the user explicitly asks for a full workout plan.
+- HARDCORE peer-level — exact sets, reps, rest. Challenge excuses, respect effort.
+- USE PROFILE: goal, experience, injuries, session_duration from ATHLETE CONTEXT — never re-ask them.
+- ONLY ASK: today's energy and mood or feeling — if not already in the user's last message.
+- PLAIN TEXT ONLY for TTS: no asterisks, bullets, markdown, emojis, or special characters.
+- No filler openings. No UI placeholders. Address the latest message first.`
+    : `STRICT OUTPUT RULES:
 - Respond ONLY as ${coach.name}. Never mention or speak as other coaches.
 - ALWAYS reply in fluent, natural, professional English only.
 - HARD LIMIT: 3 to 4 sentences unless the user explicitly asks for a full workout plan.
@@ -223,6 +253,17 @@ STRICT OUTPUT RULES:
 - ONLY ASK: today's energy and mood or feeling — if not already in the user's last message.
 - PLAIN TEXT ONLY for TTS: no asterisks, bullets, markdown, emojis, or special characters.
 - No filler openings. No UI placeholders. Address the latest message first.`;
+
+  return `${basePrompt}
+
+${personaBlocks}
+
+ATHLETE CONTEXT (treat as confirmed facts — do not re-ask):
+${profileContext}
+
+${phaseRules}
+
+${strictOutputRules}`;
 }
 
 /** Convert app messages to Gemini multi-turn contents (role: user | model). */
