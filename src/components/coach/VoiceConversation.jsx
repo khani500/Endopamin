@@ -113,7 +113,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
   };
 
-  const stopSession = () => {
+  const stopVoiceSession = () => {
     isSpeakingRef.current = false;
     sessionRef.current?.disconnect();
     sessionRef.current = null;
@@ -125,7 +125,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
 
   const handleMicPress = () => {
     if (status === 'thinking' || status === 'speaking' || isSpeakingRef.current) {
-      stopSession();
+      stopVoiceSession();
       setStatus('idle');
       return;
     }
@@ -136,7 +136,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
 
     if (status === 'listening') {
-      stopSession();
+      stopVoiceSession();
     }
   };
 
@@ -144,10 +144,10 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     if (isOpen) {
       void startSession();
     } else {
-      stopSession();
+      stopVoiceSession();
     }
 
-    return () => stopSession();
+    return () => stopVoiceSession();
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -160,7 +160,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       <button
         type="button"
         onClick={() => {
-          stopSession();
+          stopVoiceSession();
           onClose();
         }}
         className="absolute right-6 top-6 text-2xl text-gray-400"
@@ -232,7 +232,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         }`}
         aria-label={
           isBusy
-            ? 'Coach is speaking'
+            ? 'Tap to interrupt coach'
             : canStartMic
               ? 'Tap to record your message'
               : 'Stop recording'
@@ -248,7 +248,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
 
       <p className="mt-4 text-xs text-gray-600">
         {isBusy
-          ? 'Listen to your coach...'
+          ? 'Tap mic to interrupt'
           : canStartMic
             ? 'Tap to start'
             : 'Tap to stop'}
