@@ -27,8 +27,13 @@ import NutritionCoachPage from './features/nutrition/pages/NutritionCoachPage';
 
 function RootRedirect() {
   const { profile, loading } = useAuth();
-  if (loading) return null; // wait for auth + profile to load
-  if (!profile?.height && !profile?.weight) return <Navigate to="/onboarding" replace />;
+  if (loading) return null;
+
+  const localDone = localStorage.getItem('onboarding_done') === 'true';
+
+  if (!profile?.onboarding_completed && !localDone) {
+    return <Navigate to="/onboarding" replace />;
+  }
   return <Home />;
 }
 

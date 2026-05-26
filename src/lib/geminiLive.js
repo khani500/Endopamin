@@ -108,7 +108,7 @@ export class GeminiLiveSession {
     this.scriptProcessor = this.audioContext.createScriptProcessor(4096, 1, 1);
 
     this.scriptProcessor.onaudioprocess = e => {
-      if (!this.isRecording || this.ws?.readyState !== WebSocket.OPEN) return;
+      if (!this.isRecording || this.isPlaying || this.ws?.readyState !== WebSocket.OPEN) return;
 
       const float32 = e.inputBuffer.getChannelData(0);
       const int16 = new Int16Array(float32.length);

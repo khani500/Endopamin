@@ -1,4 +1,4 @@
-import { stopSpeaking } from '../lib/voice';
+import { isSpeaking, stopSpeaking } from '../lib/voice';
 import { createVoiceActivityDetector } from '../lib/vad';
 
 export const VOICE_SESSION_STATE = {
@@ -29,8 +29,14 @@ export function createVoiceSession({
   let lastFinalTranscript = '';
   let restartTimer = null;
   let bargeInCooldownUntil = 0;
+  let coachOutputActive = false;
 
   const setState = state => onStateChange?.(state);
+
+  const shouldIgnoreMicInput = () =>
+    coachOutputActive
+    || pausedForProcessing
+    || isSpeaking();
 
   const clearRestartTimer = () => {
     if (restartTimer) {
@@ -76,7 +82,7 @@ export function createVoiceSession({
 
   const scheduleRestart = (delayMs = 350) => {
     clearRestartTimer();
-    if (!active || pausedForProcessing) return;
+    if (!active || pausedForProcessing || coachOutputActive) return;
     restartTimer = setTimeout(() => {
       restartTimer = null;
       void startListening();
@@ -134,8 +140,9 @@ export function createVoiceSession({
     vad = null;
   };
 
+  /** Desktop continuous recognition (formerly beginDesktopRecognitionSession). */
   const startListening = async () => {
-    if (!active || pausedForProcessing) return;
+    if (!active || pausedForProcessing || coachOutputActive) return;
 
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
@@ -156,12 +163,15 @@ export function createVoiceSession({
     r.interimResults = true;
 
     r.onstart = () => {
+      if (shouldIgnoreMicInput()) return;
       bargeInArmed = false;
-      stopSpeaking();
+      if (!coachOutputActive) stopSpeaking();
       setState(VOICE_SESSION_STATE.LISTENING);
     };
 
     r.onresult = event => {
+      if (shouldIgnoreMicInput()) return;
+
       let interim = '';
       let finalChunk = '';
 
@@ -172,16 +182,12 @@ export function createVoiceSession({
         else interim += transcript;
       }
 
-      if (interim.trim() || finalChunk.trim()) {
-        stopSpeaking();
-      }
+      if (!interim.trim() && !finalChunk.trim()) return;
 
       onInterimTranscript?.(`${finalChunk}${interim}`.trim());
 
       const finalText = finalChunk.trim();
       if (!finalText || finalText === lastFinalTranscript) return;
-
-      stopSpeaking();
 
       lastFinalTranscript = finalText;
       pausedForProcessing = true;
@@ -203,7 +209,7 @@ export function createVoiceSession({
 
     r.onend = () => {
       recognition = null;
-      if (active && !pausedForProcessing) scheduleRestart(200);
+      if (active && !pausedForProcessing && !coachOutputActive) scheduleRestart(200);
     };
 
     try {
@@ -229,6 +235,7 @@ export function createVoiceSession({
 
   const stop = () => {
     active = false;
+    coachOutputActive = false;
     pausedForProcessing = false;
     bargeInArmed = false;
     lastFinalTranscript = '';
@@ -242,6 +249,7 @@ export function createVoiceSession({
   };
 
   const beginProcessing = () => {
+    coachOutputActive = true;
     pausedForProcessing = true;
     bargeInArmed = false;
     clearRestartTimer();
@@ -252,6 +260,7 @@ export function createVoiceSession({
   };
 
   const beginSpeaking = () => {
+    coachOutputActive = true;
     pausedForProcessing = true;
     bargeInArmed = true;
     clearRestartTimer();
@@ -265,6 +274,7 @@ export function createVoiceSession({
   /** Resume mic after coach TTS finishes (while session still active). */
   const resumeListening = () => {
     if (!active) return;
+    coachOutputActive = false;
     pausedForProcessing = false;
     bargeInArmed = false;
     lastFinalTranscript = '';

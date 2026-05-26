@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase';
 import { stripMarkdown } from '../lib/gemini';
 import { chatWithCoach } from '../services/coachAI';
 import { useCoach } from '../hooks/useCoach';
+import { isSpeaking } from '../../lib/voice';
 import { useTokenGuard } from '../hooks/useTokenGuard';
 
 const QUICK_ACTIONS = [
@@ -46,6 +47,7 @@ export default function CoachPage() {
   const [voiceMode, setVoiceMode] = useState(false);
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef(null);
+  const isSpeakingRef = useRef(false);
   const inputRef = useRef(null);
   const [selectedGender, setSelectedGender] = useState(profile?.gender === 'female' ? 'female' : 'male');
   const [selectedTone, setSelectedTone] = useState(PERSONA_TO_TONE[personaId] || 'calm');
@@ -128,7 +130,10 @@ export default function CoachPage() {
   };
 
   const speakCoach = text => {
-    speak(stripMarkdown(text));
+    isSpeakingRef.current = true;
+    speak(stripMarkdown(text), () => {
+      isSpeakingRef.current = false;
+    });
   };
 
   const handleSend = async (textOverride = input, modeOverride = 'chat') => {
@@ -206,6 +211,7 @@ export default function CoachPage() {
       recognition.interimResults = false;
 
       recognition.onresult = event => {
+        if (isSpeakingRef.current || isSpeaking()) return;
         const text = event.results?.[0]?.[0]?.transcript || '';
         setInput(text);
         setListening(false);

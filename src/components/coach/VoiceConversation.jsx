@@ -17,6 +17,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const sessionRef = useRef(null);
   const welcomeSentRef = useRef(false);
   const isSpeakingRef = useRef(false);
+  const prevStatusRef = useRef('idle');
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
 
@@ -65,8 +66,24 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         });
       },
       onStatusChange: s => {
+        const prev = prevStatusRef.current;
+        prevStatusRef.current = s;
         setStatus(s);
-        isSpeakingRef.current = s === 'speaking' || s === 'thinking';
+
+        const coachIsOutputting = s === 'speaking' || s === 'thinking';
+        isSpeakingRef.current = coachIsOutputting;
+
+        if (coachIsOutputting) {
+          sessionRef.current?.stopMic();
+        } else if (
+          s === 'listening'
+          && sessionRef.current
+          && (prev === 'speaking' || prev === 'thinking' || prev === 'ready')
+        ) {
+          void sessionRef.current.startMic().catch(err => {
+            console.error('Mic resume after coach speech failed:', err);
+          });
+        }
 
         if (s === 'ready' && !welcomeSentRef.current) {
           welcomeSentRef.current = true;

@@ -340,11 +340,20 @@ export default function CoachPage() {
     }
   }, [coach, profile, workoutTime, location, equipment, getCoachMessages, setCoachMessages]);
 
+  /** Text input only — updates chat, never triggers TTS. */
+  const handleSendText = useCallback(async rawText => {
+    return processUserMessage(rawText, { fromVoice: false });
+  }, [processUserMessage]);
+
   const sendMessage = useCallback(async (rawText, { fromVoice = false } = {}) => {
-    stopCoachAudio();
-    const reply = await processUserMessage(rawText, { fromVoice });
-    if (reply && fromVoice) await speak(reply);
-  }, [processUserMessage, speak]);
+    if (fromVoice) {
+      stopCoachAudio();
+      const reply = await processUserMessage(rawText, { fromVoice: true });
+      if (reply) await speak(reply);
+      return reply;
+    }
+    return handleSendText(rawText);
+  }, [processUserMessage, speak, handleSendText]);
 
   const {
     voiceState,
@@ -638,7 +647,7 @@ export default function CoachPage() {
 
           <button type="button"
             onClick={() => {
-              sendMessage(`Create a detailed ${workoutTime}-min ${location} workout plan${location === 'gym' ? ' with equipment: ' + equipment.join(', ') : ''}`);
+              void handleSendText(`Create a detailed ${workoutTime}-min ${location} workout plan${location === 'gym' ? ' with equipment: ' + equipment.join(', ') : ''}`);
               setView('chat');
             }}
             className="w-full py-4 rounded-[18px] font-black text-[13px] text-black mb-2 transition-all active:scale-95"
@@ -869,11 +878,10 @@ export default function CoachPage() {
               style={{ background:'rgba(255,255,255,0.04)', borderColor:'rgba(255,255,255,0.09)' }}>
               <input type="text" value={input}
                 onChange={e => setInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && sendMessage(input, { fromVoice: false })}
+                onKeyDown={e => e.key === 'Enter' && !loading && void handleSendText(input)}
                 placeholder={`Ask ${coach.name}...`}
                 className="flex-1 bg-transparent text-[13px] text-white placeholder-white/25 outline-none px-2" />
-              <button type="button" onClick={() => sendMessage(input, { fromVoice: false })}
-                disabled={!input.trim()||loading}
+              <button type="button" onClick={() => void handleSendText(input)} disabled={!input.trim() || loading}
                 className="w-9 h-9 rounded-[11px] flex items-center justify-center transition-all active:scale-90 flex-shrink-0"
                 style={{ background:input.trim()?coach.color:'rgba(255,255,255,0.06)' }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke={input.trim()?'#000':'rgba(255,255,255,0.25)'}
@@ -1023,7 +1031,7 @@ export default function CoachPage() {
                 ← Back
               </button>
               <button type="button"
-                onClick={() => { sendMessage(`How do I perform ${activeEx?.name} with perfect form?`); setActiveEx(null); setView('chat'); }}
+                onClick={() => { void handleSendText(`How do I perform ${activeEx?.name} with perfect form?`); setActiveEx(null); setView('chat'); }}
                 className="py-3.5 rounded-[14px] font-bold text-[12px] border transition-all active:scale-95"
                 style={{ borderColor: `${coach.color}30`, color: coach.color, background: `${coach.color}10` }}>
                 Ask Coach

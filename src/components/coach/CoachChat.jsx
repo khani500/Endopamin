@@ -4,7 +4,7 @@ import { useCoach } from '../../hooks/useCoach';
 
 export const CoachChat = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
-  const { coach, chat, speak } = useCoach();
+  const { coach, chat } = useCoach();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,7 +24,6 @@ export const CoachChat = ({ isOpen, onClose }) => {
       const response = await chat(text, priorMessages);
       const coachMsg = { role: 'coach', content: response };
       setMessages(prev => [...prev, coachMsg]);
-      speak(response);
     } catch (err) {
       console.error('CoachChat AI error:', err);
       setMessages(prev => [

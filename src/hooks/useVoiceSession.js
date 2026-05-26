@@ -51,9 +51,9 @@ export function useVoiceSession({ processUtterance, speakReply }) {
             return;
           }
 
-          sessionRef.current.beginProcessing();
-
           const streamState = { text: '', done: false };
+
+          sessionRef.current?.beginProcessing();
 
           try {
             const replyPromise = processUtteranceRef.current(text, {

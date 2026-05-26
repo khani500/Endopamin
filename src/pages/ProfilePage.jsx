@@ -252,6 +252,7 @@ export default function ProfilePage() {
 
   const buildPayload = () => ({
     id: user?.id,
+    onboarding_completed: true,
     display_name: form.display_name || 'Athlete',
     age: form.age ? Number(form.age) : null,
     gender: form.gender,
@@ -316,6 +317,7 @@ export default function ProfilePage() {
 
     try {
       await persistProfile();
+      localStorage.setItem('onboarding_done', 'true');
     } catch (err) {
       console.error('Profile save failed:', err);
     }

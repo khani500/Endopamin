@@ -85,6 +85,8 @@ export const AuthProvider = ({ children }) => {
   }, [loadProfile]);
 
   const signOut = useCallback(async () => {
+    localStorage.removeItem('onboarding_done');
+
     if (!supabase) {
       setUser(null);
       setProfile(null);
