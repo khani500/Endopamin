@@ -269,15 +269,6 @@ export default function ProfilePage() {
     session_duration: form.session_duration,
     diet: form.diet,
     injuries: form.injuries,
-    plan_setup: {
-      goal: form.goal,
-      activity: form.activity,
-      location: form.location,
-      experience: form.experience,
-      session_duration: form.session_duration,
-      diet: form.diet,
-      injuries: form.injuries,
-    },
   });
 
   const persistProfile = async () => {
