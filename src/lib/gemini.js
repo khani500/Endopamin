@@ -1,18 +1,42 @@
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
 const GEMINI_MODEL = 'gemini-2.5-flash';
 
+function useGeminiProxy() {
+  return typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+}
+
 function endpoint(action = 'generateContent') {
+  if (useGeminiProxy()) {
+    return '/api/gemini';
+  }
   return `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:${action}?key=${GEMINI_API_KEY}`;
 }
 
 function streamEndpoint() {
+  if (useGeminiProxy()) {
+    return '/api/gemini';
+  }
   return `${endpoint('streamGenerateContent')}&alt=sse`;
 }
 
+function buildRequestPayload(body, action = 'generateContent', { stream = false } = {}) {
+  if (!useGeminiProxy()) return body;
+  return {
+    model: GEMINI_MODEL,
+    action,
+    ...(stream ? { alt: 'sse' } : {}),
+    ...body,
+  };
+}
+
 function assertConfigured() {
-  if (!GEMINI_API_KEY) {
+  if (!GEMINI_API_KEY && !useGeminiProxy()) {
     throw new Error('Gemini API key is missing. Add VITE_GEMINI_API_KEY to .env.local and restart Vite.');
   }
+}
+
+function isConfigured() {
+  return Boolean(GEMINI_API_KEY) || useGeminiProxy();
 }
 
 function extractText(data) {
@@ -50,7 +74,7 @@ async function generateContent({ prompt, systemPrompt = '', generationConfig = {
   const response = await fetch(endpoint(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify(buildRequestPayload(body)),
     signal: generationConfig.signal,
   });
   const data = await response.json();
@@ -77,7 +101,7 @@ async function generateChatContent({ contents, systemPrompt = '', signal } = {})
   const response = await fetch(endpoint(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify(buildRequestPayload(body)),
     signal,
   });
   const data = await response.json();
@@ -109,7 +133,7 @@ async function generateAudioContent({ audioBase64, mimeType, prompt }) {
   const response = await fetch(endpoint(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify(buildRequestPayload(body)),
   });
   const data = await response.json();
   if (!response.ok || data.error) {
@@ -126,7 +150,7 @@ export const testConnection = async () => {
 };
 
 export const askGemini = async (prompt, systemPrompt = '') => {
-  if (!GEMINI_API_KEY) {
+  if (!isConfigured()) {
     return 'Coach is offline — API key missing';
   }
 
@@ -144,7 +168,7 @@ export const askGemini = async (prompt, systemPrompt = '') => {
  * @param {{ messages: { role: 'user'|'assistant', text: string }[], systemPrompt?: string }} params
  */
 export const askGeminiChat = async ({ messages, systemPrompt = '', signal } = {}) => {
-  if (!GEMINI_API_KEY) {
+  if (!isConfigured()) {
     return 'Coach is offline — API key missing';
   }
 
@@ -196,7 +220,7 @@ export async function askGeminiChatStream({
   const response = await fetch(streamEndpoint(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify(buildRequestPayload(body, 'streamGenerateContent', { stream: true })),
     signal,
   });
 
@@ -249,13 +273,13 @@ export async function askGeminiChatStream({
 }
 
 export const askGeminiWithImage = async (base64Image, prompt) => {
-  if (!GEMINI_API_KEY) return null;
+  if (!isConfigured()) return null;
 
   try {
     const response = await fetch(endpoint(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: JSON.stringify(buildRequestPayload({
         contents: [
           {
             parts: [
@@ -270,7 +294,7 @@ export const askGeminiWithImage = async (base64Image, prompt) => {
           },
         ],
         generationConfig: { temperature: 0.1, maxOutputTokens: 512 },
-      }),
+      })),
     });
 
     const data = await response.json();
