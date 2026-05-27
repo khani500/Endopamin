@@ -167,6 +167,15 @@ export function clearSpeechRecognitionRestart(timerId) {
 /** Shared HTML5 Audio ref — stop/play targets this everywhere (mic, VAD, pause). */
 export const coachAudioRef = { current: null };
 
+function base64ToArrayBuffer(base64) {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i += 1) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
 let playbackGeneration = 0;
 
 const DEFAULT_NEURAL_VOICE = 'en-US-Neural2-F';
@@ -196,11 +205,18 @@ function getCoachVoiceName(coachId) {
 export function stopCoachAudio() {
   playbackGeneration += 1;
 
-  const audio = coachAudioRef.current;
-  if (audio) {
+  const playback = coachAudioRef.current;
+  if (playback?.stop) {
     try {
-      if (!audio.paused) audio.pause();
-      audio.currentTime = 0;
+      playback.stop();
+    } catch {
+      // ignore
+    }
+    coachAudioRef.current = null;
+  } else if (playback) {
+    try {
+      if (!playback.paused) playback.pause();
+      playback.currentTime = 0;
     } catch {
       // ignore
     }
@@ -292,10 +308,15 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
   stopCoachAudio();
   const playGeneration = playbackGeneration;
 
-  await resumeAudioContextOnUserGesture();
+  const context = await resumeAudioContextOnUserGesture();
+  if (!context) {
+    await speakWithSpeechSynthesis(trimmed, signal);
+    onEnd?.();
+    return;
+  }
 
-  const audio = new Audio(`data:audio/mp3;base64,${data.audioContent}`);
-  coachAudioRef.current = audio;
+  let source;
+  let settled = false;
 
   return new Promise((resolve, reject) => {
     const cleanup = () => {
@@ -303,38 +324,68 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
     };
 
     const onAbort = () => {
-      stopCoachAudio();
+      if (source) {
+        try {
+          source.stop(0);
+        } catch {
+          // ignore
+        }
+      }
+      coachAudioRef.current = null;
       cleanup();
       reject(new DOMException('Aborted', 'AbortError'));
     };
 
     signal?.addEventListener('abort', onAbort, { once: true });
-
-    audio.onended = () => {
-      cleanup();
-      if (playGeneration !== playbackGeneration) {
-        resolve();
-        return;
-      }
-      if (coachAudioRef.current === audio) coachAudioRef.current = null;
-      onEnd?.();
-      resolve();
-    };
-
-    audio.onerror = () => {
-      cleanup();
-      if (coachAudioRef.current === audio) coachAudioRef.current = null;
-      reject(new Error('Coach audio playback failed.'));
-    };
-
-    audio.play().catch(async () => {
-      console.warn('HTML5 Audio blocked, falling back to SpeechSynthesis');
-      cleanup();
-      if (coachAudioRef.current === audio) coachAudioRef.current = null;
-      await speakWithSpeechSynthesis(trimmed, signal);
-      onEnd?.();
-      resolve();
-    });
+    Promise.resolve()
+      .then(async () => {
+        const audioBuffer = await context.decodeAudioData(base64ToArrayBuffer(data.audioContent));
+        if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+        source = context.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(context.destination);
+        coachAudioRef.current = {
+          stop: () => {
+            try {
+              source.stop(0);
+            } catch {
+              // ignore
+            }
+          },
+        };
+        source.onended = () => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          if (playGeneration !== playbackGeneration) {
+            resolve();
+            return;
+          }
+          if (coachAudioRef.current?.stop) coachAudioRef.current = null;
+          onEnd?.();
+          resolve();
+        };
+        source.start(0);
+      })
+      .catch(async error => {
+        if (error?.name === 'AbortError') {
+          if (!settled) {
+            settled = true;
+            cleanup();
+            reject(error);
+          }
+          return;
+        }
+        console.warn('AudioContext playback failed, falling back to SpeechSynthesis');
+        if (!settled) {
+          settled = true;
+          cleanup();
+          if (coachAudioRef.current?.stop) coachAudioRef.current = null;
+          await speakWithSpeechSynthesis(trimmed, signal);
+          onEnd?.();
+          resolve();
+        }
+      });
   });
 }
 
@@ -342,8 +393,8 @@ export const speak = playCoachAudio;
 export const speakWithGoogleTTS = playCoachAudio;
 
 export const isSpeaking = () => {
-  const audio = coachAudioRef.current;
-  return Boolean(audio && !audio.paused && !audio.ended)
+  const playback = coachAudioRef.current;
+  return Boolean(playback)
     || (typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.speaking);
 };
 
