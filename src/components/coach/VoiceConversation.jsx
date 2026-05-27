@@ -39,8 +39,45 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const isSpeakingRef = useRef(false);
   const prevStatusRef = useRef('idle');
   const fallbackModeRef = useRef(false);
+  const sessionStartingRef = useRef(false);
+  const iosRestartTimerRef = useRef(null);
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
+
+  /** iOS Safari blocks Gemini Live WebSocket — always use SpeechRecognition + TTS. */
+  const usesSpeechPath = () => isIOS || fallbackModeRef.current;
+
+  const clearIosRestartTimer = () => {
+    if (iosRestartTimerRef.current != null) {
+      window.clearTimeout(iosRestartTimerRef.current);
+      iosRestartTimerRef.current = null;
+    }
+  };
+
+  const activateFallbackFromLive = err => {
+    console.error('Gemini Live failed, falling back to tap-to-speak:', err);
+    try {
+      sessionRef.current?.disconnect();
+    } catch {
+      // ignore
+    }
+    sessionRef.current = null;
+    sessionStartingRef.current = false;
+    fallbackModeRef.current = true;
+    isSpeakingRef.current = false;
+    welcomeSentRef.current = false;
+    setStatus('ready');
+  };
+
+  const scheduleListenAfterSpeak = () => {
+    clearIosRestartTimer();
+    iosRestartTimerRef.current = window.setTimeout(() => {
+      iosRestartTimerRef.current = null;
+      if (!isOpen || isSpeakingRef.current || recognitionRef.current) return;
+      if (!usesSpeechPath()) return;
+      void startIosListening();
+    }, 400);
+  };
 
   const statusLabels = {
     idle: 'Tap to speak',
@@ -130,11 +167,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       isSpeakingRef.current = false;
       setStatus('ready');
 
-      // Auto-restart listening after coach speaks
-      if (!controller.signal.aborted) {
-        setTimeout(() => {
-          if (isOpen) void startIosListening();
-        }, 400);
+      if (!controller.signal.aborted && usesSpeechPath()) {
+        scheduleListenAfterSpeak();
       }
     } catch (err) {
       if (err?.name !== 'AbortError') {
@@ -153,8 +187,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       await resumeAudioContextOnUserGesture();
       await prepareSpeechInputOnUserGesture();
     } catch (err) {
-      console.error('iOS audio/mic preparation failed:', err);
-      setStatus('closed');
+      console.error('Speech input preparation failed:', err);
+      setStatus('ready');
       return;
     }
 
@@ -194,7 +228,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     });
 
     if (!recognition) {
-      setStatus('closed');
+      setStatus('ready');
       return;
     }
 
@@ -210,12 +244,14 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   };
 
   const startSession = async () => {
-    if (isIOS) {
+    if (usesSpeechPath()) {
       setStatus('ready');
       return;
     }
 
-    if (sessionRef.current) return;
+    if (sessionRef.current || sessionStartingRef.current) return;
+
+    sessionStartingRef.current = true;
 
     const session = new GeminiLiveSession({
       coachId,
@@ -231,6 +267,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         });
       },
       onStatusChange: s => {
+        if (fallbackModeRef.current) return;
+
         const prev = prevStatusRef.current;
         prevStatusRef.current = s;
         setStatus(s);
@@ -243,10 +281,12 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         } else if (
           s === 'listening'
           && sessionRef.current
+          && !fallbackModeRef.current
           && (prev === 'speaking' || prev === 'thinking' || prev === 'ready')
         ) {
           void sessionRef.current.startMic().catch(err => {
             console.error('Mic resume after coach speech failed:', err);
+            activateFallbackFromLive(err);
           });
         }
 
@@ -261,10 +301,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         }
       },
       onError: err => {
-        console.error('Gemini Live error, falling back to tap-to-speak:', err);
-        sessionRef.current = null;
-        fallbackModeRef.current = true;
-        setStatus('ready');
+        activateFallbackFromLive(err);
       },
     });
 
@@ -272,27 +309,34 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
 
     try {
       await session.connect();
+      if (fallbackModeRef.current) return;
       await session.startMic();
     } catch (err) {
-      console.error('Gemini Live session failed, falling back to tap-to-speak:', err);
-      sessionRef.current = null;
-      fallbackModeRef.current = true;
-      setStatus('ready');
+      activateFallbackFromLive(err);
+    } finally {
+      sessionStartingRef.current = false;
     }
   };
 
   const stopVoiceSession = () => {
+    clearIosRestartTimer();
     iosAbortRef.current?.abort();
     iosAbortRef.current = null;
     stopCoachAudio();
     cleanupIosRecognition();
     isSpeakingRef.current = false;
-    sessionRef.current?.disconnect();
+    sessionStartingRef.current = false;
+    try {
+      sessionRef.current?.disconnect();
+    } catch {
+      // ignore
+    }
     sessionRef.current = null;
     iosHistoryRef.current = [];
     iosTranscriptRef.current = '';
     welcomeSentRef.current = false;
     fallbackModeRef.current = false;
+    prevStatusRef.current = 'idle';
     setStatus('idle');
     setTranscript('');
     setCoachReply('');
@@ -309,7 +353,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
 
     if (canStartMic) {
-      if (isIOS || fallbackModeRef.current) {
+      if (usesSpeechPath()) {
         void startIosListening();
       } else {
         void startSession();
@@ -318,7 +362,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
 
     if (status === 'listening') {
-      if (isIOS && recognitionRef.current) {
+      if (usesSpeechPath() && recognitionRef.current) {
         shouldSubmitTranscriptRef.current = true;
         setStatus('thinking');
         try {
@@ -335,14 +379,24 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   };
 
   useEffect(() => {
-    if (isOpen) {
-      void startSession();
-    } else {
+    if (!isOpen) {
       stopVoiceSession();
+      return () => stopVoiceSession();
     }
 
+    if (isIOS) {
+      setStatus('ready');
+      return () => stopVoiceSession();
+    }
+
+    if (fallbackModeRef.current) {
+      setStatus('ready');
+      return () => stopVoiceSession();
+    }
+
+    void startSession();
     return () => stopVoiceSession();
-  }, [isOpen, isIOS]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
