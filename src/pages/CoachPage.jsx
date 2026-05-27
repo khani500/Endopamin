@@ -10,6 +10,7 @@ import {
   stopCoachAudio,
   isSpeaking,
   isIOSDevice,
+  unlockAudioContextForIOS,
 } from '../lib/voice';
 import {
   buildCoachSystemPrompt,
@@ -371,6 +372,7 @@ export default function CoachPage() {
 
   /** Text input only — updates chat, never triggers TTS. */
   const handleSendText = useCallback(async rawText => {
+    await unlockAudioContextForIOS();
     return processUserMessage(rawText, { fromVoice: false });
   }, [processUserMessage]);
 

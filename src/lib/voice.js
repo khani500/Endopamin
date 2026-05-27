@@ -6,6 +6,7 @@ export const IOS_SPEECH_RESTART_DELAY_MS = 300;
 export const IOS_SPEECH_HINT = 'Tap mic and speak clearly';
 
 let sharedAudioContext = null;
+let audioContextUnlocked = false;
 
 export function isIOSDevice() {
   return typeof navigator !== 'undefined'
@@ -65,6 +66,29 @@ export async function resumeAudioContextOnUserGesture() {
   }
 
   return sharedAudioContext;
+}
+
+export async function unlockAudioContextForIOS() {
+  if (audioContextUnlocked) return;
+  if (!isIOSDevice()) return;
+  if (typeof window === 'undefined') return;
+
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return;
+
+  try {
+    const ctx = new AudioCtx();
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
+    await ctx.resume();
+    audioContextUnlocked = true;
+    sharedAudioContext = ctx;
+  } catch (e) {
+    console.warn('iOS audio unlock failed:', e);
+  }
 }
 
 /**
