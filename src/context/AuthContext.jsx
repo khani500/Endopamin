@@ -55,8 +55,8 @@ export const AuthProvider = ({ children }) => {
     const profileDefaults = {
       id: sessionUser.id,
       display_name: metadataName || sessionUser.email?.split('@')[0] || 'Athlete',
-      goal: 'strength_gain',
-      experience: 'intermediate',
+      goal: null,
+      experience: null,
       gender: null,
       job_type: null,
       days_per_week: 4,
