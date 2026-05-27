@@ -191,13 +191,20 @@ export const askGeminiChat = async ({ messages, systemPrompt = '', signal } = {}
     return 'Coach is offline — API key missing';
   }
 
-  try {
-    const data = await generateChatContent({ contents: messages, systemPrompt, signal });
-    return extractText(data) || 'No response';
-  } catch (err) {
-    if (err.name === 'AbortError') throw err;
-    console.error('Gemini chat error:', err.message);
-    return 'Coach is having connection issues. Try again.';
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const data = await generateChatContent({ contents: messages, systemPrompt, signal });
+      return extractText(data) || 'No response';
+    } catch (err) {
+      if (err.name === 'AbortError') throw err;
+      if (attempt === 0) {
+        console.warn('Gemini chat attempt 1 failed, retrying...', err.message);
+        await new Promise(r => setTimeout(r, 800));
+        continue;
+      }
+      console.error('Gemini chat error after retry:', err.message);
+      return 'Coach is having connection issues. Try again.';
+    }
   }
 };
 

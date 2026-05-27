@@ -218,6 +218,26 @@ export const stopSpeaking = stopCoachAudio;
  * Synthesize and play coach speech via Google Cloud TTS (Neural2).
  * Always stops overlapping audio before fetching or playing a new clip.
  */
+
+/** Fallback TTS using browser SpeechSynthesis (works without API key). */
+async function speakWithSpeechSynthesis(text, signal) {
+  return new Promise(resolve => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      resolve();
+      return;
+    }
+    window.speechSynthesis.cancel();
+    if (signal?.aborted) { resolve(); return; }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = 1.05;
+    utterance.volume = 1.0;
+    utterance.onend = () => resolve();
+    utterance.onerror = () => resolve();
+    window.speechSynthesis.speak(utterance);
+  });
+}
+
 export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } = {}) {
   const trimmed = String(text || '').trim();
   if (!trimmed) return;
@@ -230,7 +250,9 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
 
   const apiKey = getTtsApiKey();
   if (!apiKey) {
-    console.warn('Google TTS API key missing — set VITE_GOOGLE_TTS_API_KEY in .env.local');
+    console.warn('Google TTS API key missing — falling back to SpeechSynthesis');
+    await speakWithSpeechSynthesis(trimmed, signal);
+    onEnd?.();
     return;
   }
 
@@ -256,7 +278,11 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
 
   const data = await response.json();
   if (!response.ok || !data.audioContent) {
-    throw new Error(data.error?.message || 'Google TTS did not return audio.');
+    const errMsg = data.error?.message || 'Google TTS did not return audio.';
+    console.warn('Google TTS failed, falling back to SpeechSynthesis:', errMsg);
+    await speakWithSpeechSynthesis(trimmed, signal);
+    onEnd?.();
+    return;
   }
 
   if (signal?.aborted || generation !== playbackGeneration) {
@@ -301,10 +327,13 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
       reject(new Error('Coach audio playback failed.'));
     };
 
-    void audio.play().catch(error => {
+    audio.play().catch(async () => {
+      console.warn('HTML5 Audio blocked, falling back to SpeechSynthesis');
       cleanup();
       if (coachAudioRef.current === audio) coachAudioRef.current = null;
-      reject(error);
+      await speakWithSpeechSynthesis(trimmed, signal);
+      onEnd?.();
+      resolve();
     });
   });
 }
