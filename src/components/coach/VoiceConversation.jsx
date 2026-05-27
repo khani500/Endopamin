@@ -172,10 +172,11 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         setStatus('ready');
       },
       onEnd: () => {
-        const shouldSubmit = shouldSubmitTranscriptRef.current;
+        const hasTranscript = Boolean(iosTranscriptRef.current.trim());
+        const shouldSubmit = shouldSubmitTranscriptRef.current || hasTranscript;
         shouldSubmitTranscriptRef.current = false;
         recognitionRef.current = null;
-        if (shouldSubmit) {
+        if (shouldSubmit && iosTranscriptRef.current.trim()) {
           void runIosTurn(iosTranscriptRef.current);
         } else if (!isSpeakingRef.current) {
           setStatus('ready');
@@ -251,8 +252,9 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         }
       },
       onError: err => {
-        console.error('Gemini Live error:', err);
-        setStatus('closed');
+        console.error('Gemini Live error, falling back to tap-to-speak:', err);
+        sessionRef.current = null;
+        setStatus('ready');
       },
     });
 
@@ -262,9 +264,9 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       await session.connect();
       await session.startMic();
     } catch (err) {
-      console.error('Gemini Live session failed:', err);
+      console.error('Gemini Live session failed, falling back to tap-to-speak:', err);
       sessionRef.current = null;
-      setStatus('closed');
+      setStatus('ready');
     }
   };
 
