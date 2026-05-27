@@ -129,6 +129,13 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
 
       isSpeakingRef.current = false;
       setStatus('ready');
+
+      // Auto-restart listening after coach speaks
+      if (!controller.signal.aborted) {
+        setTimeout(() => {
+          if (isOpen) void startIosListening();
+        }, 400);
+      }
     } catch (err) {
       if (err?.name !== 'AbortError') {
         console.error('iOS voice turn failed:', err);
