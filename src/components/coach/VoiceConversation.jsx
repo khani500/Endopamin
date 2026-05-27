@@ -42,7 +42,6 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const sessionStartingRef = useRef(false);
   const iosRestartTimerRef = useRef(null);
   const micReadyRef = useRef(false);
-  const backgroundListeningRef = useRef(false);
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
 
@@ -164,10 +163,6 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       setStatus('speaking');
       isSpeakingRef.current = true;
 
-      if (usesSpeechPath() && micReadyRef.current && !recognitionRef.current) {
-        void startIosListening(true);
-      }
-
       await playCoachAudio(reply, coachId, { signal: controller.signal });
 
       isSpeakingRef.current = false;
@@ -188,7 +183,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
   };
 
-  const startIosListening = async (background = false) => {
+  const startIosListening = async () => {
     try {
       await resumeAudioContextOnUserGesture();
       if (!micReadyRef.current) {
@@ -204,10 +199,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
 
     cleanupIosRecognition();
     iosTranscriptRef.current = '';
-    if (!background) {
-      setTranscript('');
-      setCoachReply('');
-    }
+    setTranscript('');
+    setCoachReply('');
     shouldSubmitTranscriptRef.current = false;
 
     const recognition = createSpeechRecognition({
@@ -217,23 +210,9 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       onResult: event => {
         const result = event?.results?.[event.results.length - 1];
         const chunk = result?.[0]?.transcript?.trim() || '';
-        if (!chunk) return;
-        iosTranscriptRef.current = chunk;
-        if (!backgroundListeningRef.current) setTranscript(chunk);
-
-        // Interrupt coach while speaking (hands-free barge-in)
-        if (
-          backgroundListeningRef.current
-          && isSpeakingRef.current
-          && result?.isFinal
-          && chunk.length >= 2
-        ) {
-          shouldSubmitTranscriptRef.current = true;
-          try {
-            recognition.stop();
-          } catch {
-            // ignore
-          }
+        if (chunk) {
+          iosTranscriptRef.current = chunk;
+          setTranscript(chunk);
         }
       },
       onError: err => {
@@ -245,20 +224,10 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         const shouldSubmit = shouldSubmitTranscriptRef.current || hasTranscript;
         shouldSubmitTranscriptRef.current = false;
         recognitionRef.current = null;
-        backgroundListeningRef.current = false;
-
         if (shouldSubmit && iosTranscriptRef.current.trim()) {
-          // User spoke — runIosTurn will stop coach audio automatically
           void runIosTurn(iosTranscriptRef.current);
-        } else if (isOpen && usesSpeechPath()) {
-          // No speech detected — keep listening (background if coach speaking)
-          const inBg = isSpeakingRef.current;
-          window.setTimeout(() => {
-            if (isOpen && !recognitionRef.current && !iosAbortRef.current?.signal?.aborted) {
-              void startIosListening(inBg);
-            }
-          }, inBg ? 150 : 300);
-          if (!inBg) setStatus('ready');
+        } else if (!isSpeakingRef.current) {
+          setStatus('ready');
         }
       },
     });
@@ -269,8 +238,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
 
     recognitionRef.current = recognition;
-    backgroundListeningRef.current = background;
-    if (!background) setStatus('listening');
+    setStatus('listening');
     try {
       recognition.start();
     } catch (err) {
@@ -374,7 +342,6 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     welcomeSentRef.current = false;
     fallbackModeRef.current = false;
     micReadyRef.current = false;
-    backgroundListeningRef.current = false;
     prevStatusRef.current = 'idle';
     setStatus('idle');
     setTranscript('');
