@@ -87,9 +87,6 @@ async function generateContent({ prompt, systemPrompt = '', generationConfig = {
 
 /** Multi-turn chat with full conversation history for coach sessions. */
 async function generateChatContent({ contents, systemPrompt = '', signal } = {}) {
-  const isProduction =
-    typeof window !== 'undefined' && window.location.hostname !== 'localhost';
-
   const body = {
     contents,
     generationConfig: COACH_GENERATION_CONFIG,
@@ -101,28 +98,12 @@ async function generateChatContent({ contents, systemPrompt = '', signal } = {})
     };
   }
 
-  let response;
-  if (isProduction) {
-    // fix: always use Vercel proxy in production (fixes Safari iOS CORS block)
-    response = await fetch('/api/gemini', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: GEMINI_MODEL,
-        action: 'generateContent',
-        ...body,
-      }),
-      signal,
-    });
-  } else {
-    response = await fetch(endpoint(), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(buildRequestPayload(body)),
-      signal,
-    });
-  }
-
+  const response = await fetch(endpoint(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(buildRequestPayload(body)),
+    signal,
+  });
   const data = await response.json();
   if (!response.ok || data.error) {
     const message = data.error?.message || `Gemini request failed with status ${response.status}`;
