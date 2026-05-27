@@ -273,32 +273,44 @@ export async function askGeminiChatStream({
 }
 
 export const askGeminiWithImage = async (base64Image, prompt) => {
-  if (!isConfigured()) return null;
+  const isProduction =
+    typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+
+  const body = {
+    contents: [
+      {
+        parts: [
+          {
+            inline_data: {
+              mime_type: 'image/jpeg',
+              data: base64Image,
+            },
+          },
+          { text: prompt },
+        ],
+      },
+    ],
+    generationConfig: { temperature: 0.1, maxOutputTokens: 512 },
+  };
 
   try {
-    const response = await fetch(endpoint(), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(buildRequestPayload({
-        contents: [
-          {
-            parts: [
-              {
-                inline_data: {
-                  mime_type: 'image/jpeg',
-                  data: base64Image,
-                },
-              },
-              { text: prompt },
-            ],
-          },
-        ],
-        generationConfig: { temperature: 0.1, maxOutputTokens: 512 },
-      })),
-    });
+    let response;
+    if (isProduction) {
+      response = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...body, model: 'gemini-2.5-flash', action: 'generateContent' }),
+      });
+    } else {
+      if (!GEMINI_API_KEY) return null;
+      response = await fetch(endpoint(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    }
 
     const data = await response.json();
-    console.log('📡 Gemini vision response status:', response.status);
     if (data.error) {
       console.error('Vision error:', data.error);
       return null;
