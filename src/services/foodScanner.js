@@ -48,9 +48,7 @@ export async function imageToGeminiPayload(blob) {
   };
 }
 
-export const scanFood = async imageFile => {
-  const base64 = await blobToBase64(imageFile);
-  const prompt = `You are a nutrition expert. Analyze this food image carefully.
+const FOOD_SCAN_PROMPT = `You are a nutrition expert. Analyze this food image carefully.
 Return ONLY valid JSON, no markdown, no explanation:
 {
   "food_name": "specific food name",
@@ -64,15 +62,23 @@ Return ONLY valid JSON, no markdown, no explanation:
   "tips": "one practical nutrition tip about this food"
 }`;
 
-  const response = await askGeminiWithImage(base64, prompt);
-  if (!response) return null;
-
+export const scanFood = async imageFile => {
   try {
-    const clean = response.replace(/```json|```/g, '').trim();
-    return normalizeFoodResult(JSON.parse(extractJson(clean) || clean));
-  } catch {
-    console.error('JSON parse error:', response);
-    return null;
+    const { base64 } = await imageToGeminiPayload(imageFile);
+    console.log('Scanning food, image size:', base64.length);
+
+    const result = await askGeminiWithImage(base64, FOOD_SCAN_PROMPT);
+    console.log('Gemini vision result:', result);
+
+    if (!result) throw new Error('No response from Gemini');
+
+    const cleaned = result.replace(/```json|```/g, '').trim();
+    const jsonText = extractJson(cleaned) || cleaned;
+    const parsed = JSON.parse(jsonText);
+    return normalizeFoodResult(parsed);
+  } catch (err) {
+    console.error('Food scan error:', err);
+    throw err;
   }
 };
 

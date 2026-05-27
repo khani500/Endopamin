@@ -10,7 +10,6 @@ import {
   stopCoachAudio,
   isSpeaking,
   isIOSDevice,
-  unlockAudioContextForIOS,
 } from '../lib/voice';
 import {
   buildCoachSystemPrompt,
@@ -372,11 +371,42 @@ export default function CoachPage() {
 
   /** Text input only — updates chat, never triggers TTS. */
   const handleSendText = useCallback(async rawText => {
-    await unlockAudioContextForIOS();
+    if (typeof window !== 'undefined') {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        try {
+          const ctx = new AudioCtx();
+          const buf = ctx.createBuffer(1, 1, 22050);
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(ctx.destination);
+          src.start(0);
+          await ctx.resume();
+        } catch (e) {
+          // ignore — unlock is best-effort on tap
+        }
+      }
+    }
     return processUserMessage(rawText, { fromVoice: false });
   }, [processUserMessage]);
 
   const sendMessage = useCallback(async (rawText, { fromVoice = false } = {}) => {
+    if (typeof window !== 'undefined') {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        try {
+          const ctx = new AudioCtx();
+          const buf = ctx.createBuffer(1, 1, 22050);
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(ctx.destination);
+          src.start(0);
+          await ctx.resume();
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
     if (fromVoice) {
       stopCoachAudio();
       return processUserMessage(rawText, { fromVoice: true });
