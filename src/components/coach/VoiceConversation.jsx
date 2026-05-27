@@ -41,6 +41,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const fallbackModeRef = useRef(false);
   const sessionStartingRef = useRef(false);
   const iosRestartTimerRef = useRef(null);
+  const micReadyRef = useRef(false);
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
 
@@ -185,7 +186,11 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const startIosListening = async () => {
     try {
       await resumeAudioContextOnUserGesture();
-      await prepareSpeechInputOnUserGesture();
+      if (!micReadyRef.current) {
+        // Only request mic permission on first tap (requires user gesture)
+        await prepareSpeechInputOnUserGesture();
+        micReadyRef.current = true;
+      }
     } catch (err) {
       console.error('Speech input preparation failed:', err);
       setStatus('ready');
@@ -336,6 +341,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     iosTranscriptRef.current = '';
     welcomeSentRef.current = false;
     fallbackModeRef.current = false;
+    micReadyRef.current = false;
     prevStatusRef.current = 'idle';
     setStatus('idle');
     setTranscript('');
