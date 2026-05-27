@@ -39,3 +39,31 @@ export function getNotificationPermission() {
   if (!('Notification' in window)) return 'not_supported';
   return Notification.permission;
 }
+
+export async function getNotificationSettings(userId) {
+  try {
+    const { data } = await supabase
+      .from('profiles')
+      .select('fcm_token, last_notification_at')
+      .eq('id', userId)
+      .single();
+    return { desk_breaks: true, desk_break_interval: 60, ...data };
+  } catch {
+    return { desk_breaks: true, desk_break_interval: 60 };
+  }
+}
+
+export function sendNotification(title, body, data = {}) {
+  if (typeof window === 'undefined' || !('Notification' in window)) return;
+  if (Notification.permission !== 'granted') return;
+  try {
+    new Notification(title, {
+      body,
+      icon: '/logo.png',
+      badge: '/badge.png',
+      data,
+    });
+  } catch (err) {
+    console.warn('Notification failed:', err);
+  }
+}

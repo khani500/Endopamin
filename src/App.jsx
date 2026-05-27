@@ -15,7 +15,7 @@ import WorkoutSession from './pages/WorkoutSession';
 import GroupSession from './pages/GroupSession';
 import DeskBreakSession from './pages/DeskBreakSession';
 import { useAuth } from './context/AuthContext';
-import { setupNotifications, getNotificationPermission, listenForForegroundMessages } from './services/notificationService';
+import { setupNotifications, getNotificationPermission, listenForForegroundMessages, getNotificationSettings, sendNotification } from './services/notificationService';
 import { checkUserAbsence, updateLastActive } from './services/absenceDetector';
 import { onForegroundMessage } from './lib/firebase';
 import NutritionLayout from './features/nutrition/NutritionLayout';
