@@ -38,6 +38,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const welcomeSentRef = useRef(false);
   const isSpeakingRef = useRef(false);
   const prevStatusRef = useRef('idle');
+  const fallbackModeRef = useRef(false);
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
 
@@ -131,6 +132,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     } catch (err) {
       if (err?.name !== 'AbortError') {
         console.error('iOS voice turn failed:', err);
+        setCoachReply('ERR: ' + (err?.message || String(err)));
       }
       isSpeakingRef.current = false;
       setStatus('ready');
@@ -254,6 +256,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       onError: err => {
         console.error('Gemini Live error, falling back to tap-to-speak:', err);
         sessionRef.current = null;
+        fallbackModeRef.current = true;
         setStatus('ready');
       },
     });
@@ -266,6 +269,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     } catch (err) {
       console.error('Gemini Live session failed, falling back to tap-to-speak:', err);
       sessionRef.current = null;
+      fallbackModeRef.current = true;
       setStatus('ready');
     }
   };
@@ -281,6 +285,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     iosHistoryRef.current = [];
     iosTranscriptRef.current = '';
     welcomeSentRef.current = false;
+    fallbackModeRef.current = false;
     setStatus('idle');
     setTranscript('');
     setCoachReply('');
@@ -297,7 +302,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
 
     if (canStartMic) {
-      if (isIOS) {
+      if (isIOS || fallbackModeRef.current) {
         void startIosListening();
       } else {
         void startSession();
