@@ -15,10 +15,9 @@ import WorkoutSession from './pages/WorkoutSession';
 import GroupSession from './pages/GroupSession';
 import DeskBreakSession from './pages/DeskBreakSession';
 import { useAuth } from './context/AuthContext';
-import { setupNotifications, getNotificationPermission, listenForForegroundMessages } from './services/notificationService';
-import { getNotificationSettings, sendNotification } from './services/notifications';
 import { checkUserAbsence, updateLastActive } from './services/absenceDetector';
 import { onForegroundMessage } from './lib/firebase';
+import { getNotificationSettings, sendNotification } from './services/notificationService';
 import NutritionLayout from './features/nutrition/NutritionLayout';
 import NutritionHub from './features/nutrition/pages/NutritionHub';
 import NutritionOverviewPage from './features/nutrition/pages/NutritionOverviewPage';
@@ -74,16 +73,6 @@ function App() {
 
   useEffect(() => {
     if (!user?.id || !profile) return;
-
-    // Setup push notifications (ask permission once)
-    if (getNotificationPermission() !== 'denied') {
-      setupNotifications(user.id).catch(() => {});
-    }
-
-    // Listen for foreground notifications → show as toast
-    listenForForegroundMessages(({ title, body }) => {
-      console.log('🔔 Notification:', title, body);
-    }).catch(() => {});
 
     const checkKey = `${user.id}:${profile.last_active || 'new'}`;
     if (absenceCheckKeyRef.current === checkKey) return;
