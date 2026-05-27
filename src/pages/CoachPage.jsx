@@ -323,7 +323,7 @@ export default function CoachPage() {
         coach,
         historyWithUser,
         profileContext,
-        { preservePersona: coach.id === 'kane' },
+        { preservePersona: coach.id === 'kane', profile },
       );
       const contents = toGeminiContents(historyWithUser);
 

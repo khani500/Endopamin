@@ -125,6 +125,70 @@ export function buildProfileContext(profile, workoutTime, location, equipment) {
   ].filter(Boolean).join('\n');
 }
 
+export const calculateMetrics = profile => {
+  const weight = Number(profile?.weight) || 0;
+  const height = Number(profile?.height) || 0;
+  const age = Number(profile?.age) || 30;
+  const gender = profile?.gender || 'male';
+
+  const heightM = profile?.height_unit === 'cm' ? height / 100 : height * 0.0254;
+  const heightCm = profile?.height_unit === 'cm' ? height : height * 2.54;
+  const weightKg = profile?.weight_unit === 'kg' ? weight : weight * 0.453592;
+  const bmi = heightM > 0 ? (weightKg / (heightM * heightM)).toFixed(1) : '0';
+
+  const bmr = gender === 'male'
+    ? (10 * weightKg) + (6.25 * heightCm) - (5 * age) + 5
+    : (10 * weightKg) + (6.25 * heightCm) - (5 * age) - 161;
+
+  const activityMultipliers = {
+    sedentary: 1.2,
+    moderate: 1.55,
+    active: 1.725,
+  };
+  const tdee = Math.round(bmr * (activityMultipliers[profile?.activity] || 1.55));
+
+  const proteinMin = weightKg > 0 ? Math.round(weightKg * 1.6) : 0;
+  const proteinMax = weightKg > 0 ? Math.round(weightKg * 2.2) : 0;
+
+  return {
+    bmi,
+    bmr: Math.round(bmr),
+    tdee,
+    proteinMin,
+    proteinMax,
+    weightKg: weightKg > 0 ? weightKg.toFixed(1) : '0',
+  };
+};
+
+export function buildAthleteMetricsBlock(profile = {}) {
+  const metrics = calculateMetrics(profile);
+  const sessionLocation = profile?.location || 'gym';
+  const sessionDuration = profile?.session_duration || 45;
+
+  return `
+
+CALCULATED METRICS (use these in ALL recommendations):
+- BMI: ${metrics.bmi}
+- BMR: ${metrics.bmr} kcal/day
+- TDEE: ${metrics.tdee} kcal/day
+- Daily protein target: ${metrics.proteinMin}-${metrics.proteinMax}g
+- Body weight (calculated): ${metrics.weightKg} kg
+- Training environment: ${sessionLocation}
+- Available time per session: ${sessionDuration} minutes
+
+SCIENTIFIC REFERENCES TO USE:
+- Nutrition: ISSN position stands on protein (1.6-2.2g/kg), creatine, caffeine
+- Training: NSCA guidelines, progressive overload, periodization
+- Recovery: sleep quality, HRV, RPE scale (Borg 1-10)
+
+COACH MUST:
+1. Reference BMI/TDEE/protein targets in nutrition advice
+2. Match workout to available time and location (gym/home)
+3. Suggest desk breaks every 60 min for sedentary users
+4. Provide complete warmup → main → cooldown structure
+5. Cite evidence when making recommendations`;
+}
+
 /** Endopamin AI core identity — applied to every coach persona. */
 export const ENDOPAMIN_AI_CORE_IDENTITY = `You are Endopamin AI, an elite, scientific, and deeply knowledgeable fitness coach and personal trainer. Your client is a 48-year-old fitness industry veteran with 10 years of coaching experience, an expert software developer, and a highly disciplined athlete who trains daily.
 
@@ -207,6 +271,8 @@ RIGHT: Hardcore spoken coaching cue that gets them moving now.`;
 
 export function buildCoachSystemPrompt(basePrompt, coach, messages, profileContext, options = {}) {
   const preservePersona = options.preservePersona ?? coach.id === 'kane';
+  const profile = options.profile || {};
+  const athleteContext = `${profileContext}${buildAthleteMetricsBlock(profile)}`;
   const phase = getConversationPhase(messages);
 
   const phaseRules = {
@@ -259,7 +325,7 @@ ${TTS_OUTPUT_RULES}`;
 ${personaBlocks}
 
 ATHLETE CONTEXT (treat as confirmed facts — do not re-ask):
-${profileContext}
+${athleteContext}
 
 ${phaseRules}
 

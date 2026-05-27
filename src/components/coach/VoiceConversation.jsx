@@ -46,7 +46,9 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
 
   const buildSystemPrompt = () => {
     const ctx = buildProfileContext(profile, profile?.session_duration, profile?.location, []);
-    return buildCoachSystemPrompt(coach.personality, { name: coach.name }, [], ctx);
+    return buildCoachSystemPrompt(coach.personality, { name: coach.name, id: coachId }, [], ctx, {
+      profile,
+    });
   };
 
   const startSession = async () => {

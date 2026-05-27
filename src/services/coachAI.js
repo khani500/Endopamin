@@ -133,9 +133,10 @@ ${COACH_CHAT_INSTRUCTIONS}`;
 
   const systemPrompt = buildCoachSystemPrompt(
     basePrompt,
-    { name: coach.name },
+    { name: coach.name, id: coach.id },
     historyMessages,
     profileContext,
+    { preservePersona: coachId === 'kane', profile },
   );
 
   try {
