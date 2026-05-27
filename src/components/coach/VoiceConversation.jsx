@@ -1,20 +1,40 @@
 import { useEffect, useRef, useState } from 'react';
 import { getCoach } from '../../config/coaches';
 import { useAuth } from '../../context/AuthContext';
-import { buildCoachSystemPrompt, buildProfileContext } from '../../lib/coachChat';
+import {
+  buildCoachSystemPrompt,
+  buildProfileContext,
+  sanitizeCoachResponse,
+  toGeminiContents,
+} from '../../lib/coachChat';
+import { askGeminiChat } from '../../lib/gemini';
 import { GeminiLiveSession } from '../../lib/geminiLive';
+import {
+  isIOSDevice,
+  createSpeechRecognition,
+  prepareSpeechInputOnUserGesture,
+  stopCoachAudio,
+  playCoachAudio,
+  resumeAudioContextOnUserGesture,
+} from '../../lib/voice';
 
 const WELCOME_TRIGGER =
   '[VOICE_SESSION_START] Greet the athlete by first name in fluent professional English. Ask only about energy and mood today. Max 2 sentences. Plain spoken English for TTS.';
 
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
+  const isIOS = isIOSDevice();
   const [status, setStatus] = useState('idle');
   const [transcript, setTranscript] = useState('');
   const [coachReply, setCoachReply] = useState('');
   const [listenHint] = useState('');
   const [conversation, setConversation] = useState([]);
   const sessionRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const iosHistoryRef = useRef([]);
+  const iosTranscriptRef = useRef('');
+  const shouldSubmitTranscriptRef = useRef(false);
+  const iosAbortRef = useRef(null);
   const welcomeSentRef = useRef(false);
   const isSpeakingRef = useRef(false);
   const prevStatusRef = useRef('idle');
@@ -42,7 +62,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   };
 
   const isBusy = status === 'thinking' || status === 'speaking' || status === 'connecting';
-  const canStartMic = status === 'idle' || status === 'closed';
+  const canStartMic = status === 'idle' || status === 'closed' || status === 'ready';
 
   const buildSystemPrompt = () => {
     const ctx = buildProfileContext(profile, profile?.session_duration, profile?.location, []);
@@ -51,7 +71,140 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     });
   };
 
+  const cleanupIosRecognition = () => {
+    const recognition = recognitionRef.current;
+    if (recognition) {
+      try {
+        recognition.onresult = null;
+        recognition.onerror = null;
+        recognition.onend = null;
+        recognition.stop();
+      } catch {
+        // ignore
+      }
+    }
+    recognitionRef.current = null;
+    shouldSubmitTranscriptRef.current = false;
+  };
+
+  const runIosTurn = async rawText => {
+    const text = String(rawText || '').trim();
+    if (!text) {
+      setStatus('ready');
+      return;
+    }
+
+    stopCoachAudio();
+    setStatus('thinking');
+    setCoachReply('');
+    const userMessage = { role: 'user', text };
+    const historyWithUser = [...iosHistoryRef.current, userMessage];
+    iosHistoryRef.current = historyWithUser;
+    setConversation(historyWithUser);
+
+    const controller = new AbortController();
+    iosAbortRef.current = controller;
+
+    try {
+      const rawReply = await askGeminiChat({
+        messages: toGeminiContents(historyWithUser),
+        systemPrompt: buildSystemPrompt(),
+        signal: controller.signal,
+      });
+      const reply = sanitizeCoachResponse(rawReply, coach.name);
+      if (!reply) {
+        setStatus('ready');
+        return;
+      }
+
+      const assistantMessage = { role: 'assistant', text: reply };
+      iosHistoryRef.current = [...historyWithUser, assistantMessage];
+      setConversation(iosHistoryRef.current);
+      setCoachReply(reply);
+      setStatus('speaking');
+      isSpeakingRef.current = true;
+
+      await playCoachAudio(reply, coachId, { signal: controller.signal });
+
+      isSpeakingRef.current = false;
+      setStatus('ready');
+    } catch (err) {
+      if (err?.name !== 'AbortError') {
+        console.error('iOS voice turn failed:', err);
+      }
+      isSpeakingRef.current = false;
+      setStatus('ready');
+    } finally {
+      iosAbortRef.current = null;
+    }
+  };
+
+  const startIosListening = async () => {
+    try {
+      await resumeAudioContextOnUserGesture();
+      await prepareSpeechInputOnUserGesture();
+    } catch (err) {
+      console.error('iOS audio/mic preparation failed:', err);
+      setStatus('closed');
+      return;
+    }
+
+    cleanupIosRecognition();
+    iosTranscriptRef.current = '';
+    setTranscript('');
+    setCoachReply('');
+    shouldSubmitTranscriptRef.current = false;
+
+    const recognition = createSpeechRecognition({
+      lang: 'en-US',
+      interimResults: true,
+      continuous: false,
+      onResult: event => {
+        const result = event?.results?.[event.results.length - 1];
+        const chunk = result?.[0]?.transcript?.trim() || '';
+        if (chunk) {
+          iosTranscriptRef.current = chunk;
+          setTranscript(chunk);
+        }
+      },
+      onError: err => {
+        console.error('SpeechRecognition error:', err);
+        setStatus('ready');
+      },
+      onEnd: () => {
+        const shouldSubmit = shouldSubmitTranscriptRef.current;
+        shouldSubmitTranscriptRef.current = false;
+        recognitionRef.current = null;
+        if (shouldSubmit) {
+          void runIosTurn(iosTranscriptRef.current);
+        } else if (!isSpeakingRef.current) {
+          setStatus('ready');
+        }
+      },
+    });
+
+    if (!recognition) {
+      setStatus('closed');
+      return;
+    }
+
+    recognitionRef.current = recognition;
+    setStatus('listening');
+    try {
+      recognition.start();
+    } catch (err) {
+      console.error('Failed to start SpeechRecognition:', err);
+      recognitionRef.current = null;
+      setStatus('ready');
+    }
+  };
+
   const startSession = async () => {
+    if (isIOS) {
+      setStatus('ready');
+      return;
+    }
+
     if (sessionRef.current) return;
 
     const session = new GeminiLiveSession({
@@ -61,10 +214,10 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         setCoachReply(prev => prev + text);
         setConversation(prev => {
           const last = prev[prev.length - 1];
-          if (last?.role === 'coach') {
-            return [...prev.slice(0, -1), { role: 'coach', content: last.content + text }];
+          if (last?.role === 'assistant') {
+            return [...prev.slice(0, -1), { role: 'assistant', text: last.text + text }];
           }
-          return [...prev, { role: 'coach', content: text }];
+          return [...prev, { role: 'assistant', text }];
         });
       },
       onStatusChange: s => {
@@ -116,9 +269,15 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   };
 
   const stopVoiceSession = () => {
+    iosAbortRef.current?.abort();
+    iosAbortRef.current = null;
+    stopCoachAudio();
+    cleanupIosRecognition();
     isSpeakingRef.current = false;
     sessionRef.current?.disconnect();
     sessionRef.current = null;
+    iosHistoryRef.current = [];
+    iosTranscriptRef.current = '';
     welcomeSentRef.current = false;
     setStatus('idle');
     setTranscript('');
@@ -127,18 +286,37 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
 
   const handleMicPress = () => {
     if (status === 'thinking' || status === 'speaking' || isSpeakingRef.current) {
+      iosAbortRef.current?.abort();
+      iosAbortRef.current = null;
+      stopCoachAudio();
       stopVoiceSession();
       setStatus('idle');
       return;
     }
 
     if (canStartMic) {
-      void startSession();
+      if (isIOS) {
+        void startIosListening();
+      } else {
+        void startSession();
+      }
       return;
     }
 
     if (status === 'listening') {
-      stopVoiceSession();
+      if (isIOS && recognitionRef.current) {
+        shouldSubmitTranscriptRef.current = true;
+        setStatus('thinking');
+        try {
+          recognitionRef.current.stop();
+        } catch (err) {
+          console.error('Failed to stop SpeechRecognition:', err);
+          shouldSubmitTranscriptRef.current = false;
+          setStatus('ready');
+        }
+      } else {
+        stopVoiceSession();
+      }
     }
   };
 
@@ -150,7 +328,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     }
 
     return () => stopVoiceSession();
-  }, [isOpen]);
+  }, [isOpen, isIOS]);
 
   if (!isOpen) return null;
 
@@ -264,7 +442,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
               className={`text-xs ${message.role === 'user' ? 'text-right text-gray-300' : 'text-left text-[#CCFF00]'}`}
             >
               {message.role === 'user' ? '🗣 ' : `${coach.avatar} `}
-              {message.content}
+              {message.text}
             </p>
           ))}
         </div>
