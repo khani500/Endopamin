@@ -248,8 +248,15 @@ async function speakWithSpeechSynthesis(text, signal) {
     utterance.lang = 'en-US';
     utterance.rate = 1.05;
     utterance.volume = 1.0;
-    utterance.onend = () => resolve();
-    utterance.onerror = () => resolve();
+    // Timeout fallback: iOS PWA sometimes blocks silently (no onend/onerror)
+    const estimatedMs = Math.max(text.length * 65, 2500);
+    const timeout = setTimeout(() => {
+      window.speechSynthesis.cancel();
+      resolve();
+    }, estimatedMs);
+
+    utterance.onend = () => { clearTimeout(timeout); resolve(); };
+    utterance.onerror = () => { clearTimeout(timeout); resolve(); };
     window.speechSynthesis.speak(utterance);
   });
 }
