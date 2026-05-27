@@ -309,7 +309,9 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
   const playGeneration = playbackGeneration;
 
   const context = await resumeAudioContextOnUserGesture();
-  if (!context) {
+  // If AudioContext is missing or not running (PWA background/foreground switch), fall back immediately
+  if (!context || context.state !== 'running') {
+    console.warn('AudioContext not running (state:', context?.state, ') — using SpeechSynthesis');
     await speakWithSpeechSynthesis(trimmed, signal);
     onEnd?.();
     return;
