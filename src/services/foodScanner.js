@@ -9,7 +9,7 @@ export async function blobToBase64(blob) {
   });
 }
 
-async function canvasToBlob(canvas, type = 'image/jpeg', quality = 0.82) {
+async function canvasToBlob(canvas, type = 'image/jpeg', quality = 0.7) {
   return new Promise(resolve => canvas.toBlob(resolve, type, quality));
 }
 
@@ -18,7 +18,7 @@ async function normalizeImageBlob(blob) {
 
   try {
     const bitmap = await createImageBitmap(blob);
-    const maxSide = 1024;
+    const maxSide = 800;
     const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
     const width = Math.max(1, Math.round(bitmap.width * scale));
     const height = Math.max(1, Math.round(bitmap.height * scale));
