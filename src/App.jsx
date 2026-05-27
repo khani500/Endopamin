@@ -15,6 +15,7 @@ import WorkoutSession from './pages/WorkoutSession';
 import GroupSession from './pages/GroupSession';
 import DeskBreakSession from './pages/DeskBreakSession';
 import { useAuth } from './context/AuthContext';
+import { setupNotifications, getNotificationPermission, listenForForegroundMessages } from './services/notificationService';
 import { checkUserAbsence, updateLastActive } from './services/absenceDetector';
 import { onForegroundMessage } from './lib/firebase';
 import { getNotificationSettings, sendNotification } from './services/notificationService';
@@ -73,6 +74,16 @@ function App() {
 
   useEffect(() => {
     if (!user?.id || !profile) return;
+
+    // Setup push notifications (ask permission once)
+    if (getNotificationPermission() !== 'denied') {
+      setupNotifications(user.id).catch(() => {});
+    }
+
+    // Listen for foreground notifications → show as toast
+    listenForForegroundMessages(({ title, body }) => {
+      console.log('🔔 Notification:', title, body);
+    }).catch(() => {});
 
     const checkKey = `${user.id}:${profile.last_active || 'new'}`;
     if (absenceCheckKeyRef.current === checkKey) return;
