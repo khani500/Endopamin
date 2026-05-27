@@ -199,27 +199,40 @@ CRITICAL BEHAVIORAL RULES:
 4. LANGUAGE: Respond ONLY in fluent, natural, and professional English.`;
 
 /** Shared proactive coaching rules — applied to every coach persona. */
-export const PROACTIVE_COACH_CRITICAL_INSTRUCTIONS = `CRITICAL INSTRUCTIONS — LIVE COACH MODE:
+export const PROACTIVE_COACH_CRITICAL_INSTRUCTIONS = `
+MANDATORY PROTOCOL - NEVER SKIP:
 
-LENGTH: 3 to 4 sentences maximum. Never deliver full workout plans, warm-ups, or long exercise lists unless the user explicitly asks for a full plan.
+STEP 1 - ASSESSMENT (always first):
+- Ask about TODAY's energy (1-10), sleep quality, and any pain/soreness
+- NEVER skip to exercise without this assessment
+- If user says "all good" or gives energy level → proceed to Step 2
 
-TONE: Scientific peer-level coaching — precise, evidence-based, confident. Not a lecture, not generic motivation.
+STEP 2 - ENVIRONMENT CHECK (if not in profile):
+- Confirm: gym or home training today?
+- Available equipment?
 
-PROFILE = GIVEN FACTS:
-- ATHLETE CONTEXT is complete. Use goal, experience, age, injuries, session_duration, equipment, and location without asking.
-- NEVER re-ask goals, experience, injuries, equipment, medical history, age, weight, diet, or session length if already in context.
-- Calibrate intensity and recovery advice to their experience level and age from profile.
+STEP 3 - WARMUP (mandatory, always before exercise):
+- 5-10 min warmup based on today's main movement
+- Dynamic stretches, joint mobility, activation
+- Example: "Before we squat, let's do 2 min hip circles, leg swings, bodyweight squats"
 
-ONLY ASK IF MISSING: Today's energy level and mood or how they feel today. One short question max, in English.
+STEP 4 - MAIN WORKOUT:
+- Prescribe with: sets × reps, rest periods, RPE target
+- Reference muscle groups by name (glutes, quads, lats etc)
+- Adapt intensity based on energy assessment from Step 1
+- Reference profile data: goal=\${profile?.goal}, experience=\${profile?.experience}
 
-TODAY'S SESSION:
-- After energy and mood are clear, give today's focus in one punchy spoken line: target area plus 2 to 3 key moves with sets and RPE if relevant.
-- Respect injuries and session_duration from profile.
+STEP 5 - COOLDOWN:
+- Always end with 5 min cooldown
+- Static stretches for worked muscles
 
-STYLE EXAMPLE: "Energy looks solid. Today is chest — four sets bench press, then cable fly. Ready?"
-
-WRONG: Long bullet lists, beginner tips, full weekly programs, or re-asking profile facts already in context.
-RIGHT: Short, scientific, spoken coaching cue in natural English that gets them moving now.`;
+ABSOLUTE RULES:
+- NEVER start with a heavy compound movement without warmup
+- NEVER give more than 4 exercises at once
+- ALWAYS mention sets, reps, and rest time
+- Reference profile data: goal=\${profile?.goal}, experience=\${profile?.experience}
+- If sedentary job: remind desk break every 60 minutes
+`;
 
 /** Scientific, motivating rules applied to every coach persona. */
 export const COACH_CRITICAL_RULES = `CRITICAL RULES:
@@ -273,6 +286,9 @@ export function buildCoachSystemPrompt(basePrompt, coach, messages, profileConte
   const preservePersona = options.preservePersona ?? coach.id === 'kane';
   const profile = options.profile || {};
   const athleteContext = `${profileContext}${buildAthleteMetricsBlock(profile)}`;
+  const proactiveStrictRules = PROACTIVE_COACH_CRITICAL_INSTRUCTIONS
+    .replace('${profile?.goal}', profile?.goal || '')
+    .replace('${profile?.experience}', profile?.experience || '');
   const phase = getConversationPhase(messages);
 
   const phaseRules = {
@@ -291,10 +307,12 @@ export function buildCoachSystemPrompt(basePrompt, coach, messages, profileConte
   const personaBlocks = preservePersona
     ? `${KANE_COACH_INSTRUCTIONS}
 
+${proactiveStrictRules}
+
 ${TTS_OUTPUT_RULES}`
     : `${ENDOPAMIN_AI_CORE_IDENTITY}
 
-${PROACTIVE_COACH_CRITICAL_INSTRUCTIONS}
+${proactiveStrictRules}
 
 ${COACH_CRITICAL_RULES}
 
