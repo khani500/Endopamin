@@ -75,7 +75,7 @@ export const scanFood = async (imageFile) => {
         ]
       }],
       thinkingConfig: { thinkingBudget: 0 },
-        generationConfig: {
+      generationConfig: {
         temperature: 0.1,
         maxOutputTokens: 512
       }
