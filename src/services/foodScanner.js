@@ -74,7 +74,8 @@ export const scanFood = async (imageFile) => {
           { text: 'Analyze this food image. Reply with ONLY one single-line JSON, no newlines inside strings, no markdown, no explanation:\n{"food_name":"","serving_size":"","calories":0,"protein_g":0,"carbs_g":0,"fat_g":0,"confidence":"high","notes":""}' }
         ]
       }],
-      generationConfig: {
+      thinkingConfig: { thinkingBudget: 0 },
+        generationConfig: {
         temperature: 0.1,
         maxOutputTokens: 512
       }
@@ -198,6 +199,7 @@ Return ONLY a JSON object with this exact structure, no other text:
             },
           ],
         }],
+        thinkingConfig: { thinkingBudget: 0 },
         generationConfig: {
           temperature: 0.1,
           maxOutputTokens: 512,
