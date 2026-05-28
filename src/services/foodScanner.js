@@ -62,20 +62,29 @@ Return ONLY valid JSON, no markdown, no explanation:
   "tips": "one practical nutrition tip about this food"
 }`;
 
-export const scanFood = async imageFile => {
+export const scanFood = async (imageFile) => {
   try {
-    const { base64 } = await imageToGeminiPayload(imageFile);
-    console.log('Scanning food, image size:', base64.length);
+    const { base64, mimeType } = await imageToGeminiPayload(imageFile);
 
-    const result = await askGeminiWithImage(base64, FOOD_SCAN_PROMPT);
-    console.log('Gemini vision result:', result);
+    const response = await fetch('/api/gemini', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'gemini-1.5-flash',
+        contents: [{
+          parts: [
+            { inline_data: { mime_type: mimeType, data: base64 } },
+            { text: FOOD_SCAN_PROMPT }
+          ]
+        }]
+      })
+    });
 
-    if (!result) throw new Error('No response from Gemini');
-
-    const cleaned = result.replace(/```json|```/g, '').trim();
-    const jsonText = extractJson(cleaned) || cleaned;
-    const parsed = JSON.parse(jsonText);
-    return normalizeFoodResult(parsed);
+    const data = await response.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const jsonText = extractJson(text);
+    if (!jsonText) throw new Error('Could not analyze image. Try again.');
+    return normalizeFoodResult(JSON.parse(jsonText));
   } catch (err) {
     console.error('Food scan error:', err);
     throw err;
