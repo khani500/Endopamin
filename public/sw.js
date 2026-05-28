@@ -1,4 +1,4 @@
-const CACHE = 'endopamin-v1';
+const CACHE = 'endopamin-v99';
 const PRECACHE = ['/', '/index.html'];
 
 self.addEventListener('install', e => {
