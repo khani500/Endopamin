@@ -66,24 +66,35 @@ export const scanFood = async (imageFile) => {
   try {
     const { base64, mimeType } = await imageToGeminiPayload(imageFile);
 
-    const response = await fetch('/api/gemini', {
+    const buildBody = model => ({
+      model,
+      contents: [{
+        parts: [
+          { inline_data: { mime_type: mimeType, data: base64 } },
+          { text: 'Analyze this food. Return ONLY this JSON, no other text:\n{"food_name":"","serving_size":"","calories":0,"protein_g":0,"carbs_g":0,"fat_g":0,"confidence":"high","notes":""}' }
+        ]
+      }],
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 512
+      }
+    });
+
+    let model = 'gemini-1.5-flash';
+    let response = await fetch('/api/gemini', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'gemini-2.0-flash',
-        contents: [{
-          parts: [
-            { inline_data: { mime_type: mimeType, data: base64 } },
-            { text: 'Analyze this food. Return ONLY this JSON, no other text:\n{"food_name":"","serving_size":"","calories":0,"protein_g":0,"carbs_g":0,"fat_g":0,"confidence":"high","notes":""}' }
-          ]
-        }],
-        generationConfig: {
-          temperature: 0.1,
-          maxOutputTokens: 256,
-          responseMimeType: 'application/json'
-        }
-      })
+      body: JSON.stringify(buildBody(model))
     });
+
+    if (response.status === 503) {
+      model = 'gemini-1.5-pro';
+      response = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildBody(model))
+      });
+    }
 
     const data = await response.json();
     if (!response.ok || data.error) {
