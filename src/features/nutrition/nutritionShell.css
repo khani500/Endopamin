@@ -617,6 +617,52 @@
   font-size: 12px;
 }
 
+.np-scan-overlay {
+  overflow: hidden;
+}
+
+.np-scan-radar {
+  position: absolute;
+  inset: 12%;
+  border: 2px solid rgba(204, 255, 0, 0.35);
+  border-radius: 16px;
+  box-shadow: 0 0 24px rgba(204, 255, 0, 0.15);
+  pointer-events: none;
+}
+
+.np-scan-radar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #ccff00, transparent);
+  animation: np-scan-sweep 1.6s ease-in-out infinite;
+}
+
+@keyframes np-scan-sweep {
+  0% {
+    top: 0;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    top: calc(100% - 3px);
+    opacity: 0.3;
+  }
+}
+
+.np-scan-progress-label {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ccff00;
+  letter-spacing: 0.02em;
+}
+
 .np-btn-row {
   display: flex;
   flex-wrap: wrap;

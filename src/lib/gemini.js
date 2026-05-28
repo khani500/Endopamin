@@ -1,8 +1,12 @@
+import { FOOD_VISION_PROMPT } from './foodScanner';
+
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
 const GEMINI_MODEL = 'gemini-2.5-flash';
 
 function useGeminiProxy() {
-  return typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname;
+  return host !== 'localhost' && host !== '127.0.0.1';
 }
 
 function endpoint(action = 'generateContent') {
@@ -298,55 +302,67 @@ export async function askGeminiChatStream({
   return fullText.trim() || 'No response';
 }
 
-export const askGeminiWithImage = async (base64Image, prompt) => {
-  const isProduction =
-    typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+export const askGeminiWithImage = async (
+  base64Image,
+  prompt,
+  { mimeType = 'image/jpeg', model = 'gemini-1.5-flash' } = {},
+) => {
+  assertConfigured();
 
   const body = {
     contents: [
       {
         parts: [
-          {
-            inline_data: {
-              mime_type: 'image/jpeg',
-              data: base64Image,
-            },
-          },
+          { inline_data: { mime_type: mimeType, data: base64Image } },
           { text: prompt },
         ],
       },
     ],
-    generationConfig: { temperature: 0.1, maxOutputTokens: 512 },
+    generationConfig: { temperature: 0.1, maxOutputTokens: 2048 },
   };
 
-  try {
-    let response;
-    if (isProduction) {
-      response = await fetch('/api/gemini', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...body, model: 'gemini-2.5-flash', action: 'generateContent' }),
-      });
-    } else {
-      if (!GEMINI_API_KEY) return null;
-      response = await fetch(endpoint(), {
+  let response;
+  if (useGeminiProxy()) {
+    response = await fetch('/api/gemini', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...body, model, action: 'generateContent' }),
+    });
+  } else {
+    response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+      {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-      });
-    }
+      },
+    );
+  }
 
-    const data = await response.json();
-    if (data.error) {
-      console.error('Vision error:', data.error);
-      return null;
-    }
-    return extractText(data) || null;
-  } catch (err) {
-    console.error('Vision fetch error:', err);
+  const data = await response.json();
+  if (!response.ok || data.error) {
+    console.error('Vision error:', data.error || response.status);
     return null;
   }
+  return extractText(data) || null;
 };
+
+/** Analyze a food photo with Gemini Vision (uses /api/gemini proxy in production). */
+export async function analyzeFood(base64Image, prompt, options = {}) {
+  const text = await askGeminiWithImage(base64Image, prompt || FOOD_VISION_PROMPT, options);
+  if (!text) return null;
+
+  const clean = text.replace(/```json|```/g, '').trim();
+  const start = clean.indexOf('{');
+  const end = clean.lastIndexOf('}');
+  if (start === -1 || end <= start) return null;
+
+  try {
+    return JSON.parse(clean.slice(start, end + 1));
+  } catch {
+    return null;
+  }
+}
 
 export const transcribeAudioWithGemini = async audioBlob => {
   if (!audioBlob) throw new Error('No microphone audio was recorded.');
