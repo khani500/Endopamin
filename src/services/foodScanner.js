@@ -101,9 +101,11 @@ export const scanFood = async (imageFile) => {
       throw new Error(data.error?.message || 'Gemini error');
     }
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const jsonText = extractJson(text);
-    if (!jsonText) throw new Error('Could not analyze image. Try again.');
-    return normalizeFoodResult(JSON.parse(jsonText));
+    const result = extractNutritionFromText(text);
+    if (!result.food_name || result.food_name === 'Unknown food') {
+      throw new Error('Could not identify food in image. Try again.');
+    }
+    return normalizeFoodResult(result);
   } catch (err) {
     console.error('Food scan error:', err.message);
     throw err;
@@ -119,6 +121,27 @@ function extractJson(text) {
   const raw = clean.slice(start, end + 1);
   const sanitized = raw.replace(/[\r\n]+/g, ' ');
   return sanitized;
+}
+
+function extractNutritionFromText(text) {
+  const str = (key) => {
+    const m = text.match(new RegExp('"' + key + '"\\s*:\\s*"([^"]*)"'));
+    return m ? m[1].trim() : '';
+  };
+  const num = (key) => {
+    const m = text.match(new RegExp('"' + key + '"\\s*:\\s*(\\d+(?:\\.\\d+)?)'));
+    return m ? parseFloat(m[1]) : 0;
+  };
+  return {
+    food_name: str('food_name') || 'Unknown food',
+    serving_size: str('serving_size') || 'Estimated portion',
+    calories: num('calories'),
+    protein_g: num('protein_g'),
+    carbs_g: num('carbs_g'),
+    fat_g: num('fat_g'),
+    confidence: str('confidence') || 'medium',
+    notes: str('notes') || 'AI estimate.',
+  };
 }
 
 function normalizeFoodResult(raw) {
