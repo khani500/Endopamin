@@ -71,7 +71,7 @@ export const scanFood = async (imageFile) => {
       contents: [{
         parts: [
           { inline_data: { mime_type: mimeType, data: base64 } },
-          { text: 'Analyze this food. Return ONLY this JSON, no other text:\n{"food_name":"","serving_size":"","calories":0,"protein_g":0,"carbs_g":0,"fat_g":0,"confidence":"high","notes":""}' }
+          { text: 'Analyze this food image. Reply with ONLY one single-line JSON, no newlines inside strings, no markdown, no explanation:\n{"food_name":"","serving_size":"","calories":0,"protein_g":0,"carbs_g":0,"fat_g":0,"confidence":"high","notes":""}' }
         ]
       }],
       generationConfig: {
@@ -115,7 +115,10 @@ function extractJson(text) {
   const start = clean.indexOf('{');
   const end = clean.lastIndexOf('}');
   if (start === -1 || end === -1 || end <= start) return null;
-  return clean.slice(start, end + 1);
+  // sanitize: remove literal newlines inside the JSON string
+  const raw = clean.slice(start, end + 1);
+  const sanitized = raw.replace(/[\r\n]+/g, ' ');
+  return sanitized;
 }
 
 function normalizeFoodResult(raw) {
