@@ -65,12 +65,13 @@ Return ONLY valid JSON, no markdown, no explanation:
 export const scanFood = async (imageFile) => {
   try {
     const { base64, mimeType } = await imageToGeminiPayload(imageFile);
+    console.log('📸 Image prepared:', mimeType, base64.length, 'chars');
 
     const response = await fetch('/api/gemini', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.0-flash',
         contents: [{
           parts: [
             { inline_data: { mime_type: mimeType, data: base64 } },
@@ -81,12 +82,20 @@ export const scanFood = async (imageFile) => {
     });
 
     const data = await response.json();
+    console.log('🤖 Gemini raw response:', JSON.stringify(data).slice(0, 500));
+
+    if (!response.ok || data.error) {
+      throw new Error(data.error?.message || `Gemini error ${response.status}`);
+    }
+
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    console.log('📝 Gemini text:', text.slice(0, 300));
+
     const jsonText = extractJson(text);
-    if (!jsonText) throw new Error('Could not analyze image. Try again.');
+    if (!jsonText) throw new Error(`Gemini returned: ${text.slice(0, 100)}`);
     return normalizeFoodResult(JSON.parse(jsonText));
   } catch (err) {
-    console.error('Food scan error:', err);
+    console.error('❌ Food scan error:', err.message);
     throw err;
   }
 };
