@@ -18,7 +18,7 @@ async function normalizeImageBlob(blob) {
 
   try {
     const bitmap = await createImageBitmap(blob);
-    const maxSide = 800;
+    const maxSide = 400;
     const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
     const width = Math.max(1, Math.round(bitmap.width * scale));
     const height = Math.max(1, Math.round(bitmap.height * scale));
@@ -29,7 +29,7 @@ async function normalizeImageBlob(blob) {
     if (!ctx) throw new Error('Could not create image canvas.');
     ctx.drawImage(bitmap, 0, 0, width, height);
     bitmap.close?.();
-    return (await canvasToBlob(canvas)) || blob;
+    return (await canvasToBlob(canvas, 'image/jpeg', 0.5)) || blob;
   } catch (error) {
     console.warn('Could not normalize image to JPEG, using original blob:', error);
     return blob;
@@ -134,44 +134,29 @@ function normalizeFoodResult(raw) {
 }
 
 export const analyzeFoodImage = async (base64Image, { mimeType = 'image/jpeg', signal } = {}) => {
-  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
-  const GEMINI_MODEL = 'gemini-2.5-flash';
+  const GEMINI_MODEL = 'gemini-1.5-flash';
   const requestDebug = {
-    keyLoaded: Boolean(GEMINI_API_KEY),
-    keyLength: GEMINI_API_KEY?.length || 0,
     model: GEMINI_MODEL,
     mimeType,
     base64Length: base64Image?.length || 0,
   };
 
-  if (!GEMINI_API_KEY) {
-    const error = new Error('Gemini API key missing. VITE_GEMINI_API_KEY is not loaded from .env.local. Restart npm run dev after editing .env.local.');
-    error.details = requestDebug;
-    throw error;
-  }
   if (!base64Image) throw new Error('No image data captured.');
 
   let response;
   let data;
   try {
-    response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        signal,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [
+    response = await fetch('/api/gemini', {
+      method: 'POST',
+      signal,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: GEMINI_MODEL,
+        contents: [{
+          parts: [
+            { inline_data: { mime_type: mimeType, data: base64Image } },
             {
-              parts: [
-                {
-                  inline_data: {
-                    mime_type: mimeType,
-                    data: base64Image,
-                  },
-                },
-                {
-                  text: `You are a nutrition vision analyzer. Analyze the visible food in this image and estimate nutritional information.
+              text: `You are a nutrition vision analyzer. Analyze the visible food in this image and estimate nutritional information.
 Return ONLY a JSON object with this exact structure, no other text:
 {
   "food_name": "name of the food",
@@ -184,17 +169,15 @@ Return ONLY a JSON object with this exact structure, no other text:
   "confidence": "high|medium|low",
   "notes": "any important notes about the estimate"
 }`,
-                },
-              ],
             },
           ],
-          generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 512,
-          },
-        }),
-      },
-    );
+        }],
+        generationConfig: {
+          temperature: 0.1,
+          maxOutputTokens: 512,
+        },
+      }),
+    });
     data = await response.json();
   } catch (error) {
     const wrapped = new Error(`Gemini network error: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
