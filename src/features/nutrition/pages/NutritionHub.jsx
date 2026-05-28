@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { foodResultToLogEntry, getScanErrorMessage, scanFood } from '../../../lib/foodScanner';
-import { useNutritionStore } from '../store/nutritionStore';
+import { askGeminiWithImage } from '../../../lib/gemini';
+
+const MACRO_GOALS = { calories: 2200, protein: 160, carbs: 220, fat: 65 };
 
 const SUPPLEMENTS = [
   { name: 'Creatine', dose: '5g daily', benefit: 'Strength & power', color: '#CCFF00' },
@@ -51,38 +52,12 @@ function SvgIcon({ d, viewBox = "0 0 24 24", fill = "none", className = "w-5 h-5
 
 export default function NutritionHub() {
   const { profile } = useAuth() || {};
-  const addFoodEntry = useNutritionStore(s => s.addFoodEntry);
-  const foodLog = useNutritionStore(s => s.foodLog);
-  const targetCalories = useNutritionStore(s => s.targetCalories);
-  const targetProtein = useNutritionStore(s => s.targetProtein);
-  const targetCarbs = useNutritionStore(s => s.targetCarbs);
-  const targetFat = useNutritionStore(s => s.targetFat);
-
   const [activeTab, setActiveTab] = useState('log');
   const [searchQuery, setSearchQuery] = useState('');
   const [scannedImage, setScannedImage] = useState(null);
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
-
-  const today = new Date().toDateString();
-  const macros = foodLog
-    .filter(e => new Date(e.at).toDateString() === today)
-    .reduce(
-      (a, e) => ({
-        calories: a.calories + e.kcal,
-        protein: a.protein + e.protein,
-        carbs: a.carbs + e.carbs,
-        fat: a.fat + e.fat,
-      }),
-      { calories: 0, protein: 0, carbs: 0, fat: 0 },
-    );
-
-  const MACRO_GOALS = {
-    calories: targetCalories,
-    protein: targetProtein,
-    carbs: targetCarbs,
-    fat: targetFat,
-  };
+  const [macros, setMacros] = useState({ calories: 1240, protein: 89, carbs: 134, fat: 38 });
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
@@ -101,47 +76,40 @@ export default function NutritionHub() {
     setScannedImage(url);
 
     try {
-      const analyzed = await scanFood(file);
-      if (!analyzed) throw new Error('Empty scan result');
+      const base64 = await new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onloadend = () => res(reader.result.split(',')[1]);
+        reader.onerror = rej;
+        reader.readAsDataURL(file);
+      });
 
-      const items = Array.isArray(analyzed.foods) && analyzed.foods.length > 0
-        ? analyzed.foods.map(item => ({
-            name: item.name,
-            weight: item.portion,
-            calories: item.calories,
-            protein: item.protein,
-            carbs: item.carbs,
-            fat: item.fat,
-          }))
-        : [
-            {
-              name: analyzed.food_name,
-              weight: analyzed.serving_size,
-              calories: analyzed.calories,
-              protein: analyzed.protein_g,
-              carbs: analyzed.carbs_g,
-              fat: analyzed.fat_g,
-            },
-          ];
+      const prompt = `You are a nutrition expert AI. Analyze this food image carefully.
+Identify ALL food items visible on the plate/image separately.
+For each food item, estimate the portion size and calculate macros.
+Return ONLY a valid JSON object with this exact structure, no markdown:
+{
+  "items": [
+    {"name": "Food Name", "weight": 150, "calories": 165, "protein": 31, "carbs": 0, "fat": 3.6}
+  ],
+  "total": {"calories": 165, "protein": 31, "carbs": 0, "fat": 3.6},
+  "confidence": "high"
+}`;
 
-      const data = {
-        items,
-        total: {
-          calories: analyzed.calories,
-          protein: analyzed.protein_g,
-          carbs: analyzed.carbs_g,
-          fat: analyzed.fat_g,
-        },
-        confidence: analyzed.confidence,
-        source: analyzed.source,
-        notes: analyzed.notes,
-      };
-
-      setScanResult(data);
-      addFoodEntry(foodResultToLogEntry(analyzed));
+      const response = await askGeminiWithImage(base64, prompt);
+      if (response) {
+        const clean = response.replace(/```json|```/g, '').trim();
+        const data = JSON.parse(clean);
+        setScanResult(data);
+        setMacros(prev => ({
+          calories: prev.calories + data.total.calories,
+          protein: prev.protein + data.total.protein,
+          carbs: prev.carbs + data.total.carbs,
+          fat: prev.fat + data.total.fat,
+        }));
+      }
     } catch (err) {
       console.error('Scan error:', err);
-      setScanResult({ error: getScanErrorMessage(err) });
+      setScanResult({ error: 'Could not analyze image. Try again.' });
     } finally {
       setScanning(false);
     }

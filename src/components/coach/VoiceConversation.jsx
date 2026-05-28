@@ -18,10 +18,10 @@ import {
   resumeAudioContextOnUserGesture,
 } from '../../lib/voice';
 
-export const VoiceConversation = ({ isOpen, onClose }) => {
-  const WELCOME_TRIGGER =
-    '[VOICE_SESSION_START] Greet the athlete by first name in fluent professional English. Ask only about energy and mood today. Max 2 sentences. Plain spoken English for TTS.';
+const WELCOME_TRIGGER =
+  '[VOICE_SESSION_START] Greet the athlete by first name in fluent professional English. Ask only about energy and mood today. Max 2 sentences. Plain spoken English for TTS.';
 
+export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
   const isIOS = isIOSDevice();
   const [status, setStatus] = useState('idle');
