@@ -80,7 +80,7 @@ export const scanFood = async (imageFile) => {
       }
     });
 
-    let model = 'gemini-1.5-flash';
+    let model = 'gemini-2.5-flash';
     let response = await fetch('/api/gemini', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -88,7 +88,7 @@ export const scanFood = async (imageFile) => {
     });
 
     if (response.status === 503) {
-      model = 'gemini-1.5-pro';
+      model = 'gemini-2.5-flash';
       response = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -160,7 +160,7 @@ function normalizeFoodResult(raw) {
 }
 
 export const analyzeFoodImage = async (base64Image, { mimeType = 'image/jpeg', signal } = {}) => {
-  const GEMINI_MODEL = 'gemini-1.5-flash';
+  const GEMINI_MODEL = 'gemini-2.5-flash';
   const requestDebug = {
     model: GEMINI_MODEL,
     mimeType,
