@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { scanFoodHub } from '../../../services/foodScanner';
+import { BarcodeScanner } from '../components/BarcodeScanner';
 
 const MACRO_GOALS = { calories: 2200, protein: 160, carbs: 220, fat: 65 };
 
@@ -57,6 +58,7 @@ export default function NutritionHub() {
   const [scannedImage, setScannedImage] = useState(null);
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [macros, setMacros] = useState({ calories: 1240, protein: 89, carbs: 134, fat: 38 });
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
@@ -68,6 +70,29 @@ export default function NutritionHub() {
     f.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const applyScanData = (data, { errorMessage = 'Could not analyze image. Try again.' } = {}) => {
+    const items = Array.isArray(data?.items) ? data.items : [];
+    const total = data?.total ?? { calories: 0, protein: 0, carbs: 0, fat: 0 };
+
+    if (!items.length || (total.calories <= 0 && total.protein <= 0)) {
+      setScanResult({ error: errorMessage });
+      return false;
+    }
+
+    setScanResult({
+      items,
+      total,
+      confidence: data?.confidence ?? 'medium',
+    });
+    setMacros(prev => ({
+      calories: Math.round(prev.calories + total.calories),
+      protein: Math.round((prev.protein + total.protein) * 10) / 10,
+      carbs: Math.round((prev.carbs + total.carbs) * 10) / 10,
+      fat: Math.round((prev.fat + total.fat) * 10) / 10,
+    }));
+    return true;
+  };
+
   const processImage = async (file) => {
     if (!file) return;
     setScanning(true);
@@ -77,31 +102,18 @@ export default function NutritionHub() {
 
     try {
       const data = await scanFoodHub(file);
-      const items = Array.isArray(data?.items) ? data.items : [];
-      const total = data?.total ?? { calories: 0, protein: 0, carbs: 0, fat: 0 };
-
-      if (!items.length || (total.calories <= 0 && total.protein <= 0)) {
-        setScanResult({ error: 'Could not analyze image. Try again.' });
-        return;
-      }
-
-      setScanResult({
-        items,
-        total,
-        confidence: data?.confidence ?? 'medium',
-      });
-      setMacros(prev => ({
-        calories: Math.round(prev.calories + total.calories),
-        protein: Math.round((prev.protein + total.protein) * 10) / 10,
-        carbs: Math.round((prev.carbs + total.carbs) * 10) / 10,
-        fat: Math.round((prev.fat + total.fat) * 10) / 10,
-      }));
+      applyScanData(data);
     } catch (err) {
       console.error('Scan error:', err);
       setScanResult({ error: 'Could not analyze image. Try again.' });
     } finally {
       setScanning(false);
     }
+  };
+
+  const handleBarcodeResult = (data) => {
+    setShowBarcodeScanner(false);
+    applyScanData(data, { errorMessage: 'Could not load product from barcode.' });
   };
 
   const ITEM_COLORS = ['#CCFF00', '#5088FF', '#FFA53C', '#FF6B6B', '#A064FF'];
@@ -365,7 +377,24 @@ export default function NutritionHub() {
                 Gallery
               </button>
             </div>
+            <div className="px-4 pb-4">
+              <button type="button" onClick={() => setShowBarcodeScanner(true)}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] font-bold text-[12px] border transition-all active:scale-95"
+                style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.12)', color: '#fff' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M3 5h2v14H3zM8 5h1v14H8zM11 5h2v14h-2zM15 5h1v14h-1zM18 5h3v14h-3z"/>
+                </svg>
+                Scan Barcode
+              </button>
+            </div>
           </div>
+
+          {showBarcodeScanner && (
+            <BarcodeScanner
+              onResult={handleBarcodeResult}
+              onClose={() => setShowBarcodeScanner(false)}
+            />
+          )}
 
           {/* Always visible macro chart */}
           <div className="rounded-[24px] border border-white/[0.07] p-5"
