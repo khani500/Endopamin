@@ -93,11 +93,22 @@ export default async function handler(req, res) {
       });
     }
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: upstreamBody,
-    });
+    let response;
+    let lastErr;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 2000 * attempt));
+      try {
+        response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: upstreamBody,
+        });
+        if (response.status !== 503) break;
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    if (!response) throw lastErr || new Error('Gemini unreachable');
 
     if (alt === 'sse') {
       const text = await response.text();
