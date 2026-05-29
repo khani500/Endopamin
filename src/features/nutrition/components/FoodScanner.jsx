@@ -111,7 +111,7 @@ export function FoodScanner({ onAnalyzed }) {
         byteSize,
         base64Length: base64.length,
       });
-      const analyzed = await scanFood(blob);
+      const analyzed = await scanFood(blob, { signal });
       if (!analyzed) throw new Error('Could not analyze food image.');
       setResult(analyzed);
       setDebugInfo({

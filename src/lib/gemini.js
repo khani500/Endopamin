@@ -1,3 +1,5 @@
+import { extractGeminiModelText } from '../services/foodScanner';
+
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
 const GEMINI_MODEL = 'gemini-2.5-flash';
 
@@ -336,12 +338,17 @@ export const askGeminiWithImage = async (base64Image, prompt) => {
       });
     }
 
-    const data = await response.json();
-    if (data.error) {
-      console.error('Vision error:', data.error);
+    const rawText = await response.text();
+    if (!response.ok) {
+      console.error('Vision error: HTTP', response.status);
       return null;
     }
-    return extractText(data) || null;
+    try {
+      return extractGeminiModelText(rawText) || null;
+    } catch (err) {
+      console.error('Vision error:', err);
+      return null;
+    }
   } catch (err) {
     console.error('Vision fetch error:', err);
     return null;

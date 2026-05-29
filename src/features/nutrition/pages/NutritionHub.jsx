@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { askGeminiWithImage } from '../../../lib/gemini';
+import { safeParseJson } from '../../../services/foodScanner';
 
 const MACRO_GOALS = { calories: 2200, protein: 160, carbs: 220, fat: 65 };
 
@@ -97,8 +98,11 @@ Return ONLY a valid JSON object with this exact structure, no markdown:
 
       const response = await askGeminiWithImage(base64, prompt);
       if (response) {
-        const clean = response.replace(/```json|```/g, '').trim();
-        const data = JSON.parse(clean);
+        const data = safeParseJson(response);
+        if (!data?.total) {
+          setScanResult({ error: 'Could not analyze image. Try again.' });
+          return;
+        }
         setScanResult(data);
         setMacros(prev => ({
           calories: prev.calories + data.total.calories,

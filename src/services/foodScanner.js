@@ -1,5 +1,3 @@
-import { askGeminiWithImage } from '../lib/gemini';
-
 export async function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -48,106 +46,85 @@ export async function imageToGeminiPayload(blob) {
   };
 }
 
-const FOOD_SCAN_PROMPT = `You are a nutrition expert. Analyze this food image carefully.
-Return ONLY valid JSON, no markdown, no explanation:
-{
-  "food_name": "specific food name",
-  "serving_description": "what you see (e.g., 1 large chicken breast, 200g cooked rice)",
-  "calories": 350,
-  "protein_g": 45,
-  "carbs_g": 30,
-  "fat_g": 8,
-  "fiber_g": 2,
-  "confidence": "high",
-  "tips": "one practical nutrition tip about this food"
-}`;
+const FOOD_SCAN_NUTRITION_PROMPT =
+  'Analyze this food image. Reply with ONLY one single-line JSON object. '
+  + 'No markdown, no code fences, no explanation. '
+  + 'Keys: food_name, serving_size, calories, protein_g, carbs_g, fat_g, confidence, notes. '
+  + 'Example: {"food_name":"grilled chicken","serving_size":"1 breast","calories":165,'
+  + '"protein_g":31,"carbs_g":0,"fat_g":3,"confidence":"high","notes":"lean protein"}';
 
-export const scanFood = async (imageFile) => {
-  try {
-    const { base64, mimeType } = await imageToGeminiPayload(imageFile);
+function stripMarkdown(text) {
+  return String(text || '').replace(/```json/gi, '').replace(/```/g, '').trim();
+}
 
-    const buildBody = model => ({
-      model,
-      contents: [{
-        parts: [
-          { inline_data: { mime_type: mimeType, data: base64 } },
-          { text: 'Analyze this food image. Reply with ONLY one single-line JSON, no newlines inside strings, no markdown, no explanation:\n{"food_name":"","serving_size":"","calories":0,"protein_g":0,"carbs_g":0,"fat_g":0,"confidence":"high","notes":""}' }
-        ]
-      }],
-      generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 512
-      }
-    });
+/** Extract JSON object substring from first `{` through last `}` (or tail if truncated). */
+export function extractJsonObject(text) {
+  const clean = stripMarkdown(text);
+  const start = clean.indexOf('{');
+  if (start === -1) return null;
+  const end = clean.lastIndexOf('}');
+  const raw = end > start ? clean.slice(start, end + 1) : clean.slice(start);
+  return raw.replace(/[\r\n]+/g, ' ').trim();
+}
 
-    let model = 'gemini-2.5-flash';
-    let response = await fetch('/api/gemini', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(buildBody(model))
-    });
-
-    if (response.status === 503) {
-      model = 'gemini-2.5-flash';
-      response = await fetch('/api/gemini', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildBody(model))
-      });
-    }
-
-    const rawText = await response.text();
-    let text = '';
+/** Try JSON.parse; on failure use brace extraction; never throws. */
+export function safeParseJson(text) {
+  const attempts = [stripMarkdown(text), extractJsonObject(text)].filter(Boolean);
+  for (const candidate of attempts) {
     try {
-      const cleanText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-      const data = JSON.parse(cleanText);
-      if (!response.ok || data.error) throw new Error(data.error?.message || 'Gemini error');
-      text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    } catch (e) {
-      const m = rawText.match(/"text"\s*:\s*"((?:[^"\\]|\\.)*)"/);
-      text = m ? m[1] : '';
-      if (!text) throw new Error('Gemini response error. Try again.');
+      return JSON.parse(candidate);
+    } catch {
+      // try next candidate
     }
-    const result = extractNutritionFromText(text);
-    if (!result.food_name || result.food_name === 'Unknown food') {
-      throw new Error('Could not identify food in image. Try again.');
-    }
-    return normalizeFoodResult(result);
-  } catch (err) {
-    console.error('Food scan error:', err.message);
+  }
+  return null;
+}
+
+function unescapeJsonString(value) {
+  return String(value || '')
+    .replace(/\\n/g, '\n')
+    .replace(/\\"/g, '"')
+    .replace(/\\\\/g, '\\');
+}
+
+/** Pull Gemini model text from full HTTP body, even when JSON envelope is truncated. */
+export function extractGeminiModelText(rawText) {
+  const parsed = safeParseJson(rawText);
+  if (parsed?.error?.message) {
+    const err = new Error(parsed.error.message);
+    err.apiError = parsed.error;
     throw err;
   }
-};
 
-function extractJson(text) {
-  const clean = String(text || '').replace(/```json|```/g, '').trim();
-  const start = clean.indexOf('{');
-  const end = clean.lastIndexOf('}');
-  if (start === -1 || end === -1 || end <= start) return null;
-  // sanitize: remove literal newlines inside the JSON string
-  const raw = clean.slice(start, end + 1);
-  const sanitized = raw.replace(/[\r\n]+/g, ' ');
-  return sanitized;
+  const fromEnvelope = parsed?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (fromEnvelope) return String(fromEnvelope);
+
+  const textMatch = String(rawText || '').match(/"text"\s*:\s*"((?:[^"\\]|\\.)*)/);
+  if (textMatch?.[1]) return unescapeJsonString(textMatch[1]);
+
+  if (/"food_name"|"calories"/.test(rawText)) return rawText;
+
+  return '';
 }
 
 function extractNutritionFromText(text) {
-  const str = (key) => {
-    const m = text.match(new RegExp('"' + key + '"\\s*:\\s*"([^"]*)"'));
+  const str = key => {
+    const m = String(text || '').match(new RegExp(`"${key}"\\s*:\\s*"([^"]*)"`));
     return m ? m[1].trim() : '';
   };
-  const num = (key) => {
-    const m = text.match(new RegExp('"' + key + '"\\s*:\\s*(\\d+(?:\\.\\d+)?)'));
+  const num = key => {
+    const m = String(text || '').match(new RegExp(`"${key}"\\s*:\\s*(\\d+(?:\\.\\d+)?)`));
     return m ? parseFloat(m[1]) : 0;
   };
   return {
-    food_name: str('food_name') || 'Unknown food',
-    serving_size: str('serving_size') || 'Estimated portion',
-    calories: num('calories'),
-    protein_g: num('protein_g'),
-    carbs_g: num('carbs_g'),
-    fat_g: num('fat_g'),
+    food_name: str('food_name') || str('name') || 'Unknown food',
+    serving_size: str('serving_size') || str('serving') || 'Estimated portion',
+    calories: num('calories') || num('kcal'),
+    protein_g: num('protein_g') || num('protein'),
+    carbs_g: num('carbs_g') || num('carbs'),
+    fat_g: num('fat_g') || num('fat'),
     confidence: str('confidence') || 'medium',
-    notes: str('notes') || 'AI estimate.',
+    notes: str('notes') || str('tips') || 'AI estimate.',
   };
 }
 
@@ -155,15 +132,104 @@ function normalizeFoodResult(raw) {
   if (!raw || typeof raw !== 'object') return null;
   return {
     food_name: String(raw.food_name || raw.name || raw.label || 'Unknown food'),
-    serving_size: String(raw.serving_size || raw.serving || 'Estimated portion'),
+    serving_size: String(raw.serving_size || raw.serving || raw.serving_description || 'Estimated portion'),
     calories: Number(raw.calories ?? raw.kcal) || 0,
     protein_g: Number(raw.protein_g ?? raw.protein) || 0,
     carbs_g: Number(raw.carbs_g ?? raw.carbs) || 0,
     fat_g: Number(raw.fat_g ?? raw.fat) || 0,
     fiber_g: Number(raw.fiber_g ?? raw.fiber) || 0,
     confidence: String(raw.confidence || 'medium').toLowerCase(),
-    notes: String(raw.notes || 'Nutrition is an AI estimate.'),
+    notes: String(raw.notes || raw.tips || 'Nutrition is an AI estimate.'),
   };
+}
+
+/** Parse nutrition from AI text: JSON first, regex field extraction as fallback. */
+export function parseNutritionFromAiText(text) {
+  const parsed = safeParseJson(text);
+  if (parsed && typeof parsed === 'object') {
+    const normalized = normalizeFoodResult(parsed);
+    if (normalized?.food_name && normalized.food_name !== 'Unknown food') {
+      return normalized;
+    }
+  }
+
+  const regexResult = extractNutritionFromText(text);
+  if (regexResult.food_name && regexResult.food_name !== 'Unknown food') {
+    return normalizeFoodResult(regexResult);
+  }
+
+  return null;
+}
+
+async function callGeminiVision({ base64, mimeType, prompt, signal }) {
+  const buildBody = model => ({
+    model,
+    contents: [{
+      parts: [
+        { inline_data: { mime_type: mimeType, data: base64 } },
+        { text: prompt },
+      ],
+    }],
+    generationConfig: {
+      temperature: 0.1,
+      maxOutputTokens: 512,
+    },
+  });
+
+  let response = await fetch('/api/gemini', {
+    method: 'POST',
+    signal,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(buildBody('gemini-2.5-flash')),
+  });
+
+  if (response.status === 503) {
+    response = await fetch('/api/gemini', {
+      method: 'POST',
+      signal,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildBody('gemini-2.5-flash')),
+    });
+  }
+
+  const rawText = await response.text();
+
+  if (!response.ok) {
+    const errBody = safeParseJson(rawText);
+    throw new Error(errBody?.error?.message || `Gemini error ${response.status}`);
+  }
+
+  const aiText = extractGeminiModelText(rawText);
+  return { rawText, aiText, response };
+}
+
+export const scanFood = async (imageFile, { signal } = {}) => {
+  try {
+    const { base64, mimeType } = await imageToGeminiPayload(imageFile);
+    const { aiText, rawText } = await callGeminiVision({
+      base64,
+      mimeType,
+      prompt: FOOD_SCAN_NUTRITION_PROMPT,
+      signal,
+    });
+
+    const result = parseNutritionFromAiText(aiText);
+    if (result) return result;
+
+    const fallback = parseNutritionFromAiText(rawText);
+    if (fallback) return fallback;
+
+    throw new Error('Could not identify food in image. Try again with a clearer photo.');
+  } catch (err) {
+    if (err?.name === 'AbortError') throw err;
+    console.error('Food scan error:', err.message);
+    throw err;
+  }
+};
+
+/** @deprecated Use safeParseJson — kept for callers that still import extractJson */
+export function extractJson(text) {
+  return extractJsonObject(text);
 }
 
 export const analyzeFoodImage = async (base64Image, { mimeType = 'image/jpeg', signal } = {}) => {
@@ -176,46 +242,24 @@ export const analyzeFoodImage = async (base64Image, { mimeType = 'image/jpeg', s
 
   if (!base64Image) throw new Error('No image data captured.');
 
+  let rawText = '';
+  let aiText = '';
   let response;
-  let data;
+
   try {
-    response = await fetch('/api/gemini', {
-      method: 'POST',
+    ({ rawText, aiText, response } = await callGeminiVision({
+      base64: base64Image,
+      mimeType,
       signal,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: GEMINI_MODEL,
-        contents: [{
-          parts: [
-            { inline_data: { mime_type: mimeType, data: base64Image } },
-            {
-              text: `You are a nutrition vision analyzer. Analyze the visible food in this image and estimate nutritional information.
-Return ONLY a JSON object with this exact structure, no other text:
-{
-  "food_name": "name of the food",
-  "serving_size": "estimated serving size",
-  "calories": number,
-  "protein_g": number,
-  "carbs_g": number,
-  "fat_g": number,
-  "fiber_g": number,
-  "confidence": "high|medium|low",
-  "notes": "any important notes about the estimate"
-}`,
-            },
-          ],
-        }],
-        generationConfig: {
-          temperature: 0.1,
-          maxOutputTokens: 512,
-        },
-      }),
-    });
-    const responseRawText = await response.text();
-    const cleanText = responseRawText.replace(/```json/g, '').replace(/```/g, '').trim();
-    data = JSON.parse(cleanText);
+      prompt:
+        'Analyze the visible food in this image. Return ONLY one single-line JSON object. '
+        + 'No markdown. Keys: food_name, serving_size, calories, protein_g, carbs_g, fat_g, fiber_g, confidence, notes.',
+    }));
   } catch (error) {
-    const wrapped = new Error(`Gemini network error: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+    const wrapped = new Error(
+      `Gemini network error: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error },
+    );
     wrapped.details = requestDebug;
     throw wrapped;
   }
@@ -224,35 +268,20 @@ Return ONLY a JSON object with this exact structure, no other text:
     ...requestDebug,
     status: response.status,
     statusText: response.statusText,
-    errorMessage: data?.error?.message || '',
-    rawText: data?.candidates?.[0]?.content?.parts?.[0]?.text || '',
+    errorMessage: safeParseJson(rawText)?.error?.message || '',
+    rawText: aiText || rawText.slice(0, 500),
   };
 
   console.log('Gemini Vision scanner response:', responseDebug);
 
-  if (!response.ok || data.error) {
-    const error = new Error(data.error?.message || `Gemini Vision failed with status ${response.status}`);
+  const normalized = parseNutritionFromAiText(aiText) || parseNutritionFromAiText(rawText);
+  if (!normalized) {
+    const error = new Error(
+      `Gemini did not return nutrition JSON. Raw response: ${(aiText || rawText).slice(0, 240) || '(empty)'}`,
+    );
     error.details = responseDebug;
     throw error;
   }
 
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-  const jsonText = extractJson(text);
-  if (!jsonText) {
-    const error = new Error(`Gemini did not return nutrition JSON. Raw response: ${text.slice(0, 240) || '(empty)'}`);
-    error.details = responseDebug;
-    throw error;
-  }
-
-  try {
-    const cleanText = jsonText.replace(/```json/g, '').replace(/```/g, '').trim();
-    const nutritionData = JSON.parse(cleanText);
-    const normalized = normalizeFoodResult(nutritionData);
-    return { ...normalized, debug: responseDebug };
-  } catch (error) {
-    console.error('Failed to parse Gemini food response:', text);
-    const wrapped = new Error(error instanceof Error ? error.message : 'Could not parse nutrition result.', { cause: error });
-    wrapped.details = responseDebug;
-    throw wrapped;
-  }
+  return { ...normalized, debug: responseDebug };
 };
