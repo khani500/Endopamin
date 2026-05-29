@@ -97,11 +97,17 @@ export const scanFood = async (imageFile) => {
       });
     }
 
-    const data = await response.json();
-    if (!response.ok || data.error) {
-      throw new Error(data.error?.message || 'Gemini error');
+    const rawText = await response.text();
+    let text = '';
+    try {
+      const data = JSON.parse(rawText);
+      if (!response.ok || data.error) throw new Error(data.error?.message || 'Gemini error');
+      text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    } catch(e) {
+      const m = rawText.match(/"text"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+      text = m ? m[1] : '';
+      if (!text) throw new Error('Gemini response error. Try again.');
     }
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const result = extractNutritionFromText(text);
     if (!result.food_name || result.food_name === 'Unknown food') {
       throw new Error('Could not identify food in image. Try again.');
