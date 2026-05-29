@@ -47,15 +47,28 @@ export async function imageToGeminiPayload(blob) {
 }
 
 const FOOD_SCAN_NUTRITION_PROMPT =
-  'Identify the food. Reply in ONE line only, plain JSON, no markdown:\n'
-  + '{"food_name":"name","serving_size":"portion","calories":0,"protein_g":0,"carbs_g":0,"fat_g":0,"confidence":"medium","notes":""}';
+  'Analyze this food image. Estimate realistic macros for the visible portion. '
+  + 'Reply with ONE line of JSON only (no markdown). '
+  + 'You MUST provide numeric values for calories, protein_g, carbs_g, and fat_g. '
+  + '{"food_name":"","serving_size":"","calories":0,"protein_g":0,"carbs_g":0,"fat_g":0,"confidence":"medium","notes":""}';
 
 function stripMarkdown(text) {
   return String(text || '').replace(/```json/gi, '').replace(/```/g, '').trim();
 }
 
+function flattenForExtraction(text) {
+  return unescapeJsonString(stripMarkdown(text)).replace(/[\r\n]+/g, ' ').trim();
+}
+
+function hasMacroValues(result) {
+  return Boolean(
+    result
+    && (result.calories > 0 || result.protein_g > 0 || result.carbs_g > 0 || result.fat_g > 0),
+  );
+}
+
 export function extractJsonObject(text) {
-  const clean = stripMarkdown(text);
+  const clean = flattenForExtraction(text);
   const start = clean.indexOf('{');
   if (start === -1) return null;
   const end = clean.lastIndexOf('}');
@@ -63,9 +76,13 @@ export function extractJsonObject(text) {
   return raw.replace(/[\r\n]+/g, ' ').trim();
 }
 
-/** Optional JSON.parse — never throws, used only outside the scanner hot path. */
+/** Optional JSON.parse — never throws. Tries flattened/unescaped text first. */
 export function safeParseJson(text) {
-  const attempts = [stripMarkdown(text), extractJsonObject(text)].filter(Boolean);
+  const attempts = [
+    flattenForExtraction(text),
+    extractJsonObject(text),
+    stripMarkdown(text),
+  ].filter(Boolean);
   for (const candidate of attempts) {
     try {
       return JSON.parse(candidate);
@@ -105,23 +122,37 @@ export function extractGeminiModelText(rawText) {
   const textMatch = raw.match(/"text"\s*:\s*"((?:[^"\\]|\\.)*)/);
   if (textMatch?.[1]) return unescapeJsonString(textMatch[1]);
 
-  if (/"food_name"|"calories"/.test(raw)) return raw;
+  const flat = flattenForExtraction(raw);
+  const inner = extractJsonObject(flat);
+  if (inner && /food_name|calories|protein/i.test(inner)) return inner;
+
+  if (/"food_name"|"calories"/.test(flat)) return flat;
 
   return '';
 }
 
 function readStringField(text, key) {
-  const src = String(text || '');
-  const complete = src.match(new RegExp(`"${key}"\\s*:\\s*"([^"]*)"`));
+  const src = flattenForExtraction(text);
+  const complete = src.match(new RegExp(`"${key}"\\s*:\\s*"([^"]*)"`, 'i'));
   if (complete?.[1]) return complete[1].trim();
-  const partial = src.match(new RegExp(`"${key}"\\s*:\\s*"([^"]*)`));
+  const partial = src.match(new RegExp(`"${key}"\\s*:\\s*"([^"]*)`, 'i'));
   return partial?.[1]?.trim() || '';
 }
 
 function readNumberField(text, key) {
-  const src = String(text || '');
-  const m = src.match(new RegExp(`"${key}"\\s*:\\s*(\\d+(?:\\.\\d+)?)`));
-  return m ? parseFloat(m[1]) : 0;
+  const src = flattenForExtraction(text);
+  const keys = key.endsWith('_g') ? [key, key.replace(/_g$/, '')] : [key, `${key}_g`];
+  for (const k of keys) {
+    const patterns = [
+      new RegExp(`"${k}"\\s*:\\s*(\\d+(?:\\.\\d+)?)`, 'i'),
+      new RegExp(`${k}\\s*:\\s*(\\d+(?:\\.\\d+)?)`, 'i'),
+    ];
+    for (const re of patterns) {
+      const m = src.match(re);
+      if (m) return parseFloat(m[1]);
+    }
+  }
+  return 0;
 }
 
 function extractNutritionFromText(text) {
@@ -152,16 +183,31 @@ function normalizeFoodResult(raw) {
   };
 }
 
-/** Regex-only nutrition parse — no JSON.parse anywhere in this path. */
+/** Parse nutrition: JSON when safe, regex fallback, prefer results with macros. */
 export function parseNutritionFromAiText(text) {
-  const sources = [text, extractJsonObject(text)].filter(Boolean);
+  const flat = flattenForExtraction(text);
+  const sources = [...new Set([flat, extractJsonObject(flat), text].filter(Boolean))];
+  let bestNameOnly = null;
+
   for (const source of sources) {
+    const parsed = safeParseJson(source);
+    if (parsed && typeof parsed === 'object') {
+      const normalized = normalizeFoodResult(parsed);
+      if (normalized?.food_name && normalized.food_name !== 'Unknown food') {
+        if (hasMacroValues(normalized)) return normalized;
+        if (!bestNameOnly) bestNameOnly = normalized;
+      }
+    }
+
     const regexResult = extractNutritionFromText(source);
     if (regexResult.food_name && regexResult.food_name !== 'Unknown food') {
-      return normalizeFoodResult(regexResult);
+      const normalized = normalizeFoodResult(regexResult);
+      if (hasMacroValues(normalized)) return normalized;
+      if (!bestNameOnly) bestNameOnly = normalized;
     }
   }
-  return null;
+
+  return bestNameOnly;
 }
 
 async function callGeminiVision({ base64, mimeType, prompt, signal }) {
