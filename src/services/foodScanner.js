@@ -7,7 +7,7 @@ export async function blobToBase64(blob) {
   });
 }
 
-async function canvasToBlob(canvas, type = 'image/jpeg', quality = 0.7) {
+async function canvasToBlob(canvas, type = 'image/jpeg', quality = 0.5) {
   return new Promise(resolve => canvas.toBlob(resolve, type, quality));
 }
 
@@ -16,7 +16,7 @@ async function normalizeImageBlob(blob) {
 
   try {
     const bitmap = await createImageBitmap(blob);
-    const maxSide = 400;
+    const maxSide = 320;
     const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
     const width = Math.max(1, Math.round(bitmap.width * scale));
     const height = Math.max(1, Math.round(bitmap.height * scale));
@@ -27,7 +27,7 @@ async function normalizeImageBlob(blob) {
     if (!ctx) throw new Error('Could not create image canvas.');
     ctx.drawImage(bitmap, 0, 0, width, height);
     bitmap.close?.();
-    return (await canvasToBlob(canvas, 'image/jpeg', 0.5)) || blob;
+    return (await canvasToBlob(canvas, 'image/jpeg', 0.4)) || blob;
   } catch (error) {
     console.warn('Could not normalize image to JPEG, using original blob:', error);
     return blob;
@@ -47,17 +47,13 @@ export async function imageToGeminiPayload(blob) {
 }
 
 const FOOD_SCAN_NUTRITION_PROMPT =
-  'Analyze this food image. Reply with ONLY one single-line JSON object. '
-  + 'No markdown, no code fences, no explanation. '
-  + 'Keys: food_name, serving_size, calories, protein_g, carbs_g, fat_g, confidence, notes. '
-  + 'Example: {"food_name":"grilled chicken","serving_size":"1 breast","calories":165,'
-  + '"protein_g":31,"carbs_g":0,"fat_g":3,"confidence":"high","notes":"lean protein"}';
+  'Identify the food. Reply in ONE line only, plain JSON, no markdown:\n'
+  + '{"food_name":"name","serving_size":"portion","calories":0,"protein_g":0,"carbs_g":0,"fat_g":0,"confidence":"medium","notes":""}';
 
 function stripMarkdown(text) {
   return String(text || '').replace(/```json/gi, '').replace(/```/g, '').trim();
 }
 
-/** Extract JSON object substring from first `{` through last `}` (or tail if truncated). */
 export function extractJsonObject(text) {
   const clean = stripMarkdown(text);
   const start = clean.indexOf('{');
@@ -67,14 +63,14 @@ export function extractJsonObject(text) {
   return raw.replace(/[\r\n]+/g, ' ').trim();
 }
 
-/** Try JSON.parse; on failure use brace extraction; never throws. */
+/** Optional JSON.parse — never throws, used only outside the scanner hot path. */
 export function safeParseJson(text) {
   const attempts = [stripMarkdown(text), extractJsonObject(text)].filter(Boolean);
   for (const candidate of attempts) {
     try {
       return JSON.parse(candidate);
     } catch {
-      // try next candidate
+      // ignore
     }
   }
   return null;
@@ -87,44 +83,57 @@ function unescapeJsonString(value) {
     .replace(/\\\\/g, '\\');
 }
 
-/** Pull Gemini model text from full HTTP body, even when JSON envelope is truncated. */
+function extractApiErrorMessage(rawText) {
+  const raw = String(rawText || '');
+  const msgMatch = raw.match(/"message"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  return msgMatch?.[1] ? unescapeJsonString(msgMatch[1]) : '';
+}
+
+/** Regex-only — never calls JSON.parse (Safari-safe for truncated responses). */
 export function extractGeminiModelText(rawText) {
-  const parsed = safeParseJson(rawText);
-  if (parsed?.error?.message) {
-    const err = new Error(parsed.error.message);
-    err.apiError = parsed.error;
-    throw err;
+  const raw = String(rawText || '');
+
+  if (/"error"\s*:/.test(raw)) {
+    const message = extractApiErrorMessage(raw);
+    if (message) {
+      const err = new Error(message);
+      err.apiError = { message };
+      throw err;
+    }
   }
 
-  const fromEnvelope = parsed?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (fromEnvelope) return String(fromEnvelope);
-
-  const textMatch = String(rawText || '').match(/"text"\s*:\s*"((?:[^"\\]|\\.)*)/);
+  const textMatch = raw.match(/"text"\s*:\s*"((?:[^"\\]|\\.)*)/);
   if (textMatch?.[1]) return unescapeJsonString(textMatch[1]);
 
-  if (/"food_name"|"calories"/.test(rawText)) return rawText;
+  if (/"food_name"|"calories"/.test(raw)) return raw;
 
   return '';
 }
 
+function readStringField(text, key) {
+  const src = String(text || '');
+  const complete = src.match(new RegExp(`"${key}"\\s*:\\s*"([^"]*)"`));
+  if (complete?.[1]) return complete[1].trim();
+  const partial = src.match(new RegExp(`"${key}"\\s*:\\s*"([^"]*)`));
+  return partial?.[1]?.trim() || '';
+}
+
+function readNumberField(text, key) {
+  const src = String(text || '');
+  const m = src.match(new RegExp(`"${key}"\\s*:\\s*(\\d+(?:\\.\\d+)?)`));
+  return m ? parseFloat(m[1]) : 0;
+}
+
 function extractNutritionFromText(text) {
-  const str = key => {
-    const m = String(text || '').match(new RegExp(`"${key}"\\s*:\\s*"([^"]*)"`));
-    return m ? m[1].trim() : '';
-  };
-  const num = key => {
-    const m = String(text || '').match(new RegExp(`"${key}"\\s*:\\s*(\\d+(?:\\.\\d+)?)`));
-    return m ? parseFloat(m[1]) : 0;
-  };
   return {
-    food_name: str('food_name') || str('name') || 'Unknown food',
-    serving_size: str('serving_size') || str('serving') || 'Estimated portion',
-    calories: num('calories') || num('kcal'),
-    protein_g: num('protein_g') || num('protein'),
-    carbs_g: num('carbs_g') || num('carbs'),
-    fat_g: num('fat_g') || num('fat'),
-    confidence: str('confidence') || 'medium',
-    notes: str('notes') || str('tips') || 'AI estimate.',
+    food_name: readStringField(text, 'food_name') || readStringField(text, 'name') || 'Unknown food',
+    serving_size: readStringField(text, 'serving_size') || readStringField(text, 'serving') || 'Estimated portion',
+    calories: readNumberField(text, 'calories') || readNumberField(text, 'kcal'),
+    protein_g: readNumberField(text, 'protein_g') || readNumberField(text, 'protein'),
+    carbs_g: readNumberField(text, 'carbs_g') || readNumberField(text, 'carbs'),
+    fat_g: readNumberField(text, 'fat_g') || readNumberField(text, 'fat'),
+    confidence: readStringField(text, 'confidence') || 'medium',
+    notes: readStringField(text, 'notes') || readStringField(text, 'tips') || 'AI estimate.',
   };
 }
 
@@ -143,27 +152,21 @@ function normalizeFoodResult(raw) {
   };
 }
 
-/** Parse nutrition from AI text: JSON first, regex field extraction as fallback. */
+/** Regex-only nutrition parse — no JSON.parse anywhere in this path. */
 export function parseNutritionFromAiText(text) {
-  const parsed = safeParseJson(text);
-  if (parsed && typeof parsed === 'object') {
-    const normalized = normalizeFoodResult(parsed);
-    if (normalized?.food_name && normalized.food_name !== 'Unknown food') {
-      return normalized;
+  const sources = [text, extractJsonObject(text)].filter(Boolean);
+  for (const source of sources) {
+    const regexResult = extractNutritionFromText(source);
+    if (regexResult.food_name && regexResult.food_name !== 'Unknown food') {
+      return normalizeFoodResult(regexResult);
     }
   }
-
-  const regexResult = extractNutritionFromText(text);
-  if (regexResult.food_name && regexResult.food_name !== 'Unknown food') {
-    return normalizeFoodResult(regexResult);
-  }
-
   return null;
 }
 
 async function callGeminiVision({ base64, mimeType, prompt, signal }) {
-  const buildBody = model => ({
-    model,
+  const body = {
+    model: 'gemini-2.5-flash',
     contents: [{
       parts: [
         { inline_data: { mime_type: mimeType, data: base64 } },
@@ -174,29 +177,30 @@ async function callGeminiVision({ base64, mimeType, prompt, signal }) {
       temperature: 0.1,
       maxOutputTokens: 512,
     },
-  });
+  };
 
   let response = await fetch('/api/gemini', {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(buildBody('gemini-2.5-flash')),
+    body: JSON.stringify(body),
   });
 
   if (response.status === 503) {
+    await new Promise(r => setTimeout(r, 1500));
     response = await fetch('/api/gemini', {
       method: 'POST',
       signal,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(buildBody('gemini-2.5-flash')),
+      body: JSON.stringify(body),
     });
   }
 
   const rawText = await response.text();
 
   if (!response.ok) {
-    const errBody = safeParseJson(rawText);
-    throw new Error(errBody?.error?.message || `Gemini error ${response.status}`);
+    const apiMsg = extractApiErrorMessage(rawText);
+    throw new Error(apiMsg || `Gemini error ${response.status}`);
   }
 
   const aiText = extractGeminiModelText(rawText);
@@ -213,29 +217,29 @@ export const scanFood = async (imageFile, { signal } = {}) => {
       signal,
     });
 
-    const result = parseNutritionFromAiText(aiText);
+    const combined = `${aiText}\n${rawText}`;
+    const result = parseNutritionFromAiText(combined);
     if (result) return result;
-
-    const fallback = parseNutritionFromAiText(rawText);
-    if (fallback) return fallback;
 
     throw new Error('Could not identify food in image. Try again with a clearer photo.');
   } catch (err) {
     if (err?.name === 'AbortError') throw err;
-    console.error('Food scan error:', err.message);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('Food scan error:', msg);
+    if (/json|parse|eof|unterminated/i.test(msg)) {
+      throw new Error('Analysis incomplete. Please try again.');
+    }
     throw err;
   }
 };
 
-/** @deprecated Use safeParseJson — kept for callers that still import extractJson */
 export function extractJson(text) {
   return extractJsonObject(text);
 }
 
 export const analyzeFoodImage = async (base64Image, { mimeType = 'image/jpeg', signal } = {}) => {
-  const GEMINI_MODEL = 'gemini-2.5-flash';
   const requestDebug = {
-    model: GEMINI_MODEL,
+    model: 'gemini-2.5-flash',
     mimeType,
     base64Length: base64Image?.length || 0,
   };
@@ -251,9 +255,7 @@ export const analyzeFoodImage = async (base64Image, { mimeType = 'image/jpeg', s
       base64: base64Image,
       mimeType,
       signal,
-      prompt:
-        'Analyze the visible food in this image. Return ONLY one single-line JSON object. '
-        + 'No markdown. Keys: food_name, serving_size, calories, protein_g, carbs_g, fat_g, fiber_g, confidence, notes.',
+      prompt: FOOD_SCAN_NUTRITION_PROMPT,
     }));
   } catch (error) {
     const wrapped = new Error(
@@ -268,16 +270,14 @@ export const analyzeFoodImage = async (base64Image, { mimeType = 'image/jpeg', s
     ...requestDebug,
     status: response.status,
     statusText: response.statusText,
-    errorMessage: safeParseJson(rawText)?.error?.message || '',
+    errorMessage: extractApiErrorMessage(rawText),
     rawText: aiText || rawText.slice(0, 500),
   };
 
-  console.log('Gemini Vision scanner response:', responseDebug);
-
-  const normalized = parseNutritionFromAiText(aiText) || parseNutritionFromAiText(rawText);
+  const normalized = parseNutritionFromAiText(`${aiText}\n${rawText}`);
   if (!normalized) {
     const error = new Error(
-      `Gemini did not return nutrition JSON. Raw response: ${(aiText || rawText).slice(0, 240) || '(empty)'}`,
+      `Gemini did not return nutrition data. Raw response: ${(aiText || rawText).slice(0, 240) || '(empty)'}`,
     );
     error.details = responseDebug;
     throw error;

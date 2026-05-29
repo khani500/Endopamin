@@ -123,7 +123,10 @@ export function FoodScanner({ onAnalyzed }) {
       setCoachTip(analyzed.protein_g >= 30 ? 'Good protein choice!' : 'Add a lean protein to balance this meal.');
     } catch (e) {
       if (e.name !== 'AbortError') {
-        const message = e instanceof Error ? e.message : String(e);
+        let message = e instanceof Error ? e.message : String(e);
+        if (/json|parse|eof|unterminated/i.test(message)) {
+          message = 'Analysis incomplete. Please try again.';
+        }
         setError(message);
         setDebugInfo({
           stage: 'Gemini scan failed',

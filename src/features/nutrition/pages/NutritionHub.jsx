@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { askGeminiWithImage } from '../../../lib/gemini';
-import { safeParseJson } from '../../../services/foodScanner';
+import { parseNutritionFromAiText, safeParseJson } from '../../../services/foodScanner';
 
 const MACRO_GOALS = { calories: 2200, protein: 160, carbs: 220, fat: 65 };
 
@@ -98,7 +98,29 @@ Return ONLY a valid JSON object with this exact structure, no markdown:
 
       const response = await askGeminiWithImage(base64, prompt);
       if (response) {
-        const data = safeParseJson(response);
+        let data = safeParseJson(response);
+        if (!data?.total) {
+          const single = parseNutritionFromAiText(response);
+          if (single) {
+            data = {
+              items: [{
+                name: single.food_name,
+                weight: 0,
+                calories: single.calories,
+                protein: single.protein_g,
+                carbs: single.carbs_g,
+                fat: single.fat_g,
+              }],
+              total: {
+                calories: single.calories,
+                protein: single.protein_g,
+                carbs: single.carbs_g,
+                fat: single.fat_g,
+              },
+              confidence: single.confidence,
+            };
+          }
+        }
         if (!data?.total) {
           setScanResult({ error: 'Could not analyze image. Try again.' });
           return;

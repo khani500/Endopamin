@@ -5,7 +5,4 @@ self.addEventListener('activate', e => {
       .then(() => self.clients.claim())
   );
 });
-self.addEventListener('fetch', e => {
-  if (e.request.url.includes('/api/')) return;
-  e.respondWith(fetch(e.request));
-});
+// No fetch handler — never intercept network requests (fixes iOS /api/ failures)
