@@ -77,16 +77,24 @@ export default function NutritionHub() {
 
     try {
       const data = await scanFoodHub(file);
-      if (!data?.total || (data.total.calories <= 0 && data.total.protein <= 0)) {
+      const items = Array.isArray(data?.items) ? data.items : [];
+      const total = data?.total ?? { calories: 0, protein: 0, carbs: 0, fat: 0 };
+
+      if (!items.length || (total.calories <= 0 && total.protein <= 0)) {
         setScanResult({ error: 'Could not analyze image. Try again.' });
         return;
       }
-      setScanResult(data);
+
+      setScanResult({
+        items,
+        total,
+        confidence: data?.confidence ?? 'medium',
+      });
       setMacros(prev => ({
-        calories: prev.calories + data.total.calories,
-        protein: prev.protein + data.total.protein,
-        carbs: prev.carbs + data.total.carbs,
-        fat: prev.fat + data.total.fat,
+        calories: Math.round(prev.calories + total.calories),
+        protein: Math.round((prev.protein + total.protein) * 10) / 10,
+        carbs: Math.round((prev.carbs + total.carbs) * 10) / 10,
+        fat: Math.round((prev.fat + total.fat) * 10) / 10,
       }));
     } catch (err) {
       console.error('Scan error:', err);
@@ -280,7 +288,7 @@ export default function NutritionHub() {
               <p className="text-[10px] tracking-[2px] uppercase text-[#CCFF00] font-bold mb-3">Last Scan Added</p>
               <div className="space-y-2">
                 {scanResult.items?.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between">
+                  <div key={`${item.name}-${item.weight}-${i}`} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-1.5 h-1.5 rounded-full" style={{ background: ITEM_COLORS[i % ITEM_COLORS.length] }} />
                       <span className="text-[12px] text-white/80">{item.name}</span>
@@ -443,7 +451,7 @@ export default function NutritionHub() {
                 {scanResult.items?.map((item, i) => {
                   const color = ITEM_COLORS[i % ITEM_COLORS.length];
                   return (
-                    <div key={i} className="rounded-[16px] p-3 border"
+                    <div key={`${item.name}-${item.weight}-${i}`} className="rounded-[16px] p-3 border"
                       style={{ background: `${color}0D`, borderColor: `${color}25` }}>
                       <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center gap-2">

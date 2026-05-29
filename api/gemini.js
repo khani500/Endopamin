@@ -79,6 +79,8 @@ export default async function handler(req, res) {
     ...geminiBody
   } = body;
 
+  // Forwards full Gemini payload: systemInstruction, generationConfig (responseSchema, maxOutputTokens), contents, etc.
+
   let url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:${action}?key=${GEMINI_API_KEY}`;
   if (alt === 'sse') {
     url += '&alt=sse';

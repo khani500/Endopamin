@@ -48,25 +48,49 @@ export async function imageToGeminiPayload(blob) {
   };
 }
 
-const FOOD_SCAN_NUTRITION_PROMPT =
-  'Analyze this food image. Identify EVERY distinct food item visible — do not merge different foods. '
-  + 'Reply with ONE line of JSON only (no markdown). '
-  + 'Use an items array with positive numeric weight (grams), calories, protein_g, carbs_g, fat_g for EACH item. '
-  + '{"items":[{"name":"Walnuts","serving_size":"80g","calories":523,"protein_g":12,"carbs_g":11,"fat_g":52},'
-  + '{"name":"Cashews","serving_size":"70g","calories":387,"protein_g":13,"carbs_g":21,"fat_g":31}],'
-  + '"confidence":"medium","notes":""}';
+const HUB_SCAN_SYSTEM =
+  'You are a nutrition vision API. You MUST always respond with valid JSON. '
+  + 'The response MUST contain an "items" array — even for a single food, wrap it in an array with one object. '
+  + 'List EVERY visually distinct food separately (e.g. a plate with apple slices, walnuts, and cashews = 3 items). '
+  + 'Never merge different foods into one entry. Never duplicate the same food name. '
+  + 'Scan the entire plate including sides and corners, not only the largest item. '
+  + 'Each item needs: name, weight (grams), calories, protein, carbs, fat — all positive numbers.';
 
-const HUB_SCAN_PROMPT =
-  'You are a nutrition expert analyzing a food photo. '
-  + 'Identify EVERY distinct food item visible — never merge different foods into one entry. '
-  + 'If a bowl has walnuts AND cashews, return TWO separate items with individual weights and macros. '
-  + 'Scan the entire image for different shapes, colors, and textures. Include one entry per distinct food type. '
-  + 'Return ONE JSON object only, no markdown. Every numeric field must be a positive number. '
-  + 'The total object must equal the sum of all items. '
-  + '{"items":['
-  + '{"name":"Walnuts","weight":80,"calories":523,"protein":12,"carbs":11.2,"fat":52},'
-  + '{"name":"Cashews","weight":70,"calories":387,"protein":12.6,"carbs":21,"fat":30.8}'
-  + '],"total":{"calories":910,"protein":24.6,"carbs":32.2,"fat":82.8},"confidence":"high"}';
+const HUB_SCAN_USER =
+  'Analyze this food photo. Return JSON only: '
+  + '{"items":[{"name":"Apple slices","weight":180,"calories":95,"protein":0.5,"carbs":25,"fat":0.3},'
+  + '{"name":"Walnuts","weight":25,"calories":163,"protein":3.6,"carbs":3.5,"fat":16.3},'
+  + '{"name":"Cashews","weight":20,"calories":111,"protein":3.6,"carbs":6,"fat":8.9}],'
+  + '"confidence":"high"}';
+
+const FOOD_SCAN_NUTRITION_PROMPT =
+  'Analyze this food image. Identify EVERY distinct food item visible. '
+  + 'Reply with ONE JSON object only (no markdown). ALWAYS use an "items" array — even for one food. '
+  + '{"items":[{"name":"Grilled Chicken","weight":150,"calories":248,"protein":46,"carbs":0,"fat":5}],'
+  + '"confidence":"medium"}';
+
+const FOOD_ITEMS_RESPONSE_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    items: {
+      type: 'ARRAY',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          name: { type: 'STRING' },
+          weight: { type: 'NUMBER' },
+          calories: { type: 'NUMBER' },
+          protein: { type: 'NUMBER' },
+          carbs: { type: 'NUMBER' },
+          fat: { type: 'NUMBER' },
+        },
+        required: ['name', 'weight', 'calories', 'protein', 'carbs', 'fat'],
+      },
+    },
+    confidence: { type: 'STRING' },
+  },
+  required: ['items'],
+};
 
 function parseNumericValue(value) {
   if (typeof value === 'number' && Number.isFinite(value)) return value;
@@ -130,6 +154,56 @@ function estimateFromLookup(foodName, weightG = 150) {
     carbs: m.carbs,
     fat: m.fat,
   };
+}
+
+function normalizeItemName(name) {
+  return String(name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function deduplicateHubItems(items) {
+  const seen = new Map();
+  for (const item of items) {
+    const key = normalizeItemName(item.name);
+    if (!key) continue;
+    const existing = seen.get(key);
+    if (existing) {
+      existing.weight = Math.round(existing.weight + (item.weight || 0));
+      existing.calories += item.calories || 0;
+      existing.protein = Math.round((existing.protein + (item.protein || 0)) * 10) / 10;
+      existing.carbs = Math.round((existing.carbs + (item.carbs || 0)) * 10) / 10;
+      existing.fat = Math.round((existing.fat + (item.fat || 0)) * 10) / 10;
+      existing.estimated = existing.estimated || item.estimated;
+    } else {
+      seen.set(key, { ...item });
+    }
+  }
+  return Array.from(seen.values());
+}
+
+export function finalizeScanResult(result) {
+  if (!result?.items?.length) return null;
+  const items = deduplicateHubItems(
+    result.items.map(item => normalizeHubItem(item)),
+  );
+  if (!items.length) return null;
+  return {
+    items,
+    total: sumHubItems(items),
+    confidence: String(result.confidence || 'medium').toLowerCase(),
+  };
+}
+
+function coerceToItemsPayload(parsed) {
+  if (!parsed) return null;
+  if (Array.isArray(parsed)) {
+    return { items: parsed, confidence: 'medium' };
+  }
+  if (typeof parsed !== 'object') return null;
+  if (Array.isArray(parsed.items)) return parsed;
+  if (parsed.name || parsed.food_name) {
+    return { items: [parsed], confidence: parsed.confidence || 'medium' };
+  }
+  return parsed;
 }
 
 function sumHubItems(items) {
@@ -208,8 +282,31 @@ function readNumberFromBlock(block, key) {
 
 function extractHubItemsFromText(text) {
   const src = flattenForExtraction(text);
-  const itemsMatch = src.match(/"items"\s*:\s*\[(.*)\]\s*,\s*"total"/i)
-    || src.match(/"items"\s*:\s*\[(.*)\]/i);
+
+  const bareArray = extractJsonArray(src);
+  if (bareArray) {
+    try {
+      const parsed = JSON.parse(bareArray);
+      if (Array.isArray(parsed)) {
+        return parsed
+          .filter(item => item && typeof item === 'object')
+          .map(item => ({
+            name: String(item.name || item.food_name || ''),
+            weight: readNumberFromBlock(JSON.stringify(item), 'weight')
+              || parseWeightGrams(item.serving_size),
+            calories: parseNumericValue(item.calories ?? item.kcal),
+            protein: parseNumericValue(item.protein ?? item.protein_g),
+            carbs: parseNumericValue(item.carbs ?? item.carbs_g),
+            fat: parseNumericValue(item.fat ?? item.fat_g),
+          }))
+          .filter(item => item.name);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  const itemsMatch = src.match(/"items"\s*:\s*(\[[\s\S]*?\])\s*(?:,\s*"|\})/i);
   if (!itemsMatch?.[1]) return [];
 
   const arrayContent = itemsMatch[1];
@@ -275,20 +372,48 @@ export function extractJsonObject(text) {
   return raw.replace(/[\r\n]+/g, ' ').trim();
 }
 
-/** Optional JSON.parse — never throws. Tries flattened/unescaped text first. */
+export function extractJsonArray(text) {
+  const clean = flattenForExtraction(text);
+  const start = clean.indexOf('[');
+  if (start === -1) return null;
+  const end = clean.lastIndexOf(']');
+  if (end <= start) return null;
+  return clean.slice(start, end + 1).replace(/[\r\n]+/g, ' ').trim();
+}
+
+/** Optional JSON.parse — never throws. Handles objects, bare arrays, and items wrapper. */
 export function safeParseJson(text) {
   const attempts = [
     flattenForExtraction(text),
     extractJsonObject(text),
+    extractJsonArray(text),
     stripMarkdown(text),
   ].filter(Boolean);
+
   for (const candidate of attempts) {
     try {
       return JSON.parse(candidate);
     } catch {
       // ignore
     }
+    if (candidate.trim().startsWith('[')) {
+      try {
+        return JSON.parse(candidate);
+      } catch {
+        // ignore
+      }
+    }
   }
+
+  const arr = extractJsonArray(text);
+  if (arr) {
+    try {
+      return JSON.parse(arr);
+    } catch {
+      // ignore
+    }
+  }
+
   return null;
 }
 
@@ -440,17 +565,18 @@ function normalizeHubItem(raw, rawText = '') {
 }
 
 export function normalizeHubScanData(data, rawText = '') {
-  if (!data || typeof data !== 'object') return null;
+  const coerced = coerceToItemsPayload(data);
+  if (!coerced || typeof coerced !== 'object') return null;
 
   let items = [];
-  if (Array.isArray(data.items)) {
-    items = data.items
+  if (Array.isArray(coerced.items)) {
+    items = coerced.items
       .map(item => normalizeHubItem(item, rawText))
       .filter(i => i.name && i.name !== 'Unknown food');
   }
 
   if (items.length === 0) {
-    const single = normalizeFoodResult(data);
+    const single = normalizeFoodResult(coerced);
     if (single?.food_name && single.food_name !== 'Unknown food') {
       items = [normalizeHubItem({
         name: single.food_name,
@@ -465,7 +591,7 @@ export function normalizeHubScanData(data, rawText = '') {
 
   if (items.length === 0) return null;
 
-  items = items.map(item => {
+  items = deduplicateHubItems(items.map(item => {
     if (item.calories > 0 || item.protein > 0 || item.carbs > 0 || item.fat > 0) {
       if (item.weight <= 0) {
         const est = estimateFromLookup(item.name, 150);
@@ -474,23 +600,30 @@ export function normalizeHubScanData(data, rawText = '') {
       return item;
     }
     return normalizeHubItem({ name: item.name, weight: item.weight }, rawText);
-  });
+  }));
 
   const total = sumHubItems(items);
   const confidence = String(
-    data.confidence || (items.some(i => i.estimated) ? 'low' : 'medium'),
+    coerced.confidence || (items.some(i => i.estimated) ? 'low' : 'medium'),
   ).toLowerCase();
 
   return expandCompositeItems({ items, total, confidence });
 }
 
 export function parseHubScanFromText(text) {
+  if (!text?.trim()) return null;
+
   const flat = flattenForExtraction(text);
-  const sources = [...new Set([flat, extractJsonObject(flat), text].filter(Boolean))];
+  const sources = [...new Set([
+    flat,
+    extractJsonObject(flat),
+    extractJsonArray(flat),
+  ].filter(Boolean))];
+
   const candidates = [];
 
   for (const source of sources) {
-    const parsed = safeParseJson(source);
+    const parsed = coerceToItemsPayload(safeParseJson(source));
     if (parsed) {
       const normalized = normalizeHubScanData(parsed, source);
       if (normalized?.items?.length) candidates.push(normalized);
@@ -504,11 +637,11 @@ export function parseHubScanFromText(text) {
   }
 
   const best = pickBestHubResult(...candidates);
-  if (best) return best;
+  if (best) return finalizeScanResult(best);
 
   const single = parseNutritionFromAiText(text);
   if (single) {
-    return normalizeHubScanData({
+    return finalizeScanResult(normalizeHubScanData({
       items: [{
         name: single.food_name,
         weight: parseWeightGrams(single.serving_size) || 150,
@@ -518,7 +651,7 @@ export function parseHubScanFromText(text) {
         fat: single.fat_g,
       }],
       confidence: single.confidence,
-    }, text);
+    }, text));
   }
 
   return null;
@@ -536,17 +669,7 @@ export function parseNutritionFromAiText(text) {
       if (Array.isArray(parsed.items) && parsed.items.length) {
         const hub = normalizeHubScanData(parsed, source);
         if (hub?.items?.length) {
-          if (hub.items.length > 1) return hub;
-          const item = hub.items[0];
-          return applyLookupFallback(normalizeFoodResult({
-            food_name: item.name,
-            serving_size: `${item.weight}g`,
-            calories: item.calories,
-            protein_g: item.protein,
-            carbs_g: item.carbs,
-            fat_g: item.fat,
-            confidence: hub.confidence,
-          }));
+          return hub;
         }
       }
 
@@ -568,7 +691,25 @@ export function parseNutritionFromAiText(text) {
   return bestNameOnly ? applyLookupFallback(bestNameOnly) : null;
 }
 
-async function callGeminiVision({ base64, mimeType, prompt, signal, maxOutputTokens = 512 }) {
+async function callGeminiVision({
+  base64,
+  mimeType,
+  prompt,
+  systemInstruction,
+  signal,
+  maxOutputTokens = 512,
+  responseSchema = null,
+}) {
+  const generationConfig = {
+    temperature: 0.1,
+    maxOutputTokens,
+  };
+
+  if (responseSchema) {
+    generationConfig.responseMimeType = 'application/json';
+    generationConfig.responseSchema = responseSchema;
+  }
+
   const body = {
     model: 'gemini-2.5-flash',
     contents: [{
@@ -577,11 +718,12 @@ async function callGeminiVision({ base64, mimeType, prompt, signal, maxOutputTok
         { text: prompt },
       ],
     }],
-    generationConfig: {
-      temperature: 0.1,
-      maxOutputTokens,
-    },
+    generationConfig,
   };
+
+  if (systemInstruction) {
+    body.systemInstruction = { parts: [{ text: systemInstruction }] };
+  }
 
   let response = await fetch('/api/gemini', {
     method: 'POST',
@@ -617,16 +759,17 @@ export const scanFoodHub = async (imageFile, { signal } = {}) => {
     const { aiText, rawText } = await callGeminiVision({
       base64,
       mimeType,
-      prompt: HUB_SCAN_PROMPT,
+      prompt: HUB_SCAN_USER,
+      systemInstruction: HUB_SCAN_SYSTEM,
       signal,
-      maxOutputTokens: 1024,
+      maxOutputTokens: 2048,
+      responseSchema: FOOD_ITEMS_RESPONSE_SCHEMA,
     });
 
-    const combined = `${aiText}\n${rawText}`;
-    const result = parseHubScanFromText(combined);
-    if (result?.items?.length) {
-      result.total = sumHubItems(result.items);
-      if (result.total.calories > 0 || result.total.protein > 0) return result;
+    const result = parseHubScanFromText(aiText) ?? parseHubScanFromText(rawText);
+    const finalized = finalizeScanResult(result);
+    if (finalized?.items?.length) {
+      if (finalized.total.calories > 0 || finalized.total.protein > 0) return finalized;
     }
 
     throw new Error('Could not analyze image. Try again with a clearer photo.');
@@ -649,26 +792,39 @@ export const scanFood = async (imageFile, { signal } = {}) => {
       mimeType,
       prompt: FOOD_SCAN_NUTRITION_PROMPT,
       signal,
-      maxOutputTokens: 1024,
+      maxOutputTokens: 2048,
+      responseSchema: FOOD_ITEMS_RESPONSE_SCHEMA,
     });
 
-    const combined = `${aiText}\n${rawText}`;
-    const hubResult = parseHubScanFromText(combined);
-    if (hubResult?.items?.length > 1) {
-      hubResult.total = sumHubItems(hubResult.items);
+    const hubResult = finalizeScanResult(
+      parseHubScanFromText(aiText) ?? parseHubScanFromText(rawText),
+    );
+    if (hubResult?.items?.length) {
+      if (hubResult.items.length > 1) {
+        return applyLookupFallback(normalizeFoodResult({
+          food_name: hubResult.items.map(i => i.name).join(', '),
+          serving_size: `${hubResult.items.reduce((s, i) => s + (i.weight || 0), 0)}g`,
+          calories: hubResult.total.calories,
+          protein_g: hubResult.total.protein,
+          carbs_g: hubResult.total.carbs,
+          fat_g: hubResult.total.fat,
+          confidence: hubResult.confidence,
+          notes: `${hubResult.items.length} items detected.`,
+        }));
+      }
+      const item = hubResult.items[0];
       return applyLookupFallback(normalizeFoodResult({
-        food_name: hubResult.items.map(i => i.name).join(', '),
-        serving_size: `${hubResult.items.reduce((s, i) => s + (i.weight || 0), 0)}g`,
-        calories: hubResult.total.calories,
-        protein_g: hubResult.total.protein,
-        carbs_g: hubResult.total.carbs,
-        fat_g: hubResult.total.fat,
+        food_name: item.name,
+        serving_size: `${item.weight}g`,
+        calories: item.calories,
+        protein_g: item.protein,
+        carbs_g: item.carbs,
+        fat_g: item.fat,
         confidence: hubResult.confidence,
-        notes: `${hubResult.items.length} items detected.`,
       }));
     }
 
-    const result = parseNutritionFromAiText(combined);
+    const result = parseNutritionFromAiText(aiText || rawText);
     if (result) return result;
 
     throw new Error('Could not identify food in image. Try again with a clearer photo.');
