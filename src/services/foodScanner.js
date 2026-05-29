@@ -74,7 +74,6 @@ export const scanFood = async (imageFile) => {
           { text: 'Analyze this food image. Reply with ONLY one single-line JSON, no newlines inside strings, no markdown, no explanation:\n{"food_name":"","serving_size":"","calories":0,"protein_g":0,"carbs_g":0,"fat_g":0,"confidence":"high","notes":""}' }
         ]
       }],
-      thinkingConfig: { thinkingBudget: 0 },
       generationConfig: {
         temperature: 0.1,
         maxOutputTokens: 512
@@ -205,14 +204,13 @@ Return ONLY a JSON object with this exact structure, no other text:
             },
           ],
         }],
-        thinkingConfig: { thinkingBudget: 0 },
         generationConfig: {
           temperature: 0.1,
           maxOutputTokens: 512,
         },
       }),
     });
-    data = await response.json();
+    data = JSON.parse(await response.text());
   } catch (error) {
     const wrapped = new Error(`Gemini network error: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
     wrapped.details = requestDebug;
