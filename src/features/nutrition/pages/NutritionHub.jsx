@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { askGeminiWithImage } from '../../../lib/gemini';
-import { parseNutritionFromAiText, safeParseJson } from '../../../services/foodScanner';
+import { scanFoodHub } from '../../../services/foodScanner';
 
 const MACRO_GOALS = { calories: 2200, protein: 160, carbs: 220, fat: 65 };
 
@@ -77,62 +76,18 @@ export default function NutritionHub() {
     setScannedImage(url);
 
     try {
-      const base64 = await new Promise((res, rej) => {
-        const reader = new FileReader();
-        reader.onloadend = () => res(reader.result.split(',')[1]);
-        reader.onerror = rej;
-        reader.readAsDataURL(file);
-      });
-
-      const prompt = `You are a nutrition expert AI. Analyze this food image carefully.
-Identify ALL food items visible on the plate/image separately.
-For each food item, estimate the portion size and calculate macros.
-Return ONLY a valid JSON object with this exact structure, no markdown:
-{
-  "items": [
-    {"name": "Food Name", "weight": 150, "calories": 165, "protein": 31, "carbs": 0, "fat": 3.6}
-  ],
-  "total": {"calories": 165, "protein": 31, "carbs": 0, "fat": 3.6},
-  "confidence": "high"
-}`;
-
-      const response = await askGeminiWithImage(base64, prompt);
-      if (response) {
-        let data = safeParseJson(response);
-        if (!data?.total) {
-          const single = parseNutritionFromAiText(response);
-          if (single) {
-            data = {
-              items: [{
-                name: single.food_name,
-                weight: 0,
-                calories: single.calories,
-                protein: single.protein_g,
-                carbs: single.carbs_g,
-                fat: single.fat_g,
-              }],
-              total: {
-                calories: single.calories,
-                protein: single.protein_g,
-                carbs: single.carbs_g,
-                fat: single.fat_g,
-              },
-              confidence: single.confidence,
-            };
-          }
-        }
-        if (!data?.total) {
-          setScanResult({ error: 'Could not analyze image. Try again.' });
-          return;
-        }
-        setScanResult(data);
-        setMacros(prev => ({
-          calories: prev.calories + data.total.calories,
-          protein: prev.protein + data.total.protein,
-          carbs: prev.carbs + data.total.carbs,
-          fat: prev.fat + data.total.fat,
-        }));
+      const data = await scanFoodHub(file);
+      if (!data?.total || (data.total.calories <= 0 && data.total.protein <= 0)) {
+        setScanResult({ error: 'Could not analyze image. Try again.' });
+        return;
       }
+      setScanResult(data);
+      setMacros(prev => ({
+        calories: prev.calories + data.total.calories,
+        protein: prev.protein + data.total.protein,
+        carbs: prev.carbs + data.total.carbs,
+        fat: prev.fat + data.total.fat,
+      }));
     } catch (err) {
       console.error('Scan error:', err);
       setScanResult({ error: 'Could not analyze image. Try again.' });

@@ -1,3 +1,5 @@
+import { searchFoodDatabase, macrosForGrams } from '../data/foodDatabase.js';
+
 export async function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -49,8 +51,90 @@ export async function imageToGeminiPayload(blob) {
 const FOOD_SCAN_NUTRITION_PROMPT =
   'Analyze this food image. Estimate realistic macros for the visible portion. '
   + 'Reply with ONE line of JSON only (no markdown). '
-  + 'You MUST provide numeric values for calories, protein_g, carbs_g, and fat_g. '
-  + '{"food_name":"","serving_size":"","calories":0,"protein_g":0,"carbs_g":0,"fat_g":0,"confidence":"medium","notes":""}';
+  + 'You MUST provide positive numeric values for calories, protein_g, carbs_g, fat_g, and serving_size in grams. '
+  + '{"food_name":"Grilled Chicken","serving_size":"150g","calories":248,"protein_g":46,"carbs_g":0,"fat_g":5,"confidence":"medium","notes":""}';
+
+const HUB_SCAN_PROMPT =
+  'Analyze ALL visible food in this image. For EACH distinct item estimate weight in grams and full macros. '
+  + 'Return ONE JSON object only, no markdown. Every numeric field must be a positive number for visible food. '
+  + '{"items":[{"name":"Broccoli","weight":150,"calories":51,"protein":4.2,"carbs":10.5,"fat":0.6}],'
+  + '"total":{"calories":51,"protein":4.2,"carbs":10.5,"fat":0.6},"confidence":"high"}';
+
+function parseNumericValue(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  const str = String(value ?? '').replace(/,/g, '').trim();
+  if (!str) return 0;
+  const match = str.match(/(\d+(?:\.\d+)?)/);
+  return match ? parseFloat(match[1]) : 0;
+}
+
+function parseWeightGrams(servingSize) {
+  const direct = parseNumericValue(servingSize);
+  if (direct > 0 && /g\b|gram/i.test(String(servingSize || ''))) return direct;
+  if (direct > 0 && !/oz|ml|cup|slice|piece/i.test(String(servingSize || ''))) return direct;
+  const str = String(servingSize || '').toLowerCase();
+  const gMatch = str.match(/(\d+(?:\.\d+)?)\s*g\b/);
+  if (gMatch) return parseFloat(gMatch[1]);
+  const ozMatch = str.match(/(\d+(?:\.\d+)?)\s*oz/);
+  if (ozMatch) return Math.round(parseFloat(ozMatch[1]) * 28.35);
+  return direct > 0 ? direct : 0;
+}
+
+function lookupFoodEntry(name) {
+  const q = String(name || '').trim().toLowerCase();
+  if (!q) return null;
+
+  const matches = searchFoodDatabase(q);
+  if (matches.length === 0) {
+    const words = q.split(/\s+/).filter(w => w.length > 3);
+    for (const word of words) {
+      const wordMatches = searchFoodDatabase(word);
+      if (wordMatches.length > 0) return wordMatches[0];
+    }
+    return null;
+  }
+
+  const exact = matches.find(f => f.name.toLowerCase() === q);
+  if (exact) return exact;
+  const partial = matches.find(
+    f => f.name.toLowerCase().startsWith(q) || q.startsWith(f.name.toLowerCase()),
+  );
+  return partial || matches[0];
+}
+
+function estimateFromLookup(foodName, weightG = 150) {
+  const weight = Math.max(1, Math.round(parseNumericValue(weightG) || 150));
+  const entry = lookupFoodEntry(foodName);
+  if (!entry) {
+    return {
+      weight,
+      calories: Math.max(80, Math.round(weight * 1.1)),
+      protein: Math.max(3, Math.round(weight * 0.07 * 10) / 10),
+      carbs: Math.max(5, Math.round(weight * 0.15 * 10) / 10),
+      fat: Math.max(2, Math.round(weight * 0.04 * 10) / 10),
+    };
+  }
+  const m = macrosForGrams(entry, weight);
+  return {
+    weight: m.grams,
+    calories: m.calories,
+    protein: m.protein,
+    carbs: m.carbs,
+    fat: m.fat,
+  };
+}
+
+function sumHubItems(items) {
+  return items.reduce(
+    (t, item) => ({
+      calories: t.calories + (Number(item.calories) || 0),
+      protein: Math.round((t.protein + (Number(item.protein) || 0)) * 10) / 10,
+      carbs: Math.round((t.carbs + (Number(item.carbs) || 0)) * 10) / 10,
+      fat: Math.round((t.fat + (Number(item.fat) || 0)) * 10) / 10,
+    }),
+    { calories: 0, protein: 0, carbs: 0, fat: 0 },
+  );
+}
 
 function stripMarkdown(text) {
   return String(text || '').replace(/```json/gi, '').replace(/```/g, '').trim();
@@ -124,7 +208,7 @@ export function extractGeminiModelText(rawText) {
 
   const flat = flattenForExtraction(raw);
   const inner = extractJsonObject(flat);
-  if (inner && /food_name|calories|protein/i.test(inner)) return inner;
+  if (inner && /food_name|calories|protein|"items"/i.test(inner)) return inner;
 
   if (/"food_name"|"calories"/.test(flat)) return flat;
 
@@ -144,12 +228,15 @@ function readNumberField(text, key) {
   const keys = key.endsWith('_g') ? [key, key.replace(/_g$/, '')] : [key, `${key}_g`];
   for (const k of keys) {
     const patterns = [
-      new RegExp(`"${k}"\\s*:\\s*(\\d+(?:\\.\\d+)?)`, 'i'),
-      new RegExp(`${k}\\s*:\\s*(\\d+(?:\\.\\d+)?)`, 'i'),
+      new RegExp(`"${k}"\\s*:\\s*"?([\\d,]+(?:\\.\\d+)?)"?`, 'i'),
+      new RegExp(`${k}\\s*:\\s*"?([\\d,]+(?:\\.\\d+)?)"?`, 'i'),
     ];
     for (const re of patterns) {
       const m = src.match(re);
-      if (m) return parseFloat(m[1]);
+      if (m) {
+        const n = parseNumericValue(m[1]);
+        if (n > 0) return n;
+      }
     }
   }
   return 0;
@@ -173,14 +260,143 @@ function normalizeFoodResult(raw) {
   return {
     food_name: String(raw.food_name || raw.name || raw.label || 'Unknown food'),
     serving_size: String(raw.serving_size || raw.serving || raw.serving_description || 'Estimated portion'),
-    calories: Number(raw.calories ?? raw.kcal) || 0,
-    protein_g: Number(raw.protein_g ?? raw.protein) || 0,
-    carbs_g: Number(raw.carbs_g ?? raw.carbs) || 0,
-    fat_g: Number(raw.fat_g ?? raw.fat) || 0,
-    fiber_g: Number(raw.fiber_g ?? raw.fiber) || 0,
+    calories: parseNumericValue(raw.calories ?? raw.kcal),
+    protein_g: parseNumericValue(raw.protein_g ?? raw.protein),
+    carbs_g: parseNumericValue(raw.carbs_g ?? raw.carbs),
+    fat_g: parseNumericValue(raw.fat_g ?? raw.fat),
+    fiber_g: parseNumericValue(raw.fiber_g ?? raw.fiber),
     confidence: String(raw.confidence || 'medium').toLowerCase(),
     notes: String(raw.notes || raw.tips || 'Nutrition is an AI estimate.'),
   };
+}
+
+function applyLookupFallback(result) {
+  if (!result || result.food_name === 'Unknown food') return result;
+  if (hasMacroValues(result)) {
+    const grams = parseWeightGrams(result.serving_size);
+    if (grams <= 0) {
+      const est = estimateFromLookup(result.food_name, 150);
+      result.serving_size = `${est.weight}g`;
+    }
+    return result;
+  }
+
+  const weight = parseWeightGrams(result.serving_size) || 150;
+  const est = estimateFromLookup(result.food_name, weight);
+  return {
+    ...result,
+    serving_size: `${est.weight}g`,
+    calories: est.calories,
+    protein_g: est.protein,
+    carbs_g: est.carbs,
+    fat_g: est.fat,
+    confidence: result.confidence === 'high' ? 'medium' : (result.confidence || 'low'),
+    notes: 'Estimated from food database (AI did not return macros).',
+  };
+}
+
+function normalizeHubItem(raw, rawText = '') {
+  const name = String(raw?.name || raw?.food_name || readStringField(rawText, 'name') || 'Unknown food');
+  let weight = parseNumericValue(raw?.weight ?? raw?.weight_g ?? raw?.grams);
+  let calories = parseNumericValue(raw?.calories ?? raw?.kcal);
+  let protein = parseNumericValue(raw?.protein ?? raw?.protein_g);
+  let carbs = parseNumericValue(raw?.carbs ?? raw?.carbs_g);
+  let fat = parseNumericValue(raw?.fat ?? raw?.fat_g);
+
+  if (weight <= 0) weight = parseWeightGrams(raw?.serving_size) || 150;
+
+  const hasMacros = calories > 0 || protein > 0 || carbs > 0 || fat > 0;
+  if (!hasMacros && name !== 'Unknown food') {
+    const est = estimateFromLookup(name, weight);
+    return { name, ...est, estimated: true };
+  }
+
+  if (weight <= 0) weight = 150;
+
+  return {
+    name,
+    weight: Math.round(weight),
+    calories: Math.max(calories, 0),
+    protein: Math.max(protein, 0),
+    carbs: Math.max(carbs, 0),
+    fat: Math.max(fat, 0),
+    estimated: Boolean(raw?.estimated),
+  };
+}
+
+export function normalizeHubScanData(data, rawText = '') {
+  if (!data || typeof data !== 'object') return null;
+
+  let items = [];
+  if (Array.isArray(data.items)) {
+    items = data.items
+      .map(item => normalizeHubItem(item, rawText))
+      .filter(i => i.name && i.name !== 'Unknown food');
+  }
+
+  if (items.length === 0) {
+    const single = normalizeFoodResult(data);
+    if (single?.food_name && single.food_name !== 'Unknown food') {
+      items = [normalizeHubItem({
+        name: single.food_name,
+        weight: parseWeightGrams(single.serving_size),
+        calories: single.calories,
+        protein: single.protein_g,
+        carbs: single.carbs_g,
+        fat: single.fat_g,
+      }, rawText)];
+    }
+  }
+
+  if (items.length === 0) return null;
+
+  items = items.map(item => {
+    if (item.calories > 0 || item.protein > 0 || item.carbs > 0 || item.fat > 0) {
+      if (item.weight <= 0) {
+        const est = estimateFromLookup(item.name, 150);
+        return { ...item, weight: est.weight };
+      }
+      return item;
+    }
+    return normalizeHubItem({ name: item.name, weight: item.weight }, rawText);
+  });
+
+  const total = sumHubItems(items);
+  const confidence = String(
+    data.confidence || (items.some(i => i.estimated) ? 'low' : 'medium'),
+  ).toLowerCase();
+
+  return { items, total, confidence };
+}
+
+export function parseHubScanFromText(text) {
+  const flat = flattenForExtraction(text);
+  const sources = [...new Set([flat, extractJsonObject(flat), text].filter(Boolean))];
+
+  for (const source of sources) {
+    const parsed = safeParseJson(source);
+    if (parsed) {
+      const normalized = normalizeHubScanData(parsed, source);
+      if (normalized?.items?.length) return normalized;
+    }
+  }
+
+  const single = parseNutritionFromAiText(text);
+  if (single) {
+    return normalizeHubScanData({
+      items: [{
+        name: single.food_name,
+        weight: parseWeightGrams(single.serving_size) || 150,
+        calories: single.calories,
+        protein: single.protein_g,
+        carbs: single.carbs_g,
+        fat: single.fat_g,
+      }],
+      confidence: single.confidence,
+    }, text);
+  }
+
+  return null;
 }
 
 /** Parse nutrition: JSON when safe, regex fallback, prefer results with macros. */
@@ -192,9 +408,25 @@ export function parseNutritionFromAiText(text) {
   for (const source of sources) {
     const parsed = safeParseJson(source);
     if (parsed && typeof parsed === 'object') {
+      if (Array.isArray(parsed.items) && parsed.items.length) {
+        const hub = normalizeHubScanData(parsed, source);
+        if (hub?.items?.[0]) {
+          const item = hub.items[0];
+          return applyLookupFallback(normalizeFoodResult({
+            food_name: item.name,
+            serving_size: `${item.weight}g`,
+            calories: item.calories,
+            protein_g: item.protein,
+            carbs_g: item.carbs,
+            fat_g: item.fat,
+            confidence: hub.confidence,
+          }));
+        }
+      }
+
       const normalized = normalizeFoodResult(parsed);
       if (normalized?.food_name && normalized.food_name !== 'Unknown food') {
-        if (hasMacroValues(normalized)) return normalized;
+        if (hasMacroValues(normalized)) return applyLookupFallback(normalized);
         if (!bestNameOnly) bestNameOnly = normalized;
       }
     }
@@ -202,12 +434,12 @@ export function parseNutritionFromAiText(text) {
     const regexResult = extractNutritionFromText(source);
     if (regexResult.food_name && regexResult.food_name !== 'Unknown food') {
       const normalized = normalizeFoodResult(regexResult);
-      if (hasMacroValues(normalized)) return normalized;
+      if (hasMacroValues(normalized)) return applyLookupFallback(normalized);
       if (!bestNameOnly) bestNameOnly = normalized;
     }
   }
 
-  return bestNameOnly;
+  return bestNameOnly ? applyLookupFallback(bestNameOnly) : null;
 }
 
 async function callGeminiVision({ base64, mimeType, prompt, signal }) {
@@ -252,6 +484,35 @@ async function callGeminiVision({ base64, mimeType, prompt, signal }) {
   const aiText = extractGeminiModelText(rawText);
   return { rawText, aiText, response };
 }
+
+export const scanFoodHub = async (imageFile, { signal } = {}) => {
+  try {
+    const { base64, mimeType } = await imageToGeminiPayload(imageFile);
+    const { aiText, rawText } = await callGeminiVision({
+      base64,
+      mimeType,
+      prompt: HUB_SCAN_PROMPT,
+      signal,
+    });
+
+    const combined = `${aiText}\n${rawText}`;
+    const result = parseHubScanFromText(combined);
+    if (result?.items?.length) {
+      result.total = sumHubItems(result.items);
+      if (result.total.calories > 0 || result.total.protein > 0) return result;
+    }
+
+    throw new Error('Could not analyze image. Try again with a clearer photo.');
+  } catch (err) {
+    if (err?.name === 'AbortError') throw err;
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('Food hub scan error:', msg);
+    if (/json|parse|eof|unterminated/i.test(msg)) {
+      throw new Error('Analysis incomplete. Please try again.');
+    }
+    throw err;
+  }
+};
 
 export const scanFood = async (imageFile, { signal } = {}) => {
   try {
