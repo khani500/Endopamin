@@ -99,10 +99,11 @@ export const scanFood = async (imageFile) => {
     const rawText = await response.text();
     let text = '';
     try {
-      const data = JSON.parse(rawText);
+      const cleanText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const data = JSON.parse(cleanText);
       if (!response.ok || data.error) throw new Error(data.error?.message || 'Gemini error');
       text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    } catch(e) {
+    } catch (e) {
       const m = rawText.match(/"text"\s*:\s*"((?:[^"\\]|\\.)*)"/);
       text = m ? m[1] : '';
       if (!text) throw new Error('Gemini response error. Try again.');
@@ -210,7 +211,9 @@ Return ONLY a JSON object with this exact structure, no other text:
         },
       }),
     });
-    data = JSON.parse(await response.text());
+    const responseRawText = await response.text();
+    const cleanText = responseRawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    data = JSON.parse(cleanText);
   } catch (error) {
     const wrapped = new Error(`Gemini network error: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
     wrapped.details = requestDebug;
@@ -242,7 +245,9 @@ Return ONLY a JSON object with this exact structure, no other text:
   }
 
   try {
-    const normalized = normalizeFoodResult(JSON.parse(jsonText));
+    const cleanText = jsonText.replace(/```json/g, '').replace(/```/g, '').trim();
+    const nutritionData = JSON.parse(cleanText);
+    const normalized = normalizeFoodResult(nutritionData);
     return { ...normalized, debug: responseDebug };
   } catch (error) {
     console.error('Failed to parse Gemini food response:', text);
