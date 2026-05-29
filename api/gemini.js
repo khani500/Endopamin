@@ -117,8 +117,9 @@ export default async function handler(req, res) {
       return res.send(text);
     }
 
-    const data = await response.json();
-    return res.status(response.status).json(data);
+    const text = await response.text();
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(response.status).send(text);
   } catch (err) {
     if (isPayloadTooLargeError(err)) {
       return res.status(413).json({
