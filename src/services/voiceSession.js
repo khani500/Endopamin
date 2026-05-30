@@ -1,4 +1,10 @@
-import { isSpeaking, stopSpeaking } from '../lib/voice';
+import {
+  isSpeaking,
+  stopSpeaking,
+  playListeningBeep,
+  isIOSDevice,
+  IOS_SPEECH_RESTART_DELAY_MS,
+} from '../lib/voice';
 import { createVoiceActivityDetector } from '../lib/vad';
 
 export const VOICE_SESSION_STATE = {
@@ -6,11 +12,15 @@ export const VOICE_SESSION_STATE = {
   LISTENING: 'listening',
   PROCESSING: 'processing',
   SPEAKING: 'speaking',
+  AWAITING_TAP: 'awaiting_tap',
 };
 
+export const SILENCE_TIMEOUT_MS = 5000;
+export const LISTEN_RESUME_DELAY_MS = 600;
+
 /**
- * Duplex voice session with continuous VAD and barge-in while the coach speaks.
- * Start → listen → process → speak (VAD stays hot) → listen again.
+ * Duplex voice session with continuous VAD, barge-in, silence timeout, and hands-free loop.
+ * Start → listen → process → speak (music ducks) → beep → listen again.
  */
 export function createVoiceSession({
   onStateChange,
@@ -21,6 +31,7 @@ export function createVoiceSession({
   enableBargeIn = true,
 } = {}) {
   let active = false;
+  let awaitingTap = false;
   let recognition = null;
   let micStream = null;
   let vad = null;
@@ -28,6 +39,8 @@ export function createVoiceSession({
   let bargeInArmed = false;
   let lastFinalTranscript = '';
   let restartTimer = null;
+  let resumeTimer = null;
+  let silenceTimer = null;
   let bargeInCooldownUntil = 0;
   let coachOutputActive = false;
 
@@ -42,6 +55,20 @@ export function createVoiceSession({
     if (restartTimer) {
       clearTimeout(restartTimer);
       restartTimer = null;
+    }
+  };
+
+  const clearResumeTimer = () => {
+    if (resumeTimer) {
+      clearTimeout(resumeTimer);
+      resumeTimer = null;
+    }
+  };
+
+  const clearSilenceTimer = () => {
+    if (silenceTimer) {
+      clearTimeout(silenceTimer);
+      silenceTimer = null;
     }
   };
 
@@ -80,9 +107,30 @@ export function createVoiceSession({
     recognition = null;
   };
 
+  const enterAwaitingTap = () => {
+    if (!active || pausedForProcessing || coachOutputActive) return;
+
+    clearRestartTimer();
+    clearSilenceTimer();
+    stopRecognition();
+    awaitingTap = true;
+    onInterimTranscript?.('');
+    setState(VOICE_SESSION_STATE.AWAITING_TAP);
+  };
+
+  const resetSilenceTimer = () => {
+    clearSilenceTimer();
+    if (!active || pausedForProcessing || coachOutputActive || awaitingTap) return;
+
+    silenceTimer = setTimeout(() => {
+      silenceTimer = null;
+      enterAwaitingTap();
+    }, SILENCE_TIMEOUT_MS);
+  };
+
   const scheduleRestart = (delayMs = 350) => {
     clearRestartTimer();
-    if (!active || pausedForProcessing || coachOutputActive) return;
+    if (!active || pausedForProcessing || coachOutputActive || awaitingTap) return;
     restartTimer = setTimeout(() => {
       restartTimer = null;
       void startListening();
@@ -105,8 +153,7 @@ export function createVoiceSession({
     clearRestartTimer();
     stopRecognition();
     vad?.reset?.();
-    setState(VOICE_SESSION_STATE.LISTENING);
-    void startListening();
+    resumeListening();
   };
 
   const setVadBargeInEnabled = enabled => {
@@ -140,9 +187,8 @@ export function createVoiceSession({
     vad = null;
   };
 
-  /** Desktop continuous recognition (formerly beginDesktopRecognitionSession). */
   const startListening = async () => {
-    if (!active || pausedForProcessing || coachOutputActive) return;
+    if (!active || pausedForProcessing || coachOutputActive || awaitingTap) return;
 
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
@@ -167,6 +213,12 @@ export function createVoiceSession({
       bargeInArmed = false;
       if (!coachOutputActive) stopSpeaking();
       setState(VOICE_SESSION_STATE.LISTENING);
+      resetSilenceTimer();
+    };
+
+    r.onspeechstart = () => {
+      if (shouldIgnoreMicInput()) return;
+      resetSilenceTimer();
     };
 
     r.onresult = event => {
@@ -182,6 +234,8 @@ export function createVoiceSession({
         else interim += transcript;
       }
 
+      if (interim.trim() || finalChunk.trim()) resetSilenceTimer();
+
       if (!interim.trim() && !finalChunk.trim()) return;
 
       onInterimTranscript?.(`${finalChunk}${interim}`.trim());
@@ -193,6 +247,7 @@ export function createVoiceSession({
       pausedForProcessing = true;
       bargeInArmed = false;
       clearRestartTimer();
+      clearSilenceTimer();
       stopRecognition();
       onUtteranceFinal?.(finalText);
     };
@@ -200,6 +255,7 @@ export function createVoiceSession({
     r.onerror = event => {
       if (!active) return;
       if (event.error === 'aborted') return;
+      if (awaitingTap) return;
       if (event.error === 'no-speech' && !pausedForProcessing) {
         scheduleRestart(200);
         return;
@@ -209,7 +265,9 @@ export function createVoiceSession({
 
     r.onend = () => {
       recognition = null;
-      if (active && !pausedForProcessing && !coachOutputActive) scheduleRestart(200);
+      if (active && !pausedForProcessing && !coachOutputActive && !awaitingTap) {
+        scheduleRestart(200);
+      }
     };
 
     try {
@@ -219,27 +277,53 @@ export function createVoiceSession({
     }
   };
 
-  const start = async () => {
+  const scheduleListeningResume = () => {
+    clearResumeTimer();
+    const iosExtra = isIOSDevice() ? IOS_SPEECH_RESTART_DELAY_MS : 0;
+
+    resumeTimer = setTimeout(() => {
+      resumeTimer = null;
+      if (!active || pausedForProcessing || coachOutputActive || awaitingTap) return;
+
+      void (async () => {
+        await playListeningBeep();
+        if (!active || pausedForProcessing || coachOutputActive || awaitingTap) return;
+        void startListening();
+      })();
+    }, LISTEN_RESUME_DELAY_MS + iosExtra);
+  };
+
+  const start = async ({ deferListening = false } = {}) => {
     if (!isSupported()) {
       throw new Error('Speech recognition is not supported in this browser.');
     }
 
     active = true;
+    awaitingTap = false;
     pausedForProcessing = false;
     bargeInArmed = false;
     lastFinalTranscript = '';
     stopSpeaking();
     await startVadMonitor();
-    await startListening();
+
+    if (deferListening) {
+      setState(VOICE_SESSION_STATE.PROCESSING);
+      return;
+    }
+
+    scheduleListeningResume();
   };
 
   const stop = () => {
     active = false;
+    awaitingTap = false;
     coachOutputActive = false;
     pausedForProcessing = false;
     bargeInArmed = false;
     lastFinalTranscript = '';
     clearRestartTimer();
+    clearResumeTimer();
+    clearSilenceTimer();
     stopRecognition();
     stopVadMonitor();
     releaseMicStream();
@@ -252,7 +336,10 @@ export function createVoiceSession({
     coachOutputActive = true;
     pausedForProcessing = true;
     bargeInArmed = false;
+    awaitingTap = false;
     clearRestartTimer();
+    clearResumeTimer();
+    clearSilenceTimer();
     stopRecognition();
     setVadBargeInEnabled(false);
     void startVadMonitor();
@@ -263,7 +350,10 @@ export function createVoiceSession({
     coachOutputActive = true;
     pausedForProcessing = true;
     bargeInArmed = true;
+    awaitingTap = false;
     clearRestartTimer();
+    clearResumeTimer();
+    clearSilenceTimer();
     stopRecognition();
     vad?.setCoachSpeaking?.(true);
     setVadBargeInEnabled(true);
@@ -274,15 +364,24 @@ export function createVoiceSession({
   /** Resume mic after coach TTS finishes (while session still active). */
   const resumeListening = () => {
     if (!active) return;
+
     coachOutputActive = false;
     pausedForProcessing = false;
     bargeInArmed = false;
+    awaitingTap = false;
     lastFinalTranscript = '';
     onInterimTranscript?.('');
     vad?.setCoachSpeaking?.(false);
     setVadBargeInEnabled(false);
     void startVadMonitor();
-    void startListening();
+    scheduleListeningResume();
+  };
+
+  /** Re-enter hands-free loop after silence timeout (requires prior user gesture). */
+  const resumeFromTap = () => {
+    if (!active || !awaitingTap) return;
+    awaitingTap = false;
+    resumeListening();
   };
 
   /** Stop coach audio and return to listening without ending the session. */
@@ -299,9 +398,11 @@ export function createVoiceSession({
     beginProcessing,
     beginSpeaking,
     resumeListening,
+    resumeFromTap,
     interruptCoachSpeech,
     triggerBargeIn,
     isActive: () => active,
+    isAwaitingTap: () => awaitingTap,
     isSupported,
   };
 }

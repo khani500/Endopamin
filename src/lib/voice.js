@@ -167,6 +167,65 @@ export function clearSpeechRecognitionRestart(timerId) {
 /** Shared HTML5 Audio ref — stop/play targets this everywhere (mic, VAD, pause). */
 export const coachAudioRef = { current: null };
 
+const DUCK_VOLUME = 0.22;
+let duckDepth = 0;
+const duckedMediaVolumes = new Map();
+
+/** Lower in-page media volume so coach TTS mixes instead of replacing it. */
+export function duckBackgroundAudio() {
+  duckDepth += 1;
+  if (duckDepth > 1 || typeof document === 'undefined') return;
+
+  document.querySelectorAll('audio, video').forEach(el => {
+    if (el.paused || el.muted) return;
+    if (!duckedMediaVolumes.has(el)) duckedMediaVolumes.set(el, el.volume);
+    el.volume = Math.min(el.volume, DUCK_VOLUME);
+  });
+}
+
+export function restoreBackgroundAudio() {
+  if (duckDepth <= 0) return;
+  duckDepth -= 1;
+  if (duckDepth > 0) return;
+
+  duckedMediaVolumes.forEach((volume, el) => {
+    el.volume = volume;
+  });
+  duckedMediaVolumes.clear();
+}
+
+export function forceRestoreBackgroundAudio() {
+  duckDepth = 0;
+  duckedMediaVolumes.forEach((volume, el) => {
+    el.volume = volume;
+  });
+  duckedMediaVolumes.clear();
+}
+
+/** Soft cue (~800 Hz, 80 ms) that the mic is open again. */
+export async function playListeningBeep() {
+  const ctx = await resumeAudioContextOnUserGesture();
+  if (!ctx || ctx.state !== 'running') return;
+
+  return new Promise(resolve => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const start = ctx.currentTime;
+
+    osc.type = 'sine';
+    osc.frequency.value = 800;
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(0.07, start + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.08);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.onended = () => resolve();
+    osc.start(start);
+    osc.stop(start + 0.08);
+  });
+}
+
 function base64ToArrayBuffer(base64) {
   const binaryString = atob(base64);
   const bytes = new Uint8Array(binaryString.length);
@@ -204,6 +263,7 @@ function getCoachVoiceName(coachId) {
 /** Immediately stop any coach audio (HTML5 + browser TTS fallback). */
 export function stopCoachAudio() {
   playbackGeneration += 1;
+  forceRestoreBackgroundAudio();
 
   const playback = coachAudioRef.current;
   if (playback?.stop) {
@@ -237,26 +297,35 @@ export const stopSpeaking = stopCoachAudio;
 
 /** Fallback TTS using browser SpeechSynthesis (works without API key). */
 async function speakWithSpeechSynthesis(text, signal) {
+  duckBackgroundAudio();
   return new Promise(resolve => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    const finish = () => {
+      restoreBackgroundAudio();
       resolve();
+    };
+
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      finish();
       return;
     }
     window.speechSynthesis.cancel();
-    if (signal?.aborted) { resolve(); return; }
+    if (signal?.aborted) {
+      finish();
+      return;
+    }
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
     utterance.rate = 1.05;
-    utterance.volume = 1.0;
+    utterance.volume = 0.92;
     // Timeout fallback: iOS PWA sometimes blocks silently (no onend/onerror)
     const estimatedMs = Math.max(text.length * 65, 2500);
     const timeout = setTimeout(() => {
       window.speechSynthesis.cancel();
-      resolve();
+      finish();
     }, estimatedMs);
 
-    utterance.onend = () => { clearTimeout(timeout); resolve(); };
-    utterance.onerror = () => { clearTimeout(timeout); resolve(); };
+    utterance.onend = () => { clearTimeout(timeout); finish(); };
+    utterance.onerror = () => { clearTimeout(timeout); finish(); };
     window.speechSynthesis.speak(utterance);
   });
 }
@@ -340,6 +409,7 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
           // ignore
         }
       }
+      restoreBackgroundAudio();
       coachAudioRef.current = null;
       cleanup();
       reject(new DOMException('Aborted', 'AbortError'));
@@ -348,11 +418,17 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
     signal?.addEventListener('abort', onAbort, { once: true });
     Promise.resolve()
       .then(async () => {
+        duckBackgroundAudio();
         const audioBuffer = await context.decodeAudioData(base64ToArrayBuffer(data.audioContent));
         if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+
+        const coachGain = context.createGain();
+        coachGain.gain.value = 1;
+        coachGain.connect(context.destination);
+
         source = context.createBufferSource();
         source.buffer = audioBuffer;
-        source.connect(context.destination);
+        source.connect(coachGain);
         coachAudioRef.current = {
           stop: () => {
             try {
@@ -363,6 +439,7 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
           },
         };
         source.onended = () => {
+          restoreBackgroundAudio();
           if (settled) return;
           settled = true;
           cleanup();
@@ -377,6 +454,7 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
         source.start(0);
       })
       .catch(async error => {
+        restoreBackgroundAudio();
         if (error?.name === 'AbortError') {
           if (!settled) {
             settled = true;

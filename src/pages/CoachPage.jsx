@@ -302,7 +302,7 @@ export default function CoachPage() {
   const speak = speakCoachText;
 
   const processUserMessage = useCallback(async (rawText, options = {}) => {
-    const { signal, streaming = false, onToken, fromVoice = false } = options;
+    const { signal, streaming = false, onToken, fromVoice = false, skipHistory = false } = options;
     const text = sanitizeTranscript(String(rawText || '').trim());
     if (!text || (!options.voiceTurn && sendingRef.current)) return null;
     if (signal?.aborted) return null;
@@ -313,19 +313,22 @@ export default function CoachPage() {
 
     const userMsg = { role: 'user', text, timestamp: new Date().toISOString() };
     const currentHistory = getCoachMessages(coach.id);
-    const historyWithUser = [...currentHistory, userMsg];
-    setCoachMessages(coach.id, historyWithUser);
+    const historyWithUser = skipHistory ? currentHistory : [...currentHistory, userMsg];
+    if (!skipHistory) {
+      setCoachMessages(coach.id, historyWithUser);
+    }
+    const apiHistory = skipHistory ? [...currentHistory, userMsg] : historyWithUser;
 
     try {
       const profileContext = buildProfileContext(profile, workoutTime, location, equipment);
       const systemPrompt = buildCoachSystemPrompt(
         coach.systemPrompt,
         coach,
-        historyWithUser,
+        apiHistory,
         profileContext,
         { preservePersona: coach.id === 'kane', profile },
       );
-      const contents = toGeminiContents(historyWithUser);
+      const contents = toGeminiContents(apiHistory);
 
       const rawReply = streaming
         ? await askGeminiChatStream({
@@ -421,6 +424,7 @@ export default function CoachPage() {
     toggleVoiceSession,
     stopVoiceSession,
     pauseCoachSpeech,
+    resumeFromTap,
     VOICE_SESSION_STATE,
   } = useVoiceSession({
     processUtterance: processUserMessage,
@@ -436,6 +440,11 @@ export default function CoachPage() {
     || isSpeaking();
 
   const handleMicPress = useCallback(() => {
+    if (voiceState === VOICE_SESSION_STATE.AWAITING_TAP) {
+      resumeFromTap();
+      return;
+    }
+
     if (isVoiceBusy || (voiceSessionActive && loading)) {
       pauseCoachSpeech();
       sendingRef.current = false;
@@ -444,7 +453,16 @@ export default function CoachPage() {
     }
 
     toggleVoiceSession();
-  }, [isVoiceBusy, voiceSessionActive, loading, pauseCoachSpeech, toggleVoiceSession]);
+  }, [
+    voiceState,
+    isVoiceBusy,
+    voiceSessionActive,
+    loading,
+    pauseCoachSpeech,
+    resumeFromTap,
+    toggleVoiceSession,
+    VOICE_SESSION_STATE,
+  ]);
 
   useEffect(() => () => stopVoiceSession(), [stopVoiceSession]);
 
@@ -453,6 +471,7 @@ export default function CoachPage() {
     [VOICE_SESSION_STATE.LISTENING]: 'LIVE',
     [VOICE_SESSION_STATE.PROCESSING]: 'THINKING',
     [VOICE_SESSION_STATE.SPEAKING]: 'SPEAKING',
+    [VOICE_SESSION_STATE.AWAITING_TAP]: 'PAUSED',
   }[voiceState] || 'ONLINE';
 
   useEffect(() => {
@@ -829,13 +848,17 @@ export default function CoachPage() {
               <p className="text-[11px] text-white/35">{coach.role}</p>
               {voiceSessionActive && (
                 <p className="text-[10px] mt-1" style={{ color: coach.color }}>
-                  {voiceState === VOICE_SESSION_STATE.LISTENING && liveTranscript
-                    ? `"${liveTranscript}"`
-                    : voiceState === VOICE_SESSION_STATE.LISTENING
-                      ? 'Walkie-talkie on — tap mic to end'
-                      : voiceState === VOICE_SESSION_STATE.PROCESSING
-                        ? 'Processing...'
-                        : 'Coach is speaking...'}
+                  {voiceState === VOICE_SESSION_STATE.AWAITING_TAP
+                    ? 'Tap mic to talk'
+                    : voiceState === VOICE_SESSION_STATE.LISTENING && liveTranscript
+                      ? `"${liveTranscript}"`
+                      : voiceState === VOICE_SESSION_STATE.LISTENING
+                        ? 'Listening — speak anytime'
+                        : voiceState === VOICE_SESSION_STATE.PROCESSING
+                          ? 'Processing...'
+                          : voiceState === VOICE_SESSION_STATE.SPEAKING
+                            ? 'Coach is speaking...'
+                            : 'Voice session active'}
                 </p>
               )}
             </div>
@@ -851,27 +874,35 @@ export default function CoachPage() {
             )}
             <button type="button" onClick={handleMicPress}
               aria-label={
-                isVoiceBusy
-                  ? 'Interrupt coach'
-                  : voiceSessionActive
-                    ? 'End voice session'
-                    : 'Start voice session'
+                voiceState === VOICE_SESSION_STATE.AWAITING_TAP
+                  ? 'Tap to talk'
+                  : isVoiceBusy
+                    ? 'Interrupt coach'
+                    : voiceSessionActive
+                      ? 'End voice session'
+                      : 'Start voice session'
               }
               aria-pressed={voiceSessionActive}
               className="w-13 h-13 rounded-full flex items-center justify-center transition-all active:scale-90 flex-shrink-0"
               style={{
                 width: 52, height: 52,
-                background: voiceSessionActive ? coach.color : `${coach.color}15`,
+                background: voiceSessionActive
+                  ? (voiceState === VOICE_SESSION_STATE.AWAITING_TAP ? `${coach.color}40` : coach.color)
+                  : `${coach.color}15`,
                 border: `2px solid ${coach.color}50`,
                 boxShadow: isVoiceBusy
                   ? `0 0 0 6px ${coach.color}35, 0 0 28px ${coach.color}70`
-                  : voiceSessionActive
-                    ? `0 0 0 6px ${coach.color}20, 0 0 0 12px ${coach.color}08, 0 0 28px ${coach.color}60`
-                    : `0 0 14px ${coach.color}20`,
+                  : voiceState === VOICE_SESSION_STATE.AWAITING_TAP
+                    ? `0 0 0 6px ${coach.color}25, 0 0 20px ${coach.color}40`
+                    : voiceSessionActive
+                      ? `0 0 0 6px ${coach.color}20, 0 0 0 12px ${coach.color}08, 0 0 28px ${coach.color}60`
+                      : `0 0 14px ${coach.color}20`,
               }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke={voiceSessionActive ? '#000' : coach.color}
+              <svg viewBox="0 0 24 24" fill="none" stroke={
+                voiceSessionActive && voiceState !== VOICE_SESSION_STATE.AWAITING_TAP ? '#000' : coach.color
+              }
                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                {voiceSessionActive ? (
+                {voiceSessionActive && voiceState !== VOICE_SESSION_STATE.AWAITING_TAP ? (
                   <rect x="6" y="6" width="12" height="12" rx="1" />
                 ) : (
                   <>
