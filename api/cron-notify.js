@@ -142,7 +142,8 @@ export default async function handler(req, res) {
       },
     });
     const users = await usersRes.json();
-    if (!users?.length) return res.status(200).json({ sent: 0 });
+    console.log("DB users:", users?.length, JSON.stringify(users).slice(0,200));
+  if (!users?.length) return res.status(200).json({ sent: 0, db: users });
 
     const accessToken = await getAccessToken();
     const now = Date.now();
