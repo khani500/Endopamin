@@ -135,7 +135,7 @@ export default async function handler(req, res) {
     const projectId = sa.project_id;
     if (!projectId) return res.status(500).json({ error: 'No Firebase project ID' });
 
-    const usersRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?fcm_token=not.is.null&select=*`, {
+    const usersRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=*`, {
       headers: {
         apikey: SUPABASE_KEY,
         Authorization: `Bearer ${SUPABASE_KEY}`,
