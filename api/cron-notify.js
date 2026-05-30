@@ -49,29 +49,30 @@ async function generateContent(profile) {
   const lastActive = profile.last_active ? new Date(profile.last_active) : null;
   const daysAgo = lastActive ? Math.floor((Date.now() - lastActive.getTime()) / 86400000) : 3;
 
-  let context = '';
-  if (daysAgo >= 3) {
-    context = `${name} has been ABSENT for ${daysAgo} days. Wake-up call needed.`;
-  } else if (streak >= 7) {
-    context = `${name} has a ${streak}-day streak! Celebrate and dare them to continue.`;
-  } else if (streak >= 3) {
-    context = `${name} is on a ${streak}-day streak. Push for more.`;
-  } else {
-    context = `Send ${name} a random unexpected motivational moment.`;
-  }
+  const timeOfDay = new Date().getHours();
+  const tod = timeOfDay < 12 ? 'morning' : timeOfDay < 17 ? 'afternoon' : 'evening';
 
-  const prompt = `You are ${coachId.toUpperCase()} fitness coach. Write ONE push notification.
+  const scenarios = [
+    `${name} hasn't worked out in ${daysAgo} days. Roast them gently.`,
+    `${name} has a ${streak}-day streak. Hype them up like they won the Olympics.`,
+    `Send ${name} a completely unexpected random fitness fact that blows their mind.`,
+    `Challenge ${name} to do one thing RIGHT NOW. Something tiny but specific.`,
+    `${name} is slacking. Make them laugh while feeling guilty.`,
+    `Tell ${name} something their body is doing right now that's actually amazing.`,
+    `Send ${name} a weird motivational quote that makes no sense but somehow works.`,
+  ];
+  const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
 
+  const prompt = `You are ${coachId.toUpperCase()} fitness coach texting your athlete at ${tod}.
 PERSONALITY: ${COACH_PERSONALITIES[coachId] || COACH_PERSONALITIES.elias}
-CONTEXT: ${context}
+MISSION: ${scenario}
 USER GOAL: ${goal}
-
 RULES:
-- Title: max 45 chars, punchy and unexpected
-- Body: max 90 chars, make them smile OR feel fired up
-- Sound exactly like this coach talking
-- Be creative, unpredictable, vary between tough love, humor, science, challenges
-
+- Title: max 45 chars, punchy, unexpected, sometimes emoji
+- Body: max 90 chars, make them smile OR feel fired up OR both
+- Sound exactly like THIS coach, not generic
+- Be unpredictable. No clichés. Surprise them.
+- Sometimes be weird. Sometimes be tough. Sometimes be funny.
 Return ONLY raw JSON: {"title": "...", "body": "..."}`;
 
   try {
