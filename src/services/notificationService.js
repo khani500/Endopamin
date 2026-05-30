@@ -13,10 +13,11 @@ export const registerForNotifications = async userId => {
   if (supabase) {
     await supabase
       .from('notification_settings')
-      .upsert({
-        user_id: userId,
-        fcm_token: token,
-      });
+      .upsert({ user_id: userId, fcm_token: token });
+    await supabase
+      .from('profiles')
+      .update({ fcm_token: token })
+      .eq('id', userId);
   }
 
   return true;
