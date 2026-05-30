@@ -158,7 +158,7 @@ export default async function handler(req, res) {
 
       const lastActive = profile.last_active ? new Date(profile.last_active) : null;
       const daysAgo = lastActive ? (now - lastActive.getTime()) / 86400000 : 5;
-      const shouldSend = daysAgo >= 3 || Math.random() < 0.20;
+      const shouldSend = true;
       if (!shouldSend) continue;
 
       const { title, body } = await generateContent(profile);
