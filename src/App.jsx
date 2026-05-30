@@ -17,7 +17,7 @@ import DeskBreakSession from './pages/DeskBreakSession';
 import { useAuth } from './context/AuthContext';
 import { checkUserAbsence, updateLastActive } from './services/absenceDetector';
 import { onForegroundMessage } from './lib/firebase';
-import { getNotificationSettings, sendNotification } from './services/notificationService';
+import { getNotificationSettings, sendNotification, registerForNotifications } from './services/notificationService';
 import NutritionLayout from './features/nutrition/NutritionLayout';
 import NutritionHub from './features/nutrition/pages/NutritionHub';
 import NutritionOverviewPage from './features/nutrition/pages/NutritionOverviewPage';
@@ -73,6 +73,8 @@ function App() {
 
   useEffect(() => {
     if (!user?.id || !profile) return;
+
+    registerForNotifications(user.id).catch(() => {});
 
     const checkKey = `${user.id}:${profile.last_active || 'new'}`;
     if (absenceCheckKeyRef.current === checkKey) return;
