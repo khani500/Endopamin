@@ -190,20 +190,39 @@ function getCoachImageSrc(coachId) {
   return `/coaches/${coachId}.${ext}`;
 }
 
-const COACH_PAGE_SESSION_KEY = 'endopamin_coach_page_session';
+const COACH_STORAGE_KEY = 'endopamin_coach';
+const HISTORY_STORAGE_KEY = 'endopamin_history';
 
-function loadCoachPageSession() {
+function getSavedCoachId() {
   try {
-    const raw = sessionStorage.getItem(COACH_PAGE_SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
+    return sessionStorage.getItem(COACH_STORAGE_KEY);
   } catch {
     return null;
   }
 }
 
-function saveCoachPageSession(data) {
+function saveCoachId(coachId) {
   try {
-    sessionStorage.setItem(COACH_PAGE_SESSION_KEY, JSON.stringify(data));
+    sessionStorage.setItem(COACH_STORAGE_KEY, coachId);
+  } catch {
+    // ignore quota errors
+  }
+}
+
+function loadSavedHistory() {
+  try {
+    const raw = sessionStorage.getItem(HISTORY_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveHistory(messages) {
+  try {
+    sessionStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(messages.slice(-10)));
   } catch {
     // ignore quota errors
   }
@@ -218,8 +237,8 @@ export default function CoachPage() {
     getCoachMessages,
   } = useCoachSession();
   const [coach, setCoach] = useState(() => {
-    const saved = loadCoachPageSession();
-    if (saved?.coachId) return getCoachById(saved.coachId);
+    const savedCoach = getSavedCoachId();
+    if (savedCoach) return getCoachById(savedCoach);
     return getCoachById(profile?.coach_persona) || getCoachById('elias');
   });
   const [view, setView] = useState('chat');
@@ -237,17 +256,11 @@ export default function CoachPage() {
   const [exerciseData, setExerciseData] = useState(null);
   const [loadingGif, setLoadingGif] = useState(false);
   const [voiceMode, setVoiceModeState] = useState(() => {
-    const saved = loadCoachPageSession();
-    const mode = (saved?.voiceMode === VOICE_MODES.SILENT || saved?.voiceMode === VOICE_MODES.VOICE)
-      ? saved.voiceMode
-      : getVoiceMode();
+    const mode = getVoiceMode();
     setVoiceMode(mode);
     return mode;
   });
   const [showIosVoiceWarning, setShowIosVoiceWarning] = useState(false);
-  const [restoredVoicePending, setRestoredVoicePending] = useState(
-    () => Boolean(loadCoachPageSession()?.voiceSessionWasActive),
-  );
   const messagesEndRef = useRef(null);
   const coachInitRef = useRef(false);
   const coachSwitchRef = useRef(null);
@@ -256,8 +269,7 @@ export default function CoachPage() {
   const userXp = profile?.dopa_xp || 0;
 
   useEffect(() => {
-    const saved = loadCoachPageSession();
-    if (saved?.coachId) return;
+    if (getSavedCoachId()) return;
     const personaId = profile?.coach_persona;
     if (!personaId) return;
     const profileCoach = getCoachById(personaId);
@@ -272,21 +284,53 @@ export default function CoachPage() {
     if (coachInitRef.current) return;
     coachInitRef.current = true;
 
-    const saved = loadCoachPageSession();
-    if (!saved?.coachId) return;
+    const savedCoachId = getSavedCoachId();
+    if (!savedCoachId) return;
 
-    const restoredCoach = getCoachById(saved.coachId);
-    switchCoach(saved.coachId, restoredCoach.greeting);
-    if (saved.messages?.length) {
-      setCoachMessages(saved.coachId, saved.messages.slice(-10));
-    }
-    if (saved.voiceMode === VOICE_MODES.SILENT || saved.voiceMode === VOICE_MODES.VOICE) {
-      setVoiceMode(saved.voiceMode);
-      setVoiceModeState(saved.voiceMode);
+    const restoredCoach = getCoachById(savedCoachId);
+    setCoach(restoredCoach);
+    switchCoach(savedCoachId, restoredCoach.greeting);
+
+    const savedHistory = loadSavedHistory();
+    if (savedHistory?.length) {
+      setCoachMessages(savedCoachId, savedHistory);
     }
   }, [switchCoach, setCoachMessages]);
 
+  useEffect(() => {
+    saveCoachId(coach.id);
+  }, [coach.id]);
+
+  useEffect(() => {
+    if (messages.length) saveHistory(messages);
+  }, [messages]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+
+    const restoreFromSession = () => {
+      const savedCoachId = getSavedCoachId();
+      const savedHistory = loadSavedHistory();
+      if (savedCoachId) {
+        const restoredCoach = getCoachById(savedCoachId);
+        setCoach(prev => (prev.id === restoredCoach.id ? prev : restoredCoach));
+        switchCoach(savedCoachId, restoredCoach.greeting);
+        if (savedHistory?.length) {
+          setCoachMessages(savedCoachId, savedHistory);
+        }
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (!document.hidden) restoreFromSession();
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+  }, [switchCoach, setCoachMessages]);
+
   const handleSelectCoach = useCallback(async selectedCoach => {
+    saveCoachId(selectedCoach.id);
     setCoach(selectedCoach);
     setView('chat');
     if (profile?.coach_persona !== selectedCoach.id) {
@@ -528,19 +572,9 @@ export default function CoachPage() {
     coachMeta: {
       id: coach.id,
       name: coach.name,
-      artworkSrc: getCoachImageSrc(coach.id),
+      artworkSrc: `/coaches/${coach.id}.jpg`,
     },
   });
-
-  useEffect(() => {
-    saveCoachPageSession({
-      coachId: coach.id,
-      messages: messages.slice(-10),
-      voiceMode,
-      voiceSessionWasActive: voiceSessionActive,
-    });
-    if (voiceSessionActive) setRestoredVoicePending(false);
-  }, [coach.id, messages, voiceMode, voiceSessionActive]);
 
   // Back-compat alias — mic button and older bundles reference toggleVoice
   const toggleVoice = toggleVoiceSession;
@@ -552,13 +586,8 @@ export default function CoachPage() {
     ));
 
   const handleMicPress = useCallback(() => {
-    if (needsContinueTap || restoredVoicePending) {
-      setRestoredVoicePending(false);
-      if (voiceSessionActive) {
-        resumeFromTap();
-      } else {
-        toggleVoiceSession();
-      }
+    if (needsContinueTap) {
+      resumeFromTap();
       return;
     }
 
@@ -577,7 +606,6 @@ export default function CoachPage() {
     toggleVoiceSession();
   }, [
     needsContinueTap,
-    restoredVoicePending,
     voiceState,
     voiceSessionActive,
     isVoiceBusy,
@@ -599,14 +627,14 @@ export default function CoachPage() {
   }[voiceState] || 'ONLINE';
 
   useEffect(() => {
-    const isInitialRestore = coachSwitchRef.current === null && loadCoachPageSession()?.coachId === coach.id;
+    const isInitialRestore = coachSwitchRef.current === null && getSavedCoachId() === coach.id;
     coachSwitchRef.current = coach.id;
 
     switchCoach(coach.id, coach.greeting);
     if (isInitialRestore) {
-      const saved = loadCoachPageSession();
-      if (saved?.messages?.length) {
-        setCoachMessages(coach.id, saved.messages.slice(-10));
+      const savedHistory = loadSavedHistory();
+      if (savedHistory?.length) {
+        setCoachMessages(coach.id, savedHistory);
       }
       return;
     }
@@ -1005,9 +1033,9 @@ export default function CoachPage() {
                 </span>
               </div>
               <p className="text-[11px] text-white/35">{coach.role}</p>
-              {(voiceSessionActive || restoredVoicePending) && (
+              {voiceSessionActive && (
                 <p className="text-[10px] mt-1" style={{ color: coach.color }}>
-                  {(needsContinueTap || restoredVoicePending)
+                  {needsContinueTap
                     ? 'Tap to continue'
                     : voiceState === VOICE_SESSION_STATE.AWAITING_TAP
                       ? 'Tap mic to talk'
@@ -1058,7 +1086,7 @@ export default function CoachPage() {
               </div>
             <button type="button" onClick={handleMicPress}
               aria-label={
-                needsContinueTap || restoredVoicePending
+                needsContinueTap
                   ? 'Tap to continue'
                   : voiceState === VOICE_SESSION_STATE.AWAITING_TAP
                     ? 'Tap to talk'

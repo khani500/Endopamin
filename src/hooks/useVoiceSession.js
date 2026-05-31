@@ -11,26 +11,24 @@ import { createVoiceSession, VOICE_SESSION_STATE } from '../services/voiceSessio
 const WELCOME_TRIGGER =
   '[VOICE_SESSION_START] Greet the athlete by first name in fluent professional English. Ask only about energy and mood today. Max 2 sentences. Plain spoken English for TTS.';
 
-function setupMediaSession({ coachName, artworkSrc }, handlers) {
+function setupMediaSession({ coachName, coachId }, handlers) {
   if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
 
-  const artworkType = artworkSrc?.endsWith('.png') ? 'image/png' : 'image/jpeg';
   navigator.mediaSession.metadata = new MediaMetadata({
     title: 'Endopamin Coach',
     artist: coachName,
-    artwork: [{ src: artworkSrc, sizes: '512x512', type: artworkType }],
+    artwork: [{ src: `/coaches/${coachId}.jpg`, sizes: '512x512', type: 'image/jpeg' }],
   });
 
   navigator.mediaSession.setActionHandler('play', handlers.onPlay);
   navigator.mediaSession.setActionHandler('pause', handlers.onPause);
-  navigator.mediaSession.setActionHandler('stop', handlers.onStop);
 }
 
 function clearMediaSession() {
   if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
 
   navigator.mediaSession.metadata = null;
-  ['play', 'pause', 'stop'].forEach(action => {
+  ['play', 'pause'].forEach(action => {
     try {
       navigator.mediaSession.setActionHandler(action, null);
     } catch {
@@ -48,21 +46,22 @@ function createSilentKeepAlive() {
 
   return {
     async start() {
-      if (ctx) return;
-      ctx = new AudioCtx();
+      if (!ctx) {
+        ctx = new AudioCtx();
+      }
       if (ctx.state === 'suspended') await ctx.resume();
+      if (source) return;
 
       const sampleRate = ctx.sampleRate;
       const buffer = ctx.createBuffer(1, sampleRate, sampleRate);
-      const channel = buffer.getChannelData(0);
-      channel.fill(0.00001);
+      buffer.getChannelData(0).fill(0);
 
       source = ctx.createBufferSource();
       source.buffer = buffer;
       source.loop = true;
 
       const gain = ctx.createGain();
-      gain.gain.value = 0.0001;
+      gain.gain.value = 0;
       source.connect(gain);
       gain.connect(ctx.destination);
       source.start(0);
@@ -137,13 +136,14 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
 
   const activateSessionMedia = useCallback(async () => {
     const meta = coachMetaRef.current;
-    if (!meta?.name || !meta?.artworkSrc) return;
+    if (!meta?.name || !meta?.id) return;
 
     setupMediaSession(
-      { coachName: meta.name, artworkSrc: meta.artworkSrc },
+      { coachName: meta.name, coachId: meta.id },
       {
         onPlay: () => {
           setNeedsContinueTap(false);
+          void keepAliveRef.current.start();
           sessionRef.current?.resumeFromTap?.();
           syncMediaSessionPlaybackState('playing');
         },
@@ -151,21 +151,12 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
           sessionRef.current?.pauseToAwaitingTap?.();
           syncMediaSessionPlaybackState('paused');
         },
-        onStop: () => {
-          cancelActiveTurn();
-          stopCoachAudio();
-          sessionRef.current?.stop?.();
-          setLiveTranscript('');
-          startingRef.current = false;
-          setNeedsContinueTap(false);
-          teardownSessionMedia();
-        },
       },
     );
 
     await keepAliveRef.current.start();
     syncMediaSessionPlaybackState('playing');
-  }, [cancelActiveTurn, syncMediaSessionPlaybackState, teardownSessionMedia]);
+  }, [syncMediaSessionPlaybackState]);
 
   useEffect(() => {
     const session = createVoiceSession({
@@ -229,16 +220,15 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
       if (document.hidden) {
         if (session?.isActive()) {
           wasActiveBeforeHideRef.current = true;
-          session.suspendForBackground?.();
-          syncMediaSessionPlaybackState('paused');
         }
         return;
       }
 
       if (wasActiveBeforeHideRef.current && session?.isActive()) {
         wasActiveBeforeHideRef.current = false;
-        setNeedsContinueTap(true);
+        void keepAliveRef.current.start();
         session.suspendForBackground?.();
+        setNeedsContinueTap(true);
         syncMediaSessionPlaybackState('paused');
       }
     };
@@ -250,13 +240,14 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
   useEffect(() => {
     if (!sessionRef.current?.isActive?.()) return;
     const meta = coachMetaRef.current;
-    if (!meta?.name || !meta?.artworkSrc) return;
+    if (!meta?.name || !meta?.id) return;
 
     setupMediaSession(
-      { coachName: meta.name, artworkSrc: meta.artworkSrc },
+      { coachName: meta.name, coachId: meta.id },
       {
         onPlay: () => {
           setNeedsContinueTap(false);
+          void keepAliveRef.current.start();
           sessionRef.current?.resumeFromTap?.();
           syncMediaSessionPlaybackState('playing');
         },
@@ -264,18 +255,9 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
           sessionRef.current?.pauseToAwaitingTap?.();
           syncMediaSessionPlaybackState('paused');
         },
-        onStop: () => {
-          cancelActiveTurn();
-          stopCoachAudio();
-          sessionRef.current?.stop?.();
-          setLiveTranscript('');
-          startingRef.current = false;
-          setNeedsContinueTap(false);
-          teardownSessionMedia();
-        },
       },
     );
-  }, [coachMeta?.id, coachMeta?.name, coachMeta?.artworkSrc, cancelActiveTurn, syncMediaSessionPlaybackState, teardownSessionMedia]);
+  }, [coachMeta?.id, coachMeta?.name, syncMediaSessionPlaybackState]);
 
   const runWelcomeTurn = useCallback(async () => {
     const session = sessionRef.current;
@@ -317,6 +299,7 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
 
   const resumeFromTap = useCallback(() => {
     setNeedsContinueTap(false);
+    void keepAliveRef.current.start();
     sessionRef.current?.resumeFromTap?.();
     syncMediaSessionPlaybackState('playing');
   }, [syncMediaSessionPlaybackState]);
