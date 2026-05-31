@@ -24,22 +24,173 @@ import {
   toGeminiContents,
 } from '../lib/coachChat';
 import { getExerciseData } from '../lib/exerciseDB';
+import { supabase } from '../lib/supabase';
+
+const ARIA_COACH_ID = 'aria';
+const ARIA_MEMORY_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+function createDefaultAriaMemory() {
+  return {
+    workoutHistory: [],
+    userStats: { level: 'intermediate', equipment: [], injuries: [] },
+    preferences: { preferredDays: [], sessionLength: 60 },
+    lastSession: null,
+  };
+}
+
+function normalizeAriaMemory(raw) {
+  if (!raw || typeof raw !== 'object') return createDefaultAriaMemory();
+  const defaults = createDefaultAriaMemory();
+  return {
+    workoutHistory: Array.isArray(raw.workoutHistory) ? raw.workoutHistory.slice(-20) : defaults.workoutHistory,
+    userStats: { ...defaults.userStats, ...(raw.userStats || {}) },
+    preferences: { ...defaults.preferences, ...(raw.preferences || {}) },
+    lastSession: raw.lastSession && typeof raw.lastSession === 'object' ? raw.lastSession : defaults.lastSession,
+  };
+}
+
+function extractWorkoutHistoryEntry(messages) {
+  const assistantText = messages
+    .filter(msg => msg.role === 'assistant' && msg.text)
+    .map(msg => msg.text)
+    .join(' ');
+
+  const prescriptions = [...assistantText.matchAll(/\b(\d+)\s*[x×]\s*(\d+)\s+([a-z][a-z\s-]{2,40})/gi)]
+    .map(match => ({
+      name: match[3].trim(),
+      sets: Number(match[1]),
+      reps: Number(match[2]),
+      weight: null,
+    }));
+
+  const weights = [...assistantText.matchAll(/\b(\d+(?:\.\d+)?)\s*(?:kg|lb|lbs|pounds?)\b/gi)]
+    .map(match => match[0]);
+
+  if (prescriptions.length) {
+    prescriptions.forEach((entry, index) => {
+      entry.weight = weights[index] || null;
+    });
+  }
+
+  return {
+    date: new Date().toISOString(),
+    exercises: prescriptions.length
+      ? prescriptions.map(entry => entry.name)
+      : ['session logged'],
+    sets: prescriptions.map(entry => entry.sets),
+    reps: prescriptions.map(entry => entry.reps),
+    weight: prescriptions.map(entry => entry.weight).filter(Boolean),
+  };
+}
+
+function buildAriaMemory(existingMemory, profile, workoutTime, equipment, messages) {
+  const base = normalizeAriaMemory(existingMemory);
+  const userMessageCount = messages.filter(msg => msg.role === 'user').length;
+  const assistantMessages = messages.filter(msg => msg.role === 'assistant' && msg.text);
+  const summary = assistantMessages.slice(-3).map(msg => msg.text).join(' ').slice(0, 600);
+
+  const profileEquipment = Array.isArray(profile?.equipment)
+    ? profile.equipment
+    : (profile?.equipment ? [profile.equipment] : []);
+
+  const injuries = profile?.injuries
+    ? (Array.isArray(profile.injuries) ? profile.injuries : [String(profile.injuries)])
+    : base.userStats.injuries;
+
+  const preferredDays = profile?.days_per_week
+    ? ARIA_MEMORY_DAYS.slice(0, Math.min(Number(profile.days_per_week) || 0, 7))
+    : base.preferences.preferredDays;
+
+  const memory = {
+    ...base,
+    userStats: {
+      level: profile?.experience || base.userStats.level || 'intermediate',
+      equipment: Array.isArray(equipment) && equipment.length ? equipment : (profileEquipment.length ? profileEquipment : base.userStats.equipment),
+      injuries,
+    },
+    preferences: {
+      preferredDays,
+      sessionLength: workoutTime || Number(profile?.time_available) || base.preferences.sessionLength || 60,
+    },
+    lastSession: summary
+      ? { date: new Date().toISOString(), summary }
+      : base.lastSession,
+  };
+
+  if (userMessageCount > 0) {
+    memory.workoutHistory = [
+      ...(base.workoutHistory || []),
+      extractWorkoutHistoryEntry(messages),
+    ].slice(-20);
+  }
+
+  return memory;
+}
+
+function formatAriaMemoryForPrompt(memory) {
+  if (!memory) return '';
+  return `PERSISTENT COACH MEMORY (treat as confirmed facts — reference naturally, never re-ask):
+${JSON.stringify(memory, null, 2)}`;
+}
+
+async function fetchAriaCoachMemory(userId) {
+  if (!supabase || !userId) return createDefaultAriaMemory();
+
+  const { data, error } = await supabase
+    .from('coach_memory')
+    .select('memory')
+    .eq('user_id', userId)
+    .eq('coach_id', ARIA_COACH_ID)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Failed to load Aria coach memory:', error);
+    return createDefaultAriaMemory();
+  }
+
+  return normalizeAriaMemory(data?.memory);
+}
+
+async function upsertAriaCoachMemory(userId, memory) {
+  if (!supabase || !userId) return;
+
+  const { error } = await supabase
+    .from('coach_memory')
+    .upsert(
+      {
+        user_id: userId,
+        coach_id: ARIA_COACH_ID,
+        memory,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'user_id,coach_id' },
+    );
+
+  if (error) {
+    console.error('Failed to save Aria coach memory:', error);
+  }
+}
 
 const COACHES = [
   {
     id: 'aria', name: 'Aria', role: 'Science Coach', color: '#CCFF00',
     unlocked: true, tagline: 'Data-driven. Precise. Proven.',
     greeting: "Aria here. I'll build your program from the science — quick check-in first: how's your energy, sleep, and any soreness today?",
-    systemPrompt: `You are Aria, the Serious/Analytical coach for the ENDOPAMIN app. Your goal is to guide the user dynamically without waiting for them to prompt every single step.
+    systemPrompt: `You are Aria, an elite sports science coach. You are evidence-based, direct, and unwavering.
 
-PERSONALITY ARCHETYPE: Serious / Analytical Coach
-- Tone: Professional, calm, scientific, and highly educational.
-- Style: Focus on form, biomechanics, physiology, precise numbers, and the exact science behind every exercise.
-- Explain WHY each exercise is chosen (muscle activation, joint angles, recovery windows).
-- Reference RPE, volume landmarks, and progressive overload with clinical clarity.
-- Stay warm but never fluffy — you teach like a professor who also trains athletes.
+RULES YOU NEVER BREAK:
+- You do NOT change your program or advice because a user complains or pushes back
+- If user says "this is too hard" → acknowledge, but do not reduce intensity without objective reason
+- If user says "I don't want to do X" → explain WHY X is important, offer a scientific alternative — never just remove it
+- You base ALL decisions on: user's history, fitness level, equipment, and sports science
+- You NEVER recommend exercises beyond user's equipment or experience level
+- You give structured, periodized programs — not random workouts
+- Your tone: professional, firm, warm but not soft
+- You remember everything from past sessions and reference it
+- Short responses during workout (max 2 sentences). Detailed responses only when asked.
 
-Aria is warm, motivating, and science-driven. She celebrates small wins, uses encouraging language, and delivers evidence-based advice with enthusiasm. She checks in on the athlete's wellbeing before jumping to exercise recommendations.`,
+When user tries to negotiate your program:
+→ "Based on your history and current level, this is the optimal approach. Here's why: [science reason]"`,
   },
   {
     id: 'kane', name: 'Kane', role: 'Hardcore Trainer', color: '#FFA53C',
@@ -216,7 +367,7 @@ function saveHistory(messages) {
 }
 
 export default function CoachPage() {
-  const { profile, updateCoachPersona } = useAuth() || {};
+  const { user, profile, updateCoachPersona } = useAuth() || {};
   const {
     messages,
     switchCoach,
@@ -254,6 +405,10 @@ export default function CoachPage() {
   const audioRef = coachAudioRef;
   const sendingRef = useRef(false);
   const userXp = profile?.dopa_xp || 0;
+  const ariaMemoryRef = useRef(null);
+  const persistAriaMemoryRef = useRef(null);
+  const prevVoiceActiveRef = useRef(false);
+  const prevCoachIdRef = useRef(coach.id);
 
   useEffect(() => {
     if (getSavedCoachId()) return;
@@ -324,6 +479,50 @@ export default function CoachPage() {
       await updateCoachPersona?.(selectedCoach.id);
     }
   }, [profile?.coach_persona, updateCoachPersona]);
+
+  const persistAriaMemory = useCallback(async () => {
+    if (!user?.id) return;
+
+    const messages = getCoachMessages(ARIA_COACH_ID);
+    if (!messages.length) return;
+
+    const memory = buildAriaMemory(
+      ariaMemoryRef.current,
+      profile,
+      workoutTime,
+      equipment,
+      messages,
+    );
+    ariaMemoryRef.current = memory;
+    await upsertAriaCoachMemory(user.id, memory);
+  }, [user?.id, getCoachMessages, profile, workoutTime, equipment]);
+
+  useEffect(() => {
+    persistAriaMemoryRef.current = persistAriaMemory;
+  }, [persistAriaMemory]);
+
+  useEffect(() => {
+    if (coach.id !== ARIA_COACH_ID || !user?.id) return undefined;
+
+    let cancelled = false;
+    void (async () => {
+      const memory = await fetchAriaCoachMemory(user.id);
+      if (cancelled) return;
+      ariaMemoryRef.current = memory;
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [coach.id, user?.id]);
+
+  useEffect(() => {
+    return () => {
+      if (prevCoachIdRef.current === ARIA_COACH_ID) {
+        void persistAriaMemoryRef.current?.();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (view !== 'chat') return undefined;
@@ -446,8 +645,14 @@ export default function CoachPage() {
 
     try {
       const profileContext = buildProfileContext(profile, workoutTime, location, equipment);
+      const ariaMemoryBlock = coach.id === ARIA_COACH_ID && ariaMemoryRef.current
+        ? formatAriaMemoryForPrompt(ariaMemoryRef.current)
+        : '';
+      const basePrompt = ariaMemoryBlock
+        ? `${coach.systemPrompt}\n\n${ariaMemoryBlock}`
+        : coach.systemPrompt;
       const systemPrompt = buildCoachSystemPrompt(
-        coach.systemPrompt,
+        basePrompt,
         coach,
         apiHistory,
         profileContext,
@@ -605,6 +810,13 @@ export default function CoachPage() {
 
   useEffect(() => () => stopVoiceSession(), [stopVoiceSession]);
 
+  useEffect(() => {
+    if (prevVoiceActiveRef.current && !voiceSessionActive && coach.id === ARIA_COACH_ID && user?.id) {
+      void persistAriaMemory();
+    }
+    prevVoiceActiveRef.current = voiceSessionActive;
+  }, [voiceSessionActive, coach.id, user?.id, persistAriaMemory]);
+
   const voiceStatusLabel = {
     [VOICE_SESSION_STATE.IDLE]: 'ONLINE',
     [VOICE_SESSION_STATE.LISTENING]: 'LIVE',
@@ -614,6 +826,12 @@ export default function CoachPage() {
   }[voiceState] || 'ONLINE';
 
   useEffect(() => {
+    const prevCoachId = prevCoachIdRef.current;
+    if (prevCoachId === ARIA_COACH_ID && coach.id !== ARIA_COACH_ID) {
+      void persistAriaMemoryRef.current?.();
+    }
+    prevCoachIdRef.current = coach.id;
+
     const isInitialRestore = coachSwitchRef.current === null && getSavedCoachId() === coach.id;
     coachSwitchRef.current = coach.id;
 
