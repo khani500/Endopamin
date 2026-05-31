@@ -400,13 +400,15 @@ export function createVoiceSession({
     setState(VOICE_SESSION_STATE.AWAITING_TAP);
   };
 
-  /** App backgrounded — release mic, keep session alive for resume tap. */
+  /** App backgrounded / screen locked — release mic, keep session alive for resume tap. */
   const suspendForBackground = () => {
     if (!active) return;
     clearRestartTimer();
     clearResumeTimer();
     clearSilenceTimer();
     stopRecognition();
+    stopVadMonitor();
+    releaseMicStream();
     stopSpeaking();
     coachOutputActive = false;
     pausedForProcessing = false;

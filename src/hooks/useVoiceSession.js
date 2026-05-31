@@ -11,6 +11,32 @@ import { createVoiceSession, VOICE_SESSION_STATE } from '../services/voiceSessio
 const WELCOME_TRIGGER =
   '[VOICE_SESSION_START] Greet the athlete by first name in fluent professional English. Ask only about energy and mood today. Max 2 sentences. Plain spoken English for TTS.';
 
+const VOICE_PENDING_KEY = 'endopamin_voice_pending_resume';
+
+function markVoiceSessionPending(coachId) {
+  try {
+    sessionStorage.setItem(VOICE_PENDING_KEY, coachId);
+  } catch {
+    // ignore quota errors
+  }
+}
+
+function clearVoiceSessionPending() {
+  try {
+    sessionStorage.removeItem(VOICE_PENDING_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+function getVoiceSessionPending() {
+  try {
+    return sessionStorage.getItem(VOICE_PENDING_KEY);
+  } catch {
+    return null;
+  }
+}
+
 function setupMediaSession({ coachName, coachId }, handlers) {
   if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
 
@@ -37,34 +63,33 @@ function clearMediaSession() {
   });
 }
 
+/** iOS background keep-alive: 1s silent buffer loop on a running AudioContext (no gain node). */
 function createSilentKeepAlive() {
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) return { start: () => {}, stop: () => {} };
-
-  let ctx = null;
   let source = null;
+  let audioContext = null;
 
   return {
-    async start() {
+    async start(ctx) {
       if (!ctx) {
-        ctx = new AudioCtx();
+        throw new Error('Silent keep-alive requires an AudioContext from a user gesture');
       }
-      if (ctx.state === 'suspended') await ctx.resume();
-      if (source) return;
 
-      const sampleRate = ctx.sampleRate;
-      const buffer = ctx.createBuffer(1, sampleRate, sampleRate);
+      audioContext = ctx;
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+      if (source) return audioContext;
+
+      const buffer = audioContext.createBuffer(1, audioContext.sampleRate, audioContext.sampleRate);
       buffer.getChannelData(0).fill(0);
 
-      source = ctx.createBufferSource();
+      source = audioContext.createBufferSource();
       source.buffer = buffer;
       source.loop = true;
-
-      const gain = ctx.createGain();
-      gain.gain.value = 0;
-      source.connect(gain);
-      gain.connect(ctx.destination);
+      source.connect(audioContext.destination);
       source.start(0);
+
+      return audioContext;
     },
     stop() {
       try {
@@ -73,11 +98,8 @@ function createSilentKeepAlive() {
         // ignore
       }
       source = null;
-      if (ctx?.state !== 'closed') {
-        void ctx?.close?.();
-      }
-      ctx = null;
     },
+    isRunning: () => Boolean(source),
   };
 }
 
@@ -98,6 +120,7 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
   const startingRef = useRef(false);
   const keepAliveRef = useRef(createSilentKeepAlive());
   const wasActiveBeforeHideRef = useRef(false);
+  const pendingRecoveryRef = useRef(false);
 
   useEffect(() => {
     processUtteranceRef.current = processUtterance;
@@ -128,13 +151,7 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
     }
   }, []);
 
-  const teardownSessionMedia = useCallback(() => {
-    keepAliveRef.current.stop();
-    clearMediaSession();
-    syncMediaSessionPlaybackState('none');
-  }, [syncMediaSessionPlaybackState]);
-
-  const activateSessionMedia = useCallback(async () => {
+  const registerMediaSession = useCallback(() => {
     const meta = coachMetaRef.current;
     if (!meta?.name || !meta?.id) return;
 
@@ -142,10 +159,10 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
       { coachName: meta.name, coachId: meta.id },
       {
         onPlay: () => {
-          setNeedsContinueTap(false);
-          void keepAliveRef.current.start();
-          sessionRef.current?.resumeFromTap?.();
-          syncMediaSessionPlaybackState('playing');
+          if (!sessionRef.current?.isActive()) return;
+          sessionRef.current?.suspendForBackground?.();
+          setNeedsContinueTap(true);
+          syncMediaSessionPlaybackState('paused');
         },
         onPause: () => {
           sessionRef.current?.pauseToAwaitingTap?.();
@@ -153,9 +170,39 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
         },
       },
     );
+  }, [syncMediaSessionPlaybackState]);
 
-    await keepAliveRef.current.start();
+  const startSessionMediaFromGesture = useCallback(async ctx => {
+    await keepAliveRef.current.start(ctx);
+    registerMediaSession();
     syncMediaSessionPlaybackState('playing');
+  }, [registerMediaSession, syncMediaSessionPlaybackState]);
+
+  const teardownSessionMedia = useCallback(() => {
+    keepAliveRef.current.stop();
+    clearMediaSession();
+    syncMediaSessionPlaybackState('none');
+  }, [syncMediaSessionPlaybackState]);
+
+  const handleAppBackground = useCallback(() => {
+    const session = sessionRef.current;
+    if (!session?.isActive() || session.isAwaitingTap?.()) return;
+
+    wasActiveBeforeHideRef.current = true;
+    session.suspendForBackground?.();
+  }, []);
+
+  const handleAppForeground = useCallback(() => {
+    const session = sessionRef.current;
+    if (!session?.isActive()) return;
+    if (!wasActiveBeforeHideRef.current && !session.isAwaitingTap?.()) return;
+
+    wasActiveBeforeHideRef.current = false;
+    if (!session.isAwaitingTap?.()) {
+      session.suspendForBackground?.();
+    }
+    setNeedsContinueTap(true);
+    syncMediaSessionPlaybackState('paused');
   }, [syncMediaSessionPlaybackState]);
 
   useEffect(() => {
@@ -213,51 +260,61 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
   }, [beginTurn, cancelActiveTurn, teardownSessionMedia]);
 
   useEffect(() => {
-    if (typeof document === 'undefined') return undefined;
+    const pendingCoachId = getVoiceSessionPending();
+    if (!pendingCoachId || pendingRecoveryRef.current) return;
+    if (coachMeta?.id && pendingCoachId !== coachMeta.id) return;
 
-    const onVisibilityChange = () => {
-      const session = sessionRef.current;
-      if (document.hidden) {
-        if (session?.isActive()) {
-          wasActiveBeforeHideRef.current = true;
-        }
-        return;
-      }
+    const session = sessionRef.current;
+    if (!session || session.isActive()) return;
 
-      if (wasActiveBeforeHideRef.current && session?.isActive()) {
-        wasActiveBeforeHideRef.current = false;
-        void keepAliveRef.current.start();
+    pendingRecoveryRef.current = true;
+    void (async () => {
+      try {
+        await session.start({ deferListening: true });
         session.suspendForBackground?.();
         setNeedsContinueTap(true);
-        syncMediaSessionPlaybackState('paused');
+      } catch (err) {
+        console.error('Voice session recovery failed:', err);
+        clearVoiceSessionPending();
       }
+    })();
+  }, [coachMeta?.id]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return undefined;
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        handleAppBackground();
+        return;
+      }
+      handleAppForeground();
+    };
+
+    const onPageHide = () => {
+      handleAppBackground();
+    };
+
+    const onPageShow = () => {
+      handleAppForeground();
+    };
+
+    const onWindowFocus = () => {
+      handleAppForeground();
     };
 
     document.addEventListener('visibilitychange', onVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
-  }, [syncMediaSessionPlaybackState]);
+    window.addEventListener('pagehide', onPageHide);
+    window.addEventListener('pageshow', onPageShow);
+    window.addEventListener('focus', onWindowFocus);
 
-  useEffect(() => {
-    if (!sessionRef.current?.isActive?.()) return;
-    const meta = coachMetaRef.current;
-    if (!meta?.name || !meta?.id) return;
-
-    setupMediaSession(
-      { coachName: meta.name, coachId: meta.id },
-      {
-        onPlay: () => {
-          setNeedsContinueTap(false);
-          void keepAliveRef.current.start();
-          sessionRef.current?.resumeFromTap?.();
-          syncMediaSessionPlaybackState('playing');
-        },
-        onPause: () => {
-          sessionRef.current?.pauseToAwaitingTap?.();
-          syncMediaSessionPlaybackState('paused');
-        },
-      },
-    );
-  }, [coachMeta?.id, coachMeta?.name, syncMediaSessionPlaybackState]);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('pagehide', onPageHide);
+      window.removeEventListener('pageshow', onPageShow);
+      window.removeEventListener('focus', onWindowFocus);
+    };
+  }, [handleAppBackground, handleAppForeground]);
 
   const runWelcomeTurn = useCallback(async () => {
     const session = sessionRef.current;
@@ -298,11 +355,25 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
   }, [cancelActiveTurn]);
 
   const resumeFromTap = useCallback(() => {
-    setNeedsContinueTap(false);
-    void keepAliveRef.current.start();
-    sessionRef.current?.resumeFromTap?.();
-    syncMediaSessionPlaybackState('playing');
-  }, [syncMediaSessionPlaybackState]);
+    void (async () => {
+      const session = sessionRef.current;
+      if (!session?.isActive()) return;
+
+      setNeedsContinueTap(false);
+      wasActiveBeforeHideRef.current = false;
+
+      try {
+        const ctx = await resumeAudioContextOnUserGesture();
+        await prepareSpeechInputOnUserGesture();
+        await startSessionMediaFromGesture(ctx);
+        session.resumeFromTap?.();
+      } catch (err) {
+        console.error('Voice session resume failed:', err);
+        session.suspendForBackground?.();
+        setNeedsContinueTap(true);
+      }
+    })();
+  }, [startSessionMediaFromGesture]);
 
   const toggleVoiceSession = useCallback(() => {
     const session = sessionRef.current;
@@ -324,6 +395,8 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
       startingRef.current = false;
       setNeedsContinueTap(false);
       wasActiveBeforeHideRef.current = false;
+      pendingRecoveryRef.current = false;
+      clearVoiceSessionPending();
       teardownSessionMedia();
       return;
     }
@@ -334,20 +407,31 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
     void (async () => {
       try {
         stopCoachAudio();
-        await resumeAudioContextOnUserGesture();
+        const ctx = await resumeAudioContextOnUserGesture();
+        await keepAliveRef.current.start(ctx);
         await prepareSpeechInputOnUserGesture();
         await session.start({ deferListening: true });
-        await activateSessionMedia();
+        markVoiceSessionPending(coachMetaRef.current?.id || 'coach');
+        registerMediaSession();
+        syncMediaSessionPlaybackState('playing');
         await runWelcomeTurn();
       } catch (err) {
         console.error('Voice session start failed:', err);
         session.stop();
+        clearVoiceSessionPending();
         teardownSessionMedia();
       } finally {
         startingRef.current = false;
       }
     })();
-  }, [activateSessionMedia, cancelActiveTurn, resumeFromTap, runWelcomeTurn, teardownSessionMedia]);
+  }, [
+    cancelActiveTurn,
+    registerMediaSession,
+    resumeFromTap,
+    runWelcomeTurn,
+    syncMediaSessionPlaybackState,
+    teardownSessionMedia,
+  ]);
 
   const stopVoiceSession = useCallback(() => {
     cancelActiveTurn();
@@ -357,6 +441,8 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
     startingRef.current = false;
     setNeedsContinueTap(false);
     wasActiveBeforeHideRef.current = false;
+    pendingRecoveryRef.current = false;
+    clearVoiceSessionPending();
     teardownSessionMedia();
   }, [cancelActiveTurn, teardownSessionMedia]);
 
