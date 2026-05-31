@@ -13,6 +13,43 @@ export function isIOSDevice() {
     && /iPad|iPhone|iPod/.test(navigator.userAgent);
 }
 
+export const VOICE_MODE_STORAGE_KEY = 'endopamin_voice_mode';
+export const IOS_VOICE_WARNING_KEY = 'endopamin_ios_voice_warning_shown';
+
+export const VOICE_MODES = {
+  VOICE: 'voice',
+  SILENT: 'silent',
+};
+
+export function getVoiceMode() {
+  if (typeof window === 'undefined') return VOICE_MODES.VOICE;
+  const stored = localStorage.getItem(VOICE_MODE_STORAGE_KEY);
+  return stored === VOICE_MODES.SILENT ? VOICE_MODES.SILENT : VOICE_MODES.VOICE;
+}
+
+export function setVoiceMode(mode) {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(
+    VOICE_MODE_STORAGE_KEY,
+    mode === VOICE_MODES.SILENT ? VOICE_MODES.SILENT : VOICE_MODES.VOICE,
+  );
+}
+
+export function isSilentVoiceMode() {
+  return getVoiceMode() === VOICE_MODES.SILENT;
+}
+
+export function wasIosVoiceWarningShown() {
+  return typeof window !== 'undefined'
+    && localStorage.getItem(IOS_VOICE_WARNING_KEY) === '1';
+}
+
+export function markIosVoiceWarningShown() {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(IOS_VOICE_WARNING_KEY, '1');
+  }
+}
+
 export function isSpeechRecognitionSupported() {
   return typeof window !== 'undefined'
     && Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
@@ -334,6 +371,14 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
   const trimmed = String(text || '').trim();
   if (!trimmed) return;
 
+  if (isSilentVoiceMode()) {
+    if (signal?.aborted) {
+      throw new DOMException('Aborted', 'AbortError');
+    }
+    onEnd?.();
+    return;
+  }
+
   stopCoachAudio();
 
   if (signal?.aborted) {
@@ -523,6 +568,15 @@ export async function speakStreamingText(getText, coachId = 'aria', {
   speakSentence,
   pollMs = 45,
 } = {}) {
+  if (isSilentVoiceMode()) {
+    while (!isComplete?.()) {
+      if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+      await new Promise(resolve => window.setTimeout(resolve, pollMs));
+    }
+    onSpeechStart?.();
+    return;
+  }
+
   let spokenChars = 0;
   let speechStarted = false;
   const say = speakSentence

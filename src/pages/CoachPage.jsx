@@ -10,6 +10,11 @@ import {
   stopCoachAudio,
   isSpeaking,
   isIOSDevice,
+  getVoiceMode,
+  setVoiceMode,
+  VOICE_MODES,
+  wasIosVoiceWarningShown,
+  markIosVoiceWarningShown,
 } from '../lib/voice';
 import {
   buildCoachSystemPrompt,
@@ -210,6 +215,8 @@ export default function CoachPage() {
   const [animatedItems, setAnimatedItems] = useState([]);
   const [exerciseData, setExerciseData] = useState(null);
   const [loadingGif, setLoadingGif] = useState(false);
+  const [voiceMode, setVoiceModeState] = useState(() => getVoiceMode());
+  const [showIosVoiceWarning, setShowIosVoiceWarning] = useState(false);
   const messagesEndRef = useRef(null);
   const audioRef = coachAudioRef;
   const sendingRef = useRef(false);
@@ -300,6 +307,35 @@ export default function CoachPage() {
   }, [coach.id]);
 
   const speak = speakCoachText;
+
+  const selectVoiceMode = useCallback(mode => {
+    const next = mode === VOICE_MODES.SILENT ? VOICE_MODES.SILENT : VOICE_MODES.VOICE;
+    setVoiceMode(next);
+    setVoiceModeState(next);
+
+    if (next === VOICE_MODES.SILENT) {
+      stopCoachAudio();
+      setShowIosVoiceWarning(false);
+      return;
+    }
+
+    if (isIOSDevice() && !wasIosVoiceWarningShown()) {
+      setShowIosVoiceWarning(true);
+    }
+  }, []);
+
+  const dismissIosVoiceWarning = useCallback(() => {
+    markIosVoiceWarningShown();
+    setShowIosVoiceWarning(false);
+  }, []);
+
+  const switchToSilentFromWarning = useCallback(() => {
+    markIosVoiceWarningShown();
+    setShowIosVoiceWarning(false);
+    setVoiceMode(VOICE_MODES.SILENT);
+    setVoiceModeState(VOICE_MODES.SILENT);
+    stopCoachAudio();
+  }, []);
 
   const processUserMessage = useCallback(async (rawText, options = {}) => {
     const { signal, streaming = false, onToken, fromVoice = false, skipHistory = false } = options;
@@ -435,9 +471,10 @@ export default function CoachPage() {
   const toggleVoice = toggleVoiceSession;
 
   const isVoiceBusy =
-    voiceState === VOICE_SESSION_STATE.SPEAKING
-    || voiceState === VOICE_SESSION_STATE.PROCESSING
-    || isSpeaking();
+    voiceState === VOICE_SESSION_STATE.PROCESSING
+    || (voiceMode === VOICE_MODES.VOICE && (
+      voiceState === VOICE_SESSION_STATE.SPEAKING || isSpeaking()
+    ));
 
   const handleMicPress = useCallback(() => {
     if (voiceState === VOICE_SESSION_STATE.AWAITING_TAP) {
@@ -470,7 +507,7 @@ export default function CoachPage() {
     [VOICE_SESSION_STATE.IDLE]: 'ONLINE',
     [VOICE_SESSION_STATE.LISTENING]: 'LIVE',
     [VOICE_SESSION_STATE.PROCESSING]: 'THINKING',
-    [VOICE_SESSION_STATE.SPEAKING]: 'SPEAKING',
+    [VOICE_SESSION_STATE.SPEAKING]: voiceMode === VOICE_MODES.SILENT ? 'TEXT' : 'SPEAKING',
     [VOICE_SESSION_STATE.AWAITING_TAP]: 'PAUSED',
   }[voiceState] || 'ONLINE';
 
@@ -829,6 +866,30 @@ export default function CoachPage() {
       {/* ══ CHAT ══ */}
       {view === 'chat' && (
         <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+          {showIosVoiceWarning && (
+            <div className="mx-5 mb-3 rounded-[16px] border p-3 flex-shrink-0"
+              style={{
+                background: `${coach.color}12`,
+                borderColor: `${coach.color}35`,
+                boxShadow: `0 0 20px ${coach.color}15`,
+              }}>
+              <p className="text-[12px] text-white/85 leading-relaxed mb-3">
+                🎵 Heads up: Coach voice may pause your music on iPhone. Switch to Text mode to keep your music playing.
+              </p>
+              <div className="flex gap-2">
+                <button type="button" onClick={dismissIosVoiceWarning}
+                  className="flex-1 py-2 rounded-[10px] text-[11px] font-black text-black transition-all active:scale-95"
+                  style={{ background: coach.color }}>
+                  Got it
+                </button>
+                <button type="button" onClick={switchToSilentFromWarning}
+                  className="flex-1 py-2 rounded-[10px] text-[11px] font-bold border transition-all active:scale-95"
+                  style={{ borderColor: `${coach.color}40`, color: coach.color, background: `${coach.color}08` }}>
+                  Switch to Text
+                </button>
+              </div>
+            </div>
+          )}
           {/* Coach card + mic */}
           <div className="mx-5 mb-3 rounded-[20px] border p-4 flex items-center gap-3 flex-shrink-0"
             style={{
@@ -857,12 +918,12 @@ export default function CoachPage() {
                         : voiceState === VOICE_SESSION_STATE.PROCESSING
                           ? 'Processing...'
                           : voiceState === VOICE_SESSION_STATE.SPEAKING
-                            ? 'Coach is speaking...'
+                            ? (voiceMode === VOICE_MODES.SILENT ? 'Reply on screen...' : 'Coach is speaking...')
                             : 'Voice session active'}
                 </p>
               )}
             </div>
-            {(voiceState === VOICE_SESSION_STATE.SPEAKING || isSpeaking()) && (
+            {(voiceMode === VOICE_MODES.VOICE && (voiceState === VOICE_SESSION_STATE.SPEAKING || isSpeaking())) && (
               <button
                 type="button"
                 onClick={pauseCoachSpeech}
@@ -872,6 +933,29 @@ export default function CoachPage() {
                 Pause
               </button>
             )}
+            <div className="flex flex-col items-center gap-2 flex-shrink-0">
+              <div className="flex rounded-[12px] border p-0.5"
+                style={{ borderColor: `${coach.color}35`, background: 'rgba(255,255,255,0.04)' }}
+                role="group" aria-label="Coach audio mode">
+                <button type="button" onClick={() => selectVoiceMode(VOICE_MODES.VOICE)}
+                  className="px-2.5 py-1.5 rounded-[10px] text-[9px] font-black uppercase tracking-wide transition-all active:scale-95"
+                  style={{
+                    background: voiceMode === VOICE_MODES.VOICE ? coach.color : 'transparent',
+                    color: voiceMode === VOICE_MODES.VOICE ? '#000' : `${coach.color}90`,
+                    boxShadow: voiceMode === VOICE_MODES.VOICE ? `0 0 12px ${coach.color}50` : 'none',
+                  }}>
+                  🔊 Voice
+                </button>
+                <button type="button" onClick={() => selectVoiceMode(VOICE_MODES.SILENT)}
+                  className="px-2.5 py-1.5 rounded-[10px] text-[9px] font-black uppercase tracking-wide transition-all active:scale-95"
+                  style={{
+                    background: voiceMode === VOICE_MODES.SILENT ? coach.color : 'transparent',
+                    color: voiceMode === VOICE_MODES.SILENT ? '#000' : `${coach.color}90`,
+                    boxShadow: voiceMode === VOICE_MODES.SILENT ? `0 0 12px ${coach.color}50` : 'none',
+                  }}>
+                  💬 Text only
+                </button>
+              </div>
             <button type="button" onClick={handleMicPress}
               aria-label={
                 voiceState === VOICE_SESSION_STATE.AWAITING_TAP
@@ -912,6 +996,7 @@ export default function CoachPage() {
                 )}
               </svg>
             </button>
+            </div>
           </div>
 
           {/* Time */}
