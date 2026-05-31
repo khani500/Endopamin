@@ -7,6 +7,7 @@ import {
   sanitizeCoachResponse,
   toGeminiContents,
 } from '../../lib/coachChat';
+import { buildCoachReferenceContext } from '../../lib/coachContext';
 import { askGeminiChat } from '../../lib/gemini';
 import { GeminiLiveSession } from '../../lib/geminiLive';
 import {
@@ -107,6 +108,13 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     const ctx = buildProfileContext(profile, profile?.session_duration, profile?.location, []);
     return buildCoachSystemPrompt(coach.personality, { name: coach.name, id: coachId }, [], ctx, {
       profile,
+      referenceContext: buildCoachReferenceContext({
+        location: profile?.location || 'gym',
+        experience: profile?.experience,
+        equipment: profile?.equipment,
+        injuries: profile?.injuries,
+        goal: profile?.goal,
+      }),
     });
   };
 

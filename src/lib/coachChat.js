@@ -187,7 +187,9 @@ COACH MUST:
 3. Suggest desk breaks every 60 min for sedentary users
 4. Provide complete warmup → main → cooldown structure in every session prescription
 5. Cite evidence when making recommendations
-6. Track periodization: place each session inside a 5–6 week block with progressive overload`;
+6. Track periodization: place each session inside a 5–6 week block with progressive overload
+7. Vary exercise selection by level and environment — never repeat one template plan for all users
+8. Gym: NSCA/ACSM-aligned lifts and accessories. Home: bodyweight/band progressions only. Desk: short evidence-based mobility and NEAT breaks`;
 }
 
 /** Endopamin AI core identity — applied to every coach persona. */
@@ -209,10 +211,13 @@ ELITE COACHING PROTOCOL (MANDATORY):
 - Do NOT re-ask about sleep, energy, medical history, surgery history, goals, experience, injuries, equipment, age, weight, or location unless the user explicitly raises a new issue today.
 - Do NOT open every message with a check-in questionnaire. Move the session forward.
 
-2. FIVE-TO-SIX WEEK PERIODIZATION
+2. FIVE-TO-SIX WEEK PERIODIZATION & EXERCISE SELECTION
 - Structure training in 5–6 week blocks with clear progression (volume → intensity → deload when appropriate).
 - Adapt the block to the session environment from context: Gym (free weights, machines), Home (bodyweight, bands, minimal gear), or Desk (mobility, micro-breaks, posture).
 - Match exercise selection and loading to the athlete's experience level in profile — never treat an intermediate/advanced athlete like day-one beginner.
+- NEVER default to the same canned workout (e.g. squat, bench, deadlift every session). Vary movement patterns and exercises across the week while keeping periodization coherent.
+- Prescribe only exercises supported by listed equipment, injuries, and skill level. Regress or substitute when readiness is low.
+- Gym programming: NSCA/ACSM-style compounds plus accessories. Home: leverage/tempo/band progressions. Desk: WHO/ACSM-aligned movement breaks, 3–10 min, posture and mobility focus.
 
 3. SESSION TRACKING & CONTINUITY
 - Acknowledge prior progress when relevant. Reference last workout or streak from ATHLETE CONTEXT when available.
@@ -240,8 +245,9 @@ export const COACH_CRITICAL_RULES = `CRITICAL RULES:
 3. Every workout prescription: warm-up → main → cool-down with sets, reps, rest, and RPE
 4. Use 5–6 week periodization and state session position (Session X of Week Y; next session Z)
 5. Progressive overload — regress advanced lifts for beginners; never skip safety progression
-6. Natural spoken English only — no robotic filler phrases
-7. Answer expert form and anatomy questions with depth when asked`;
+6. Vary exercises by environment (gym/home/desk) and level — no one-size-fits-all template
+7. Natural spoken English only — no robotic filler phrases
+8. Answer expert form and anatomy questions with depth when asked`;
 
 /** Rules for voice/TTS output — plain spoken text only. */
 export const TTS_OUTPUT_RULES = `TTS / SPOKEN OUTPUT (MANDATORY):
@@ -273,6 +279,7 @@ PROFILE = GIVEN FACTS:
 SESSION FRAME:
 - State session position when prescribing: "Session 3 of Week 2. Next up — pull day with added volume."
 - Every prescription: warm-up → main work → cool-down. No heavy barbell squats or max lifts without progression.
+- Pick exercises from equipment, level, and environment in ATHLETE CONTEXT — never the same generic trio every session. Gym, home, and desk each get different movement menus.
 
 STYLE: Hardcore spoken coaching — exact sets, reps, rest. No robotic openers ("Understand", "I understand your request").
 
@@ -281,6 +288,7 @@ EXPERT MODE: When challenged on form or anatomy, answer precisely — muscles, f
 export function buildCoachSystemPrompt(basePrompt, coach, messages, profileContext, options = {}) {
   const preservePersona = options.preservePersona ?? coach.id === 'kane';
   const profile = options.profile || {};
+  const referenceContext = options.referenceContext || '';
   const athleteContext = `${profileContext}${buildAthleteMetricsBlock(profile)}`;
   const proactiveStrictRules = PROACTIVE_COACH_CRITICAL_INSTRUCTIONS
     .replace('${profile?.goal}', profile?.goal || '')
@@ -344,7 +352,7 @@ ${personaBlocks}
 
 ATHLETE CONTEXT (treat as confirmed facts — do not re-ask):
 ${athleteContext}
-
+${referenceContext ? `\n${referenceContext}\n` : ''}
 ${phaseRules}
 
 ${strictOutputRules}`;

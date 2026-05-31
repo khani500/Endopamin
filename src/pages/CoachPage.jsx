@@ -25,12 +25,12 @@ import {
 } from '../lib/coachChat';
 import { getExerciseData } from '../lib/exerciseDB';
 import { supabase } from '../lib/supabase';
-import { COACH_SYSTEM_PROMPTS } from '../config/coachPrompts';
+import { COACH_SYSTEM_PROMPTS, formatCoachMemoryForPrompt } from '../config/coachPrompts';
+import { buildCoachReferenceContext, buildCoachReferenceContextAsync } from '../lib/coachContext';
 
-const ARIA_COACH_ID = 'aria';
-const ARIA_MEMORY_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const COACH_MEMORY_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-function createDefaultAriaMemory() {
+function createDefaultCoachMemory() {
   return {
     workoutHistory: [],
     userStats: { level: 'intermediate', equipment: [], injuries: [] },
@@ -39,9 +39,9 @@ function createDefaultAriaMemory() {
   };
 }
 
-function normalizeAriaMemory(raw) {
-  if (!raw || typeof raw !== 'object') return createDefaultAriaMemory();
-  const defaults = createDefaultAriaMemory();
+function normalizeCoachMemory(raw) {
+  if (!raw || typeof raw !== 'object') return createDefaultCoachMemory();
+  const defaults = createDefaultCoachMemory();
   return {
     workoutHistory: Array.isArray(raw.workoutHistory) ? raw.workoutHistory.slice(-20) : defaults.workoutHistory,
     userStats: { ...defaults.userStats, ...(raw.userStats || {}) },
@@ -84,8 +84,8 @@ function extractWorkoutHistoryEntry(messages) {
   };
 }
 
-function buildAriaMemory(existingMemory, profile, workoutTime, equipment, messages) {
-  const base = normalizeAriaMemory(existingMemory);
+function buildCoachMemory(existingMemory, profile, workoutTime, equipment, messages) {
+  const base = normalizeCoachMemory(existingMemory);
   const userMessageCount = messages.filter(msg => msg.role === 'user').length;
   const assistantMessages = messages.filter(msg => msg.role === 'assistant' && msg.text);
   const summary = assistantMessages.slice(-3).map(msg => msg.text).join(' ').slice(0, 600);
@@ -99,7 +99,7 @@ function buildAriaMemory(existingMemory, profile, workoutTime, equipment, messag
     : base.userStats.injuries;
 
   const preferredDays = profile?.days_per_week
-    ? ARIA_MEMORY_DAYS.slice(0, Math.min(Number(profile.days_per_week) || 0, 7))
+    ? COACH_MEMORY_DAYS.slice(0, Math.min(Number(profile.days_per_week) || 0, 7))
     : base.preferences.preferredDays;
 
   const memory = {
@@ -128,39 +128,33 @@ function buildAriaMemory(existingMemory, profile, workoutTime, equipment, messag
   return memory;
 }
 
-function formatAriaMemoryForPrompt(memory) {
-  if (!memory) return '';
-  return `PERSISTENT COACH MEMORY (treat as confirmed facts — reference naturally, never re-ask):
-${JSON.stringify(memory, null, 2)}`;
-}
-
-async function fetchAriaCoachMemory(userId) {
-  if (!supabase || !userId) return createDefaultAriaMemory();
+async function fetchCoachMemory(userId, coachId) {
+  if (!supabase || !userId || !coachId) return createDefaultCoachMemory();
 
   const { data, error } = await supabase
     .from('coach_memory')
     .select('memory')
     .eq('user_id', userId)
-    .eq('coach_id', ARIA_COACH_ID)
+    .eq('coach_id', coachId)
     .maybeSingle();
 
   if (error) {
-    console.error('Failed to load Aria coach memory:', error);
-    return createDefaultAriaMemory();
+    console.error(`Failed to load ${coachId} coach memory:`, error);
+    return createDefaultCoachMemory();
   }
 
-  return normalizeAriaMemory(data?.memory);
+  return normalizeCoachMemory(data?.memory);
 }
 
-async function upsertAriaCoachMemory(userId, memory) {
-  if (!supabase || !userId) return;
+async function upsertCoachMemory(userId, coachId, memory) {
+  if (!supabase || !userId || !coachId) return;
 
   const { error } = await supabase
     .from('coach_memory')
     .upsert(
       {
         user_id: userId,
-        coach_id: ARIA_COACH_ID,
+        coach_id: coachId,
         memory,
         updated_at: new Date().toISOString(),
       },
@@ -168,7 +162,7 @@ async function upsertAriaCoachMemory(userId, memory) {
     );
 
   if (error) {
-    console.error('Failed to save Aria coach memory:', error);
+    console.error(`Failed to save ${coachId} coach memory:`, error);
   }
 }
 
@@ -364,8 +358,9 @@ export default function CoachPage() {
   const audioRef = coachAudioRef;
   const sendingRef = useRef(false);
   const userXp = profile?.dopa_xp || 0;
-  const ariaMemoryRef = useRef(null);
-  const persistAriaMemoryRef = useRef(null);
+  const coachMemoryRef = useRef({ coachId: null, memory: null });
+  const persistCoachMemoryRef = useRef(null);
+  const referenceContextRef = useRef('');
   const prevVoiceActiveRef = useRef(false);
   const prevCoachIdRef = useRef(coach.id);
 
@@ -439,35 +434,67 @@ export default function CoachPage() {
     }
   }, [profile?.coach_persona, updateCoachPersona]);
 
-  const persistAriaMemory = useCallback(async () => {
-    if (!user?.id) return;
+  useEffect(() => {
+    referenceContextRef.current = buildCoachReferenceContext({
+      location,
+      experience: profile?.experience,
+      equipment,
+      injuries: profile?.injuries,
+      goal: profile?.goal,
+    });
 
-    const messages = getCoachMessages(ARIA_COACH_ID);
+    let cancelled = false;
+    void (async () => {
+      const remoteContext = await buildCoachReferenceContextAsync({
+        location,
+        experience: profile?.experience,
+        equipment,
+        injuries: profile?.injuries,
+        goal: profile?.goal,
+      });
+      if (!cancelled) {
+        referenceContextRef.current = remoteContext;
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [location, equipment, profile?.experience, profile?.injuries, profile?.goal]);
+
+  const persistCoachMemory = useCallback(async (coachId) => {
+    if (!user?.id || !coachId) return;
+
+    const messages = getCoachMessages(coachId);
     if (!messages.length) return;
 
-    const memory = buildAriaMemory(
-      ariaMemoryRef.current,
+    const existingMemory = coachMemoryRef.current?.coachId === coachId
+      ? coachMemoryRef.current.memory
+      : null;
+
+    const memory = buildCoachMemory(
+      existingMemory,
       profile,
       workoutTime,
       equipment,
       messages,
     );
-    ariaMemoryRef.current = memory;
-    await upsertAriaCoachMemory(user.id, memory);
+    coachMemoryRef.current = { coachId, memory };
+    await upsertCoachMemory(user.id, coachId, memory);
   }, [user?.id, getCoachMessages, profile, workoutTime, equipment]);
 
   useEffect(() => {
-    persistAriaMemoryRef.current = persistAriaMemory;
-  }, [persistAriaMemory]);
+    persistCoachMemoryRef.current = persistCoachMemory;
+  }, [persistCoachMemory]);
 
   useEffect(() => {
-    if (coach.id !== ARIA_COACH_ID || !user?.id) return undefined;
+    if (!user?.id || !coach.id) return undefined;
 
     let cancelled = false;
     void (async () => {
-      const memory = await fetchAriaCoachMemory(user.id);
+      const memory = await fetchCoachMemory(user.id, coach.id);
       if (cancelled) return;
-      ariaMemoryRef.current = memory;
+      coachMemoryRef.current = { coachId: coach.id, memory };
     })();
 
     return () => {
@@ -477,8 +504,9 @@ export default function CoachPage() {
 
   useEffect(() => {
     return () => {
-      if (prevCoachIdRef.current === ARIA_COACH_ID) {
-        void persistAriaMemoryRef.current?.();
+      const coachId = prevCoachIdRef.current;
+      if (coachId) {
+        void persistCoachMemoryRef.current?.(coachId);
       }
     };
   }, []);
@@ -604,18 +632,29 @@ export default function CoachPage() {
 
     try {
       const profileContext = buildProfileContext(profile, workoutTime, location, equipment);
-      const ariaMemoryBlock = coach.id === ARIA_COACH_ID && ariaMemoryRef.current
-        ? formatAriaMemoryForPrompt(ariaMemoryRef.current)
+      const coachMemoryBlock = coachMemoryRef.current?.coachId === coach.id && coachMemoryRef.current.memory
+        ? formatCoachMemoryForPrompt(coachMemoryRef.current.memory)
         : '';
-      const basePrompt = ariaMemoryBlock
-        ? `${coach.systemPrompt}\n\n${ariaMemoryBlock}`
+      const basePrompt = coachMemoryBlock
+        ? `${coach.systemPrompt}\n\n${coachMemoryBlock}`
         : coach.systemPrompt;
       const systemPrompt = buildCoachSystemPrompt(
         basePrompt,
         coach,
         apiHistory,
         profileContext,
-        { preservePersona: coach.id === 'kane', profile },
+        {
+          preservePersona: coach.id === 'kane',
+          profile,
+          referenceContext: referenceContextRef.current
+            || buildCoachReferenceContext({
+              location,
+              experience: profile?.experience,
+              equipment,
+              injuries: profile?.injuries,
+              goal: profile?.goal,
+            }),
+        },
       );
       const contents = toGeminiContents(apiHistory);
 
@@ -770,11 +809,11 @@ export default function CoachPage() {
   useEffect(() => () => stopVoiceSession(), [stopVoiceSession]);
 
   useEffect(() => {
-    if (prevVoiceActiveRef.current && !voiceSessionActive && coach.id === ARIA_COACH_ID && user?.id) {
-      void persistAriaMemory();
+    if (prevVoiceActiveRef.current && !voiceSessionActive && user?.id) {
+      void persistCoachMemory(coach.id);
     }
     prevVoiceActiveRef.current = voiceSessionActive;
-  }, [voiceSessionActive, coach.id, user?.id, persistAriaMemory]);
+  }, [voiceSessionActive, coach.id, user?.id, persistCoachMemory]);
 
   const voiceStatusLabel = {
     [VOICE_SESSION_STATE.IDLE]: 'ONLINE',
@@ -786,8 +825,8 @@ export default function CoachPage() {
 
   useEffect(() => {
     const prevCoachId = prevCoachIdRef.current;
-    if (prevCoachId === ARIA_COACH_ID && coach.id !== ARIA_COACH_ID) {
-      void persistAriaMemoryRef.current?.();
+    if (prevCoachId && prevCoachId !== coach.id) {
+      void persistCoachMemoryRef.current?.(prevCoachId);
     }
     prevCoachIdRef.current = coach.id;
 

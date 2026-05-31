@@ -4,6 +4,7 @@ import {
   sanitizeCoachResponse,
   toGeminiContents,
 } from '../lib/coachChat';
+import { buildCoachReferenceContext } from '../lib/coachContext';
 import { getCoach } from '../config/coaches';
 
 function firstName(name) {
@@ -143,7 +144,17 @@ ${COACH_CHAT_INSTRUCTIONS}`;
     { name: coach.name, id: coach.id },
     historyMessages,
     profileContext,
-    { preservePersona: coachId === 'kane', profile },
+    {
+      preservePersona: coachId === 'kane',
+      profile,
+      referenceContext: buildCoachReferenceContext({
+        location: profile?.location || 'gym',
+        experience: profile?.experience,
+        equipment: profile?.equipment,
+        injuries: profile?.injuries,
+        goal: profile?.goal,
+      }),
+    },
   );
 
   try {
