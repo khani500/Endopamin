@@ -1,4 +1,79 @@
 import { extractGeminiModelText } from '../services/foodScanner';
+import { TRAINING_KNOWLEDGE } from '../data/trainingKnowledge';
+import { supabase } from './supabase';
+
+const BEGINNER_FORBIDDEN_RULES =
+  'FORBIDDEN exercises for beginners: barbell squat, goblet squat, deadlift, barbell bench press, overhead press, pull-ups. Always use NASM progression alternatives.';
+
+function normalizeUserLevel(userLevel) {
+  const level = String(userLevel || 'intermediate').toLowerCase();
+  if (level.includes('begin')) return 'beginner';
+  if (level.includes('adv')) return 'advanced';
+  return 'intermediate';
+}
+
+function mapLocalKnowledgeRows() {
+  return TRAINING_KNOWLEDGE.map(entry => ({
+    id: entry.id,
+    source: entry.source,
+    topics: entry.topics || [],
+    levels: entry.levels || [],
+    summary: entry.summary,
+  }));
+}
+
+function matchesCategory(row, category) {
+  const needle = String(category || '').trim().toLowerCase();
+  if (!needle) return true;
+
+  if (String(row.source || '').toLowerCase() === needle) return true;
+  if (row.topics?.some(topic => String(topic).toLowerCase().includes(needle))) return true;
+  if (row.levels?.some(level => String(level).toLowerCase().includes(needle))) return true;
+  return false;
+}
+
+/** Query Supabase training_knowledge; optional category filters topics, levels, or source. */
+export async function fetchTrainingKnowledge(category) {
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('training_knowledge')
+        .select('id, source, topics, levels, summary')
+        .order('source', { ascending: true });
+
+      if (!error && Array.isArray(data) && data.length) {
+        return category ? data.filter(row => matchesCategory(row, category)) : data;
+      }
+    } catch (err) {
+      console.warn('fetchTrainingKnowledge Supabase error, using local fallback:', err);
+    }
+  }
+
+  const localRows = mapLocalKnowledgeRows();
+  return category ? localRows.filter(row => matchesCategory(row, category)) : localRows;
+}
+
+/** Build formatted scientific knowledge block for coach system prompts. */
+export async function buildKnowledgeContext(userLevel) {
+  const level = normalizeUserLevel(userLevel);
+  let entries = await fetchTrainingKnowledge();
+
+  if (level === 'beginner') {
+    entries = entries.filter(row =>
+      row.topics?.some(topic => String(topic).toLowerCase().includes('beginner'))
+      || row.levels?.includes('beginner'),
+    );
+  }
+
+  const lines = entries.map(row => `- [${row.source}]: ${row.summary}`);
+  let block = `SCIENTIFIC KNOWLEDGE BASE:\n${lines.join('\n')}`;
+
+  if (level === 'beginner') {
+    block += `\n\n${BEGINNER_FORBIDDEN_RULES}`;
+  }
+
+  return block;
+}
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
 const GEMINI_MODEL = 'gemini-2.5-flash';

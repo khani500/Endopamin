@@ -105,6 +105,106 @@ export const TRAINING_KNOWLEDGE = [
     summary:
       'Advanced strength blocks use specific intensities — 70 to 85 percent for volume work, 85 to 95 percent for peaking phases — with planned deloads every 4 to 6 weeks. Accessories support weak links in the competition or primary lifts.',
   },
+  {
+    id: 'nasm_opt_phase1',
+    source: 'NASM',
+    topics: ['beginner', 'stabilization', 'motor_learning'],
+    environments: ['gym', 'home'],
+    levels: ['beginner'],
+    goals: ['weight_loss', 'maintenance', 'strength_gain'],
+    summary:
+      'NASM OPT Phase 1 (Stabilization Endurance): 12 to 20 reps, 1 to 3 sets, slow tempo, low load. Prioritize postural control, balance, and full ROM before any heavy bilateral loading. First 4 to 8 weeks = movement quality, not max strength.',
+  },
+  {
+    id: 'nasm_beginner_squat_progression',
+    source: 'NASM',
+    topics: ['beginner', 'squat', 'regression', 'safety'],
+    environments: ['gym', 'home'],
+    levels: ['beginner'],
+    goals: ['weight_loss', 'maintenance', 'strength_gain'],
+    summary:
+      'Beginners do NOT start with barbell, goblet, or loaded squats. Progression: sit-to-stand → supported partial squat → step-up → box squat (bodyweight only) → goblet squat after 4+ weeks of clean patterns. Use leg press or hack squat machine before free-weight squat when available.',
+  },
+  {
+    id: 'nasm_opt_phase2',
+    source: 'NASM',
+    topics: ['intermediate', 'hypertrophy', 'progression'],
+    environments: ['gym', 'home'],
+    levels: ['intermediate'],
+    goals: ['strength_gain', 'maintenance', 'weight_loss'],
+    summary:
+      'NASM OPT Phase 2 (Strength Endurance): moderate loads, 8 to 12 reps, supersets or circuits allowed. Introduce loaded squat/hinge patterns only after Phase 1 stability benchmarks — no pain, controlled tempo, symmetrical ROM.',
+  },
+  {
+    id: 'ace_ift_beginner',
+    source: 'ACE',
+    topics: ['beginner', 'functional', 'progression'],
+    environments: ['gym', 'home'],
+    levels: ['beginner'],
+    goals: ['weight_loss', 'maintenance', 'strength_gain'],
+    summary:
+      'ACE IFT model: establish stability and mobility first, then integrated movement, then load. Beginners train movement patterns (push, pull, squat, hinge, rotate, gait) with bodyweight and bands before barbells. Session RPE 4 to 6 for first month.',
+  },
+  {
+    id: 'nsca_beginner_resistance',
+    source: 'NSCA',
+    topics: ['beginner', 'resistance', 'frequency'],
+    environments: ['gym', 'home'],
+    levels: ['beginner'],
+    goals: ['strength_gain', 'maintenance', 'weight_loss'],
+    summary:
+      'NSCA beginner guidelines: 2 to 3 non-consecutive days per week, full-body or upper/lower split, 8 to 15 reps, 1 to 3 sets. Machines and dumbbells preferred over barbells for novices. No 1RM testing until 8 to 12 weeks of consistent training.',
+  },
+  {
+    id: 'issn_recovery',
+    source: 'ISSN',
+    topics: ['recovery', 'protein', 'sleep'],
+    environments: ['gym', 'home', 'desk'],
+    levels: ['beginner', 'intermediate', 'advanced'],
+    goals: ['strength_gain', 'maintenance', 'weight_loss'],
+    summary:
+      'ISSN position: 1.6 to 2.2 g protein per kg bodyweight for active adults; sleep 7 to 9 h; 48 to 72 h between hard sessions for same muscle groups. Recovery is programming — not optional add-on.',
+  },
+  {
+    id: 'acsm_neuromotor',
+    source: 'ACSM',
+    topics: ['balance', 'beginner', 'fall_prevention'],
+    environments: ['home', 'gym'],
+    levels: ['beginner'],
+    goals: ['maintenance', 'weight_loss'],
+    summary:
+      'ACSM neuromotor training: include balance and proprioception 2 to 3 days per week for beginners and older adults — single-leg stands, tandem walk, controlled step-ups before advanced unilateral loading.',
+  },
+  {
+    id: 'nsca_exercise_variety',
+    source: 'NSCA',
+    topics: ['variety', 'periodization', 'programming'],
+    environments: ['gym', 'home'],
+    levels: ['beginner', 'intermediate', 'advanced'],
+    goals: ['strength_gain', 'maintenance', 'weight_loss'],
+    summary:
+      'Rotate exercises within the same movement pattern every 3 to 4 weeks while keeping progressive overload on key lifts. Avoid prescribing identical exercise lists session after session — vary accessories, angles, and unilateral work while maintaining periodization structure.',
+  },
+  {
+    id: 'acsm_warmup_protocol',
+    source: 'ACSM',
+    topics: ['warmup', 'activation', 'injury_prevention'],
+    environments: ['gym', 'home', 'desk'],
+    levels: ['beginner', 'intermediate', 'advanced'],
+    goals: ['strength_gain', 'maintenance', 'weight_loss'],
+    summary:
+      'General warm-up 5 to 10 min: raise heart rate, dynamic mobility for session patterns, activation drills (glute bridges before hinges, band pull-aparts before pulls). Specific warm-up sets before working loads. Cool-down 5 min static stretch for worked muscles.',
+  },
+  {
+    id: 'who_desk_breaks',
+    source: 'WHO',
+    topics: ['desk', 'sedentary', 'micro_breaks'],
+    environments: ['desk'],
+    levels: ['beginner', 'intermediate', 'advanced'],
+    goals: ['weight_loss', 'maintenance'],
+    summary:
+      'WHO: reduce sedentary time; break sitting every 30 to 60 minutes. Desk programs = hip flexor stretch, thoracic rotation, scapular retraction, diaphragmatic breathing, march in place — never heavy squat or deadlift in desk breaks.',
+  },
 ];
 
 const LEVEL_RANK = { beginner: 0, intermediate: 1, advanced: 2 };

@@ -36,7 +36,7 @@ export async function fetchTrainingKnowledgeBlock(options = {}) {
     location = 'gym',
     experience = 'intermediate',
     goal = 'maintenance',
-    limit = 5,
+    limit: limitOverride,
   } = options;
 
   const env = normalizeLocation(location);
@@ -46,6 +46,7 @@ export async function fetchTrainingKnowledgeBlock(options = {}) {
       ? 'advanced'
       : 'intermediate';
   const goalTag = normalizeGoal(goal);
+  const limit = limitOverride ?? (lvl === 'beginner' ? 7 : 5);
 
   if (supabase) {
     try {
@@ -78,6 +79,10 @@ export async function fetchTrainingKnowledgeBlock(options = {}) {
   return buildLocalKnowledgeBlock({ location, experience: lvl, goal, limit });
 }
 
+function isBeginnerExperience(experience) {
+  return String(experience || '').toLowerCase().includes('begin');
+}
+
 /** Synchronous exercise library block for prompt injection. */
 export function buildCoachReferenceContext({
   location = 'gym',
@@ -86,36 +91,29 @@ export function buildCoachReferenceContext({
   injuries = '',
   goal = 'maintenance',
 } = {}) {
+  const beginner = isBeginnerExperience(experience);
   const exerciseBlock = buildExerciseLibraryBlock({
     location,
     experience,
     equipment,
     injuries,
-    maxPerPattern: 2,
+    maxPerPattern: beginner ? 3 : 2,
   });
 
-  const knowledgeBlock = buildLocalKnowledgeBlock({
-    location,
-    experience,
-    goal,
-    limit: 5,
-  });
-
-  return `${knowledgeBlock}\n\n${exerciseBlock}`;
+  return exerciseBlock;
 }
 
 /** Async version — prefers Supabase knowledge when available. */
 export async function buildCoachReferenceContextAsync(options = {}) {
-  const knowledgeBlock = await fetchTrainingKnowledgeBlock(options);
   const exerciseBlock = buildExerciseLibraryBlock({
     location: options.location,
     experience: options.experience,
     equipment: options.equipment,
     injuries: options.injuries,
-    maxPerPattern: 2,
+    maxPerPattern: isBeginnerExperience(options.experience) ? 3 : 2,
   });
 
-  return `${knowledgeBlock}\n\n${exerciseBlock}`;
+  return exerciseBlock;
 }
 
 export { getExercisesForContext, buildExerciseLibraryBlock };

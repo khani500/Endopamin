@@ -1,11 +1,11 @@
-import { askGemini, askGeminiChat } from '../lib/gemini';
+import { askGemini, askGeminiChat, buildKnowledgeContext } from '../lib/gemini';
 import {
   buildCoachSystemPrompt,
   sanitizeCoachResponse,
   toGeminiContents,
 } from '../lib/coachChat';
 import { buildCoachReferenceContext } from '../lib/coachContext';
-import { getCoach } from '../config/coaches';
+import { getCoach, resolveCoachId } from '../config/coaches';
 
 function firstName(name) {
   return String(name || 'Champion').trim().split(/\s+/)[0] || 'Champion';
@@ -84,6 +84,7 @@ function shouldTriggerAssessment(profile = {}) {
 
 export const getDailyMessage = async (coachId, userContext) => {
   const coach = getCoach(coachId);
+  const resolvedId = resolveCoachId(coachId);
   const { name, streak, level, lastWorkout, goal, energy, gender } = userContext;
   const userName = firstName(name);
 
@@ -105,17 +106,19 @@ Rules:
   } catch (error) {
     console.error('Daily message failed:', error);
     const fallbacks = {
-      rex: `${userName}. ${streak} days. Do not stop now.`,
-      maya: `${userName}! ${streak} days strong — let's make today count!`,
-      elias: `${userName}, ${streak} consecutive days of adaptation. Your body is changing. Continue.`,
+      aria: `${userName}, ${streak} days of data logged. Stay consistent — your next session builds on today.`,
+      kane: `${userName}. ${streak} days. Do not stop now.`,
+      blaze: `${userName}! ${streak} days strong — let's make today count!`,
+      nova: `${userName}, ${streak} consecutive days of adaptation. Your body is changing. Continue.`,
       zara: `${userName}, ${streak} days in. Your future self is already bragging about you.`,
     };
-    return fallbacks[coachId] || fallbacks.rex;
+    return fallbacks[resolvedId] || fallbacks.aria;
   }
 };
 
 export const chatWithCoach = async (coachId, userName, message, conversationHistory = [], profile = {}) => {
   const coach = getCoach(coachId);
+  const resolvedId = resolveCoachId(coachId);
   const name = firstName(userName);
   const profileContext = buildProfileContext(profile, name);
 
@@ -133,6 +136,8 @@ export const chatWithCoach = async (coachId, userName, message, conversationHist
     ? `\nIMPORTANT: It has been 30 days since ${name} joined. Proactively bring up a progress assessment and suggest upgrading their plan. Do this naturally within your response, not as a separate announcement.`
     : '';
 
+  const knowledgeContext = await buildKnowledgeContext(profile?.experience);
+
   const basePrompt = `${coach.personality}
 
 ${assessmentNote}
@@ -145,8 +150,9 @@ ${COACH_CHAT_INSTRUCTIONS}`;
     historyMessages,
     profileContext,
     {
-      preservePersona: coachId === 'kane',
+      preservePersona: resolvedId === 'kane',
       profile,
+      knowledgeContext,
       referenceContext: buildCoachReferenceContext({
         location: profile?.location || 'gym',
         experience: profile?.experience,
@@ -166,12 +172,13 @@ ${COACH_CHAT_INSTRUCTIONS}`;
   } catch (error) {
     console.error('Coach chat failed:', error);
     const fallbacks = {
-      rex: `${coach.name}: Connection dropped. Here is your move ${name}: warm up now, first working set in 5 minutes. No waiting.`,
-      maya: `${coach.name}: Temporary glitch ${name}! Do not let it stop you — start with what you know!`,
-      elias: `${coach.name}: Technical interruption, ${name}. While we reconnect — focus on your breathing and prime your nervous system.`,
+      aria: `${coach.name}: Connection dropped. Review your session plan and resume when ready.`,
+      kane: `${coach.name}: Connection dropped. Here is your move ${name}: warm up now, first working set in 5 minutes. No waiting.`,
+      blaze: `${coach.name}: Temporary glitch ${name}! Do not let it stop you — start with what you know!`,
+      nova: `${coach.name}: Technical interruption, ${name}. While we reconnect — focus on your breathing and prime your nervous system.`,
       zara: `${coach.name}: The AI gods are testing us ${name}. Classic villain move. Just start moving anyway.`,
     };
-    return fallbacks[coachId] || fallbacks.rex;
+    return fallbacks[resolvedId] || fallbacks.aria;
   }
 };
 

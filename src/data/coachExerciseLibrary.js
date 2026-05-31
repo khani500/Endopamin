@@ -34,7 +34,7 @@ export const COACH_EXERCISE_LIBRARY = [
     name: 'Box Squat',
     pattern: 'squat',
     environments: ['gym', 'home'],
-    levels: ['beginner', 'intermediate'],
+    levels: ['intermediate'],
     equipment: ['bodyweight', 'bench', 'dumbbell', 'barbell', 'squat_rack'],
     regressions: ['sit_to_stand'],
     progressions: ['goblet_squat', 'barbell_back_squat'],
@@ -46,7 +46,7 @@ export const COACH_EXERCISE_LIBRARY = [
     name: 'Goblet Squat',
     pattern: 'squat',
     environments: ['gym', 'home'],
-    levels: ['beginner', 'intermediate'],
+    levels: ['intermediate'],
     equipment: ['dumbbell', 'kettlebell'],
     regressions: ['box_squat'],
     progressions: ['front_squat', 'barbell_back_squat'],
@@ -70,7 +70,7 @@ export const COACH_EXERCISE_LIBRARY = [
     name: 'Bulgarian Split Squat',
     pattern: 'squat',
     environments: ['gym', 'home'],
-    levels: ['beginner', 'intermediate', 'advanced'],
+    levels: ['intermediate', 'advanced'],
     equipment: ['bodyweight', 'dumbbell', 'bench'],
     regressions: ['reverse_lunge'],
     progressions: ['weighted_split_squat'],
@@ -410,6 +410,114 @@ export const COACH_EXERCISE_LIBRARY = [
     contraindications: ['acute_knee'],
   },
   {
+    id: 'step_up',
+    name: 'Step-Up (Low Box)',
+    pattern: 'squat',
+    environments: ['gym', 'home'],
+    levels: ['beginner'],
+    equipment: ['bodyweight', 'bench', 'dumbbell'],
+    regressions: ['sit_to_stand'],
+    progressions: ['reverse_lunge', 'box_squat'],
+    prescription: '3 x 8 to 10 each leg, controlled descent',
+    contraindications: ['acute_knee'],
+  },
+  {
+    id: 'leg_press',
+    name: 'Leg Press (Machine)',
+    pattern: 'squat',
+    environments: ['gym'],
+    levels: ['beginner', 'intermediate'],
+    equipment: ['leg_press'],
+    regressions: ['sit_to_stand', 'step_up'],
+    progressions: ['goblet_squat', 'box_squat'],
+    prescription: '3 x 10 to 15 @ RPE 6 to 7, full ROM',
+    contraindications: ['acute_knee'],
+  },
+  {
+    id: 'chest_press_machine',
+    name: 'Chest Press Machine',
+    pattern: 'horizontal_push',
+    environments: ['gym'],
+    levels: ['beginner'],
+    equipment: ['cables'],
+    regressions: ['wall_push_up', 'incline_push_up'],
+    progressions: ['dumbbell_bench', 'push_up'],
+    prescription: '3 x 10 to 15 @ RPE 6 to 7',
+    contraindications: ['acute_shoulder'],
+  },
+  {
+    id: 'face_pull',
+    name: 'Face Pull / Band Pull-Apart',
+    pattern: 'horizontal_pull',
+    environments: ['gym', 'home'],
+    levels: ['beginner', 'intermediate'],
+    equipment: ['cables', 'resistance'],
+    regressions: [],
+    progressions: ['cable_row', 'dumbbell_row'],
+    prescription: '3 x 12 to 15, scapular retraction focus',
+    contraindications: [],
+  },
+  {
+    id: 'bird_dog',
+    name: 'Bird Dog',
+    pattern: 'core',
+    environments: ['home', 'gym', 'desk'],
+    levels: ['beginner'],
+    equipment: ['bodyweight'],
+    regressions: [],
+    progressions: ['dead_bug', 'plank'],
+    prescription: '3 x 8 each side, hold 3 s',
+    contraindications: ['acute_lower_back'],
+  },
+  {
+    id: 'clamshell',
+    name: 'Clamshell (Side-Lying)',
+    pattern: 'mobility',
+    environments: ['home', 'gym'],
+    levels: ['beginner'],
+    equipment: ['bodyweight', 'resistance'],
+    regressions: [],
+    progressions: ['glute_bridge'],
+    prescription: '2 x 12 each side, glute med activation',
+    contraindications: [],
+  },
+  {
+    id: 'cat_camel',
+    name: 'Cat-Camel (Spinal Flexion-Extension)',
+    pattern: 'mobility',
+    environments: ['desk', 'home', 'gym'],
+    levels: ['beginner', 'intermediate', 'advanced'],
+    equipment: ['bodyweight'],
+    regressions: [],
+    progressions: [],
+    prescription: '2 x 8 slow, pain-free range',
+    contraindications: ['acute_lower_back'],
+  },
+  {
+    id: 'seated_row_machine',
+    name: 'Seated Row Machine',
+    pattern: 'horizontal_pull',
+    environments: ['gym'],
+    levels: ['beginner'],
+    equipment: ['cables'],
+    regressions: ['band_row'],
+    progressions: ['cable_row', 'dumbbell_row'],
+    prescription: '3 x 10 to 12 @ RPE 6 to 7',
+    contraindications: [],
+  },
+  {
+    id: 'trap_bar_deadlift',
+    name: 'Trap Bar Deadlift',
+    pattern: 'hinge',
+    environments: ['gym'],
+    levels: ['intermediate'],
+    equipment: ['barbell'],
+    regressions: ['romanian_deadlift', 'glute_bridge'],
+    progressions: ['conventional_deadlift'],
+    prescription: '3 to 4 x 5 to 8 @ RPE 7',
+    contraindications: ['acute_lower_back'],
+  },
+  {
     id: 'front_squat',
     name: 'Front Squat',
     pattern: 'squat',
@@ -421,6 +529,28 @@ export const COACH_EXERCISE_LIBRARY = [
     prescription: '4 x 4 to 6 @ RPE 8',
     contraindications: ['acute_knee', 'acute_wrist'],
   },
+];
+
+/** Exercises never prescribed for beginners — use NASM/NSCA regressions instead. */
+export const BEGINNER_BLOCKED_EXERCISE_IDS = new Set([
+  'barbell_back_squat',
+  'front_squat',
+  'goblet_squat',
+  'box_squat',
+  'split_squat',
+  'conventional_deadlift',
+  'romanian_deadlift',
+  'barbell_bench',
+  'overhead_press',
+  'pull_up',
+]);
+
+/** Beginner-safe squat-pattern alternatives (NASM progression). */
+export const BEGINNER_SQUAT_ALTERNATIVES = [
+  'sit_to_stand',
+  'step_up',
+  'leg_press',
+  'reverse_lunge',
 ];
 
 const LEVEL_RANK = { beginner: 0, intermediate: 1, advanced: 2 };
@@ -467,16 +597,31 @@ function hasEquipment(exercise, available) {
   );
   if (!avail.size) return exercise.equipment.includes('bodyweight');
 
+  const gymMachineAliases = ['machine', 'machines', 'cable', 'cables', 'leg_press', 'smith'];
+  const hasGymMachines = [...avail, ...gymMachineAliases.filter(a => avail.has(a))].some(a =>
+    gymMachineAliases.some(alias => a.includes(alias) || alias.includes(a)),
+  );
+
   return exercise.equipment.some(eq => {
     if (eq === 'bodyweight') return true;
+    if (eq === 'leg_press' && (avail.has('leg_press') || avail.has('machines') || avail.has('machine'))) return true;
+    if (eq === 'cables' && (avail.has('cables') || avail.has('cable') || avail.has('machines'))) return true;
     return [...avail].some(a => a.includes(eq) || eq.includes(a));
-  });
+  }) || (hasGymMachines && exercise.equipment.some(eq => eq === 'leg_press' || eq === 'cables'));
 }
 
 function levelAllowed(exercise, athleteLevel) {
-  const rank = LEVEL_RANK[athleteLevel] ?? 1;
-  return exercise.levels.some(l => (LEVEL_RANK[l] ?? 1) <= rank + 1 && (LEVEL_RANK[l] ?? 1) >= rank - 1)
-    || exercise.levels.includes(athleteLevel);
+  if (athleteLevel === 'beginner') {
+    if (!exercise.levels.includes('beginner')) return false;
+    if (BEGINNER_BLOCKED_EXERCISE_IDS.has(exercise.id)) return false;
+    return true;
+  }
+
+  if (athleteLevel === 'intermediate') {
+    return exercise.levels.some(l => (LEVEL_RANK[l] ?? 1) <= LEVEL_RANK.intermediate);
+  }
+
+  return true;
 }
 
 /** Filter library for athlete context; returns up to maxPerPattern exercises per pattern. */
@@ -524,9 +669,14 @@ export function resolveExerciseChain(exerciseId) {
   return { exercise, regressions, progressions };
 }
 
-export function formatExerciseLibraryForPrompt(exercises) {
+export function formatExerciseLibraryForPrompt(exercises, { experience = 'intermediate' } = {}) {
+  const lvl = normalizeExperience(experience);
+  const beginnerNote = lvl === 'beginner'
+    ? `\nBEGINNER SAFETY (NASM/NSCA/ACSM — mandatory): Do NOT prescribe barbell squat, goblet squat, box squat, Bulgarian split squat, deadlift, barbell bench, or pull-ups. Use only approved regressions: sit-to-stand, step-up, leg press, reverse lunge, wall/incline push-up, band row, lat pulldown, glute bridge, dead bug. Progress to loaded squats only after 4 to 8 weeks of clean movement patterns.\n`
+    : '';
+
   if (!exercises?.length) {
-    return `EXERCISE LIBRARY: No matching exercises for this environment/equipment — use bodyweight regressions from NASM/NSCA progression models.`;
+    return `EXERCISE LIBRARY: No matching exercises for this environment/equipment — use bodyweight regressions from NASM OPT Phase 1 and NSCA beginner guidelines.${beginnerNote}`;
   }
 
   const lines = exercises.map(exercise => {
@@ -542,11 +692,11 @@ export function formatExerciseLibraryForPrompt(exercises) {
     return `- ${exercise.name} (${exercise.pattern}): ${exercise.prescription}. Regress: ${reg || 'none'}. Progress: ${prog || 'none'}.`;
   });
 
-  return `APPROVED EXERCISE LIBRARY (prescribe ONLY from this list for today's environment, level, and equipment — use regressions/progressions as needed):
-${lines.join('\n')}`;
+  return `APPROVED EXERCISE LIBRARY (prescribe ONLY from this list for today's environment, level, and equipment — vary exercises across sessions, use regressions/progressions per NASM OPT model):
+${beginnerNote}${lines.join('\n')}`;
 }
 
 export function buildExerciseLibraryBlock(options = {}) {
   const exercises = getExercisesForContext(options);
-  return formatExerciseLibraryForPrompt(exercises);
+  return formatExerciseLibraryForPrompt(exercises, { experience: options.experience });
 }

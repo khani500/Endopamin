@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useCoachSession } from '../context/CoachContext';
 import { useVoiceSession } from '../hooks/useVoiceSession';
-import { askGeminiChat, askGeminiChatStream } from '../lib/gemini';
+import { askGeminiChat, askGeminiChatStream, buildKnowledgeContext } from '../lib/gemini';
 import {
   coachAudioRef,
   playCoachAudio,
@@ -265,13 +265,20 @@ const WORKOUTS = {
 const DIFF = { easy: '#CCFF00', medium: '#FFA53C', hard: '#FF6B6B' };
 
 const COACH_PERSONA_ALIASES = {
+  elias: 'aria',
   rex: 'kane',
-  maya: 'nova',
+  maya: 'blaze',
 };
 
+function normalizeTrainingLocation(value) {
+  const loc = String(value || 'gym').toLowerCase();
+  if (loc.includes('desk') || loc.includes('office')) return 'desk';
+  if (loc.includes('home')) return 'home';
+  return 'gym';
+}
+
 function getCoachById(coachId) {
-  const normalizedId = coachId === 'elias' ? COACHES[0].id : coachId;
-  const resolvedId = COACH_PERSONA_ALIASES[normalizedId] || normalizedId;
+  const resolvedId = COACH_PERSONA_ALIASES[coachId] || coachId;
   return COACHES.find(c => c.id === resolvedId) || COACHES[0];
 }
 
@@ -333,9 +340,15 @@ export default function CoachPage() {
     return getCoachById(profile?.coach_persona) || COACHES[0];
   });
   const [view, setView] = useState('chat');
-  const [location, setLocation] = useState('gym');
-  const [equipment, setEquipment] = useState(['barbell','dumbbell','bench','squat_rack','pull_up']);
-  const [workoutTime, setWorkoutTime] = useState(30);
+  const [location, setLocation] = useState(() => normalizeTrainingLocation(profile?.location));
+  const [equipment, setEquipment] = useState(() => (
+    Array.isArray(profile?.equipment) && profile.equipment.length
+      ? profile.equipment
+      : ['barbell', 'dumbbell', 'bench', 'squat_rack', 'pull_up', 'cables', 'leg_press']
+  ));
+  const [workoutTime, setWorkoutTime] = useState(() => (
+    Number(profile?.session_duration || profile?.time_available) || 30
+  ));
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeEx, setActiveEx] = useState(null);
@@ -371,6 +384,13 @@ export default function CoachPage() {
     const profileCoach = getCoachById(personaId);
     if (profileCoach && profileCoach.id !== coach.id) setCoach(profileCoach);
   }, [profile?.coach_persona, coach.id]);
+
+  useEffect(() => {
+    if (profile?.location) setLocation(normalizeTrainingLocation(profile.location));
+    if (Array.isArray(profile?.equipment) && profile.equipment.length) setEquipment(profile.equipment);
+    const duration = Number(profile?.session_duration || profile?.time_available);
+    if (duration > 0) setWorkoutTime(duration);
+  }, [profile?.location, profile?.equipment, profile?.session_duration, profile?.time_available]);
 
   useEffect(() => {
     setVoiceMode(voiceMode);
@@ -488,19 +508,30 @@ export default function CoachPage() {
   }, [persistCoachMemory]);
 
   useEffect(() => {
-    if (!user?.id || !coach.id) return undefined;
+    if (!coach.id) return undefined;
+
+    const messages = getCoachMessages(coach.id);
+    coachMemoryRef.current = {
+      coachId: coach.id,
+      memory: buildCoachMemory(null, profile, workoutTime, equipment, messages),
+    };
+
+    if (!user?.id) return undefined;
 
     let cancelled = false;
     void (async () => {
-      const memory = await fetchCoachMemory(user.id, coach.id);
+      const stored = await fetchCoachMemory(user.id, coach.id);
       if (cancelled) return;
-      coachMemoryRef.current = { coachId: coach.id, memory };
+      coachMemoryRef.current = {
+        coachId: coach.id,
+        memory: buildCoachMemory(stored, profile, workoutTime, equipment, messages),
+      };
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [coach.id, user?.id]);
+  }, [coach.id, user?.id, profile, workoutTime, equipment, getCoachMessages]);
 
   useEffect(() => {
     return () => {
@@ -632,12 +663,14 @@ export default function CoachPage() {
 
     try {
       const profileContext = buildProfileContext(profile, workoutTime, location, equipment);
-      const coachMemoryBlock = coachMemoryRef.current?.coachId === coach.id && coachMemoryRef.current.memory
-        ? formatCoachMemoryForPrompt(coachMemoryRef.current.memory)
-        : '';
-      const basePrompt = coachMemoryBlock
-        ? `${coach.systemPrompt}\n\n${coachMemoryBlock}`
-        : coach.systemPrompt;
+      const existingMemory = coachMemoryRef.current?.coachId === coach.id
+        ? coachMemoryRef.current.memory
+        : null;
+      const liveMemory = buildCoachMemory(existingMemory, profile, workoutTime, equipment, apiHistory);
+      coachMemoryRef.current = { coachId: coach.id, memory: liveMemory };
+      const coachMemoryBlock = formatCoachMemoryForPrompt(liveMemory);
+      const knowledgeContext = await buildKnowledgeContext(profile?.experience);
+      const basePrompt = `${coach.systemPrompt}\n\n${coachMemoryBlock}`;
       const systemPrompt = buildCoachSystemPrompt(
         basePrompt,
         coach,
@@ -646,6 +679,7 @@ export default function CoachPage() {
         {
           preservePersona: coach.id === 'kane',
           profile,
+          knowledgeContext,
           referenceContext: referenceContextRef.current
             || buildCoachReferenceContext({
               location,
@@ -679,7 +713,13 @@ export default function CoachPage() {
 
       if (reply) {
         const assistantMsg = { role: 'assistant', text: reply, timestamp: new Date().toISOString() };
-        setCoachMessages(coach.id, [...historyWithUser, assistantMsg]);
+        const fullHistory = [...historyWithUser, assistantMsg];
+        setCoachMessages(coach.id, fullHistory);
+        const updatedMemory = buildCoachMemory(liveMemory, profile, workoutTime, equipment, fullHistory);
+        coachMemoryRef.current = { coachId: coach.id, memory: updatedMemory };
+        if (user?.id) {
+          void upsertCoachMemory(user.id, coach.id, updatedMemory);
+        }
       }
 
       if (fromVoice && reply && !streaming && voiceMode === VOICE_MODES.VOICE) {
@@ -698,7 +738,7 @@ export default function CoachPage() {
       sendingRef.current = false;
       setLoading(false);
     }
-  }, [coach, profile, workoutTime, location, equipment, getCoachMessages, setCoachMessages, speakCoachText, voiceMode]);
+  }, [coach, profile, user?.id, workoutTime, location, equipment, getCoachMessages, setCoachMessages, speakCoachText, voiceMode]);
 
   /** Text input only — updates chat, never triggers TTS. */
   const handleSendText = useCallback(async rawText => {

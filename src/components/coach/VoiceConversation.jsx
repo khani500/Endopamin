@@ -8,7 +8,7 @@ import {
   toGeminiContents,
 } from '../../lib/coachChat';
 import { buildCoachReferenceContext } from '../../lib/coachContext';
-import { askGeminiChat } from '../../lib/gemini';
+import { askGeminiChat, buildKnowledgeContext } from '../../lib/gemini';
 import { GeminiLiveSession } from '../../lib/geminiLive';
 import {
   isIOSDevice,
@@ -43,8 +43,19 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const sessionStartingRef = useRef(false);
   const iosRestartTimerRef = useRef(null);
   const micReadyRef = useRef(false);
+  const knowledgeContextRef = useRef('');
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
+
+  useEffect(() => {
+    let cancelled = false;
+    void buildKnowledgeContext(profile?.experience).then(context => {
+      if (!cancelled) knowledgeContextRef.current = context;
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [profile?.experience]);
 
   /** iOS Safari blocks Gemini Live WebSocket — always use SpeechRecognition + TTS. */
   const usesSpeechPath = () => isIOS || fallbackModeRef.current;
@@ -108,6 +119,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     const ctx = buildProfileContext(profile, profile?.session_duration, profile?.location, []);
     return buildCoachSystemPrompt(coach.personality, { name: coach.name, id: coachId }, [], ctx, {
       profile,
+      knowledgeContext: knowledgeContextRef.current,
       referenceContext: buildCoachReferenceContext({
         location: profile?.location || 'gym',
         experience: profile?.experience,

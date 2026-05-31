@@ -8,7 +8,7 @@ export function useCoach() {
   const { user, profile, updateCoachPersona } = useAuth();
   const [message, setMessage] = useState('');
   const [loadingMessage, setLoadingMessage] = useState(false);
-  const personaId = profile?.coach_persona || 'elias';
+  const personaId = profile?.coach_persona || 'aria';
   const coach = useMemo(() => getCoach(personaId), [personaId]);
 
   useEffect(() => {
@@ -51,8 +51,14 @@ export function useCoach() {
   const speak = useCallback((text, onEnd) => speakText(text, personaId, onEnd), [personaId]);
 
   const chat = useCallback(async (text, history = [], userName) => {
-   return chatWithCoach(personaId, userName || profile?.display_name || 'Champion', text, history, profile?.gender);
-  }, [personaId, profile?.display_name, profile?.gender]);
+    return chatWithCoach(
+      personaId,
+      userName || profile?.display_name || 'Champion',
+      text,
+      history,
+      profile || {},
+    );
+  }, [personaId, profile]);
 
   const setPersona = useCallback(async persona => {
     if (!COACHES[persona] || !user?.id) return { error: null };

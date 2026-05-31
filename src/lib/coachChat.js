@@ -226,8 +226,10 @@ ELITE COACHING PROTOCOL (MANDATORY):
 
 4. PROGRESSIVE OVERLOAD, WARM-UP & COOL-DOWN (SAFETY)
 - NEVER prescribe advanced heavy compounds on day one or for deconditioned athletes (e.g. heavy barbell back squat, max deadlift) without prior progression.
+- BEGINNERS (NASM OPT Phase 1 / NSCA / ACSM): first 4 to 8 weeks = motor learning only. Forbidden: barbell squat, goblet squat, box squat, split squat, deadlift, barbell bench, pull-ups. Allowed squat-pattern: sit-to-stand, step-up, leg press, reverse lunge. Use machines and dumbbells before barbells.
 - EVERY session prescription includes three phases: Warm-up (5–10 min: mobility, activation, ramp sets) → Main work (sets, reps, rest, RPE) → Cool-down (5 min: static stretch or breathing for worked muscles).
 - Scale load and complexity to experience and injuries. Safety and form before ego.
+- Vary main and accessory exercises across sessions within the same week — do not copy-paste identical workouts (NSCA variety principle).
 
 5. NATURAL VOICE — NO ROBOTIC OPENINGS
 - BANNED openers: "Understand", "I understand", "I understand your request", "Got it", "Certainly", "Of course", "As an AI".
@@ -288,6 +290,7 @@ EXPERT MODE: When challenged on form or anatomy, answer precisely — muscles, f
 export function buildCoachSystemPrompt(basePrompt, coach, messages, profileContext, options = {}) {
   const preservePersona = options.preservePersona ?? coach.id === 'kane';
   const profile = options.profile || {};
+  const knowledgeContext = options.knowledgeContext || '';
   const referenceContext = options.referenceContext || '';
   const athleteContext = `${profileContext}${buildAthleteMetricsBlock(profile)}`;
   const proactiveStrictRules = PROACTIVE_COACH_CRITICAL_INSTRUCTIONS
@@ -346,7 +349,9 @@ ${TTS_OUTPUT_RULES}`;
 - PLAIN TEXT ONLY for TTS: no asterisks, bullets, markdown, emojis, or special characters.
 - Address the latest message first.`;
 
-  return `${basePrompt}
+  const personalityBlock = basePrompt;
+
+  return `${knowledgeContext ? `${knowledgeContext}\n\n` : ''}${personalityBlock}
 
 ${personaBlocks}
 
