@@ -4,29 +4,108 @@ import {
   stopCoachAudio,
   prepareSpeechInputOnUserGesture,
   resumeAudioContextOnUserGesture,
+  VOICE_MODES,
 } from '../lib/voice';
 import { createVoiceSession, VOICE_SESSION_STATE } from '../services/voiceSession';
 
 const WELCOME_TRIGGER =
   '[VOICE_SESSION_START] Greet the athlete by first name in fluent professional English. Ask only about energy and mood today. Max 2 sentences. Plain spoken English for TTS.';
 
+function setupMediaSession({ coachName, artworkSrc }, handlers) {
+  if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
+
+  const artworkType = artworkSrc?.endsWith('.png') ? 'image/png' : 'image/jpeg';
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: 'Endopamin Coach',
+    artist: coachName,
+    artwork: [{ src: artworkSrc, sizes: '512x512', type: artworkType }],
+  });
+
+  navigator.mediaSession.setActionHandler('play', handlers.onPlay);
+  navigator.mediaSession.setActionHandler('pause', handlers.onPause);
+  navigator.mediaSession.setActionHandler('stop', handlers.onStop);
+}
+
+function clearMediaSession() {
+  if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
+
+  navigator.mediaSession.metadata = null;
+  ['play', 'pause', 'stop'].forEach(action => {
+    try {
+      navigator.mediaSession.setActionHandler(action, null);
+    } catch {
+      // ignore unsupported actions
+    }
+  });
+}
+
+function createSilentKeepAlive() {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return { start: () => {}, stop: () => {} };
+
+  let ctx = null;
+  let source = null;
+
+  return {
+    async start() {
+      if (ctx) return;
+      ctx = new AudioCtx();
+      if (ctx.state === 'suspended') await ctx.resume();
+
+      const sampleRate = ctx.sampleRate;
+      const buffer = ctx.createBuffer(1, sampleRate, sampleRate);
+      const channel = buffer.getChannelData(0);
+      channel.fill(0.00001);
+
+      source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.loop = true;
+
+      const gain = ctx.createGain();
+      gain.gain.value = 0.0001;
+      source.connect(gain);
+      gain.connect(ctx.destination);
+      source.start(0);
+    },
+    stop() {
+      try {
+        source?.stop?.(0);
+      } catch {
+        // ignore
+      }
+      source = null;
+      if (ctx?.state !== 'closed') {
+        void ctx?.close?.();
+      }
+      ctx = null;
+    },
+  };
+}
+
 /**
  * Duplex voice session: streaming Gemini replies, sentence TTS, and VAD barge-in.
  */
-export function useVoiceSession({ processUtterance, speakReply }) {
+export function useVoiceSession({ processUtterance, speakReply, voiceMode, coachMeta } = {}) {
   const [voiceState, setVoiceState] = useState(VOICE_SESSION_STATE.IDLE);
   const [liveTranscript, setLiveTranscript] = useState('');
+  const [needsContinueTap, setNeedsContinueTap] = useState(false);
   const sessionRef = useRef(null);
   const processUtteranceRef = useRef(processUtterance);
   const speakReplyRef = useRef(speakReply);
+  const coachMetaRef = useRef(coachMeta);
+  const voiceModeRef = useRef(voiceMode);
   const turnAbortRef = useRef(null);
   const turnIdRef = useRef(0);
   const startingRef = useRef(false);
+  const keepAliveRef = useRef(createSilentKeepAlive());
+  const wasActiveBeforeHideRef = useRef(false);
 
   useEffect(() => {
     processUtteranceRef.current = processUtterance;
     speakReplyRef.current = speakReply;
-  }, [processUtterance, speakReply]);
+    coachMetaRef.current = coachMeta;
+    voiceModeRef.current = voiceMode;
+  }, [processUtterance, speakReply, coachMeta, voiceMode]);
 
   const cancelActiveTurn = useCallback(() => {
     turnAbortRef.current?.abort();
@@ -40,6 +119,53 @@ export function useVoiceSession({ processUtterance, speakReply }) {
     turnAbortRef.current = abortController;
     return { turnId: turnIdRef.current, signal: abortController.signal };
   }, [cancelActiveTurn]);
+
+  const syncMediaSessionPlaybackState = useCallback(state => {
+    if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
+    try {
+      navigator.mediaSession.playbackState = state;
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const teardownSessionMedia = useCallback(() => {
+    keepAliveRef.current.stop();
+    clearMediaSession();
+    syncMediaSessionPlaybackState('none');
+  }, [syncMediaSessionPlaybackState]);
+
+  const activateSessionMedia = useCallback(async () => {
+    const meta = coachMetaRef.current;
+    if (!meta?.name || !meta?.artworkSrc) return;
+
+    setupMediaSession(
+      { coachName: meta.name, artworkSrc: meta.artworkSrc },
+      {
+        onPlay: () => {
+          setNeedsContinueTap(false);
+          sessionRef.current?.resumeFromTap?.();
+          syncMediaSessionPlaybackState('playing');
+        },
+        onPause: () => {
+          sessionRef.current?.pauseToAwaitingTap?.();
+          syncMediaSessionPlaybackState('paused');
+        },
+        onStop: () => {
+          cancelActiveTurn();
+          stopCoachAudio();
+          sessionRef.current?.stop?.();
+          setLiveTranscript('');
+          startingRef.current = false;
+          setNeedsContinueTap(false);
+          teardownSessionMedia();
+        },
+      },
+    );
+
+    await keepAliveRef.current.start();
+    syncMediaSessionPlaybackState('playing');
+  }, [cancelActiveTurn, syncMediaSessionPlaybackState, teardownSessionMedia]);
 
   useEffect(() => {
     const session = createVoiceSession({
@@ -66,15 +192,13 @@ export function useVoiceSession({ processUtterance, speakReply }) {
               signal,
               fromVoice: true,
               voiceTurn: true,
-              onSpeechStart: () => {
-                sessionRef.current?.beginSpeaking();
-              },
+              onSpeechStart: voiceModeRef.current === VOICE_MODES.VOICE
+                ? () => {
+                    sessionRef.current?.beginSpeaking();
+                  }
+                : undefined,
             });
             if (turnId !== turnIdRef.current || !sessionRef.current?.isActive()) return;
-
-            if (reply) {
-              sessionRef.current?.beginSpeaking();
-            }
           } catch (err) {
             if (err?.name === 'AbortError') return;
             console.error('Voice session utterance error:', err);
@@ -93,8 +217,65 @@ export function useVoiceSession({ processUtterance, speakReply }) {
     return () => {
       cancelActiveTurn();
       session.stop();
+      teardownSessionMedia();
     };
-  }, [beginTurn, cancelActiveTurn]);
+  }, [beginTurn, cancelActiveTurn, teardownSessionMedia]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+
+    const onVisibilityChange = () => {
+      const session = sessionRef.current;
+      if (document.hidden) {
+        if (session?.isActive()) {
+          wasActiveBeforeHideRef.current = true;
+          session.suspendForBackground?.();
+          syncMediaSessionPlaybackState('paused');
+        }
+        return;
+      }
+
+      if (wasActiveBeforeHideRef.current && session?.isActive()) {
+        wasActiveBeforeHideRef.current = false;
+        setNeedsContinueTap(true);
+        session.suspendForBackground?.();
+        syncMediaSessionPlaybackState('paused');
+      }
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+  }, [syncMediaSessionPlaybackState]);
+
+  useEffect(() => {
+    if (!sessionRef.current?.isActive?.()) return;
+    const meta = coachMetaRef.current;
+    if (!meta?.name || !meta?.artworkSrc) return;
+
+    setupMediaSession(
+      { coachName: meta.name, artworkSrc: meta.artworkSrc },
+      {
+        onPlay: () => {
+          setNeedsContinueTap(false);
+          sessionRef.current?.resumeFromTap?.();
+          syncMediaSessionPlaybackState('playing');
+        },
+        onPause: () => {
+          sessionRef.current?.pauseToAwaitingTap?.();
+          syncMediaSessionPlaybackState('paused');
+        },
+        onStop: () => {
+          cancelActiveTurn();
+          stopCoachAudio();
+          sessionRef.current?.stop?.();
+          setLiveTranscript('');
+          startingRef.current = false;
+          setNeedsContinueTap(false);
+          teardownSessionMedia();
+        },
+      },
+    );
+  }, [coachMeta?.id, coachMeta?.name, coachMeta?.artworkSrc, cancelActiveTurn, syncMediaSessionPlaybackState, teardownSessionMedia]);
 
   const runWelcomeTurn = useCallback(async () => {
     const session = sessionRef.current;
@@ -109,9 +290,11 @@ export function useVoiceSession({ processUtterance, speakReply }) {
         fromVoice: true,
         voiceTurn: true,
         skipHistory: true,
-        onSpeechStart: () => {
-          sessionRef.current?.beginSpeaking();
-        },
+        onSpeechStart: voiceModeRef.current === VOICE_MODES.VOICE
+          ? () => {
+              sessionRef.current?.beginSpeaking();
+            }
+          : undefined,
       });
     } catch (err) {
       if (err?.name !== 'AbortError') {
@@ -133,8 +316,10 @@ export function useVoiceSession({ processUtterance, speakReply }) {
   }, [cancelActiveTurn]);
 
   const resumeFromTap = useCallback(() => {
+    setNeedsContinueTap(false);
     sessionRef.current?.resumeFromTap?.();
-  }, []);
+    syncMediaSessionPlaybackState('playing');
+  }, [syncMediaSessionPlaybackState]);
 
   const toggleVoiceSession = useCallback(() => {
     const session = sessionRef.current;
@@ -154,6 +339,9 @@ export function useVoiceSession({ processUtterance, speakReply }) {
       session.stop();
       setLiveTranscript('');
       startingRef.current = false;
+      setNeedsContinueTap(false);
+      wasActiveBeforeHideRef.current = false;
+      teardownSessionMedia();
       return;
     }
 
@@ -166,15 +354,17 @@ export function useVoiceSession({ processUtterance, speakReply }) {
         await resumeAudioContextOnUserGesture();
         await prepareSpeechInputOnUserGesture();
         await session.start({ deferListening: true });
+        await activateSessionMedia();
         await runWelcomeTurn();
       } catch (err) {
         console.error('Voice session start failed:', err);
         session.stop();
+        teardownSessionMedia();
       } finally {
         startingRef.current = false;
       }
     })();
-  }, [cancelActiveTurn, resumeFromTap, runWelcomeTurn]);
+  }, [activateSessionMedia, cancelActiveTurn, resumeFromTap, runWelcomeTurn, teardownSessionMedia]);
 
   const stopVoiceSession = useCallback(() => {
     cancelActiveTurn();
@@ -182,11 +372,15 @@ export function useVoiceSession({ processUtterance, speakReply }) {
     sessionRef.current?.stop();
     setLiveTranscript('');
     startingRef.current = false;
-  }, [cancelActiveTurn]);
+    setNeedsContinueTap(false);
+    wasActiveBeforeHideRef.current = false;
+    teardownSessionMedia();
+  }, [cancelActiveTurn, teardownSessionMedia]);
 
   return {
     voiceState,
     liveTranscript,
+    needsContinueTap,
     voiceSessionActive: voiceState !== VOICE_SESSION_STATE.IDLE,
     toggleVoiceSession,
     toggleVoice: toggleVoiceSession,

@@ -190,6 +190,25 @@ function getCoachImageSrc(coachId) {
   return `/coaches/${coachId}.${ext}`;
 }
 
+const COACH_PAGE_SESSION_KEY = 'endopamin_coach_page_session';
+
+function loadCoachPageSession() {
+  try {
+    const raw = sessionStorage.getItem(COACH_PAGE_SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveCoachPageSession(data) {
+  try {
+    sessionStorage.setItem(COACH_PAGE_SESSION_KEY, JSON.stringify(data));
+  } catch {
+    // ignore quota errors
+  }
+}
+
 export default function CoachPage() {
   const { profile, updateCoachPersona } = useAuth() || {};
   const {
@@ -198,9 +217,11 @@ export default function CoachPage() {
     setCoachMessages,
     getCoachMessages,
   } = useCoachSession();
-  const [coach, setCoach] = useState(() =>
-    getCoachById(profile?.coach_persona) || getCoachById('elias'),
-  );
+  const [coach, setCoach] = useState(() => {
+    const saved = loadCoachPageSession();
+    if (saved?.coachId) return getCoachById(saved.coachId);
+    return getCoachById(profile?.coach_persona) || getCoachById('elias');
+  });
   const [view, setView] = useState('chat');
   const [location, setLocation] = useState('gym');
   const [equipment, setEquipment] = useState(['barbell','dumbbell','bench','squat_rack','pull_up']);
@@ -215,19 +236,55 @@ export default function CoachPage() {
   const [animatedItems, setAnimatedItems] = useState([]);
   const [exerciseData, setExerciseData] = useState(null);
   const [loadingGif, setLoadingGif] = useState(false);
-  const [voiceMode, setVoiceModeState] = useState(() => getVoiceMode());
+  const [voiceMode, setVoiceModeState] = useState(() => {
+    const saved = loadCoachPageSession();
+    const mode = (saved?.voiceMode === VOICE_MODES.SILENT || saved?.voiceMode === VOICE_MODES.VOICE)
+      ? saved.voiceMode
+      : getVoiceMode();
+    setVoiceMode(mode);
+    return mode;
+  });
   const [showIosVoiceWarning, setShowIosVoiceWarning] = useState(false);
+  const [restoredVoicePending, setRestoredVoicePending] = useState(
+    () => Boolean(loadCoachPageSession()?.voiceSessionWasActive),
+  );
   const messagesEndRef = useRef(null);
+  const coachInitRef = useRef(false);
+  const coachSwitchRef = useRef(null);
   const audioRef = coachAudioRef;
   const sendingRef = useRef(false);
   const userXp = profile?.dopa_xp || 0;
 
   useEffect(() => {
+    const saved = loadCoachPageSession();
+    if (saved?.coachId) return;
     const personaId = profile?.coach_persona;
     if (!personaId) return;
     const profileCoach = getCoachById(personaId);
     if (profileCoach && profileCoach.id !== coach.id) setCoach(profileCoach);
-  }, [profile?.coach_persona]);
+  }, [profile?.coach_persona, coach.id]);
+
+  useEffect(() => {
+    setVoiceMode(voiceMode);
+  }, [voiceMode]);
+
+  useEffect(() => {
+    if (coachInitRef.current) return;
+    coachInitRef.current = true;
+
+    const saved = loadCoachPageSession();
+    if (!saved?.coachId) return;
+
+    const restoredCoach = getCoachById(saved.coachId);
+    switchCoach(saved.coachId, restoredCoach.greeting);
+    if (saved.messages?.length) {
+      setCoachMessages(saved.coachId, saved.messages.slice(-10));
+    }
+    if (saved.voiceMode === VOICE_MODES.SILENT || saved.voiceMode === VOICE_MODES.VOICE) {
+      setVoiceMode(saved.voiceMode);
+      setVoiceModeState(saved.voiceMode);
+    }
+  }, [switchCoach, setCoachMessages]);
 
   const handleSelectCoach = useCallback(async selectedCoach => {
     setCoach(selectedCoach);
@@ -272,6 +329,7 @@ export default function CoachPage() {
   }, [view, location]);
 
   const speakCoachText = useCallback(async (text, options = {}) => {
+    setVoiceMode(voiceMode);
     const isStreaming = options?.stream || typeof options?.getText === 'function';
 
     if (isIOSDevice()) {
@@ -304,7 +362,7 @@ export default function CoachPage() {
 
     if (!text?.trim()) return Promise.resolve();
     return playCoachAudio(text, coach.id, { signal: options?.signal });
-  }, [coach.id]);
+  }, [coach.id, voiceMode]);
 
   const speak = speakCoachText;
 
@@ -390,7 +448,7 @@ export default function CoachPage() {
         setCoachMessages(coach.id, [...historyWithUser, assistantMsg]);
       }
 
-      if (fromVoice && reply && !streaming) {
+      if (fromVoice && reply && !streaming && voiceMode === VOICE_MODES.VOICE) {
         options.onSpeechStart?.();
         await speakCoachText(reply, { signal, onSpeechStart: options.onSpeechStart });
       }
@@ -406,7 +464,7 @@ export default function CoachPage() {
       sendingRef.current = false;
       setLoading(false);
     }
-  }, [coach, profile, workoutTime, location, equipment, getCoachMessages, setCoachMessages, speakCoachText]);
+  }, [coach, profile, workoutTime, location, equipment, getCoachMessages, setCoachMessages, speakCoachText, voiceMode]);
 
   /** Text input only — updates chat, never triggers TTS. */
   const handleSendText = useCallback(async rawText => {
@@ -456,6 +514,7 @@ export default function CoachPage() {
   const {
     voiceState,
     liveTranscript,
+    needsContinueTap,
     voiceSessionActive,
     toggleVoiceSession,
     stopVoiceSession,
@@ -465,7 +524,23 @@ export default function CoachPage() {
   } = useVoiceSession({
     processUtterance: processUserMessage,
     speakReply: (text, options) => speak(text, options),
+    voiceMode,
+    coachMeta: {
+      id: coach.id,
+      name: coach.name,
+      artworkSrc: getCoachImageSrc(coach.id),
+    },
   });
+
+  useEffect(() => {
+    saveCoachPageSession({
+      coachId: coach.id,
+      messages: messages.slice(-10),
+      voiceMode,
+      voiceSessionWasActive: voiceSessionActive,
+    });
+    if (voiceSessionActive) setRestoredVoicePending(false);
+  }, [coach.id, messages, voiceMode, voiceSessionActive]);
 
   // Back-compat alias — mic button and older bundles reference toggleVoice
   const toggleVoice = toggleVoiceSession;
@@ -477,6 +552,16 @@ export default function CoachPage() {
     ));
 
   const handleMicPress = useCallback(() => {
+    if (needsContinueTap || restoredVoicePending) {
+      setRestoredVoicePending(false);
+      if (voiceSessionActive) {
+        resumeFromTap();
+      } else {
+        toggleVoiceSession();
+      }
+      return;
+    }
+
     if (voiceState === VOICE_SESSION_STATE.AWAITING_TAP) {
       resumeFromTap();
       return;
@@ -491,9 +576,11 @@ export default function CoachPage() {
 
     toggleVoiceSession();
   }, [
+    needsContinueTap,
+    restoredVoicePending,
     voiceState,
-    isVoiceBusy,
     voiceSessionActive,
+    isVoiceBusy,
     loading,
     pauseCoachSpeech,
     resumeFromTap,
@@ -512,10 +599,21 @@ export default function CoachPage() {
   }[voiceState] || 'ONLINE';
 
   useEffect(() => {
-    stopVoiceSession();
+    const isInitialRestore = coachSwitchRef.current === null && loadCoachPageSession()?.coachId === coach.id;
+    coachSwitchRef.current = coach.id;
+
     switchCoach(coach.id, coach.greeting);
+    if (isInitialRestore) {
+      const saved = loadCoachPageSession();
+      if (saved?.messages?.length) {
+        setCoachMessages(coach.id, saved.messages.slice(-10));
+      }
+      return;
+    }
+
+    stopVoiceSession();
     sendingRef.current = false;
-  }, [coach.id, coach.greeting, switchCoach, stopVoiceSession]);
+  }, [coach.id, coach.greeting, switchCoach, stopVoiceSession, setCoachMessages]);
 
   const createGroup = () => {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -907,11 +1005,13 @@ export default function CoachPage() {
                 </span>
               </div>
               <p className="text-[11px] text-white/35">{coach.role}</p>
-              {voiceSessionActive && (
+              {(voiceSessionActive || restoredVoicePending) && (
                 <p className="text-[10px] mt-1" style={{ color: coach.color }}>
-                  {voiceState === VOICE_SESSION_STATE.AWAITING_TAP
-                    ? 'Tap mic to talk'
-                    : voiceState === VOICE_SESSION_STATE.LISTENING && liveTranscript
+                  {(needsContinueTap || restoredVoicePending)
+                    ? 'Tap to continue'
+                    : voiceState === VOICE_SESSION_STATE.AWAITING_TAP
+                      ? 'Tap mic to talk'
+                      : voiceState === VOICE_SESSION_STATE.LISTENING && liveTranscript
                       ? `"${liveTranscript}"`
                       : voiceState === VOICE_SESSION_STATE.LISTENING
                         ? 'Listening — speak anytime'
@@ -958,9 +1058,11 @@ export default function CoachPage() {
               </div>
             <button type="button" onClick={handleMicPress}
               aria-label={
-                voiceState === VOICE_SESSION_STATE.AWAITING_TAP
-                  ? 'Tap to talk'
-                  : isVoiceBusy
+                needsContinueTap || restoredVoicePending
+                  ? 'Tap to continue'
+                  : voiceState === VOICE_SESSION_STATE.AWAITING_TAP
+                    ? 'Tap to talk'
+                    : isVoiceBusy
                     ? 'Interrupt coach'
                     : voiceSessionActive
                       ? 'End voice session'

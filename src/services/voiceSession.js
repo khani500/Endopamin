@@ -384,6 +384,38 @@ export function createVoiceSession({
     resumeListening();
   };
 
+  /** Media Session pause — stop mic, stay in session. */
+  const pauseToAwaitingTap = () => {
+    if (!active) return;
+    stopSpeaking();
+    coachOutputActive = false;
+    pausedForProcessing = false;
+    bargeInArmed = false;
+    clearRestartTimer();
+    clearResumeTimer();
+    clearSilenceTimer();
+    stopRecognition();
+    awaitingTap = true;
+    onInterimTranscript?.('');
+    setState(VOICE_SESSION_STATE.AWAITING_TAP);
+  };
+
+  /** App backgrounded — release mic, keep session alive for resume tap. */
+  const suspendForBackground = () => {
+    if (!active) return;
+    clearRestartTimer();
+    clearResumeTimer();
+    clearSilenceTimer();
+    stopRecognition();
+    stopSpeaking();
+    coachOutputActive = false;
+    pausedForProcessing = false;
+    bargeInArmed = false;
+    awaitingTap = true;
+    onInterimTranscript?.('');
+    setState(VOICE_SESSION_STATE.AWAITING_TAP);
+  };
+
   /** Stop coach audio and return to listening without ending the session. */
   const interruptCoachSpeech = () => {
     if (!active) return;
@@ -399,6 +431,8 @@ export function createVoiceSession({
     beginSpeaking,
     resumeListening,
     resumeFromTap,
+    pauseToAwaitingTap,
+    suspendForBackground,
     interruptCoachSpeech,
     triggerBargeIn,
     isActive: () => active,
