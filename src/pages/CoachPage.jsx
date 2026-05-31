@@ -27,7 +27,6 @@ import { getExerciseData } from '../lib/exerciseDB';
 import { supabase } from '../lib/supabase';
 import { COACH_SYSTEM_PROMPTS, formatCoachMemoryForPrompt } from '../config/coachPrompts';
 import { buildCoachReferenceContext, buildCoachReferenceContextAsync } from '../lib/coachContext';
-import AthleteStatusSection from '../components/training/AthleteStatusSection';
 
 const COACH_MEMORY_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -353,7 +352,6 @@ export default function CoachPage() {
     return mode;
   });
   const [showIosVoiceWarning, setShowIosVoiceWarning] = useState(false);
-  const [selectedMood, setSelectedMood] = useState('strong');
   const messagesEndRef = useRef(null);
   const coachInitRef = useRef(false);
   const coachSwitchRef = useRef(null);
@@ -1348,13 +1346,6 @@ export default function CoachPage() {
               </button>
             ))}
           </div>
-
-          <AthleteStatusSection
-            selectedMood={selectedMood}
-            onMoodChange={setSelectedMood}
-            variant="coach"
-            className="mx-5 mb-3 flex-shrink-0"
-          />
 
           {/* Messages */}
           <div className="flex-1 min-h-0 overflow-y-auto px-5 space-y-3 pb-3">
