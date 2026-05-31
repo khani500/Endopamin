@@ -28,7 +28,6 @@ import { supabase } from '../lib/supabase';
 import { COACH_SYSTEM_PROMPTS, formatCoachMemoryForPrompt } from '../config/coachPrompts';
 import { buildCoachReferenceContext, buildCoachReferenceContextAsync } from '../lib/coachContext';
 import AthleteStatusSection from '../components/training/AthleteStatusSection';
-import ChooseTrainingSection from '../components/training/ChooseTrainingSection';
 
 const COACH_MEMORY_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -1198,16 +1197,6 @@ export default function CoachPage() {
       {/* ══ CHAT ══ */}
       {view === 'chat' && (
         <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-          <div className="flex-shrink-0 overflow-y-auto">
-            <AthleteStatusSection
-              selectedMood={selectedMood}
-              onMoodChange={setSelectedMood}
-              className="mx-[18px] mb-4"
-            />
-            <ChooseTrainingSection
-              onSelect={item => setLocation(item.id)}
-            />
-          </div>
           {showIosVoiceWarning && (
             <div className="mx-5 mb-3 rounded-[16px] border p-3 flex-shrink-0"
               style={{
@@ -1359,6 +1348,13 @@ export default function CoachPage() {
               </button>
             ))}
           </div>
+
+          <AthleteStatusSection
+            selectedMood={selectedMood}
+            onMoodChange={setSelectedMood}
+            variant="coach"
+            className="mx-5 mb-3 flex-shrink-0"
+          />
 
           {/* Messages */}
           <div className="flex-1 min-h-0 overflow-y-auto px-5 space-y-3 pb-3">

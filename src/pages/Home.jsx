@@ -1,8 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCoach } from '../hooks/useCoach';
-import { useState } from 'react';
-import AthleteStatusSection from '../components/training/AthleteStatusSection';
 import ChooseTrainingSection from '../components/training/ChooseTrainingSection';
 
 const iconClass = 'h-full w-full';
@@ -31,8 +29,6 @@ export default function Home() {
   const navigate = useNavigate();
   const { profile } = useAuth() || {};
   const { message, loadingMessage } = useCoach();
-  const [selectedMood, setSelectedMood] = useState('strong');
-
   const displayName = profile?.display_name || 'Athlete';
   const streak = profile?.streak_count || 0;
   const endoScore = profile?.dopa_xp ? Math.min(100, Math.round((profile.dopa_xp / 500) * 100)) : 0;
@@ -168,11 +164,6 @@ export default function Home() {
           <span className="text-[#CCFF00] font-bold">Lv.{level + 1} →</span>
         </div>
       </div>
-
-      <AthleteStatusSection
-        selectedMood={selectedMood}
-        onMoodChange={setSelectedMood}
-      />
 
       <ChooseTrainingSection onSelect={item => navigate(item.path)} />
 
