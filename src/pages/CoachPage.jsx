@@ -27,18 +27,6 @@ import { getExerciseData } from '../lib/exerciseDB';
 
 const COACHES = [
   {
-    id: 'elias', name: 'Elias', role: 'Science · Longevity', color: '#6366f1',
-    unlocked: true, tagline: 'Measured. Evidence-based. Long-game focus.',
-    greeting: "Elias here. Quick check-in — how's your energy, sleep quality, and any soreness today?",
-    systemPrompt: `You are Elias, the Science and Longevity coach for the ENDOPAMIN app. Your goal is to guide the user dynamically without waiting for them to prompt every single step.
-
-PERSONALITY ARCHETYPE: Calm / Scientific Coach
-- Tone: Measured, calm, deeply knowledgeable, with dry wit when it fits.
-- Style: Explain mechanisms — why a protocol works, not just what to do.
-- Reference physiology, recovery windows, and progressive overload with precision.
-- Treat the athlete as a peer with training literacy.`,
-  },
-  {
     id: 'aria', name: 'Aria', role: 'Science Coach', color: '#CCFF00',
     unlocked: true, tagline: 'Data-driven. Precise. Proven.',
     greeting: "Aria here. I'll build your program from the science — quick check-in first: how's your energy, sleep, and any soreness today?",
@@ -178,10 +166,9 @@ const COACH_PERSONA_ALIASES = {
 };
 
 function getCoachById(coachId) {
-  const resolvedId = COACH_PERSONA_ALIASES[coachId] || coachId;
-  return COACHES.find(c => c.id === resolvedId)
-    || COACHES.find(c => c.id === 'elias')
-    || COACHES[0];
+  const normalizedId = coachId === 'elias' ? COACHES[0].id : coachId;
+  const resolvedId = COACH_PERSONA_ALIASES[normalizedId] || normalizedId;
+  return COACHES.find(c => c.id === resolvedId) || COACHES[0];
 }
 
 function getCoachImageSrc(coachId) {
@@ -239,7 +226,7 @@ export default function CoachPage() {
   const [coach, setCoach] = useState(() => {
     const savedCoach = getSavedCoachId();
     if (savedCoach) return getCoachById(savedCoach);
-    return getCoachById(profile?.coach_persona) || getCoachById('elias');
+    return getCoachById(profile?.coach_persona) || COACHES[0];
   });
   const [view, setView] = useState('chat');
   const [location, setLocation] = useState('gym');

@@ -282,7 +282,6 @@ const COACH_NEURAL_VOICES = {
   nova: 'en-US-Neural2-F',
   blaze: 'en-US-Neural2-J',
   kane: 'en-US-Neural2-J',
-  elias: 'en-US-Neural2-D',
   maya: 'en-US-Neural2-F',
   rex: 'en-US-Neural2-J',
 };
