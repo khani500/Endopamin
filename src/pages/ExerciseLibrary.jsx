@@ -23,6 +23,15 @@ const LEVEL_STYLES = {
 };
 
 let exercisesCache = null;
+const CATEGORY_MUSCLE_MAP = {
+  chest: ['chest', 'pectorals'],
+  back: ['lats', 'middle back', 'lower back', 'traps', 'back'],
+  shoulders: ['shoulders', 'deltoids'],
+  'upper arms': ['biceps', 'triceps', 'forearms'],
+  'upper legs': ['quadriceps', 'hamstrings', 'glutes', 'adductors', 'abductors', 'calves'],
+  waist: ['abdominals', 'obliques', 'core'],
+  cardio: [],
+};
 
 function normalizeEquipmentLabel(raw) {
   const text = String(raw || '').toLowerCase();
@@ -46,6 +55,19 @@ function protocolForLevel(level) {
   if (level === 'beginner') return '3 sets x 12-15 reps, 60s rest';
   if (level === 'intermediate') return '4 sets x 8-12 reps, 75s rest';
   return '5 sets x 5-8 reps, 90s rest';
+}
+
+function matchesCategory(exercise, filter) {
+  if (!filter) return true;
+  const normalizedFilter = String(filter).toLowerCase();
+  const category = String(exercise.category || '').toLowerCase();
+  const primary = Array.isArray(exercise.muscles) ? exercise.muscles.map(m => String(m).toLowerCase()) : [];
+  const secondary = Array.isArray(exercise.muscles_secondary) ? exercise.muscles_secondary.map(m => String(m).toLowerCase()) : [];
+  const allMuscles = [...primary, ...secondary];
+
+  if (normalizedFilter === 'cardio') return category === 'cardio';
+  const mapped = CATEGORY_MUSCLE_MAP[normalizedFilter] || [normalizedFilter];
+  return mapped.some(term => allMuscles.some(m => m.includes(term) || term.includes(m)));
 }
 
 export default function ExerciseLibrary() {
@@ -81,10 +103,12 @@ export default function ExerciseLibrary() {
 
   const categoryCounts = useMemo(() => {
     const counts = {};
-    allExercises.forEach(ex => {
-      const bodyPart = ex.bodyPart || ex.category;
-      if (!bodyPart) return;
-      counts[bodyPart] = (counts[bodyPart] || 0) + 1;
+    CATEGORY_CARDS.forEach(card => {
+      if (!card.filter) {
+        counts.all = allExercises.length;
+        return;
+      }
+      counts[card.filter] = allExercises.filter(ex => matchesCategory(ex, card.filter)).length;
     });
     return counts;
   }, [allExercises]);
@@ -92,7 +116,7 @@ export default function ExerciseLibrary() {
   const categoryExercises = useMemo(() => {
     const source = allExercises;
     if (!categoryParam) return source;
-    return source.filter(ex => (ex.bodyPart || ex.category) === categoryParam);
+    return source.filter(ex => matchesCategory(ex, categoryParam));
   }, [allExercises, categoryParam]);
 
   const searchableExercises = useMemo(() => {

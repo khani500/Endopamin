@@ -36,12 +36,12 @@ function normalizeExercise(exercise = {}) {
 
   return {
     ...exercise,
-    bodyPart: category,
+    bodyPart: null,
     category,
     level: mapLevel(exercise.level),
-    target: Array.isArray(exercise.muscles) ? exercise.muscles[0] : exercise.muscles,
-    muscles: Array.isArray(exercise.muscles) ? exercise.muscles : [],
-    muscles_secondary: Array.isArray(exercise.muscles_secondary) ? exercise.muscles_secondary : [],
+    target: Array.isArray(exercise.primaryMuscles) ? exercise.primaryMuscles[0] : null,
+    muscles: Array.isArray(exercise.primaryMuscles) ? exercise.primaryMuscles : [],
+    muscles_secondary: Array.isArray(exercise.secondaryMuscles) ? exercise.secondaryMuscles : [],
     images,
     thumbnailUrl: images[0] || null,
     hoverImageUrl: images[1] || null,
@@ -52,6 +52,9 @@ export async function fetchAllExercises(limit = 1300) {
   if (allExercisesCache) return allExercisesCache;
   const data = await fetchExerciseDB('/exercises.json');
   const normalized = Array.isArray(data) ? data.map(normalizeExercise) : [];
+  console.log('ExerciseDB dataset fields sample (first 3):', normalized.slice(0, 3));
+  console.log('ExerciseDB categories:', Array.from(new Set(normalized.map(ex => ex.category))).sort());
+  console.log('ExerciseDB bodyPart values:', Array.from(new Set(normalized.map(ex => ex.bodyPart))).sort());
   allExercisesCache = normalized.slice(0, Number(limit) || 1300);
   return allExercisesCache;
 }
