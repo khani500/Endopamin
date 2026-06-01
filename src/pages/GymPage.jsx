@@ -90,6 +90,93 @@ function formatMusclesLabel(muscles, max = 2) {
   return `${list.slice(0, max).join(', ')} +${list.length - max}`;
 }
 
+function ExerciseCard({ exercise, onClick, subtitle, showLevel = true }) {
+  const categoryStyle = getCategoryStyle(exercise);
+  const levelStyle = LEVEL_COLORS[exercise.level] || LEVEL_COLORS.intermediate;
+  const musclesText = subtitle ?? exercise.muscleGroups?.slice(0, 2).join(', ') ?? '';
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        minHeight: '80px',
+        background: '#1a1a1a',
+        borderRadius: '12px',
+        padding: '12px',
+        marginBottom: '8px',
+        width: '100%',
+        border: 'none',
+        cursor: 'pointer',
+        textAlign: 'left',
+      }}
+    >
+      <div
+        style={{
+          width: '72px',
+          height: '72px',
+          borderRadius: '10px',
+          background: categoryStyle.bg,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '28px',
+          flexShrink: 0,
+        }}
+      >
+        {categoryStyle.emoji}
+      </div>
+      <div style={{ flex: 1, overflow: 'hidden' }}>
+        <div
+          style={{
+            fontWeight: 'bold',
+            color: 'white',
+            fontSize: '14px',
+            marginBottom: '4px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {exercise.name}
+        </div>
+        <div
+          style={{
+            fontSize: '11px',
+            color: '#888',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {musclesText}
+        </div>
+        {showLevel && exercise.level && (
+          <div style={{ marginTop: '4px' }}>
+            <span
+              style={{
+                fontSize: '9px',
+                padding: '4px 8px',
+                borderRadius: '999px',
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                background: levelStyle.bg,
+                border: `1px solid ${levelStyle.border}`,
+                color: levelStyle.text,
+              }}
+            >
+              {exercise.level}
+            </span>
+          </div>
+        )}
+      </div>
+    </button>
+  );
+}
+
 function matchesGymCategory(exercise, category) {
   if (!category || category.label === 'All') return true;
   if (category.filterType === 'warm-up') return isWarmUpExercise(exercise);
@@ -375,52 +462,14 @@ export default function GymPage() {
           )}
 
           {selectedHomeCategory && (
-            <div className="space-y-2">
-              {filteredHomeExercises.map((ex, i) => {
-                const levelStyle = LEVEL_COLORS[ex.level] || LEVEL_COLORS.intermediate;
-                const style = getCategoryStyle(ex);
-                const musclesLabel = formatMusclesLabel(ex.muscleGroups);
-                const equipmentLabel = ex.equipment?.length ? ex.equipment.join(', ') : '';
-                return (
-                  <button
-                    key={ex.id || `home-${i}`}
-                    type="button"
-                    onClick={() => setSelectedHomeExercise(ex)}
-                    className="w-full min-h-[80px] rounded-[18px] border p-3 flex items-center gap-3 transition-all duration-200 text-left active:scale-[0.99]"
-                    style={{
-                      background: 'rgba(255,255,255,0.025)',
-                      borderColor: 'rgba(255,255,255,0.07)',
-                      opacity: animatedItems.includes(i) ? 1 : 0,
-                      transform: animatedItems.includes(i) ? 'translateY(0)' : 'translateY(12px)',
-                      transition: `opacity 0.3s ease ${i * 0.03}s, transform 0.3s ease ${i * 0.03}s`,
-                    }}
-                  >
-                    <div
-                      className="h-20 w-20 shrink-0 flex items-center justify-center rounded-2xl text-[32px] leading-none"
-                      style={{ background: style.bg }}
-                    >
-                      {style.emoji}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-bold text-white line-clamp-2 leading-snug">{ex.name}</p>
-                      <p className="text-[9px] text-white/35 mt-1 capitalize overflow-hidden text-ellipsis whitespace-nowrap">
-                        {musclesLabel}
-                        {equipmentLabel ? ` · ${equipmentLabel}` : ''}
-                      </p>
-                    </div>
-                    <span
-                      className="text-[9px] px-2 py-1 rounded-full font-bold uppercase shrink-0"
-                      style={{
-                        background: levelStyle.bg,
-                        border: `1px solid ${levelStyle.border}`,
-                        color: levelStyle.text,
-                      }}
-                    >
-                      {ex.level}
-                    </span>
-                  </button>
-                );
-              })}
+            <div>
+              {filteredHomeExercises.map((ex, i) => (
+                <ExerciseCard
+                  key={ex.id || `home-${i}`}
+                  exercise={ex}
+                  onClick={() => setSelectedHomeExercise(ex)}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -438,33 +487,20 @@ export default function GymPage() {
                 <p className="text-[10px] tracking-[2.5px] uppercase text-white/40 font-bold mb-2">
                   {sub.label}
                 </p>
-                <div className="space-y-2">
+                <div>
                   {items.map((item, i) => {
-                    const style = getCategoryStyle(item);
+                    const muscles = item.muscleGroups?.slice(0, 2).join(', ') || '';
+                    const subtitle = muscles
+                      ? `${formatDeskDuration(item)} · ${muscles}`
+                      : formatDeskDuration(item);
                     return (
-                    <button
-                      key={item.id || `${sub.key}-${i}`}
-                      type="button"
-                      onClick={() => setSelectedDeskExercise(item)}
-                      className="w-full min-h-[80px] rounded-[18px] border p-3 flex items-center gap-3 transition-all duration-200 text-left active:scale-[0.99]"
-                      style={{
-                        background: 'rgba(255,255,255,0.025)',
-                        borderColor: 'rgba(160,100,255,0.2)',
-                      }}
-                    >
-                      <div
-                        className="h-20 w-20 shrink-0 flex items-center justify-center rounded-2xl text-[32px] leading-none"
-                        style={{ background: style.bg }}
-                      >
-                        {style.emoji}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[13px] font-bold text-white line-clamp-2 leading-snug">{item.name}</p>
-                        <p className="text-[9px] text-white/35 mt-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                          {formatDeskDuration(item)} · {formatMusclesLabel(item.muscleGroups)}
-                        </p>
-                      </div>
-                    </button>
+                      <ExerciseCard
+                        key={item.id || `${sub.key}-${i}`}
+                        exercise={item}
+                        onClick={() => setSelectedDeskExercise(item)}
+                        subtitle={subtitle}
+                        showLevel={false}
+                      />
                     );
                   })}
                 </div>
