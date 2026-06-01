@@ -17,19 +17,20 @@ const GYM_CATEGORIES = [
 ];
 
 const HOME_CATEGORIES = [
-  { label: 'Upper Body', emoji: '💪', muscles: ['chest', 'shoulders', 'triceps', 'biceps'] },
-  { label: 'Lower Body', emoji: '🦵', muscles: ['quads', 'glutes', 'hamstrings', 'calves'] },
-  { label: 'Core', emoji: '🔥', muscles: ['core', 'abdominals', 'obliques'] },
-  { label: 'Stretch & Recover', emoji: '🧘', category: 'mobility' },
-  { label: 'Cardio', emoji: '🏃', category: 'cardio' },
-  { label: 'All Home', emoji: '⚡', muscles: null },
+  { label: 'Upper Body', emoji: '💪', categories: ['horizontal_push', 'vertical_push', 'horizontal_pull', 'vertical_pull', 'arms'] },
+  { label: 'Lower Body', emoji: '🦵', categories: ['squat', 'lunge', 'hinge'] },
+  { label: 'Core', emoji: '🔥', categories: ['core'] },
+  { label: 'Mobility', emoji: '🧘', categories: ['mobility'] },
+  { label: 'Cardio', emoji: '🏃', categories: ['cardio'] },
+  { label: 'All Home', emoji: '⚡', categories: null },
 ];
 
-const DESK_SUBCATEGORIES = [
-  { label: 'Mobility', key: 'mobility' },
-  { label: 'Strength', key: 'strength' },
-  { label: 'Cardio', key: 'cardio' },
-  { label: 'Recovery', key: 'recovery' },
+const DESK_CATEGORIES = [
+  { label: 'Mobility', emoji: '🧘', subcategory: 'mobility' },
+  { label: 'Strength', emoji: '💪', subcategory: 'strength' },
+  { label: 'Cardio', emoji: '🏃', subcategory: 'cardio' },
+  { label: 'Recovery', emoji: '🫁', subcategory: 'recovery' },
+  { label: 'All Desk', emoji: '⚡', subcategory: null },
 ];
 
 const LEVEL_COLORS = {
@@ -38,12 +39,6 @@ const LEVEL_COLORS = {
   advanced: { bg: 'rgba(255,107,107,0.15)', border: 'rgba(255,107,107,0.35)', text: '#FF6B6B' },
   expert: { bg: 'rgba(255,107,107,0.15)', border: 'rgba(255,107,107,0.35)', text: '#FF6B6B' },
 };
-
-function muscleTermMatches(group, target) {
-  const g = String(group).toLowerCase().replace(/_/g, ' ');
-  const t = String(target).toLowerCase();
-  return g.includes(t) || t.includes(g);
-}
 
 function isWarmUpExercise(exercise) {
   if (exercise.category !== 'stretching') return false;
@@ -191,12 +186,48 @@ function matchesGymCategory(exercise, category) {
 
 function matchesHomeCategory(exercise, category) {
   if (!category || category.label === 'All Home') return true;
-  if (category.category) return exercise.category === category.category;
-  if (category.muscles) {
-    const groups = exercise.muscleGroups || [];
-    return category.muscles.some(m => groups.some(g => muscleTermMatches(g, m)));
-  }
-  return true;
+  if (!category.categories) return true;
+  return category.categories.includes(exercise.category);
+}
+
+function matchesDeskCategory(exercise, category) {
+  if (!category || category.label === 'All Desk') return true;
+  if (!category.subcategory) return true;
+  return exercise.subcategory === category.subcategory;
+}
+
+function categoryCountKey(label) {
+  return label.toLowerCase().replace(/\s+/g, '-');
+}
+
+function CategoryGrid({ categories, counts, allLabel, onSelect, animatedItems }) {
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {categories.map((category, i) => {
+        const key = categoryCountKey(category.label);
+        const count = category.label === allLabel
+          ? counts.all
+          : (counts[key] || 0);
+        return (
+          <button
+            key={category.label}
+            type="button"
+            onClick={() => onSelect(category)}
+            className="rounded-3xl border border-white/10 bg-[#141416] p-4 text-left transition-all duration-200 active:scale-[0.98] hover:border-[#CCFF00]/40"
+            style={{
+              opacity: animatedItems.includes(i) ? 1 : 0,
+              transform: animatedItems.includes(i) ? 'translateY(0)' : 'translateY(12px)',
+              transition: `opacity 0.3s ease ${i * 0.05}s, transform 0.3s ease ${i * 0.05}s`,
+            }}
+          >
+            <div className="text-3xl">{category.emoji}</div>
+            <p className="mt-3 text-lg font-black">{category.label}</p>
+            <p className="text-xs text-white/50">{count} exercises</p>
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
 function formatDeskDuration(exercise) {
@@ -221,50 +252,48 @@ export default function GymPage() {
   const [exerciseError, setExerciseError] = useState(null);
   const [selectedHomeCategory, setSelectedHomeCategory] = useState(null);
   const [selectedHomeExercise, setSelectedHomeExercise] = useState(null);
+  const [selectedDeskCategory, setSelectedDeskCategory] = useState(null);
   const [selectedDeskExercise, setSelectedDeskExercise] = useState(null);
 
   const homeExercises = useMemo(() => getExercisesBySetting('home'), []);
   const deskExercises = useMemo(() => getExercisesBySetting('desk'), []);
 
   const gymCategoryCounts = useMemo(() => {
-    const counts = {};
+    const counts = { all: exercises.length };
     GYM_CATEGORIES.forEach(category => {
-      if (category.label === 'All') {
-        counts.all = exercises.length;
-        return;
-      }
-      const key = category.label.toLowerCase();
-      counts[key] = exercises.filter(ex => matchesGymCategory(ex, category)).length;
+      if (category.label === 'All') return;
+      counts[categoryCountKey(category.label)] = exercises.filter(ex => matchesGymCategory(ex, category)).length;
     });
     return counts;
   }, [exercises]);
 
   const homeCategoryCounts = useMemo(() => {
-    const counts = {};
+    const counts = { all: homeExercises.length };
     HOME_CATEGORIES.forEach(category => {
-      if (category.label === 'All Home') {
-        counts.all = homeExercises.length;
-        return;
-      }
-      const key = category.label.toLowerCase().replace(/\s+/g, '-');
-      counts[key] = homeExercises.filter(ex => matchesHomeCategory(ex, category)).length;
+      if (category.label === 'All Home') return;
+      counts[categoryCountKey(category.label)] = homeExercises.filter(ex => matchesHomeCategory(ex, category)).length;
     });
     return counts;
   }, [homeExercises]);
+
+  const deskCategoryCounts = useMemo(() => {
+    const counts = { all: deskExercises.length };
+    DESK_CATEGORIES.forEach(category => {
+      if (category.label === 'All Desk') return;
+      counts[categoryCountKey(category.label)] = deskExercises.filter(ex => matchesDeskCategory(ex, category)).length;
+    });
+    return counts;
+  }, [deskExercises]);
 
   const filteredHomeExercises = useMemo(() => {
     if (!selectedHomeCategory) return [];
     return homeExercises.filter(ex => matchesHomeCategory(ex, selectedHomeCategory));
   }, [homeExercises, selectedHomeCategory]);
 
-  const deskBySubcategory = useMemo(() => {
-    const grouped = Object.fromEntries(DESK_SUBCATEGORIES.map(s => [s.key, []]));
-    deskExercises.forEach(ex => {
-      const key = ex.subcategory || 'mobility';
-      if (grouped[key]) grouped[key].push(ex);
-    });
-    return grouped;
-  }, [deskExercises]);
+  const filteredDeskExercises = useMemo(() => {
+    if (!selectedDeskCategory) return [];
+    return deskExercises.filter(ex => matchesDeskCategory(ex, selectedDeskCategory));
+  }, [deskExercises, selectedDeskCategory]);
 
   const loadExercises = useCallback(async () => {
     setIsLoadingExercises(true);
@@ -289,17 +318,18 @@ export default function GymPage() {
     if (activeTab === 'gym') items = GYM_CATEGORIES;
     else if (activeTab === 'home') {
       items = selectedHomeCategory ? filteredHomeExercises : HOME_CATEGORIES;
-    } else {
-      items = deskExercises;
+    } else if (activeTab === 'desk') {
+      items = selectedDeskCategory ? filteredDeskExercises : DESK_CATEGORIES;
     }
     items.forEach((_, i) => {
       setTimeout(() => setAnimatedItems(prev => [...prev, i]), i * 50);
     });
-  }, [activeTab, filteredHomeExercises, selectedHomeCategory, deskExercises]);
+  }, [activeTab, filteredHomeExercises, selectedHomeCategory, filteredDeskExercises, selectedDeskCategory]);
 
   useEffect(() => {
     setSelectedHomeCategory(null);
     setSelectedHomeExercise(null);
+    setSelectedDeskCategory(null);
     setSelectedDeskExercise(null);
   }, [activeTab]);
 
@@ -384,31 +414,13 @@ export default function GymPage() {
           )}
 
           {!isLoadingExercises && !exerciseError && (
-            <div className="grid grid-cols-2 gap-3">
-              {GYM_CATEGORIES.map((category, i) => {
-                const key = category.label.toLowerCase();
-                const count = category.label === 'All'
-                  ? exercises.length
-                  : (gymCategoryCounts[key] || 0);
-                return (
-                  <button
-                    key={category.label}
-                    type="button"
-                    onClick={() => openGymCategory(category)}
-                    className="rounded-3xl border border-white/10 bg-[#141416] p-4 text-left transition-all duration-200 active:scale-[0.98] hover:border-[#CCFF00]/40"
-                    style={{
-                      opacity: animatedItems.includes(i) ? 1 : 0,
-                      transform: animatedItems.includes(i) ? 'translateY(0)' : 'translateY(12px)',
-                      transition: `opacity 0.3s ease ${i * 0.05}s, transform 0.3s ease ${i * 0.05}s`,
-                    }}
-                  >
-                    <div className="text-3xl">{category.emoji}</div>
-                    <p className="mt-3 text-lg font-black">{category.label}</p>
-                    <p className="text-xs text-white/50">{count} exercises</p>
-                  </button>
-                );
-              })}
-            </div>
+            <CategoryGrid
+              categories={GYM_CATEGORIES}
+              counts={gymCategoryCounts}
+              allLabel="All"
+              onSelect={openGymCategory}
+              animatedItems={animatedItems}
+            />
           )}
         </div>
       )}
@@ -434,31 +446,13 @@ export default function GymPage() {
           )}
 
           {!selectedHomeCategory && (
-            <div className="grid grid-cols-2 gap-3">
-              {HOME_CATEGORIES.map((category, i) => {
-                const key = category.label.toLowerCase().replace(/\s+/g, '-');
-                const count = category.label === 'All Home'
-                  ? homeExercises.length
-                  : (homeCategoryCounts[key] || 0);
-                return (
-                  <button
-                    key={category.label}
-                    type="button"
-                    onClick={() => setSelectedHomeCategory(category)}
-                    className="rounded-3xl border border-white/10 bg-[#141416] p-4 text-left transition-all duration-200 active:scale-[0.98] hover:border-[#CCFF00]/40"
-                    style={{
-                      opacity: animatedItems.includes(i) ? 1 : 0,
-                      transform: animatedItems.includes(i) ? 'translateY(0)' : 'translateY(12px)',
-                      transition: `opacity 0.3s ease ${i * 0.05}s, transform 0.3s ease ${i * 0.05}s`,
-                    }}
-                  >
-                    <div className="text-3xl">{category.emoji}</div>
-                    <p className="mt-3 text-lg font-black">{category.label}</p>
-                    <p className="text-xs text-white/50">{count} exercises</p>
-                  </button>
-                );
-              })}
-            </div>
+            <CategoryGrid
+              categories={HOME_CATEGORIES}
+              counts={homeCategoryCounts}
+              allLabel="All Home"
+              onSelect={setSelectedHomeCategory}
+              animatedItems={animatedItems}
+            />
           )}
 
           {selectedHomeCategory && (
@@ -477,36 +471,61 @@ export default function GymPage() {
 
       {activeTab === 'desk' && (
         <div className="px-5 space-y-4">
-          <p className="text-[12px] font-black text-[#A064FF]">💻 Quick Desk Breaks</p>
+          {selectedDeskCategory && (
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedDeskCategory(null);
+                  setSelectedDeskExercise(null);
+                }}
+                style={{
+                  border: 'none',
+                  background: 'transparent',
+                  color: '#CCFF00',
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  padding: 0,
+                }}
+              >
+                ← Back
+              </button>
+              <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+                {selectedDeskCategory.label} · {filteredDeskExercises.length} exercises
+              </p>
+            </div>
+          )}
 
-          {DESK_SUBCATEGORIES.map(sub => {
-            const items = deskBySubcategory[sub.key] || [];
-            if (!items.length) return null;
-            return (
-              <section key={sub.key}>
-                <p className="text-[10px] tracking-[2.5px] uppercase text-white/40 font-bold mb-2">
-                  {sub.label}
-                </p>
-                <div>
-                  {items.map((item, i) => {
-                    const muscles = item.muscleGroups?.slice(0, 2).join(', ') || '';
-                    const subtitle = muscles
-                      ? `${formatDeskDuration(item)} · ${muscles}`
-                      : formatDeskDuration(item);
-                    return (
-                      <ExerciseCard
-                        key={item.id || `${sub.key}-${i}`}
-                        exercise={item}
-                        onClick={() => setSelectedDeskExercise(item)}
-                        subtitle={subtitle}
-                        showLevel={false}
-                      />
-                    );
-                  })}
-                </div>
-              </section>
-            );
-          })}
+          {!selectedDeskCategory && (
+            <CategoryGrid
+              categories={DESK_CATEGORIES}
+              counts={deskCategoryCounts}
+              allLabel="All Desk"
+              onSelect={setSelectedDeskCategory}
+              animatedItems={animatedItems}
+            />
+          )}
+
+          {selectedDeskCategory && (
+            <div>
+              {filteredDeskExercises.map((item, i) => {
+                const muscles = item.muscleGroups?.slice(0, 2).join(', ') || '';
+                const subtitle = muscles
+                  ? `${formatDeskDuration(item)} · ${muscles}`
+                  : formatDeskDuration(item);
+                return (
+                  <ExerciseCard
+                    key={item.id || `desk-${i}`}
+                    exercise={item}
+                    onClick={() => setSelectedDeskExercise(item)}
+                    subtitle={subtitle}
+                    showLevel={false}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
