@@ -13,26 +13,10 @@ const MOODS = [
   { id: 'hyped', label: 'Hyped', svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> },
 ];
 
-const TRAINING = [
-  { id: 'gym', title: 'Gym', sub: 'Equipment', path: '/gym', color: 'neon',
-    svg: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M6 4v16M18 4v16M4 8h4M16 8h4M4 16h4M16 16h4M8 12h8" />
-      </svg>
-    ) },
-  { id: 'home', title: 'Home', sub: 'No gear', path: '/gym?tab=home', color: 'blue',
-    svg: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-      </svg>
-    ) },
-  { id: 'desk', title: 'Desk Break', sub: '5 min', path: '/gym?tab=desk', color: 'purple',
-    svg: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="4" width="20" height="14" rx="2" />
-        <path d="M8 21h8M12 18v3" />
-      </svg>
-    ) },
+const TRAINING_ENV_ICONS = [
+  { label: 'Gym', path: 'M6 4v16M18 4v16M4 8h4M16 8h4M4 16h4M16 16h4M8 12h8', nav: '/gym' },
+  { label: 'Home', path: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', nav: '/gym?tab=home' },
+  { label: 'Desk', path: 'M2 6a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM8 20h8M12 18v2', nav: '/gym?tab=desk' },
 ];
 
 const QUICK_START = [
@@ -230,29 +214,82 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Choose Training */}
-      <p className="px-[18px] text-[10px] tracking-[2.5px] uppercase text-white/40 font-bold mb-3">Choose Training</p>
-      <div className="px-[18px] grid grid-cols-3 gap-[10px] mb-5">
-        {TRAINING.map(item => {
-          const colors = {
-            neon: { bg: 'rgba(204,255,0,0.12)', border: 'rgba(204,255,0,0.2)', line: 'rgba(204,255,0,0.5)' },
-            blue: { bg: 'rgba(100,180,255,0.09)', border: 'rgba(100,180,255,0.16)', line: 'rgba(100,180,255,0.5)' },
-            purple: { bg: 'rgba(160,100,255,0.09)', border: 'rgba(160,100,255,0.16)', line: 'rgba(160,100,255,0.5)' },
-          }[item.color];
-          return (
-            <button key={item.id} type="button" onClick={() => navigate(item.path)}
-              className="rounded-[22px] p-4 flex flex-col justify-between min-h-[120px] relative overflow-hidden border transition-transform duration-200 active:scale-95"
-              style={{ background: `linear-gradient(145deg, ${colors.bg}, rgba(0,0,0,0))`, borderColor: colors.border, boxShadow: '0 10px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07)' }}>
-              <div className="absolute bottom-0 left-0 right-0 h-[2px] rounded-b-[22px]"
-                style={{ background: `linear-gradient(90deg,transparent,${colors.line},transparent)` }} />
-              <div className="w-8 h-8 flex items-center justify-center">{item.svg}</div>
-              <div>
-                <p className="text-[11px] font-bold text-white leading-tight">{item.title}</p>
-                <p className="text-[9px] text-white/40 mt-0.5">{item.sub}</p>
+      {/* Choose Training — Start Training glass card */}
+      <div className="px-[18px]" style={{ marginBottom: '16px' }}>
+        <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)', marginBottom: '12px' }}>
+          CHOOSE TRAINING
+        </p>
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate('/gym')}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate('/gym'); }}
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: '20px',
+            padding: '20px',
+            cursor: 'pointer',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)',
+          }}
+        >
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+            {TRAINING_ENV_ICONS.map(item => (
+              <div
+                key={item.label}
+                role="button"
+                tabIndex={0}
+                onClick={e => { e.stopPropagation(); navigate(item.nav); }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.stopPropagation();
+                    navigate(item.nav);
+                  }
+                }}
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  background: 'rgba(204,255,0,0.08)',
+                  border: '0.5px solid rgba(204,255,0,0.25)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '2px',
+                  cursor: 'pointer',
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d={item.path} />
+                </svg>
+                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)' }}>{item.label}</span>
               </div>
-            </button>
-          );
-        })}
+            ))}
+          </div>
+          <p style={{ fontSize: '20px', fontWeight: '600', color: 'white', margin: '0 0 4px' }}>Start Training</p>
+          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', margin: '0 0 16px' }}>
+            873 exercises · 3 environments
+          </p>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'rgba(204,255,0,0.1)',
+              border: '0.5px solid rgba(204,255,0,0.25)',
+              borderRadius: '12px',
+              padding: '12px 16px',
+            }}
+          >
+            <span style={{ fontSize: '14px', fontWeight: '600', color: '#CCFF00' }}>Open Gym</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </div>
+        </div>
       </div>
 
       {/* My Plans */}
