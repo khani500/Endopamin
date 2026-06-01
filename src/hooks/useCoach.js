@@ -57,8 +57,9 @@ export function useCoach() {
       text,
       history,
       profile || {},
+      user?.id,
     );
-  }, [personaId, profile]);
+  }, [personaId, profile, user?.id]);
 
   const setPersona = useCallback(async persona => {
     if (!COACHES[persona] || !user?.id) return { error: null };

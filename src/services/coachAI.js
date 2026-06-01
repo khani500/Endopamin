@@ -1,48 +1,24 @@
 import { askGemini, askGeminiChat, buildKnowledgeContext } from '../lib/gemini';
 import {
   buildCoachSystemPrompt,
+  buildProfileContext,
   sanitizeCoachResponse,
   toGeminiContents,
 } from '../lib/coachChat';
 import { buildCoachReferenceContext } from '../lib/coachContext';
+import { buildCoachMemory, fetchCoachMemory, upsertCoachMemory } from '../lib/coachMemory';
+import { formatCoachMemoryForPrompt } from '../config/coachPrompts';
 import { getCoach, resolveCoachId } from '../config/coaches';
 
 function firstName(name) {
   return String(name || 'Champion').trim().split(/\s+/)[0] || 'Champion';
 }
 
-// Build full context string from user profile
-function buildProfileContext(profile = {}, name) {
-  const {
-    goal, experience, gender, streak_count, dopa_level,
-    energy_level, days_per_week, equipment, age, weight, height,
-    injuries, session_duration, location, diet,
-    coach_persona, created_at,
-  } = profile;
-
-  const daysSinceJoined = created_at
-    ? Math.floor((Date.now() - new Date(created_at)) / (1000 * 60 * 60 * 24))
-    : 0;
-
-  return `
-ATHLETE PROFILE (confirmed facts — do not ask again):
-- Name: ${name}
-- Goal: ${goal || 'general fitness'}
-- Experience: ${experience || 'intermediate'}
-- Injuries / restrictions: ${injuries || 'none reported'}
-- Session duration: ${session_duration || 45} min
-- Location: ${location || 'not specified'}
-- Equipment: ${Array.isArray(equipment) ? equipment.join(', ') : equipment || 'full gym'}
-- Diet: ${diet || 'none specified'}
-- Age: ${age || 'unknown'}
-- Weight: ${weight ? `${weight}kg` : 'unknown'}
-- Height: ${height ? `${height}cm` : 'unknown'}
-- Gender: ${gender || 'not specified'}
-- Training days/week: ${days_per_week || 3}
-- Streak: ${streak_count || 0} days
-- Endo level: ${dopa_level || 1}
-- Days since joined: ${daysSinceJoined}
-`.trim();
+function profileSessionContext(profile = {}) {
+  const workoutTime = Number(profile?.session_duration || profile?.time_available) || 45;
+  const location = profile?.location || 'gym';
+  const equipment = Array.isArray(profile?.equipment) ? profile.equipment : [];
+  return { workoutTime, location, equipment };
 }
 
 /** Core chat instructions — merged into buildCoachSystemPrompt via chatWithCoach. */
@@ -74,7 +50,6 @@ EXPERT MODE:
 - When the user challenges advice or asks about form, anatomy, or programming: answer with precise, professional detail.
 - Name muscles, joint actions, common faults, and safe regressions or progressions.`;
 
-// Smart monthly assessment trigger
 function shouldTriggerAssessment(profile = {}) {
   const { created_at } = profile;
   if (!created_at) return false;
@@ -85,13 +60,25 @@ function shouldTriggerAssessment(profile = {}) {
 export const getDailyMessage = async (coachId, userContext) => {
   const coach = getCoach(coachId);
   const resolvedId = resolveCoachId(coachId);
-  const { name, streak, level, lastWorkout, goal, energy, gender } = userContext;
+  const { name, streak, level, goal, energy, gender } = userContext;
   const userName = firstName(name);
+
+  const mergedProfile = {
+    display_name: userName,
+    streak_count: streak,
+    dopa_level: level,
+    goal,
+    energy_level: energy,
+    gender,
+    ...userContext,
+  };
+  const { workoutTime, location, equipment } = profileSessionContext(mergedProfile);
+  const profileContext = buildProfileContext(mergedProfile, workoutTime, location, equipment);
 
   const prompt = `
 Generate a personalized daily motivation message for ${userName}.
 
-${buildProfileContext(userContext, userName)}
+${profileContext}
 
 Rules:
 - Do NOT start with "Hey" — vary the opening every time
@@ -116,11 +103,20 @@ Rules:
   }
 };
 
-export const chatWithCoach = async (coachId, userName, message, conversationHistory = [], profile = {}) => {
+export const chatWithCoach = async (
+  coachId,
+  userName,
+  message,
+  conversationHistory = [],
+  profile = {},
+  userId = null,
+) => {
   const coach = getCoach(coachId);
   const resolvedId = resolveCoachId(coachId);
   const name = firstName(userName);
-  const profileContext = buildProfileContext(profile, name);
+  const { workoutTime, location, equipment } = profileSessionContext(profile);
+  const profileContext = buildProfileContext(profile, workoutTime, location, equipment);
+  const uid = userId || profile?.user_id || null;
 
   const isAssessmentTime = shouldTriggerAssessment(profile);
 
@@ -138,7 +134,13 @@ export const chatWithCoach = async (coachId, userName, message, conversationHist
 
   const knowledgeContext = await buildKnowledgeContext(profile?.experience);
 
+  const storedMemory = uid ? await fetchCoachMemory(uid, resolvedId) : null;
+  const liveMemory = buildCoachMemory(storedMemory, profile, workoutTime, equipment, historyMessages);
+  const coachMemoryBlock = formatCoachMemoryForPrompt(liveMemory);
+
   const basePrompt = `${coach.personality}
+
+${coachMemoryBlock}
 
 ${assessmentNote}
 
@@ -154,9 +156,9 @@ ${COACH_CHAT_INSTRUCTIONS}`;
       profile,
       knowledgeContext,
       referenceContext: buildCoachReferenceContext({
-        location: profile?.location || 'gym',
+        location,
         experience: profile?.experience,
-        equipment: profile?.equipment,
+        equipment,
         injuries: profile?.injuries,
         goal: profile?.goal,
       }),
@@ -168,7 +170,18 @@ ${COACH_CHAT_INSTRUCTIONS}`;
       messages: toGeminiContents(historyMessages),
       systemPrompt,
     });
-    return sanitizeCoachResponse(raw, coach.name);
+    const reply = sanitizeCoachResponse(raw, coach.name);
+    if (reply && uid) {
+      const updatedMemory = buildCoachMemory(
+        liveMemory,
+        profile,
+        workoutTime,
+        equipment,
+        [...historyMessages, { role: 'assistant', text: reply }],
+      );
+      void upsertCoachMemory(uid, resolvedId, updatedMemory);
+    }
+    return reply;
   } catch (error) {
     console.error('Coach chat failed:', error);
     const fallbacks = {
@@ -185,7 +198,8 @@ ${COACH_CHAT_INSTRUCTIONS}`;
 export const getCheckInResponse = async (coachId, userName, energy, sleep, profile = {}) => {
   const coach = getCoach(coachId);
   const name = firstName(userName);
-  const profileContext = buildProfileContext(profile, name);
+  const { workoutTime, location, equipment } = profileSessionContext(profile);
+  const profileContext = buildProfileContext(profile, workoutTime, location, equipment);
 
   const prompt = `
 ${profileContext}
@@ -262,11 +276,13 @@ Return ONLY the JSON, no other text.
 export const getProgressInsight = async (coachId, userName, metrics, profile = {}) => {
   const coach = getCoach(coachId);
   const name = firstName(userName);
+  const { workoutTime, location, equipment } = profileSessionContext(profile);
+  const profileContext = buildProfileContext(profile, workoutTime, location, equipment);
 
   const { weightChange, workoutsThisWeek, topExercise, streak, daysSinceStart } = metrics;
 
   const prompt = `
-${buildProfileContext(profile, name)}
+${profileContext}
 
 Progress metrics:
 - Weight change: ${weightChange}kg this week
