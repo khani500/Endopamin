@@ -7,8 +7,8 @@ const IMAGE_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/m
 
 const CATEGORIES = [
   { label: 'Chest', emoji: '🏋️', muscles: ['chest'] },
-  { label: 'Back', emoji: '🔙', muscles: ['middle back', 'lower back', 'lats', 'traps'] },
-  { label: 'Shoulders', emoji: '💪', muscles: ['shoulders'] },
+  { label: 'Back', emoji: '🔙', muscles: ['lats', 'middle back', 'lower back', 'traps'] },
+  { label: 'Shoulders', emoji: '💪', muscles: ['shoulders', 'neck'] },
   { label: 'Arms', emoji: '💪', muscles: ['biceps', 'triceps', 'forearms'] },
   { label: 'Legs', emoji: '🦵', muscles: ['quadriceps', 'hamstrings', 'glutes', 'calves', 'adductors', 'abductors'] },
   { label: 'Core', emoji: '🔥', muscles: ['abdominals', 'obliques'] },
