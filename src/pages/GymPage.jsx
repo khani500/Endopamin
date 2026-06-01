@@ -7,25 +7,64 @@ import { DESK_BREAKS } from '../data/deskBreaks';
 import { EXERCISES } from '../data/exercises';
 import { supabase } from '../lib/supabase';
 import { fetchWgerExercises, searchWgerExercises } from '../services/wgerService';
+import {
+  fetchAllExercises,
+  fetchBodyPartList,
+  searchExercises,
+} from '../services/exerciseDBService';
 
-const WGER_CATEGORIES = ['arms', 'legs', 'chest', 'back', 'shoulders', 'abs'];
-const CATEGORY_LABELS = {
-  arms: 'Arms',
-  legs: 'Legs',
-  chest: 'Chest',
+const BODY_PART_ORDER = [
+  'back',
+  'cardio',
+  'chest',
+  'lower arms',
+  'lower legs',
+  'neck',
+  'shoulders',
+  'upper arms',
+  'upper legs',
+  'waist',
+];
+
+const BODY_PART_LABELS = {
   back: 'Back',
+  cardio: 'Cardio',
+  chest: 'Chest',
+  'lower arms': 'Lower Arms',
+  'lower legs': 'Lower Legs',
+  neck: 'Neck',
   shoulders: 'Shoulders',
-  abs: 'Abs',
+  'upper arms': 'Upper Arms',
+  'upper legs': 'Upper Legs',
+  waist: 'Waist',
 };
 
 const CATEGORY_EMOJI = {
-  arms: '💪',
-  legs: '🦵',
-  chest: '🏋️',
   back: '🧱',
+  cardio: '🏃',
+  chest: '🏋️',
+  'lower arms': '💪',
+  'lower legs': '🦵',
+  neck: '🧠',
   shoulders: '🤸',
-  abs: '🔥',
+  'upper arms': '💪',
+  'upper legs': '🦵',
+  waist: '🔥',
 };
+
+function normalizeBodyPart(exercise, isWgerSource = false) {
+  if (!exercise) return null;
+  if (!isWgerSource) return exercise.bodyPart || null;
+
+  const category = String(exercise.category || '').toLowerCase();
+  if (category === 'arms') return 'upper arms';
+  if (category === 'legs') return 'upper legs';
+  if (category === 'abs') return 'waist';
+  if (category === 'chest') return 'chest';
+  if (category === 'back') return 'back';
+  if (category === 'shoulders') return 'shoulders';
+  return null;
+}
 
 const EQUIPMENT = [
   { id: 'barbell', name: 'Barbell', svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="2" y="11" width="4" height="2" rx="1"/><rect x="18" y="11" width="4" height="2" rx="1"/><rect x="5" y="9" width="3" height="6" rx="1"/><rect x="16" y="9" width="3" height="6" rx="1"/><line x1="8" y1="12" x2="16" y2="12"/></svg> },
@@ -59,40 +98,35 @@ export default function GymPage() {
   });
   const [activeTab, setActiveTab] = useState('exercises');
   const [animatedItems, setAnimatedItems] = useState([]);
-  const [wgerExercises, setWgerExercises] = useState([]);
-  const [wgerLoading, setWgerLoading] = useState(true);
-  const [wgerError, setWgerError] = useState(null);
-  const [useLocalFallback, setUseLocalFallback] = useState(false);
+  const [exercises, setExercises] = useState([]);
+  const [isLoadingExercises, setIsLoadingExercises] = useState(true);
+  const [exerciseError, setExerciseError] = useState(null);
+  const [useWgerFallback, setUseWgerFallback] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false);
   const [loadProgress, setLoadProgress] = useState({ loaded: 0, total: 0 });
+  const [bodyParts, setBodyParts] = useState(BODY_PART_ORDER);
 
   const compatibleExercises = useMemo(
     () => EXERCISES.filter(ex => ex.equipment.every(item => selectedEquipment.includes(item))),
     [selectedEquipment],
   );
 
-  const localFallbackGrouped = useMemo(() => {
-    const grouped = Object.fromEntries(WGER_CATEGORIES.map(cat => [cat, []]));
-    compatibleExercises.forEach(ex => {
-      const cat = ex.category === 'core' ? 'abs' : ex.category;
-      if (grouped[cat]) grouped[cat].push(ex);
-    });
-    return grouped;
-  }, [compatibleExercises]);
+  const displayedGrouped = useMemo(() => {
+    const source = searchResults ?? exercises;
+    const grouped = Object.fromEntries(bodyParts.map(part => [part, []]));
 
-  const wgerGrouped = useMemo(() => {
-    const source = searchResults ?? wgerExercises;
-    const grouped = Object.fromEntries(WGER_CATEGORIES.map(cat => [cat, []]));
     source.forEach(ex => {
-      const cat = ex.category && grouped[ex.category] ? ex.category : null;
-      if (cat) grouped[cat].push(ex);
+      const normalizedBodyPart = normalizeBodyPart(ex, useWgerFallback);
+      if (!normalizedBodyPart) return;
+      if (!grouped[normalizedBodyPart]) grouped[normalizedBodyPart] = [];
+      grouped[normalizedBodyPart].push(ex);
     });
-    return grouped;
-  }, [wgerExercises, searchResults]);
 
-  const displayedGrouped = useLocalFallback ? localFallbackGrouped : wgerGrouped;
+    return grouped;
+  }, [searchResults, exercises, bodyParts, useWgerFallback]);
+
   const displayedExerciseCount = useMemo(
     () => Object.values(displayedGrouped).reduce((sum, list) => sum + list.length, 0),
     [displayedGrouped],
@@ -114,27 +148,38 @@ export default function GymPage() {
     let cancelled = false;
 
     void (async () => {
-      setWgerLoading(true);
-      setWgerError(null);
+      setIsLoadingExercises(true);
+      setExerciseError(null);
       setLoadProgress({ loaded: 0, total: 0 });
       try {
-        const allExercises = await fetchWgerExercises({
-          language: 2,
-          limit: 100,
-          onProgress: progress => {
-            if (!cancelled && progress) setLoadProgress(progress);
-          },
-        });
+        const [allExercises, allBodyParts] = await Promise.all([
+          fetchAllExercises(1300),
+          fetchBodyPartList(),
+        ]);
         if (cancelled) return;
-        setWgerExercises(allExercises);
-        setUseLocalFallback(false);
+        setExercises(allExercises);
+        setBodyParts(allBodyParts.length ? allBodyParts : BODY_PART_ORDER);
+        setUseWgerFallback(false);
+        setLoadProgress({ loaded: allExercises.length, total: allExercises.length });
       } catch (err) {
         if (cancelled) return;
-        console.warn('Wger API unavailable, using local exercise library:', err);
-        setWgerError(err?.message || 'Could not load exercises from Wger');
-        setUseLocalFallback(true);
+        console.warn('ExerciseDB API unavailable, falling back to Wger:', err);
+        setExerciseError(err?.message || 'Could not load exercises from ExerciseDB');
+        try {
+          const fallback = await fetchWgerExercises({ language: 2, limit: 100 });
+          if (cancelled) return;
+          setExercises(fallback);
+          setBodyParts(BODY_PART_ORDER);
+          setUseWgerFallback(true);
+          setLoadProgress({ loaded: fallback.length, total: fallback.length });
+        } catch (fallbackErr) {
+          if (cancelled) return;
+          setUseWgerFallback(true);
+          setExercises([]);
+          setExerciseError(fallbackErr?.message || 'Could not load exercises');
+        }
       } finally {
-        if (!cancelled) setWgerLoading(false);
+        if (!cancelled) setIsLoadingExercises(false);
       }
     })();
 
@@ -156,14 +201,15 @@ export default function GymPage() {
     const timer = window.setTimeout(() => {
       void (async () => {
         try {
-          const results = await searchWgerExercises(term);
+          const results = useWgerFallback
+            ? await searchWgerExercises(term)
+            : await searchExercises(term);
           if (!cancelled) {
             setSearchResults(results);
-            setUseLocalFallback(false);
           }
         } catch (err) {
           if (!cancelled) {
-            console.warn('Wger search failed, filtering local library:', err);
+            console.warn('Primary search API failed, filtering local library:', err);
             const lower = term.toLowerCase();
             const filtered = compatibleExercises.filter(ex =>
               ex.name.toLowerCase().includes(lower)
@@ -174,12 +220,15 @@ export default function GymPage() {
               name: ex.name,
               description: ex.coachTip || '',
               category: ex.category === 'core' ? 'abs' : ex.category,
+              bodyPart: normalizeBodyPart({ category: ex.category === 'core' ? 'abs' : ex.category }, true),
               muscles: [ex.muscles?.primary, ...(ex.muscles?.secondary || [])].filter(Boolean),
               equipment: ex.equipment || [],
               images: [],
+              videos: [],
+              mainImage: null,
+              gifUrl: null,
               emoji: ex.emoji,
             })));
-            setUseLocalFallback(true);
           }
         } finally {
           if (!cancelled) setSearchLoading(false);
@@ -191,17 +240,17 @@ export default function GymPage() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [searchQuery, compatibleExercises]);
+  }, [searchQuery, compatibleExercises, useWgerFallback]);
 
   useEffect(() => {
     setAnimatedItems([]);
     const items = activeTab === 'exercises'
-      ? WGER_CATEGORIES.flatMap(cat => displayedGrouped[cat] || [])
+      ? bodyParts.flatMap(part => displayedGrouped[part] || [])
       : DESK_BREAKS;
     items.forEach((_, i) => {
       setTimeout(() => setAnimatedItems(prev => [...prev, i]), i * 50);
     });
-  }, [activeTab, displayedGrouped]);
+  }, [activeTab, displayedGrouped, bodyParts]);
 
   if (currentBreakId) {
     return <DeskBreakSession breakId={currentBreakId}
@@ -320,22 +369,22 @@ export default function GymPage() {
               placeholder="Search exercises (Wger library)..."
               className="w-full bg-transparent text-[13px] text-white outline-none placeholder:text-white/30"
             />
-            {(searchLoading || wgerLoading) && (
+            {(searchLoading || isLoadingExercises) && (
               <p className="mt-2 text-[10px] text-[#CCFF00] font-bold">
                 {loadProgress.total > 0
                   ? `Loading exercises... ${loadProgress.loaded}/${loadProgress.total}`
                   : 'Loading exercises...'}
               </p>
             )}
-            {useLocalFallback && !wgerLoading && (
-              <p className="mt-2 text-[10px] text-white/35">Showing local library — Wger API unavailable</p>
+            {useWgerFallback && !isLoadingExercises && (
+              <p className="mt-2 text-[10px] text-white/35">Showing Wger fallback — ExerciseDB unavailable</p>
             )}
-            {wgerError && !useLocalFallback && (
-              <p className="mt-2 text-[10px] text-[#FF6B6B]">{wgerError}</p>
+            {exerciseError && (
+              <p className="mt-2 text-[10px] text-[#FF6B6B]">{exerciseError}</p>
             )}
           </div>
 
-          {displayedExerciseCount === 0 && !wgerLoading && !searchLoading ? (
+          {displayedExerciseCount === 0 && !isLoadingExercises && !searchLoading ? (
             <div className="rounded-[20px] border border-white/[0.07] p-8 text-center"
               style={{ background: 'rgba(255,255,255,0.02)' }}>
               <p className="text-[32px] mb-3">🏋️</p>
@@ -345,30 +394,31 @@ export default function GymPage() {
               </p>
             </div>
           ) : (
-            WGER_CATEGORIES.map(category => {
-              const exercises = displayedGrouped[category] || [];
+            bodyParts.map(bodyPart => {
+              const exercises = displayedGrouped[bodyPart] || [];
               if (!exercises.length) return null;
 
               let itemIndex = 0;
-              WGER_CATEGORIES.slice(0, WGER_CATEGORIES.indexOf(category)).forEach(cat => {
-                itemIndex += (displayedGrouped[cat] || []).length;
+              bodyParts.slice(0, bodyParts.indexOf(bodyPart)).forEach(part => {
+                itemIndex += (displayedGrouped[part] || []).length;
               });
 
               return (
-                <section key={category}>
+                <section key={bodyPart}>
                   <p className="text-[10px] tracking-[2.5px] uppercase text-[#CCFF00] font-bold mb-2">
-                    {CATEGORY_LABELS[category]}
+                    {BODY_PART_LABELS[bodyPart] || bodyPart}
                   </p>
                   <div className="space-y-2">
                     {exercises.map((ex, i) => {
                       const animIndex = itemIndex + i;
                       const muscles = Array.isArray(ex.muscles)
                         ? ex.muscles.join(', ')
-                        : ex.muscle_group || ex.category;
+                        : ex.target || ex.muscle_group || ex.category || ex.bodyPart;
+                      const gifUrl = ex.gifUrl;
                       const videoUrl = ex.videos?.[0];
                       const mainImageUrl = ex.mainImage || ex.images?.[0];
                       const anyImageUrl = ex.images?.[0];
-                      const fallbackEmoji = CATEGORY_EMOJI[category] || '💪';
+                      const fallbackEmoji = CATEGORY_EMOJI[bodyPart] || '💪';
 
                       return (
                         <div
@@ -388,7 +438,14 @@ export default function GymPage() {
                               background: 'rgba(204,255,0,0.08)',
                               border: '1px solid rgba(204,255,0,0.15)',
                             }}>
-                            {videoUrl ? (
+                            {gifUrl ? (
+                              <img
+                                src={gifUrl}
+                                alt={ex.name}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            ) : videoUrl ? (
                               <video
                                 src={videoUrl}
                                 autoPlay
@@ -420,8 +477,10 @@ export default function GymPage() {
                           <div className="min-w-0 flex-1">
                             <p className="text-[13px] font-bold text-white truncate">{ex.name}</p>
                             <p className="text-[10px] text-white/35 mt-0.5 capitalize truncate">
-                              {muscles || category}
-                              {ex.equipment?.length ? ` · ${ex.equipment.join(', ')}` : ''}
+                              {muscles || bodyPart}
+                              {Array.isArray(ex.equipment)
+                                ? (ex.equipment.length ? ` · ${ex.equipment.join(', ')}` : '')
+                                : (ex.equipment ? ` · ${ex.equipment}` : '')}
                             </p>
                           </div>
                         </div>
