@@ -527,96 +527,164 @@ export default function GymPage() {
   );
 }
 
+function BottomSheet({ onClose, children }) {
+  return (
+    <>
+      <button
+        type="button"
+        aria-label="Close modal overlay"
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.7)',
+          zIndex: 49,
+          border: 'none',
+          padding: 0,
+          margin: 0,
+          cursor: 'pointer',
+        }}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '70vh',
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          zIndex: 50,
+          borderRadius: '20px 20px 0 0',
+          background: '#111113',
+          color: 'white',
+          boxSizing: 'border-box',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 4 }}>
+          <div style={{ width: 40, height: 4, borderRadius: 999, background: '#666' }} />
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          style={{
+            position: 'absolute',
+            top: 12,
+            right: 12,
+            zIndex: 51,
+            width: 36,
+            height: 36,
+            borderRadius: '50%',
+            border: 'none',
+            background: 'rgba(255,255,255,0.15)',
+            color: '#fff',
+            fontSize: 22,
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            lineHeight: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          ×
+        </button>
+        <div style={{ padding: '8px 16px 32px', position: 'relative' }}>
+          {children}
+        </div>
+      </div>
+    </>
+  );
+}
+
 function HomeExerciseModal({ exercise, onClose }) {
   const levelStyle = LEVEL_COLORS[exercise.level] || LEVEL_COLORS.intermediate;
   const regressions = resolveExerciseNames(exercise.regressions);
   const progressions = resolveExerciseNames(exercise.progressions);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end bg-black/60">
-      <button type="button" onClick={onClose} className="absolute inset-0" aria-label="Close modal" />
-      <div className="relative w-full max-h-[85vh] overflow-y-auto rounded-t-3xl border border-white/10 bg-[#111113] p-4 pb-8 text-white">
-        <button type="button" onClick={onClose} className="mb-3 text-xs font-black text-white/60">Close</button>
-
-        <div className="flex items-start justify-between gap-3">
-          <h2 className="text-2xl font-black text-[#CCFF00]">{exercise.name}</h2>
-          <span
-            className="text-[9px] px-2 py-1 rounded-full font-bold uppercase shrink-0"
-            style={{
-              background: levelStyle.bg,
-              border: `1px solid ${levelStyle.border}`,
-              color: levelStyle.text,
-            }}
-          >
-            {exercise.level}
-          </span>
-        </div>
-
-        <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#CCFF00]">Sets & Reps</p>
-          <p className="mt-2 text-sm font-bold text-white/85">
-            {exercise.sets} sets × {exercise.reps} · Rest {exercise.rest}
-          </p>
-        </div>
-
-        <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#CCFF00]">Form Cues</p>
-          <ol className="mt-2 space-y-1 text-sm text-white/75">
-            {(exercise.cues || []).map((cue, idx) => (
-              <li key={`${exercise.id}-cue-${idx}`}>{idx + 1}. {cue}</li>
-            ))}
-          </ol>
-        </div>
-
-        {(regressions.length > 0 || progressions.length > 0) && (
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {regressions.length > 0 && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#CCFF00]">Regression</p>
-                <ul className="mt-2 space-y-1 text-sm text-white/70">
-                  {regressions.map(name => <li key={name}>↓ {name}</li>)}
-                </ul>
-              </div>
-            )}
-            {progressions.length > 0 && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#CCFF00]">Progression</p>
-                <ul className="mt-2 space-y-1 text-sm text-white/70">
-                  {progressions.map(name => <li key={name}>↑ {name}</li>)}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
+    <BottomSheet onClose={onClose}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, paddingRight: 40 }}>
+        <h2 style={{ margin: 0, fontSize: 22, fontWeight: 'bold', color: '#CCFF00' }}>{exercise.name}</h2>
+        <span
+          style={{
+            fontSize: 9,
+            padding: '4px 8px',
+            borderRadius: 999,
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            flexShrink: 0,
+            background: levelStyle.bg,
+            border: `1px solid ${levelStyle.border}`,
+            color: levelStyle.text,
+          }}
+        >
+          {exercise.level}
+        </span>
       </div>
-    </div>
+
+      <div style={{ marginTop: 16, borderRadius: 16, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)', padding: 12 }}>
+        <p style={{ margin: 0, fontSize: 11, fontWeight: 'bold', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#CCFF00' }}>Sets & Reps</p>
+        <p style={{ margin: '8px 0 0', fontSize: 14, fontWeight: 'bold', color: 'rgba(255,255,255,0.85)' }}>
+          {exercise.sets} sets × {exercise.reps} · Rest {exercise.rest}
+        </p>
+      </div>
+
+      <div style={{ marginTop: 16, borderRadius: 16, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)', padding: 12 }}>
+        <p style={{ margin: 0, fontSize: 11, fontWeight: 'bold', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#CCFF00' }}>Form Cues</p>
+        <ol style={{ margin: '8px 0 0', paddingLeft: 18, fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>
+          {(exercise.cues || []).map((cue, idx) => (
+            <li key={`${exercise.id}-cue-${idx}`} style={{ marginBottom: 4 }}>{idx + 1}. {cue}</li>
+          ))}
+        </ol>
+      </div>
+
+      {(regressions.length > 0 || progressions.length > 0) && (
+        <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {regressions.length > 0 && (
+            <div style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)', padding: 12 }}>
+              <p style={{ margin: 0, fontSize: 11, fontWeight: 'bold', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#CCFF00' }}>Regression</p>
+              <ul style={{ margin: '8px 0 0', paddingLeft: 18, fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>
+                {regressions.map(name => <li key={name}>↓ {name}</li>)}
+              </ul>
+            </div>
+          )}
+          {progressions.length > 0 && (
+            <div style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)', padding: 12 }}>
+              <p style={{ margin: 0, fontSize: 11, fontWeight: 'bold', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#CCFF00' }}>Progression</p>
+              <ul style={{ margin: '8px 0 0', paddingLeft: 18, fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>
+                {progressions.map(name => <li key={name}>↑ {name}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </BottomSheet>
   );
 }
 
 function DeskExerciseModal({ exercise, onClose }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end bg-black/60">
-      <button type="button" onClick={onClose} className="absolute inset-0" aria-label="Close modal" />
-      <div className="relative w-full max-h-[70vh] overflow-y-auto rounded-t-3xl border border-[#A064FF]/30 bg-[#111113] p-4 pb-8 text-white">
-        <button type="button" onClick={onClose} className="mb-3 text-xs font-black text-white/60">Close</button>
+    <BottomSheet onClose={onClose}>
+      <h2 style={{ margin: 0, fontSize: 20, fontWeight: 'bold', color: '#A064FF', paddingRight: 40 }}>{exercise.name}</h2>
+      <p style={{ margin: '6px 0 0', fontSize: 11, color: 'rgba(255,255,255,0.45)', textTransform: 'capitalize' }}>
+        {formatDeskDuration(exercise)} · {exercise.muscleGroups?.join(', ')}
+      </p>
 
-        <h2 className="text-xl font-black text-[#A064FF]">{exercise.name}</h2>
-        <p className="mt-1 text-[11px] text-white/45 capitalize">
-          {formatDeskDuration(exercise)} · {exercise.muscleGroups?.join(', ')}
-        </p>
-
-        <div className="mt-4 rounded-2xl border border-[#A064FF]/20 bg-[#A064FF]/5 p-3">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#A064FF]">Step-by-step</p>
-          <ol className="mt-2 space-y-2 text-sm text-white/80">
-            {(exercise.cues || []).map((cue, idx) => (
-              <li key={`${exercise.id}-desk-${idx}`} className="flex gap-2">
-                <span className="font-black text-[#A064FF]">{idx + 1}.</span>
-                <span>{cue}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
+      <div style={{ marginTop: 16, borderRadius: 16, border: '1px solid rgba(160,100,255,0.2)', background: 'rgba(160,100,255,0.06)', padding: 12 }}>
+        <p style={{ margin: 0, fontSize: 11, fontWeight: 'bold', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#A064FF' }}>Step-by-step</p>
+        <ol style={{ margin: '8px 0 0', paddingLeft: 0, listStyle: 'none', fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>
+          {(exercise.cues || []).map((cue, idx) => (
+            <li key={`${exercise.id}-desk-${idx}`} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+              <span style={{ fontWeight: 'bold', color: '#A064FF', flexShrink: 0 }}>{idx + 1}.</span>
+              <span>{cue}</span>
+            </li>
+          ))}
+        </ol>
       </div>
-    </div>
+    </BottomSheet>
   );
 }
