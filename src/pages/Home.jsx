@@ -16,9 +16,9 @@ const MOODS = [
 const TRAINING = [
   { id: 'gym', title: 'Gym', sub: 'Equipment', path: '/gym', color: 'neon',
     svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/></svg> },
-  { id: 'home', title: 'Home', sub: 'No gear', path: '/workout/mobility', color: 'blue',
+  { id: 'home', title: 'Home', sub: 'No gear', path: '/gym?tab=home', color: 'blue',
     svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg> },
-  { id: 'desk', title: 'Desk Break', sub: '5 min', path: '/gym', color: 'purple',
+  { id: 'desk', title: 'Desk Break', sub: '5 min', path: '/gym?tab=desk', color: 'purple',
     svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="14" width="20" height="2" rx="1"/><path d="M6 16v4M18 16v4"/><path d="M12 14V8M9 8h6M12 5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor"/></svg> },
 ];
 

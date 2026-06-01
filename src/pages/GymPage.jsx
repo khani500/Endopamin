@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getExerciseById, getExercisesBySetting } from '../data/coachExerciseLibrary';
 import { clearExerciseCache, fetchAllExercises } from '../services/exerciseDBService';
 
@@ -245,6 +245,7 @@ function resolveExerciseNames(ids = []) {
 
 export default function GymPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('gym');
   const [animatedItems, setAnimatedItems] = useState([]);
   const [exercises, setExercises] = useState([]);
@@ -311,6 +312,13 @@ export default function GymPage() {
   useEffect(() => {
     void loadExercises();
   }, [loadExercises]);
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'home') setActiveTab('home');
+    else if (tab === 'desk') setActiveTab('desk');
+    else if (tab === 'gym') setActiveTab('gym');
+  }, [searchParams]);
 
   useEffect(() => {
     setAnimatedItems([]);
