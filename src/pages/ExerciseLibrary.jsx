@@ -5,17 +5,6 @@ import { fetchAllExercises } from '../services/exerciseDBService';
 
 const IMAGE_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 
-const MOBILITY_MUSCLES = [
-  'abductors',
-  'adductors',
-  'shoulders',
-  'quadriceps',
-  'hamstrings',
-  'glutes',
-  'calves',
-  'neck',
-];
-
 const CATEGORIES = [
   { label: 'Chest', emoji: '🏋️', muscles: ['chest'] },
   { label: 'Back', emoji: '🔙', muscles: ['lats', 'middle back', 'lower back', 'traps'] },
@@ -30,12 +19,20 @@ const CATEGORIES = [
 ];
 
 function isWarmUpExercise(exercise) {
-  if (exercise.category === 'stretching') return true;
-  return (exercise.primaryMuscles || []).some(m => MOBILITY_MUSCLES.includes(m));
+  if (exercise.category !== 'stretching') return false;
+  const equipment = String(exercise.equipment || '').toLowerCase();
+  return equipment.includes('body only') || equipment.includes('band');
 }
 
 function isCoolDownExercise(exercise) {
-  return exercise.category === 'stretching';
+  return exercise.category === 'stretching' && exercise.level === 'beginner';
+}
+
+function formatMusclesLabel(muscles, max = 2) {
+  const list = Array.isArray(muscles) ? muscles.filter(Boolean) : [];
+  if (!list.length) return 'general';
+  if (list.length <= max) return list.join(', ');
+  return `${list.slice(0, max).join(', ')} +${list.length - max}`;
 }
 
 const LEVEL_FILTERS = ['all', 'beginner', 'intermediate', 'expert'];
@@ -258,7 +255,7 @@ export default function ExerciseLibrary() {
           <div className="space-y-3">
             {filteredExercises.map(item => {
               const levelStyle = LEVEL_STYLES[item.level] || LEVEL_STYLES.intermediate;
-              const primaryMuscles = (item.primaryMuscles || []).join(', ') || 'general';
+              const primaryMuscles = formatMusclesLabel(item.primaryMuscles);
               const thumbnailUrl = getThumbnailUrl(item);
 
               return (
@@ -266,10 +263,10 @@ export default function ExerciseLibrary() {
                   key={item.id}
                   type="button"
                   onClick={() => setSelectedExercise(item)}
-                  className="w-full rounded-3xl border border-white/10 bg-[#141416] p-3 text-left"
+                  className="w-full min-h-[80px] rounded-3xl border border-white/10 bg-[#141416] p-3 text-left"
                 >
-                  <div className="flex gap-3">
-                    <div className="h-20 w-20 overflow-hidden rounded-2xl bg-black/30">
+                  <div className="flex gap-3 items-center">
+                    <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-black/30">
                       {thumbnailUrl ? (
                         <img
                           src={thumbnailUrl}
@@ -281,9 +278,9 @@ export default function ExerciseLibrary() {
                         <div className="flex h-full w-full items-center justify-center text-2xl">⚡</div>
                       )}
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[15px] font-black">{item.name}</p>
-                      <p className="mt-1 truncate text-[11px] capitalize text-white/45">
+                    <div className="min-w-0 flex-1 py-0.5">
+                      <p className="text-[15px] font-black text-white line-clamp-2 leading-snug">{item.name}</p>
+                      <p className="mt-1 text-[9px] capitalize text-white/45 overflow-hidden text-ellipsis whitespace-nowrap">
                         {primaryMuscles} · {item.equipment || 'bodyweight'}
                       </p>
                       <span

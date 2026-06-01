@@ -16,17 +16,6 @@ const GYM_CATEGORIES = [
   { label: 'All', emoji: '⚡', muscles: null },
 ];
 
-const MOBILITY_MUSCLES = [
-  'abductors',
-  'adductors',
-  'shoulders',
-  'quadriceps',
-  'hamstrings',
-  'glutes',
-  'calves',
-  'neck',
-];
-
 const HOME_CATEGORIES = [
   { label: 'Upper Body', emoji: '💪', muscles: ['chest', 'shoulders', 'triceps', 'biceps'] },
   { label: 'Lower Body', emoji: '🦵', muscles: ['quads', 'glutes', 'hamstrings', 'calves'] },
@@ -57,12 +46,42 @@ function muscleTermMatches(group, target) {
 }
 
 function isWarmUpExercise(exercise) {
-  if (exercise.category === 'stretching') return true;
-  return (exercise.primaryMuscles || []).some(m => MOBILITY_MUSCLES.includes(m));
+  if (exercise.category !== 'stretching') return false;
+  const equipment = String(exercise.equipment || '').toLowerCase();
+  return equipment.includes('body only') || equipment.includes('band');
 }
 
 function isCoolDownExercise(exercise) {
-  return exercise.category === 'stretching';
+  return exercise.category === 'stretching' && exercise.level === 'beginner';
+}
+
+const HOME_CATEGORY_VISUALS = {
+  squat: { gradient: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #52b788 100%)', emoji: '🦵' },
+  lunge: { gradient: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #52b788 100%)', emoji: '🦵' },
+  horizontal_push: { gradient: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #60a5fa 100%)', emoji: '💪' },
+  vertical_push: { gradient: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #60a5fa 100%)', emoji: '💪' },
+  horizontal_pull: { gradient: 'linear-gradient(135deg, #3b0764 0%, #7c3aed 50%, #a78bfa 100%)', emoji: '🔙' },
+  vertical_pull: { gradient: 'linear-gradient(135deg, #3b0764 0%, #7c3aed 50%, #a78bfa 100%)', emoji: '🔙' },
+  core: { gradient: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #fb923c 100%)', emoji: '🔥' },
+  mobility: { gradient: 'linear-gradient(135deg, #134e4a 0%, #0d9488 50%, #2dd4bf 100%)', emoji: '🧘' },
+  cardio: { gradient: 'linear-gradient(135deg, #7f1d1d 0%, #dc2626 50%, #f87171 100%)', emoji: '🏃' },
+  hinge: { gradient: 'linear-gradient(135deg, #713f12 0%, #ca8a04 50%, #facc15 100%)', emoji: '⚡' },
+};
+
+const DEFAULT_HOME_VISUAL = {
+  gradient: 'linear-gradient(135deg, #1f2937 0%, #374151 50%, #6b7280 100%)',
+  emoji: '🏠',
+};
+
+function getHomeCategoryVisual(exercise) {
+  return HOME_CATEGORY_VISUALS[exercise.category] || DEFAULT_HOME_VISUAL;
+}
+
+function formatMusclesLabel(muscles, max = 2) {
+  const list = Array.isArray(muscles) ? muscles.filter(Boolean) : [];
+  if (!list.length) return '';
+  if (list.length <= max) return list.join(', ');
+  return `${list.slice(0, max).join(', ')} +${list.length - max}`;
 }
 
 function matchesGymCategory(exercise, category) {
@@ -352,12 +371,15 @@ export default function GymPage() {
             <div className="space-y-2">
               {filteredHomeExercises.map((ex, i) => {
                 const levelStyle = LEVEL_COLORS[ex.level] || LEVEL_COLORS.intermediate;
+                const visual = getHomeCategoryVisual(ex);
+                const musclesLabel = formatMusclesLabel(ex.muscleGroups);
+                const equipmentLabel = ex.equipment?.length ? ex.equipment.join(', ') : '';
                 return (
                   <button
                     key={ex.id || `home-${i}`}
                     type="button"
                     onClick={() => setSelectedHomeExercise(ex)}
-                    className="w-full rounded-[18px] border p-4 flex items-center justify-between transition-all duration-200 text-left active:scale-[0.99]"
+                    className="w-full min-h-[80px] rounded-[18px] border p-3 flex items-center gap-3 transition-all duration-200 text-left active:scale-[0.99]"
                     style={{
                       background: 'rgba(255,255,255,0.025)',
                       borderColor: 'rgba(255,255,255,0.07)',
@@ -366,15 +388,21 @@ export default function GymPage() {
                       transition: `opacity 0.3s ease ${i * 0.03}s, transform 0.3s ease ${i * 0.03}s`,
                     }}
                   >
-                    <div className="min-w-0">
-                      <p className="text-[13px] font-bold text-white truncate">{ex.name}</p>
-                      <p className="text-[10px] text-white/35 mt-0.5 capitalize truncate">
-                        {ex.muscleGroups?.join(', ')}
-                        {ex.equipment?.length ? ` · ${ex.equipment.join(', ')}` : ''}
+                    <div
+                      className="h-20 w-20 shrink-0 flex items-center justify-center rounded-2xl text-[40px] leading-none"
+                      style={{ background: visual.gradient }}
+                    >
+                      {visual.emoji}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-bold text-white line-clamp-2 leading-snug">{ex.name}</p>
+                      <p className="text-[9px] text-white/35 mt-1 capitalize overflow-hidden text-ellipsis whitespace-nowrap">
+                        {musclesLabel}
+                        {equipmentLabel ? ` · ${equipmentLabel}` : ''}
                       </p>
                     </div>
                     <span
-                      className="text-[9px] px-2 py-1 rounded-full font-bold uppercase shrink-0 ml-2"
+                      className="text-[9px] px-2 py-1 rounded-full font-bold uppercase shrink-0"
                       style={{
                         background: levelStyle.bg,
                         border: `1px solid ${levelStyle.border}`,
