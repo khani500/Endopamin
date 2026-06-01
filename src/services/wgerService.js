@@ -158,17 +158,109 @@ function buildExerciseInfoUrl({ language, limit, category, equipment, extra = {}
   return `${BASE_URL}/exerciseinfo/?${params.toString()}`;
 }
 
+let allEnglishExercisesCache = null;
+let allEnglishExercisesPromise = null;
+
+async function fetchAllExerciseInfoPages({
+  language = 2,
+  category,
+  equipment,
+  limit = 100,
+  onProgress,
+} = {}) {
+  const pageSize = Math.min(Number(limit) || 100, 100);
+  const firstUrl = buildExerciseInfoUrl({
+    language,
+    limit: pageSize,
+    category,
+    equipment,
+    extra: { offset: 0 },
+  });
+  const first = await fetchJson(firstUrl);
+  const firstResults = first.results || [];
+  const count = Number(first.count) || firstResults.length;
+  onProgress?.({ loaded: firstResults.length, total: count });
+
+  const pages = Math.ceil(count / pageSize);
+  if (pages <= 1) return { count, results: firstResults };
+
+  const offsets = Array.from({ length: pages - 1 }, (_, i) => (i + 1) * pageSize);
+  const rest = await Promise.all(offsets.map(async offset => {
+    const pageUrl = buildExerciseInfoUrl({
+      language,
+      limit: pageSize,
+      category,
+      equipment,
+      extra: { offset },
+    });
+    const page = await fetchJson(pageUrl);
+    return page.results || [];
+  }));
+
+  let loaded = firstResults.length;
+  rest.forEach(results => {
+    loaded += results.length;
+    onProgress?.({ loaded: Math.min(loaded, count), total: count });
+  });
+
+  return {
+    count,
+    results: [...firstResults, ...rest.flat()],
+  };
+}
+
 export async function fetchWgerExercises({
   category,
   equipment,
   language = 2,
   limit = 100,
+  onProgress,
+  useCache = true,
 } = {}) {
-  const url = buildExerciseInfoUrl({ language, limit, category, equipment });
-  const data = await fetchJson(url);
+  const shouldLoadFullCatalog = !category && !equipment && Number(language) === 2;
+  if (shouldLoadFullCatalog && useCache && allEnglishExercisesCache) {
+    onProgress?.({ loaded: allEnglishExercisesCache.length, total: allEnglishExercisesCache.length });
+    return allEnglishExercisesCache;
+  }
 
-  const exercises = (data.results || []).map(row => normalizeExercise(row, language));
-  await attachVideosToExercises(exercises);
+  if (shouldLoadFullCatalog && useCache && allEnglishExercisesPromise) {
+    const cached = await allEnglishExercisesPromise;
+    onProgress?.({ loaded: cached.length, total: cached.length });
+    return cached;
+  }
+
+  const loader = async () => {
+    const data = await fetchAllExerciseInfoPages({
+      language,
+      category,
+      equipment,
+      limit,
+      onProgress,
+    });
+    const exercises = (data.results || []).map(row => normalizeExercise(row, language));
+    // For full catalog loads, avoid hundreds of per-exercise video requests up front.
+    const shouldAttachVideos = category || equipment;
+    if (shouldAttachVideos) {
+      await attachVideosToExercises(exercises);
+    }
+    return exercises;
+  };
+
+  if (shouldLoadFullCatalog && useCache) {
+    allEnglishExercisesPromise = loader()
+      .then(exercises => {
+        allEnglishExercisesCache = exercises;
+        return exercises;
+      })
+      .finally(() => {
+        allEnglishExercisesPromise = null;
+      });
+    const cached = await allEnglishExercisesPromise;
+    onProgress?.({ loaded: cached.length, total: cached.length });
+    return cached;
+  }
+
+  const exercises = await loader();
   return exercises;
 }
 

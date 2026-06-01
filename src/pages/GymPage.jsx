@@ -66,6 +66,7 @@ export default function GymPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [loadProgress, setLoadProgress] = useState({ loaded: 0, total: 0 });
 
   const compatibleExercises = useMemo(
     () => EXERCISES.filter(ex => ex.equipment.every(item => selectedEquipment.includes(item))),
@@ -115,12 +116,17 @@ export default function GymPage() {
     void (async () => {
       setWgerLoading(true);
       setWgerError(null);
+      setLoadProgress({ loaded: 0, total: 0 });
       try {
-        const batches = await Promise.all(
-          WGER_CATEGORIES.map(category => fetchWgerExercises({ category, limit: 12 })),
-        );
+        const allExercises = await fetchWgerExercises({
+          language: 2,
+          limit: 100,
+          onProgress: progress => {
+            if (!cancelled && progress) setLoadProgress(progress);
+          },
+        });
         if (cancelled) return;
-        setWgerExercises(batches.flat());
+        setWgerExercises(allExercises);
         setUseLocalFallback(false);
       } catch (err) {
         if (cancelled) return;
@@ -315,7 +321,11 @@ export default function GymPage() {
               className="w-full bg-transparent text-[13px] text-white outline-none placeholder:text-white/30"
             />
             {(searchLoading || wgerLoading) && (
-              <p className="mt-2 text-[10px] text-[#CCFF00] font-bold">Loading exercises…</p>
+              <p className="mt-2 text-[10px] text-[#CCFF00] font-bold">
+                {loadProgress.total > 0
+                  ? `Loading exercises... ${loadProgress.loaded}/${loadProgress.total}`
+                  : 'Loading exercises...'}
+              </p>
             )}
             {useLocalFallback && !wgerLoading && (
               <p className="mt-2 text-[10px] text-white/35">Showing local library — Wger API unavailable</p>
