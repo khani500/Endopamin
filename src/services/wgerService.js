@@ -1,4 +1,5 @@
 const BASE_URL = 'https://wger.de/api/v2';
+const MEDIA_BASE_URL = 'https://wger.de';
 
 const CATEGORY_MAP = {
   8: 'arms',
@@ -68,16 +69,49 @@ function mapEquipment(equipment = []) {
   });
 }
 
-function mapImages(images = []) {
-  return images
-    .map(img => img.image || img.image_url || null)
-    .filter(Boolean);
+function resolveWgerMediaUrl(url) {
+  if (!url) return null;
+  if (typeof url !== 'string') return null;
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (url.startsWith('/')) return `${MEDIA_BASE_URL}${url}`;
+  return url;
+}
+
+function parseWgerImages(images = []) {
+  const all = [];
+  let mainImage = null;
+
+  for (const img of images || []) {
+    const rawUrl = img?.image || img?.image_url || null;
+    const resolved = resolveWgerMediaUrl(rawUrl);
+    if (!resolved) continue;
+
+    if (img?.is_main && !mainImage) mainImage = resolved;
+    all.push(resolved);
+  }
+
+  // De-dupe while preserving order (and keeping main first)
+  const deduped = Array.from(new Set(all));
+  const resolvedImages = mainImage
+    ? [mainImage, ...deduped.filter(u => u !== mainImage)]
+    : deduped;
+
+  return { images: resolvedImages, mainImage: resolvedImages[0] || null };
+}
+
+function parseWgerVideos(videos = []) {
+  const all = [];
+  for (const v of videos || []) {
+    const resolved = resolveWgerMediaUrl(v?.video);
+    if (resolved) all.push(resolved);
+  }
+  return Array.from(new Set(all));
 }
 
 function normalizeExercise(row, language = 2) {
   const translation = pickTranslation(row.translations, language);
   const categoryId = row.category?.id ?? row.category;
-  const inlineImages = mapImages(row.images);
+  const { images: inlineImages, mainImage } = parseWgerImages(row.images);
 
   return {
     id: row.id,
@@ -90,7 +124,9 @@ function normalizeExercise(row, language = 2) {
       ...mapMuscles(row.muscles_secondary),
     ],
     equipment: mapEquipment(row.equipment),
+    mainImage,
     images: inlineImages,
+    videos: [],
   };
 }
 
@@ -130,24 +166,66 @@ export async function fetchWgerExercises({
 } = {}) {
   const url = buildExerciseInfoUrl({ language, limit, category, equipment });
   const data = await fetchJson(url);
-  return (data.results || []).map(row => normalizeExercise(row, language));
+
+  const exercises = (data.results || []).map(row => normalizeExercise(row, language));
+  await attachVideosToExercises(exercises);
+  return exercises;
 }
+
+// Media caches to avoid re-fetching per exercise across renders and searches.
+const imagesCache = new Map(); // exerciseId -> { images: string[], mainImage: string | null }
+const videosCache = new Map(); // exerciseId -> string[]
 
 export async function fetchExerciseImages(exerciseId) {
   if (!exerciseId) return [];
+  if (imagesCache.has(exerciseId)) return imagesCache.get(exerciseId).images;
 
   const detail = await fetchJson(`${BASE_URL}/exerciseinfo/${exerciseId}/?format=json`);
-  const inlineImages = mapImages(detail.images);
-  if (inlineImages.length) return inlineImages;
+  const parsedInline = parseWgerImages(detail.images);
+  if (parsedInline.images.length) {
+    imagesCache.set(exerciseId, parsedInline);
+    return parsedInline.images;
+  }
 
   const data = await fetchJson(
     `${BASE_URL}/exerciseimage/?exercise_base=${encodeURIComponent(exerciseId)}&format=json`,
   );
 
-  return (data.results || [])
-    .filter(img => img.exercise === Number(exerciseId) || img.exercise_uuid === detail.uuid)
-    .map(img => img.image)
-    .filter(Boolean);
+  const results = (data.results || []).filter(
+    img => img.exercise === Number(exerciseId) || img.exercise_uuid === detail.uuid,
+  );
+  const parsed = parseWgerImages(results);
+  imagesCache.set(exerciseId, parsed);
+  return parsed.images;
+}
+
+export async function fetchExerciseVideos(exerciseId) {
+  if (!exerciseId) return [];
+  if (videosCache.has(exerciseId)) return videosCache.get(exerciseId);
+
+  const data = await fetchJson(
+    `${BASE_URL}/video/?exercise_base=${encodeURIComponent(exerciseId)}&format=json`,
+  );
+  const parsed = parseWgerVideos(data.results || []);
+  videosCache.set(exerciseId, parsed);
+  return parsed;
+}
+
+async function attachVideosToExercises(exercises) {
+  const withVideos = exercises.filter(ex => !ex.videos || !ex.videos.length);
+  if (!withVideos.length) return exercises;
+
+  const chunkSize = 10;
+  for (let i = 0; i < withVideos.length; i += chunkSize) {
+    const chunk = withVideos.slice(i, i + chunkSize);
+    await Promise.all(
+      chunk.map(async ex => {
+        ex.videos = await fetchExerciseVideos(ex.id);
+      }),
+    );
+  }
+
+  return exercises;
 }
 
 export async function searchWgerExercises(query) {
@@ -162,7 +240,9 @@ export async function searchWgerExercises(query) {
 
   try {
     const data = await fetchJson(url);
-    return (data.results || []).map(row => normalizeExercise(row, 2));
+    const exercises = (data.results || []).map(row => normalizeExercise(row, 2));
+    await attachVideosToExercises(exercises);
+    return exercises;
   } catch (err) {
     console.warn('Wger name__search failed, falling back to legacy search endpoint:', err);
 
@@ -179,7 +259,9 @@ export async function searchWgerExercises(query) {
         categoryId: item.data?.category ?? null,
         muscles: [],
         equipment: [],
+        mainImage: null,
         images: [],
+        videos: [],
       }));
     } catch {
       return [];
@@ -196,9 +278,12 @@ export async function getWgerExerciseById(exerciseId, language = 2) {
   const exercise = normalizeExercise(row, language);
 
   if (!exercise.images.length) {
-    exercise.images = await fetchExerciseImages(exerciseId);
+    const images = await fetchExerciseImages(exerciseId);
+    exercise.images = images;
+    exercise.mainImage = imagesCache.get(exerciseId)?.mainImage || null;
   }
 
+  exercise.videos = await fetchExerciseVideos(exerciseId);
   return exercise;
 }
 

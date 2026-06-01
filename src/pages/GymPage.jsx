@@ -18,6 +18,15 @@ const CATEGORY_LABELS = {
   abs: 'Abs',
 };
 
+const CATEGORY_EMOJI = {
+  arms: '💪',
+  legs: '🦵',
+  chest: '🏋️',
+  back: '🧱',
+  shoulders: '🤸',
+  abs: '🔥',
+};
+
 const EQUIPMENT = [
   { id: 'barbell', name: 'Barbell', svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="2" y="11" width="4" height="2" rx="1"/><rect x="18" y="11" width="4" height="2" rx="1"/><rect x="5" y="9" width="3" height="6" rx="1"/><rect x="16" y="9" width="3" height="6" rx="1"/><line x1="8" y1="12" x2="16" y2="12"/></svg> },
   { id: 'dumbbell', name: 'Dumbbell', svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="1" y="11" width="3" height="2" rx="0.5"/><rect x="20" y="11" width="3" height="2" rx="0.5"/><rect x="3" y="10" width="2" height="4" rx="0.5"/><rect x="19" y="10" width="2" height="4" rx="0.5"/><line x1="5" y1="12" x2="19" y2="12"/></svg> },
@@ -346,7 +355,10 @@ export default function GymPage() {
                       const muscles = Array.isArray(ex.muscles)
                         ? ex.muscles.join(', ')
                         : ex.muscle_group || ex.category;
-                      const imageUrl = ex.images?.[0];
+                      const videoUrl = ex.videos?.[0];
+                      const mainImageUrl = ex.mainImage || ex.images?.[0];
+                      const anyImageUrl = ex.images?.[0];
+                      const fallbackEmoji = CATEGORY_EMOJI[category] || '💪';
 
                       return (
                         <div
@@ -366,15 +378,33 @@ export default function GymPage() {
                               background: 'rgba(204,255,0,0.08)',
                               border: '1px solid rgba(204,255,0,0.15)',
                             }}>
-                            {imageUrl ? (
+                            {videoUrl ? (
+                              <video
+                                src={videoUrl}
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                preload="metadata"
+                                className="w-full h-full object-cover"
+                                poster={mainImageUrl || anyImageUrl || undefined}
+                              />
+                            ) : mainImageUrl ? (
                               <img
-                                src={imageUrl}
+                                src={mainImageUrl}
+                                alt={ex.name}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            ) : anyImageUrl ? (
+                              <img
+                                src={anyImageUrl}
                                 alt={ex.name}
                                 className="w-full h-full object-cover"
                                 loading="lazy"
                               />
                             ) : (
-                              <span className="text-[22px]">{ex.emoji || '💪'}</span>
+                              <span className="text-[22px]">{ex.emoji || fallbackEmoji}</span>
                             )}
                           </div>
                           <div className="min-w-0 flex-1">
