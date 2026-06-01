@@ -14,19 +14,24 @@ async function fetchExerciseDB(path) {
   return response.json();
 }
 
+export function clearExerciseCache() {
+  allExercisesCache = null;
+}
+
 export async function fetchAllExercises(limit = 1300) {
   if (allExercisesCache) return allExercisesCache;
-  const response = await fetch(EXERCISES_JSON_URL);
-  if (!response.ok) {
-    throw new Error(`ExerciseDB request failed (${response.status}): exercises.json`);
+  try {
+    const response = await fetch(EXERCISES_JSON_URL);
+    if (!response.ok) {
+      throw new Error(`ExerciseDB request failed (${response.status}): exercises.json`);
+    }
+    const data = await response.json();
+    allExercisesCache = Array.isArray(data) ? data.slice(0, Number(limit) || 1300) : [];
+    return allExercisesCache;
+  } catch (err) {
+    console.error('[ExerciseDB] Failed to fetch exercises.json:', err);
+    return [];
   }
-  const data = await response.json();
-  console.log('Total exercises:', data.length);
-  console.log('First exercise:', JSON.stringify(data[0], null, 2));
-  console.log('Unique categories:', [...new Set(data.map(e => e.category))]);
-  console.log('Sample primaryMuscles:', [...new Set(data.flatMap(e => e.primaryMuscles || []))].slice(0, 20));
-  allExercisesCache = Array.isArray(data) ? data.slice(0, Number(limit) || 1300) : [];
-  return allExercisesCache;
 }
 
 export async function fetchByBodyPart(bodyPart) {
@@ -58,4 +63,4 @@ export async function fetchBodyPartList() {
   return bodyPartListCache;
 }
 
-export { BASE_URL };
+export { BASE_URL, EXERCISES_JSON_URL };
