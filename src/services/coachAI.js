@@ -5,7 +5,7 @@ import {
   sanitizeCoachResponse,
   toGeminiContents,
 } from '../lib/coachChat';
-import { buildCoachReferenceContext } from '../lib/coachContext';
+import { buildCoachReferenceContextAsync } from '../lib/coachContext';
 import { buildCoachMemory, fetchCoachMemory, upsertCoachMemory } from '../lib/coachMemory';
 import { formatCoachMemoryForPrompt } from '../config/coachPrompts';
 import { getCoach, resolveCoachId } from '../config/coaches';
@@ -138,6 +138,15 @@ export const chatWithCoach = async (
   const liveMemory = buildCoachMemory(storedMemory, profile, workoutTime, equipment, historyMessages);
   const coachMemoryBlock = formatCoachMemoryForPrompt(liveMemory);
 
+  const referenceContext = await buildCoachReferenceContextAsync({
+    location,
+    experience: profile?.experience,
+    equipment,
+    injuries: profile?.injuries,
+    goal: profile?.goal,
+    userMessage: message,
+  });
+
   const basePrompt = `${coach.personality}
 
 ${coachMemoryBlock}
@@ -155,13 +164,7 @@ ${COACH_CHAT_INSTRUCTIONS}`;
       preservePersona: resolvedId === 'kane',
       profile,
       knowledgeContext,
-      referenceContext: buildCoachReferenceContext({
-        location,
-        experience: profile?.experience,
-        equipment,
-        injuries: profile?.injuries,
-        goal: profile?.goal,
-      }),
+      referenceContext,
     },
   );
 

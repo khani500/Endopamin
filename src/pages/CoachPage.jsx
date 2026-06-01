@@ -25,7 +25,7 @@ import {
 } from '../lib/coachChat';
 import { getExerciseData } from '../lib/exerciseDB';
 import { COACH_SYSTEM_PROMPTS, formatCoachMemoryForPrompt } from '../config/coachPrompts';
-import { buildCoachReferenceContext, buildCoachReferenceContextAsync } from '../lib/coachContext';
+import { buildCoachReferenceContext, buildCoachReferenceContextAsync, buildWgerExercisePromptContext } from '../lib/coachContext';
 import {
   buildCoachMemory,
   fetchCoachMemory,
@@ -536,6 +536,24 @@ export default function CoachPage() {
       coachMemoryRef.current = { coachId: coach.id, memory: liveMemory };
       const coachMemoryBlock = formatCoachMemoryForPrompt(liveMemory);
       const knowledgeContext = await buildKnowledgeContext(profile?.experience);
+      const wgerContext = await buildWgerExercisePromptContext(text, {
+        location,
+        experience: profile?.experience,
+        equipment,
+        injuries: profile?.injuries,
+        goal: profile?.goal,
+      });
+      const baseReferenceContext = referenceContextRef.current
+        || buildCoachReferenceContext({
+          location,
+          experience: profile?.experience,
+          equipment,
+          injuries: profile?.injuries,
+          goal: profile?.goal,
+        });
+      const referenceContext = wgerContext
+        ? `${baseReferenceContext}\n\n${wgerContext}`
+        : baseReferenceContext;
       const basePrompt = `${coach.systemPrompt}\n\n${coachMemoryBlock}`;
       const systemPrompt = buildCoachSystemPrompt(
         basePrompt,
@@ -546,14 +564,7 @@ export default function CoachPage() {
           preservePersona: coach.id === 'kane',
           profile,
           knowledgeContext,
-          referenceContext: referenceContextRef.current
-            || buildCoachReferenceContext({
-              location,
-              experience: profile?.experience,
-              equipment,
-              injuries: profile?.injuries,
-              goal: profile?.goal,
-            }),
+          referenceContext,
         },
       );
       const contents = toGeminiContents(apiHistory);

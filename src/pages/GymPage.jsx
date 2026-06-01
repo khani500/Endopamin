@@ -6,6 +6,17 @@ import { RestDayProtocol } from '../components/gym/RestDayProtocol';
 import { DESK_BREAKS } from '../data/deskBreaks';
 import { EXERCISES } from '../data/exercises';
 import { supabase } from '../lib/supabase';
+import { fetchWgerExercises, searchWgerExercises } from '../services/wgerService';
+
+const WGER_CATEGORIES = ['arms', 'legs', 'chest', 'back', 'shoulders', 'abs'];
+const CATEGORY_LABELS = {
+  arms: 'Arms',
+  legs: 'Legs',
+  chest: 'Chest',
+  back: 'Back',
+  shoulders: 'Shoulders',
+  abs: 'Abs',
+};
 
 const EQUIPMENT = [
   { id: 'barbell', name: 'Barbell', svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><rect x="2" y="11" width="4" height="2" rx="1"/><rect x="18" y="11" width="4" height="2" rx="1"/><rect x="5" y="9" width="3" height="6" rx="1"/><rect x="16" y="9" width="3" height="6" rx="1"/><line x1="8" y1="12" x2="16" y2="12"/></svg> },
@@ -22,7 +33,6 @@ const EQUIPMENT = [
   { id: 'bodyweight', name: 'Bodyweight', svg: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="4" r="2"/><path d="M12 6v6M9 9l3-3 3 3M9 18l3 3 3-3M12 12v6"/><path d="M6 13c0 0 2-2 6-2s6 2 6 2"/></svg> },
 ];
 
-const DIFF_COLOR = { beginner: '#CCFF00', intermediate: '#FFA53C', advanced: '#FF6B6B' };
 
 export default function GymPage() {
   const { user, profile, setProfile } = useAuth();
@@ -40,10 +50,42 @@ export default function GymPage() {
   });
   const [activeTab, setActiveTab] = useState('exercises');
   const [animatedItems, setAnimatedItems] = useState([]);
+  const [wgerExercises, setWgerExercises] = useState([]);
+  const [wgerLoading, setWgerLoading] = useState(true);
+  const [wgerError, setWgerError] = useState(null);
+  const [useLocalFallback, setUseLocalFallback] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const compatibleExercises = useMemo(
     () => EXERCISES.filter(ex => ex.equipment.every(item => selectedEquipment.includes(item))),
     [selectedEquipment],
+  );
+
+  const localFallbackGrouped = useMemo(() => {
+    const grouped = Object.fromEntries(WGER_CATEGORIES.map(cat => [cat, []]));
+    compatibleExercises.forEach(ex => {
+      const cat = ex.category === 'core' ? 'abs' : ex.category;
+      if (grouped[cat]) grouped[cat].push(ex);
+    });
+    return grouped;
+  }, [compatibleExercises]);
+
+  const wgerGrouped = useMemo(() => {
+    const source = searchResults ?? wgerExercises;
+    const grouped = Object.fromEntries(WGER_CATEGORIES.map(cat => [cat, []]));
+    source.forEach(ex => {
+      const cat = ex.category && grouped[ex.category] ? ex.category : null;
+      if (cat) grouped[cat].push(ex);
+    });
+    return grouped;
+  }, [wgerExercises, searchResults]);
+
+  const displayedGrouped = useLocalFallback ? localFallbackGrouped : wgerGrouped;
+  const displayedExerciseCount = useMemo(
+    () => Object.values(displayedGrouped).reduce((sum, list) => sum + list.length, 0),
+    [displayedGrouped],
   );
 
   const currentBreakId = breakId || activeDeskBreak;
@@ -59,12 +101,92 @@ export default function GymPage() {
   }, [profile?.equipment]);
 
   useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      setWgerLoading(true);
+      setWgerError(null);
+      try {
+        const batches = await Promise.all(
+          WGER_CATEGORIES.map(category => fetchWgerExercises({ category, limit: 12 })),
+        );
+        if (cancelled) return;
+        setWgerExercises(batches.flat());
+        setUseLocalFallback(false);
+      } catch (err) {
+        if (cancelled) return;
+        console.warn('Wger API unavailable, using local exercise library:', err);
+        setWgerError(err?.message || 'Could not load exercises from Wger');
+        setUseLocalFallback(true);
+      } finally {
+        if (!cancelled) setWgerLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const term = searchQuery.trim();
+    if (!term) {
+      setSearchResults(null);
+      setSearchLoading(false);
+      return undefined;
+    }
+
+    let cancelled = false;
+    setSearchLoading(true);
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const results = await searchWgerExercises(term);
+          if (!cancelled) {
+            setSearchResults(results);
+            setUseLocalFallback(false);
+          }
+        } catch (err) {
+          if (!cancelled) {
+            console.warn('Wger search failed, filtering local library:', err);
+            const lower = term.toLowerCase();
+            const filtered = compatibleExercises.filter(ex =>
+              ex.name.toLowerCase().includes(lower)
+              || ex.category?.toLowerCase().includes(lower),
+            );
+            setSearchResults(filtered.map(ex => ({
+              id: ex.id,
+              name: ex.name,
+              description: ex.coachTip || '',
+              category: ex.category === 'core' ? 'abs' : ex.category,
+              muscles: [ex.muscles?.primary, ...(ex.muscles?.secondary || [])].filter(Boolean),
+              equipment: ex.equipment || [],
+              images: [],
+              emoji: ex.emoji,
+            })));
+            setUseLocalFallback(true);
+          }
+        } finally {
+          if (!cancelled) setSearchLoading(false);
+        }
+      })();
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [searchQuery, compatibleExercises]);
+
+  useEffect(() => {
     setAnimatedItems([]);
-    const items = activeTab === 'exercises' ? compatibleExercises : DESK_BREAKS;
+    const items = activeTab === 'exercises'
+      ? WGER_CATEGORIES.flatMap(cat => displayedGrouped[cat] || [])
+      : DESK_BREAKS;
     items.forEach((_, i) => {
       setTimeout(() => setAnimatedItems(prev => [...prev, i]), i * 50);
     });
-  }, [activeTab, compatibleExercises]);
+  }, [activeTab, displayedGrouped]);
 
   if (currentBreakId) {
     return <DeskBreakSession breakId={currentBreakId}
@@ -144,7 +266,7 @@ export default function GymPage() {
       <div className="px-5 mb-4">
         <div className="flex gap-2 p-1 rounded-[16px] bg-white/[0.04] border border-white/[0.06]">
           {[
-            { id: 'exercises', label: 'Exercises', count: compatibleExercises.length, icon: <><path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/></> },
+            { id: 'exercises', label: 'Exercises', count: displayedExerciseCount, icon: <><path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/></> },
             { id: 'desk', label: 'Desk Breaks', count: DESK_BREAKS.length, icon: <><rect x="2" y="14" width="20" height="3" rx="1"/><path d="M6 17v3M18 17v3M12 14V9"/><circle cx="12" cy="7" r="2"/></> },
           ].map(tab => (
             <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
@@ -173,69 +295,110 @@ export default function GymPage() {
 
       {/* Exercises Tab */}
       {activeTab === 'exercises' && (
-        <div className="px-5 space-y-2">
-          {compatibleExercises.length === 0 ? (
+        <div className="px-5 space-y-4">
+          <div className="rounded-[18px] border border-white/[0.07] p-3"
+            style={{ background: 'rgba(255,255,255,0.025)' }}>
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={event => setSearchQuery(event.target.value)}
+              placeholder="Search exercises (Wger library)..."
+              className="w-full bg-transparent text-[13px] text-white outline-none placeholder:text-white/30"
+            />
+            {(searchLoading || wgerLoading) && (
+              <p className="mt-2 text-[10px] text-[#CCFF00] font-bold">Loading exercises…</p>
+            )}
+            {useLocalFallback && !wgerLoading && (
+              <p className="mt-2 text-[10px] text-white/35">Showing local library — Wger API unavailable</p>
+            )}
+            {wgerError && !useLocalFallback && (
+              <p className="mt-2 text-[10px] text-[#FF6B6B]">{wgerError}</p>
+            )}
+          </div>
+
+          {displayedExerciseCount === 0 && !wgerLoading && !searchLoading ? (
             <div className="rounded-[20px] border border-white/[0.07] p-8 text-center"
               style={{ background: 'rgba(255,255,255,0.02)' }}>
               <p className="text-[32px] mb-3">🏋️</p>
-              <p className="text-[14px] font-bold text-white mb-1">No exercises match</p>
-              <p className="text-[12px] text-white/35">Select equipment above to see matching exercises</p>
+              <p className="text-[14px] font-bold text-white mb-1">No exercises found</p>
+              <p className="text-[12px] text-white/35">
+                {searchQuery.trim() ? 'Try a different search term' : 'Select equipment above or check back later'}
+              </p>
             </div>
           ) : (
-            compatibleExercises.map((ex, i) => (
-              <div key={ex.id || i}
-                className="rounded-[18px] border p-4 flex items-center justify-between transition-all duration-200 active:scale-[0.98] cursor-pointer"
-                style={{
-                  background: 'rgba(255,255,255,0.025)',
-                  borderColor: 'rgba(255,255,255,0.07)',
-                  opacity: animatedItems.includes(i) ? 1 : 0,
-                  transform: animatedItems.includes(i) ? 'translateY(0)' : 'translateY(12px)',
-                  transition: `opacity 0.3s ease ${i * 0.04}s, transform 0.3s ease ${i * 0.04}s`,
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-                }}
-                onClick={() => navigate(`/exercises/${ex.id}`)}>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-[12px] flex items-center justify-center flex-shrink-0 text-[20px]"
-                    style={{
-                      background: `${DIFF_COLOR[ex.level] || '#CCFF00'}15`,
-                      border: `1px solid ${DIFF_COLOR[ex.level] || '#CCFF00'}25`,
-                    }}>
-                    {ex.category === 'strength' ? '💪' :
-                     ex.category === 'cardio' ? '🏃' :
-                     ex.category === 'mobility' ? '🧘' : '⚡'}
+            WGER_CATEGORIES.map(category => {
+              const exercises = displayedGrouped[category] || [];
+              if (!exercises.length) return null;
+
+              let itemIndex = 0;
+              WGER_CATEGORIES.slice(0, WGER_CATEGORIES.indexOf(category)).forEach(cat => {
+                itemIndex += (displayedGrouped[cat] || []).length;
+              });
+
+              return (
+                <section key={category}>
+                  <p className="text-[10px] tracking-[2.5px] uppercase text-[#CCFF00] font-bold mb-2">
+                    {CATEGORY_LABELS[category]}
+                  </p>
+                  <div className="space-y-2">
+                    {exercises.map((ex, i) => {
+                      const animIndex = itemIndex + i;
+                      const muscles = Array.isArray(ex.muscles)
+                        ? ex.muscles.join(', ')
+                        : ex.muscle_group || ex.category;
+                      const imageUrl = ex.images?.[0];
+
+                      return (
+                        <div
+                          key={ex.id || `${category}-${i}`}
+                          className="rounded-[18px] border p-4 flex items-center gap-3 transition-all duration-200"
+                          style={{
+                            background: 'rgba(255,255,255,0.025)',
+                            borderColor: 'rgba(255,255,255,0.07)',
+                            opacity: animatedItems.includes(animIndex) ? 1 : 0,
+                            transform: animatedItems.includes(animIndex) ? 'translateY(0)' : 'translateY(12px)',
+                            transition: `opacity 0.3s ease ${animIndex * 0.04}s, transform 0.3s ease ${animIndex * 0.04}s`,
+                            boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+                          }}
+                        >
+                          <div className="w-14 h-14 rounded-[12px] overflow-hidden flex-shrink-0 flex items-center justify-center"
+                            style={{
+                              background: 'rgba(204,255,0,0.08)',
+                              border: '1px solid rgba(204,255,0,0.15)',
+                            }}>
+                            {imageUrl ? (
+                              <img
+                                src={imageUrl}
+                                alt={ex.name}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <span className="text-[22px]">{ex.emoji || '💪'}</span>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[13px] font-bold text-white truncate">{ex.name}</p>
+                            <p className="text-[10px] text-white/35 mt-0.5 capitalize truncate">
+                              {muscles || category}
+                              {ex.equipment?.length ? ` · ${ex.equipment.join(', ')}` : ''}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div>
-                    <p className="text-[13px] font-bold text-white">{ex.name}</p>
-                    <p className="text-[10px] text-white/35 mt-0.5">
-                      {ex.muscle_group || ex.category} · {ex.equipment?.join(', ')}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-[9px] px-2 py-1 rounded-full font-bold"
-                    style={{
-                      background: `${DIFF_COLOR[ex.level] || '#CCFF00'}15`,
-                      color: DIFF_COLOR[ex.level] || '#CCFF00',
-                      border: `1px solid ${DIFF_COLOR[ex.level] || '#CCFF00'}25`,
-                    }}>
-                    {ex.level}
-                  </span>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.8"
-                    strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                    <polyline points="9 18 15 12 9 6"/>
-                  </svg>
-                </div>
-              </div>
-            ))
+                </section>
+              );
+            })
           )}
 
-          {/* Start Workout CTA */}
-          {compatibleExercises.length > 0 && (
+          {displayedExerciseCount > 0 && (
             <button type="button"
               onClick={() => navigate('/workout/strength')}
               className="w-full py-4 rounded-[18px] font-black text-[14px] text-black mt-3 transition-all active:scale-95"
               style={{ background: '#CCFF00', boxShadow: '0 8px 24px rgba(204,255,0,0.35)' }}>
-              Start Workout with {compatibleExercises.length} Exercises
+              Start Workout with {displayedExerciseCount} Exercises
             </button>
           )}
         </div>
