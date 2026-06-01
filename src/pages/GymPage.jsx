@@ -8,7 +8,7 @@ const GYM_CATEGORIES = [
   { label: 'Back', emoji: '🔙', muscles: ['lats', 'middle back', 'lower back', 'traps'] },
   { label: 'Shoulders', emoji: '💪', muscles: ['shoulders', 'neck'] },
   { label: 'Arms', emoji: '💪', muscles: ['biceps', 'triceps', 'forearms'] },
-  { label: 'Legs', emoji: '🦵', muscles: ['quadriceps', 'hamstrings', 'glutes', 'calves', 'adductors', 'abductors'] },
+  { label: 'Legs', emoji: '🦵', filterType: 'legs' },
   { label: 'Core', emoji: '🔥', muscles: ['abdominals', 'obliques'] },
   { label: 'Cardio', emoji: '🏃', muscles: null, filterByCategory: 'cardio' },
   { label: 'Warm-Up', emoji: '🔥', filterType: 'warm-up' },
@@ -55,17 +55,26 @@ function isCoolDownExercise(exercise) {
   return exercise.category === 'stretching' && exercise.level === 'beginner';
 }
 
+const LEG_MUSCLES = ['quadriceps', 'hamstrings', 'glutes', 'calves', 'adductors', 'abductors'];
+
+function isLegsExercise(exercise) {
+  return exercise.category === 'strength'
+    && (exercise.primaryMuscles || []).some(m => LEG_MUSCLES.includes(m));
+}
+
+const DESK_CARD_GRADIENT = 'linear-gradient(135deg, #2d1a4a, #4a2d7a)';
+
 const HOME_CATEGORY_VISUALS = {
-  squat: { gradient: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #52b788 100%)', emoji: '🦵' },
-  lunge: { gradient: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #52b788 100%)', emoji: '🦵' },
-  horizontal_push: { gradient: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #60a5fa 100%)', emoji: '💪' },
-  vertical_push: { gradient: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #60a5fa 100%)', emoji: '💪' },
-  horizontal_pull: { gradient: 'linear-gradient(135deg, #3b0764 0%, #7c3aed 50%, #a78bfa 100%)', emoji: '🔙' },
-  vertical_pull: { gradient: 'linear-gradient(135deg, #3b0764 0%, #7c3aed 50%, #a78bfa 100%)', emoji: '🔙' },
-  core: { gradient: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #fb923c 100%)', emoji: '🔥' },
-  mobility: { gradient: 'linear-gradient(135deg, #134e4a 0%, #0d9488 50%, #2dd4bf 100%)', emoji: '🧘' },
-  cardio: { gradient: 'linear-gradient(135deg, #7f1d1d 0%, #dc2626 50%, #f87171 100%)', emoji: '🏃' },
-  hinge: { gradient: 'linear-gradient(135deg, #713f12 0%, #ca8a04 50%, #facc15 100%)', emoji: '⚡' },
+  squat: { gradient: 'linear-gradient(135deg, #1a4a1a, #2d7a2d)', emoji: '🦵' },
+  lunge: { gradient: 'linear-gradient(135deg, #1a4a1a, #2d7a2d)', emoji: '🦵' },
+  horizontal_push: { gradient: 'linear-gradient(135deg, #1a1a4a, #2d2d7a)', emoji: '💪' },
+  vertical_push: { gradient: 'linear-gradient(135deg, #1a1a4a, #2d2d7a)', emoji: '💪' },
+  horizontal_pull: { gradient: 'linear-gradient(135deg, #2d1a4a, #5a2d7a)', emoji: '🔙' },
+  vertical_pull: { gradient: 'linear-gradient(135deg, #2d1a4a, #5a2d7a)', emoji: '🔙' },
+  core: { gradient: 'linear-gradient(135deg, #4a2d1a, #7a5a2d)', emoji: '🔥' },
+  mobility: { gradient: 'linear-gradient(135deg, #1a3a4a, #2d6a7a)', emoji: '🧘' },
+  cardio: { gradient: 'linear-gradient(135deg, #4a1a1a, #7a2d2d)', emoji: '🏃' },
+  hinge: { gradient: 'linear-gradient(135deg, #4a4a1a, #7a7a2d)', emoji: '⚡' },
 };
 
 const DEFAULT_HOME_VISUAL = {
@@ -88,6 +97,7 @@ function matchesGymCategory(exercise, category) {
   if (!category || category.label === 'All') return true;
   if (category.filterType === 'warm-up') return isWarmUpExercise(exercise);
   if (category.filterType === 'cool-down') return isCoolDownExercise(exercise);
+  if (category.filterType === 'legs') return isLegsExercise(exercise);
   if (category.filterByCategory) return exercise.category === category.filterByCategory;
   if (category.muscles) {
     return (exercise.primaryMuscles || []).some(m => category.muscles.includes(m));
@@ -389,7 +399,7 @@ export default function GymPage() {
                     }}
                   >
                     <div
-                      className="h-20 w-20 shrink-0 flex items-center justify-center rounded-2xl text-[40px] leading-none"
+                      className="h-20 w-20 shrink-0 flex items-center justify-center rounded-2xl text-[32px] leading-none"
                       style={{ background: visual.gradient }}
                     >
                       {visual.emoji}
@@ -437,21 +447,24 @@ export default function GymPage() {
                       key={item.id || `${sub.key}-${i}`}
                       type="button"
                       onClick={() => setSelectedDeskExercise(item)}
-                      className="w-full rounded-[14px] border px-3 py-2.5 flex items-center justify-between transition-all duration-200 text-left active:scale-[0.99]"
+                      className="w-full min-h-[80px] rounded-[18px] border p-3 flex items-center gap-3 transition-all duration-200 text-left active:scale-[0.99]"
                       style={{
                         background: 'rgba(255,255,255,0.025)',
                         borderColor: 'rgba(160,100,255,0.2)',
                       }}
                     >
-                      <div className="min-w-0 text-left">
-                        <p className="text-[12px] font-bold text-white truncate">{item.name}</p>
-                        <p className="text-[10px] text-white/35 mt-0.5 truncate">
-                          {formatDeskDuration(item)} · {item.muscleGroups?.join(', ')}
+                      <div
+                        className="h-20 w-20 shrink-0 flex items-center justify-center rounded-2xl text-[32px] leading-none"
+                        style={{ background: DESK_CARD_GRADIENT }}
+                      >
+                        💻
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[13px] font-bold text-white line-clamp-2 leading-snug">{item.name}</p>
+                        <p className="text-[9px] text-white/35 mt-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                          {formatDeskDuration(item)} · {formatMusclesLabel(item.muscleGroups)}
                         </p>
                       </div>
-                      <span className="text-[9px] font-black text-[#A064FF] bg-[#A064FF]/10 px-2 py-1 rounded-full border border-[#A064FF]/20 shrink-0 ml-2">
-                        {item.level}
-                      </span>
                     </button>
                   ))}
                 </div>

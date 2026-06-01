@@ -10,7 +10,7 @@ const CATEGORIES = [
   { label: 'Back', emoji: '🔙', muscles: ['lats', 'middle back', 'lower back', 'traps'] },
   { label: 'Shoulders', emoji: '💪', muscles: ['shoulders', 'neck'] },
   { label: 'Arms', emoji: '💪', muscles: ['biceps', 'triceps', 'forearms'] },
-  { label: 'Legs', emoji: '🦵', muscles: ['quadriceps', 'hamstrings', 'glutes', 'calves', 'adductors', 'abductors'] },
+  { label: 'Legs', emoji: '🦵', filterType: 'legs' },
   { label: 'Core', emoji: '🔥', muscles: ['abdominals', 'obliques'] },
   { label: 'Cardio', emoji: '🏃', muscles: null, filterByCategory: 'cardio' },
   { label: 'Warm-Up', emoji: '🔥', filterType: 'warm-up' },
@@ -26,6 +26,13 @@ function isWarmUpExercise(exercise) {
 
 function isCoolDownExercise(exercise) {
   return exercise.category === 'stretching' && exercise.level === 'beginner';
+}
+
+const LEG_MUSCLES = ['quadriceps', 'hamstrings', 'glutes', 'calves', 'adductors', 'abductors'];
+
+function isLegsExercise(exercise) {
+  return exercise.category === 'strength'
+    && (exercise.primaryMuscles || []).some(m => LEG_MUSCLES.includes(m));
 }
 
 function formatMusclesLabel(muscles, max = 2) {
@@ -60,6 +67,7 @@ function matchesCategory(exercise, category) {
   if (!category || category.label === 'All') return true;
   if (category.filterType === 'warm-up') return isWarmUpExercise(exercise);
   if (category.filterType === 'cool-down') return isCoolDownExercise(exercise);
+  if (category.filterType === 'legs') return isLegsExercise(exercise);
   if (category.filterByCategory) return exercise.category === category.filterByCategory;
   if (category.muscles) {
     const primary = exercise.primaryMuscles || [];
