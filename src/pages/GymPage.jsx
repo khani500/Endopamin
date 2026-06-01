@@ -54,6 +54,7 @@ const CATEGORY_EMOJI = {
 const LEVEL_COLORS = {
   beginner: { bg: 'rgba(204,255,0,0.15)', border: 'rgba(204,255,0,0.35)', text: '#CCFF00' },
   intermediate: { bg: 'rgba(255,165,60,0.15)', border: 'rgba(255,165,60,0.35)', text: '#FFA53C' },
+  expert: { bg: 'rgba(255,107,107,0.15)', border: 'rgba(255,107,107,0.35)', text: '#FF6B6B' },
   advanced: { bg: 'rgba(255,107,107,0.15)', border: 'rgba(255,107,107,0.35)', text: '#FF6B6B' },
 };
 
@@ -408,10 +409,11 @@ export default function GymPage() {
                       const muscles = Array.isArray(ex.muscles)
                         ? ex.muscles.join(', ')
                         : ex.target || ex.muscle_group || ex.category || ex.bodyPart;
-                      const gifUrl = ex.gifUrl;
-                      const videoUrl = ex.videos?.[0];
-                      const mainImageUrl = ex.mainImage || ex.images?.[0];
-                      const anyImageUrl = ex.images?.[0];
+                      const secondaryMuscles = Array.isArray(ex.muscles_secondary)
+                        ? ex.muscles_secondary.join(', ')
+                        : '';
+                      const thumbnailUrl = ex.thumbnailUrl || ex.images?.[0];
+                      const hoverImageUrl = ex.hoverImageUrl || ex.images?.[1] || null;
                       const fallbackEmoji = CATEGORY_EMOJI[bodyPart] || '💪';
 
                       return (
@@ -432,38 +434,23 @@ export default function GymPage() {
                               background: 'rgba(204,255,0,0.08)',
                               border: '1px solid rgba(204,255,0,0.15)',
                             }}>
-                            {gifUrl ? (
-                              <img
-                                src={gifUrl}
-                                alt={ex.name}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            ) : videoUrl ? (
-                              <video
-                                src={videoUrl}
-                                autoPlay
-                                muted
-                                loop
-                                playsInline
-                                preload="metadata"
-                                className="w-full h-full object-cover"
-                                poster={mainImageUrl || anyImageUrl || undefined}
-                              />
-                            ) : mainImageUrl ? (
-                              <img
-                                src={mainImageUrl}
-                                alt={ex.name}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            ) : anyImageUrl ? (
-                              <img
-                                src={anyImageUrl}
-                                alt={ex.name}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
+                            {thumbnailUrl ? (
+                              <div className="relative w-full h-full group">
+                                <img
+                                  src={thumbnailUrl}
+                                  alt={ex.name}
+                                  className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-0"
+                                  loading="lazy"
+                                />
+                                {hoverImageUrl && (
+                                  <img
+                                    src={hoverImageUrl}
+                                    alt={`${ex.name} alternate`}
+                                    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                                    loading="lazy"
+                                  />
+                                )}
+                              </div>
                             ) : (
                               <span className="text-[22px]">{ex.emoji || fallbackEmoji}</span>
                             )}
@@ -472,6 +459,7 @@ export default function GymPage() {
                             <p className="text-[13px] font-bold text-white truncate">{ex.name}</p>
                             <p className="text-[10px] text-white/35 mt-0.5 capitalize truncate">
                               {muscles || bodyPart}
+                              {secondaryMuscles ? ` · ${secondaryMuscles}` : ''}
                               {Array.isArray(ex.equipment)
                                 ? (ex.equipment.length ? ` · ${ex.equipment.join(', ')}` : '')
                                 : (ex.equipment ? ` · ${ex.equipment}` : '')}
