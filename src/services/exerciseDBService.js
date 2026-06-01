@@ -1,30 +1,12 @@
-const BASE_URL = 'https://exercisedb.p.rapidapi.com';
-const EXERCISE_DB_HOST = 'exercisedb.p.rapidapi.com';
+const BASE_URL = 'https://exercisedb.dev/api/v1';
 
 let allExercisesCache = null;
 let bodyPartListCache = null;
 const bodyPartCache = new Map();
 const searchCache = new Map();
 
-function getApiKey() {
-  const key = import.meta.env.VITE_EXERCISEDB_KEY;
-  if (!key) {
-    throw new Error('Missing VITE_EXERCISEDB_KEY for ExerciseDB API');
-  }
-  return key;
-}
-
-function getHeaders() {
-  return {
-    'X-RapidAPI-Key': getApiKey(),
-    'X-RapidAPI-Host': EXERCISE_DB_HOST,
-  };
-}
-
 async function fetchExerciseDB(path) {
-  const response = await fetch(`${BASE_URL}${path}`, {
-    headers: getHeaders(),
-  });
+  const response = await fetch(`${BASE_URL}${path}`);
   if (!response.ok) {
     throw new Error(`ExerciseDB request failed (${response.status}): ${path}`);
   }
@@ -33,7 +15,7 @@ async function fetchExerciseDB(path) {
 
 export async function fetchAllExercises(limit = 1300) {
   if (allExercisesCache) return allExercisesCache;
-  const data = await fetchExerciseDB(`/exercises?limit=${Number(limit) || 1300}&offset=0`);
+  const data = await fetchExerciseDB(`/exercises?limit=${Number(limit) || 1300}`);
   allExercisesCache = Array.isArray(data) ? data : [];
   return allExercisesCache;
 }

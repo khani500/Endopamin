@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { DeskBreakSession } from '../components/desk/DeskBreakSession';
 import { RestDayProtocol } from '../components/gym/RestDayProtocol';
-import { DESK_BREAKS } from '../data/deskBreaks';
 import { EXERCISES } from '../data/exercises';
+import { getExercisesBySetting } from '../data/coachExerciseLibrary';
 import { supabase } from '../lib/supabase';
 import { fetchWgerExercises, searchWgerExercises } from '../services/wgerService';
 import {
@@ -52,6 +51,12 @@ const CATEGORY_EMOJI = {
   waist: '🔥',
 };
 
+const LEVEL_COLORS = {
+  beginner: { bg: 'rgba(204,255,0,0.15)', border: 'rgba(204,255,0,0.35)', text: '#CCFF00' },
+  intermediate: { bg: 'rgba(255,165,60,0.15)', border: 'rgba(255,165,60,0.35)', text: '#FFA53C' },
+  advanced: { bg: 'rgba(255,107,107,0.15)', border: 'rgba(255,107,107,0.35)', text: '#FF6B6B' },
+};
+
 function normalizeBodyPart(exercise, isWgerSource = false) {
   if (!exercise) return null;
   if (!isWgerSource) return exercise.bodyPart || null;
@@ -85,18 +90,12 @@ const EQUIPMENT = [
 export default function GymPage() {
   const { user, profile, setProfile } = useAuth();
   const navigate = useNavigate();
-  const { breakId } = useParams();
-  const [activeDeskBreak, setActiveDeskBreak] = useState(null);
   const [showRestDay, setShowRestDay] = useState(() => new Date().getDay() === 0);
   const [selectedEquipment, setSelectedEquipment] = useState(() => {
     try { return JSON.parse(localStorage.getItem('endopamin_equipment') || '["bodyweight"]'); }
     catch { return ['bodyweight']; }
   });
-  const [availableNow, setAvailableNow] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('endopamin_available_equipment') || '[]'); }
-    catch { return []; }
-  });
-  const [activeTab, setActiveTab] = useState('exercises');
+  const [activeTab, setActiveTab] = useState('gym');
   const [animatedItems, setAnimatedItems] = useState([]);
   const [exercises, setExercises] = useState([]);
   const [isLoadingExercises, setIsLoadingExercises] = useState(true);
@@ -132,7 +131,8 @@ export default function GymPage() {
     [displayedGrouped],
   );
 
-  const currentBreakId = breakId || activeDeskBreak;
+  const homeExercises = useMemo(() => getExercisesBySetting('home'), []);
+  const deskExercises = useMemo(() => getExercisesBySetting('desk'), []);
 
   useEffect(() => {
     if (Array.isArray(profile?.equipment) && profile.equipment.length > 0) {
@@ -244,18 +244,15 @@ export default function GymPage() {
 
   useEffect(() => {
     setAnimatedItems([]);
-    const items = activeTab === 'exercises'
+    const items = activeTab === 'gym'
       ? bodyParts.flatMap(part => displayedGrouped[part] || [])
-      : DESK_BREAKS;
+      : activeTab === 'home'
+        ? homeExercises
+        : deskExercises;
     items.forEach((_, i) => {
       setTimeout(() => setAnimatedItems(prev => [...prev, i]), i * 50);
     });
-  }, [activeTab, displayedGrouped, bodyParts]);
-
-  if (currentBreakId) {
-    return <DeskBreakSession breakId={currentBreakId}
-      onComplete={() => breakId ? navigate('/gym') : setActiveDeskBreak(null)} />;
-  }
+  }, [activeTab, displayedGrouped, bodyParts, homeExercises, deskExercises]);
 
   if (showRestDay) {
     return (
@@ -330,8 +327,9 @@ export default function GymPage() {
       <div className="px-5 mb-4">
         <div className="flex gap-2 p-1 rounded-[16px] bg-white/[0.04] border border-white/[0.06]">
           {[
-            { id: 'exercises', label: 'Exercises', count: displayedExerciseCount, icon: <><path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/></> },
-            { id: 'desk', label: 'Desk Breaks', count: DESK_BREAKS.length, icon: <><rect x="2" y="14" width="20" height="3" rx="1"/><path d="M6 17v3M18 17v3M12 14V9"/><circle cx="12" cy="7" r="2"/></> },
+            { id: 'gym', label: '🏋️ Gym', count: displayedExerciseCount },
+            { id: 'home', label: '🏠 Home', count: homeExercises.length },
+            { id: 'desk', label: '💻 Desk', count: deskExercises.length },
           ].map(tab => (
             <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-[12px] transition-all font-bold text-[11px]"
@@ -340,10 +338,6 @@ export default function GymPage() {
                 border: `1px solid ${activeTab === tab.id ? 'rgba(204,255,0,0.3)' : 'transparent'}`,
                 color: activeTab === tab.id ? '#CCFF00' : 'rgba(255,255,255,0.35)',
               }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
-                strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                {tab.icon}
-              </svg>
               {tab.label}
               <span className="text-[9px] px-1.5 py-0.5 rounded-full font-black"
                 style={{
@@ -357,8 +351,8 @@ export default function GymPage() {
         </div>
       </div>
 
-      {/* Exercises Tab */}
-      {activeTab === 'exercises' && (
+      {/* GYM Tab */}
+      {activeTab === 'gym' && (
         <div className="px-5 space-y-4">
           <div className="rounded-[18px] border border-white/[0.07] p-3"
             style={{ background: 'rgba(255,255,255,0.025)' }}>
@@ -366,7 +360,7 @@ export default function GymPage() {
               type="search"
               value={searchQuery}
               onChange={event => setSearchQuery(event.target.value)}
-              placeholder="Search exercises (Wger library)..."
+              placeholder="Search exercises (ExerciseDB)..."
               className="w-full bg-transparent text-[13px] text-white outline-none placeholder:text-white/30"
             />
             {(searchLoading || isLoadingExercises) && (
@@ -422,7 +416,7 @@ export default function GymPage() {
 
                       return (
                         <div
-                          key={ex.id || `${category}-${i}`}
+                          key={ex.id || `${bodyPart}-${i}`}
                           className="rounded-[18px] border p-4 flex items-center gap-3 transition-all duration-200"
                           style={{
                             background: 'rgba(255,255,255,0.025)',
@@ -503,47 +497,78 @@ export default function GymPage() {
         </div>
       )}
 
-      {/* Desk Breaks Tab */}
+      {/* HOME Tab */}
+      {activeTab === 'home' && (
+        <div className="px-5 space-y-2">
+          {homeExercises.map((ex, i) => {
+            const levelStyle = LEVEL_COLORS[ex.level] || LEVEL_COLORS.intermediate;
+            return (
+              <div
+                key={ex.id || `home-${i}`}
+                className="rounded-[18px] border p-4 flex items-center justify-between transition-all duration-200"
+                style={{
+                  background: 'rgba(255,255,255,0.025)',
+                  borderColor: 'rgba(255,255,255,0.07)',
+                  opacity: animatedItems.includes(i) ? 1 : 0,
+                  transform: animatedItems.includes(i) ? 'translateY(0)' : 'translateY(12px)',
+                  transition: `opacity 0.3s ease ${i * 0.03}s, transform 0.3s ease ${i * 0.03}s`,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+                }}
+              >
+                <div className="min-w-0">
+                  <p className="text-[13px] font-bold text-white truncate">{ex.name}</p>
+                  <p className="text-[10px] text-white/35 mt-0.5 capitalize truncate">
+                    {ex.muscleGroups?.join(', ') || ex.category}
+                    {ex.equipment?.length ? ` · ${ex.equipment.join(', ')}` : ''}
+                  </p>
+                </div>
+                <span
+                  className="text-[9px] px-2 py-1 rounded-full font-bold uppercase"
+                  style={{
+                    background: levelStyle.bg,
+                    border: `1px solid ${levelStyle.border}`,
+                    color: levelStyle.text,
+                  }}
+                >
+                  {ex.level}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* DESK Tab */}
       {activeTab === 'desk' && (
         <div className="px-5 space-y-3">
-          <div className="rounded-[20px] border border-[#A064FF]/20 p-4 mb-4"
-            style={{ background: 'rgba(160,100,255,0.06)' }}>
-            <p className="text-[11px] text-[#A064FF] font-bold mb-1">🪑 Office Mode</p>
-            <p className="text-[12px] text-white/40">Quick breaks designed for desk workers. No equipment needed.</p>
-          </div>
-          {DESK_BREAKS.map((item, i) => (
-            <button key={item.id} type="button"
-              onClick={() => navigate(`/desk-break/${item.id}`)}
-              className="w-full rounded-[18px] border p-4 flex items-center justify-between transition-all duration-200 active:scale-[0.98]"
+          {deskExercises.map((item, i) => (
+            <div
+              key={item.id || `desk-${i}`}
+              className="w-full rounded-[14px] border px-3 py-2.5 flex items-center justify-between transition-all duration-200"
               style={{
                 background: 'rgba(255,255,255,0.025)',
-                borderColor: 'rgba(160,100,255,0.15)',
+                borderColor: 'rgba(160,100,255,0.2)',
                 opacity: animatedItems.includes(i) ? 1 : 0,
                 transform: animatedItems.includes(i) ? 'translateY(0)' : 'translateY(12px)',
                 transition: `opacity 0.3s ease ${i * 0.06}s, transform 0.3s ease ${i * 0.06}s`,
-                boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
               }}>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-[14px] flex flex-col items-center justify-center flex-shrink-0"
+                <div className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0"
                   style={{ background: 'rgba(160,100,255,0.12)', border: '1px solid rgba(160,100,255,0.2)' }}>
-                  <span className="text-[18px]">{item.emoji}</span>
-                  <span className="text-[9px] font-black text-[#A064FF]">{item.duration}m</span>
+                  <span className="text-[14px]">💻</span>
                 </div>
                 <div className="text-left">
-                  <p className="text-[13px] font-bold text-white">{item.title}</p>
-                  <p className="text-[10px] text-white/35 mt-0.5">{item.exercises?.length || 0} moves</p>
+                  <p className="text-[12px] font-bold text-white">{item.name}</p>
+                  <p className="text-[10px] text-white/35 mt-0.5 truncate">
+                    {item.muscleGroups?.join(', ') || item.category}
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-[#A064FF] bg-[#A064FF]/10 px-2 py-1 rounded-full border border-[#A064FF]/20">
-                  Start
-                </span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.8"
-                  strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
-              </div>
-            </button>
+              <span className="text-[9px] font-black text-[#A064FF] bg-[#A064FF]/10 px-2 py-1 rounded-full border border-[#A064FF]/20">
+                {item.level}
+              </span>
+            </div>
           ))}
         </div>
       )}
@@ -570,13 +595,5 @@ export default function GymPage() {
     if (supabase && user?.id) {
       await supabase.from('profiles').update({ equipment: next }).eq('id', user.id);
     }
-  }
-
-  function toggleAvailableNow(id) {
-    setAvailableNow(prev => {
-      const next = prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id];
-      localStorage.setItem('endopamin_available_equipment', JSON.stringify(next));
-      return next;
-    });
   }
 }
