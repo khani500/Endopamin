@@ -62,28 +62,25 @@ function isLegsExercise(exercise) {
     && (exercise.primaryMuscles || []).some(m => LEG_MUSCLES.includes(m));
 }
 
-const DESK_CARD_GRADIENT = 'linear-gradient(135deg, #2d1a4a, #4a2d7a)';
+function getCategoryStyle(exercise) {
+  const cat = exercise.category?.toLowerCase() || '';
+  const subcat = exercise.subcategory?.toLowerCase() || '';
 
-const HOME_CATEGORY_VISUALS = {
-  squat: { gradient: 'linear-gradient(135deg, #1a4a1a, #2d7a2d)', emoji: '🦵' },
-  lunge: { gradient: 'linear-gradient(135deg, #1a4a1a, #2d7a2d)', emoji: '🦵' },
-  horizontal_push: { gradient: 'linear-gradient(135deg, #1a1a4a, #2d2d7a)', emoji: '💪' },
-  vertical_push: { gradient: 'linear-gradient(135deg, #1a1a4a, #2d2d7a)', emoji: '💪' },
-  horizontal_pull: { gradient: 'linear-gradient(135deg, #2d1a4a, #5a2d7a)', emoji: '🔙' },
-  vertical_pull: { gradient: 'linear-gradient(135deg, #2d1a4a, #5a2d7a)', emoji: '🔙' },
-  core: { gradient: 'linear-gradient(135deg, #4a2d1a, #7a5a2d)', emoji: '🔥' },
-  mobility: { gradient: 'linear-gradient(135deg, #1a3a4a, #2d6a7a)', emoji: '🧘' },
-  cardio: { gradient: 'linear-gradient(135deg, #4a1a1a, #7a2d2d)', emoji: '🏃' },
-  hinge: { gradient: 'linear-gradient(135deg, #4a4a1a, #7a7a2d)', emoji: '⚡' },
-};
-
-const DEFAULT_HOME_VISUAL = {
-  gradient: 'linear-gradient(135deg, #1f2937 0%, #374151 50%, #6b7280 100%)',
-  emoji: '🏠',
-};
-
-function getHomeCategoryVisual(exercise) {
-  return HOME_CATEGORY_VISUALS[exercise.category] || DEFAULT_HOME_VISUAL;
+  if (cat === 'squat' || cat === 'lunge') return { bg: 'linear-gradient(135deg, #0d2e0d, #1a5c1a)', emoji: '🦵' };
+  if (cat === 'horizontal_push' || cat === 'vertical_push') return { bg: 'linear-gradient(135deg, #0d0d2e, #1a1a5c)', emoji: '💪' };
+  if (cat === 'horizontal_pull' || cat === 'vertical_pull') return { bg: 'linear-gradient(135deg, #1a0d2e, #3d1a5c)', emoji: '🏋️' };
+  if (cat === 'core') return { bg: 'linear-gradient(135deg, #2e1a0d, #5c3d1a)', emoji: '🔥' };
+  if (cat === 'hinge') return { bg: 'linear-gradient(135deg, #2e2e0d, #5c5c1a)', emoji: '⬇️' };
+  if (cat === 'mobility') return { bg: 'linear-gradient(135deg, #0d2e2e, #1a5c5c)', emoji: '🧘' };
+  if (cat === 'cardio') return { bg: 'linear-gradient(135deg, #2e0d0d, #5c1a1a)', emoji: '🏃' };
+  if (cat === 'arms') return { bg: 'linear-gradient(135deg, #1a0d2e, #3d1a5c)', emoji: '💪' };
+  if (cat === 'desk_break') {
+    if (subcat === 'cardio') return { bg: 'linear-gradient(135deg, #2e0d0d, #5c1a1a)', emoji: '🏃' };
+    if (subcat === 'strength') return { bg: 'linear-gradient(135deg, #0d0d2e, #1a1a5c)', emoji: '💪' };
+    if (subcat === 'mobility' || subcat === 'recovery') return { bg: 'linear-gradient(135deg, #0d2e2e, #1a5c5c)', emoji: '🧘' };
+    return { bg: 'linear-gradient(135deg, #1a0d2e, #3d1a5c)', emoji: '💻' };
+  }
+  return { bg: 'linear-gradient(135deg, #1a1a1a, #333)', emoji: '⚡' };
 }
 
 function formatMusclesLabel(muscles, max = 2) {
@@ -381,7 +378,7 @@ export default function GymPage() {
             <div className="space-y-2">
               {filteredHomeExercises.map((ex, i) => {
                 const levelStyle = LEVEL_COLORS[ex.level] || LEVEL_COLORS.intermediate;
-                const visual = getHomeCategoryVisual(ex);
+                const style = getCategoryStyle(ex);
                 const musclesLabel = formatMusclesLabel(ex.muscleGroups);
                 const equipmentLabel = ex.equipment?.length ? ex.equipment.join(', ') : '';
                 return (
@@ -400,9 +397,9 @@ export default function GymPage() {
                   >
                     <div
                       className="h-20 w-20 shrink-0 flex items-center justify-center rounded-2xl text-[32px] leading-none"
-                      style={{ background: visual.gradient }}
+                      style={{ background: style.bg }}
                     >
-                      {visual.emoji}
+                      {style.emoji}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-[13px] font-bold text-white line-clamp-2 leading-snug">{ex.name}</p>
@@ -442,7 +439,9 @@ export default function GymPage() {
                   {sub.label}
                 </p>
                 <div className="space-y-2">
-                  {items.map((item, i) => (
+                  {items.map((item, i) => {
+                    const style = getCategoryStyle(item);
+                    return (
                     <button
                       key={item.id || `${sub.key}-${i}`}
                       type="button"
@@ -455,9 +454,9 @@ export default function GymPage() {
                     >
                       <div
                         className="h-20 w-20 shrink-0 flex items-center justify-center rounded-2xl text-[32px] leading-none"
-                        style={{ background: DESK_CARD_GRADIENT }}
+                        style={{ background: style.bg }}
                       >
-                        💻
+                        {style.emoji}
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-[13px] font-bold text-white line-clamp-2 leading-snug">{item.name}</p>
@@ -466,7 +465,8 @@ export default function GymPage() {
                         </p>
                       </div>
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </section>
             );
