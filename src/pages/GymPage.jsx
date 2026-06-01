@@ -11,14 +11,27 @@ const GYM_CATEGORIES = [
   { label: 'Legs', emoji: '🦵', muscles: ['quadriceps', 'hamstrings', 'glutes', 'calves', 'adductors', 'abductors'] },
   { label: 'Core', emoji: '🔥', muscles: ['abdominals', 'obliques'] },
   { label: 'Cardio', emoji: '🏃', muscles: null, filterByCategory: 'cardio' },
+  { label: 'Warm-Up', emoji: '🔥', filterType: 'warm-up' },
+  { label: 'Cool-Down', emoji: '❄️', filterType: 'cool-down' },
   { label: 'All', emoji: '⚡', muscles: null },
+];
+
+const MOBILITY_MUSCLES = [
+  'abductors',
+  'adductors',
+  'shoulders',
+  'quadriceps',
+  'hamstrings',
+  'glutes',
+  'calves',
+  'neck',
 ];
 
 const HOME_CATEGORIES = [
   { label: 'Upper Body', emoji: '💪', muscles: ['chest', 'shoulders', 'triceps', 'biceps'] },
   { label: 'Lower Body', emoji: '🦵', muscles: ['quads', 'glutes', 'hamstrings', 'calves'] },
   { label: 'Core', emoji: '🔥', muscles: ['core', 'abdominals', 'obliques'] },
-  { label: 'Mobility', emoji: '🧘', category: 'mobility' },
+  { label: 'Stretch & Recover', emoji: '🧘', category: 'mobility' },
   { label: 'Cardio', emoji: '🏃', category: 'cardio' },
   { label: 'All Home', emoji: '⚡', muscles: null },
 ];
@@ -43,8 +56,19 @@ function muscleTermMatches(group, target) {
   return g.includes(t) || t.includes(g);
 }
 
+function isWarmUpExercise(exercise) {
+  if (exercise.category === 'stretching') return true;
+  return (exercise.primaryMuscles || []).some(m => MOBILITY_MUSCLES.includes(m));
+}
+
+function isCoolDownExercise(exercise) {
+  return exercise.category === 'stretching';
+}
+
 function matchesGymCategory(exercise, category) {
   if (!category || category.label === 'All') return true;
+  if (category.filterType === 'warm-up') return isWarmUpExercise(exercise);
+  if (category.filterType === 'cool-down') return isCoolDownExercise(exercise);
   if (category.filterByCategory) return exercise.category === category.filterByCategory;
   if (category.muscles) {
     return (exercise.primaryMuscles || []).some(m => category.muscles.includes(m));

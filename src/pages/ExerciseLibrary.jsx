@@ -5,6 +5,17 @@ import { fetchAllExercises } from '../services/exerciseDBService';
 
 const IMAGE_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 
+const MOBILITY_MUSCLES = [
+  'abductors',
+  'adductors',
+  'shoulders',
+  'quadriceps',
+  'hamstrings',
+  'glutes',
+  'calves',
+  'neck',
+];
+
 const CATEGORIES = [
   { label: 'Chest', emoji: '🏋️', muscles: ['chest'] },
   { label: 'Back', emoji: '🔙', muscles: ['lats', 'middle back', 'lower back', 'traps'] },
@@ -13,8 +24,19 @@ const CATEGORIES = [
   { label: 'Legs', emoji: '🦵', muscles: ['quadriceps', 'hamstrings', 'glutes', 'calves', 'adductors', 'abductors'] },
   { label: 'Core', emoji: '🔥', muscles: ['abdominals', 'obliques'] },
   { label: 'Cardio', emoji: '🏃', muscles: null, filterByCategory: 'cardio' },
+  { label: 'Warm-Up', emoji: '🔥', filterType: 'warm-up' },
+  { label: 'Cool-Down', emoji: '❄️', filterType: 'cool-down' },
   { label: 'All', emoji: '⚡', muscles: null },
 ];
+
+function isWarmUpExercise(exercise) {
+  if (exercise.category === 'stretching') return true;
+  return (exercise.primaryMuscles || []).some(m => MOBILITY_MUSCLES.includes(m));
+}
+
+function isCoolDownExercise(exercise) {
+  return exercise.category === 'stretching';
+}
 
 const LEVEL_FILTERS = ['all', 'beginner', 'intermediate', 'expert'];
 const EQUIPMENT_FILTERS = ['all', 'barbell', 'dumbbell', 'bodyweight', 'machine', 'kettlebell'];
@@ -39,6 +61,8 @@ function findCategoryByKey(key) {
 
 function matchesCategory(exercise, category) {
   if (!category || category.label === 'All') return true;
+  if (category.filterType === 'warm-up') return isWarmUpExercise(exercise);
+  if (category.filterType === 'cool-down') return isCoolDownExercise(exercise);
   if (category.filterByCategory) return exercise.category === category.filterByCategory;
   if (category.muscles) {
     const primary = exercise.primaryMuscles || [];
