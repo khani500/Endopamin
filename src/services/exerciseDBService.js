@@ -1,4 +1,5 @@
 const BASE_URL = 'https://exercisedb.dev/api/v1';
+const EXERCISES_JSON_URL = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json';
 
 let allExercisesCache = null;
 let bodyPartListCache = null;
@@ -15,8 +16,16 @@ async function fetchExerciseDB(path) {
 
 export async function fetchAllExercises(limit = 1300) {
   if (allExercisesCache) return allExercisesCache;
-  const data = await fetchExerciseDB(`/exercises?limit=${Number(limit) || 1300}`);
-  allExercisesCache = Array.isArray(data) ? data : [];
+  const response = await fetch(EXERCISES_JSON_URL);
+  if (!response.ok) {
+    throw new Error(`ExerciseDB request failed (${response.status}): exercises.json`);
+  }
+  const data = await response.json();
+  console.log('Total exercises:', data.length);
+  console.log('First exercise:', JSON.stringify(data[0], null, 2));
+  console.log('Unique categories:', [...new Set(data.map(e => e.category))]);
+  console.log('Sample primaryMuscles:', [...new Set(data.flatMap(e => e.primaryMuscles || []))].slice(0, 20));
+  allExercisesCache = Array.isArray(data) ? data.slice(0, Number(limit) || 1300) : [];
   return allExercisesCache;
 }
 

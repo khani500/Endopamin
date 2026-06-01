@@ -254,6 +254,28 @@ export default function GymPage() {
     });
   }, [activeTab, displayedGrouped, bodyParts, homeExercises, deskExercises]);
 
+  useEffect(() => {
+    if (activeTab !== 'gym' || isLoadingExercises) return;
+    console.log('[GymPage] Gym tab category filter:', {
+      activeTab,
+      bodyPartsFilter: bodyParts,
+      useWgerFallback,
+      searchQuery: searchQuery.trim() || null,
+      exercisesPerBodyPart: Object.fromEntries(
+        bodyParts.map(part => [part, (displayedGrouped[part] || []).length]),
+      ),
+      displayedExerciseCount,
+    });
+  }, [
+    activeTab,
+    bodyParts,
+    displayedGrouped,
+    displayedExerciseCount,
+    isLoadingExercises,
+    searchQuery,
+    useWgerFallback,
+  ]);
+
   if (showRestDay) {
     return (
       <main className="min-h-screen bg-[#080808] px-5 pb-24 pt-14 text-white">
