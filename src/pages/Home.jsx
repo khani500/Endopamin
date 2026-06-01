@@ -15,11 +15,24 @@ const MOODS = [
 
 const TRAINING = [
   { id: 'gym', title: 'Gym', sub: 'Equipment', path: '/gym', color: 'neon',
-    svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/></svg> },
+    svg: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6 4v16M18 4v16M4 8h4M16 8h4M4 16h4M16 16h4M8 12h8" />
+      </svg>
+    ) },
   { id: 'home', title: 'Home', sub: 'No gear', path: '/gym?tab=home', color: 'blue',
-    svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg> },
+    svg: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+    ) },
   { id: 'desk', title: 'Desk Break', sub: '5 min', path: '/gym?tab=desk', color: 'purple',
-    svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="14" width="20" height="2" rx="1"/><path d="M6 16v4M18 16v4"/><path d="M12 14V8M9 8h6M12 5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor"/></svg> },
+    svg: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="4" width="20" height="14" rx="2" />
+        <path d="M8 21h8M12 18v3" />
+      </svg>
+    ) },
 ];
 
 const QUICK_START = [
@@ -232,7 +245,7 @@ export default function Home() {
               style={{ background: `linear-gradient(145deg, ${colors.bg}, rgba(0,0,0,0))`, borderColor: colors.border, boxShadow: '0 10px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07)' }}>
               <div className="absolute bottom-0 left-0 right-0 h-[2px] rounded-b-[22px]"
                 style={{ background: `linear-gradient(90deg,transparent,${colors.line},transparent)` }} />
-              <div className="w-8 h-8" style={{ color: colors.line }}>{item.svg}</div>
+              <div className="w-8 h-8 flex items-center justify-center">{item.svg}</div>
               <div>
                 <p className="text-[11px] font-bold text-white leading-tight">{item.title}</p>
                 <p className="text-[9px] text-white/40 mt-0.5">{item.sub}</p>
