@@ -442,36 +442,74 @@ export const transcribeAudioWithGemini = async audioBlob => {
   return extractText(data);
 };
 
-export async function generateWorkoutPlan(coachId, user) {
+export async function generateWorkoutPlan(coachId, user, userProfile = {}) {
+  const {
+    fitnessLevel = 'beginner',
+    availableEquipment = 'full_gym',
+    goal = 'general fitness',
+    injuries = 'none',
+    age = null,
+    weight = null,
+    isReturning = false,
+    setting = 'gym',
+  } = userProfile;
+
+  const { getPlanProgressSummary, buildProgressPrompt } = await import('./planMemory');
+  const progressSummary = await getPlanProgressSummary(user?.id);
+  const progressContext = buildProgressPrompt(progressSummary);
+
+  const { getFilteredExercises, buildExerciseSummary } = await import('./planExerciseFilter');
+
+  const filtered = getFilteredExercises({ setting, fitnessLevel, availableEquipment, isReturning });
+  const exerciseSummary = buildExerciseSummary(filtered);
+
   const coachPersona = {
-    aria:  "You are Aria, a scientific, data-driven fitness coach. Be professional and precise.",
-    kane:  "You are Kane, a hardcore intense coach. Be aggressive and motivating.",
-    blaze: "You are Blaze, a high-energy hype coach. Be explosive and enthusiastic.",
-    nova:  "You are Nova, a mindset-focused coach. Be calm, deep, and philosophical.",
-    zara:  "You are Zara, a strength specialist. Be precise and technical.",
+    aria:  "You are Aria, a scientific NASM-certified coach. Be precise and evidence-based.",
+    kane:  "You are Kane, a hardcore strength coach. Be intense but smart about injury prevention.",
+    blaze: "You are Blaze, a high-energy athletic coach. Be explosive and performance-focused.",
+    nova:  "You are Nova, a mindset and movement coach. Be holistic and recovery-aware.",
+    zara:  "You are Zara, a strength and hypertrophy specialist. Be technical and progressive.",
   };
 
   const prompt = `${coachPersona[coachId] || coachPersona.aria}
 
-Create a 7-day weekly workout plan for the user.
-Return ONLY valid JSON, no markdown, no explanation.
-Format:
+USER PROFILE:
+- Fitness level: ${fitnessLevel}
+- Goal: ${goal}
+- Equipment available: ${availableEquipment}
+- Setting: ${setting}
+- Injuries or limitations: ${injuries}
+${age ? `- Age: ${age}` : ''}
+${weight ? `- Weight: ${weight}kg` : ''}
+${isReturning ? '- NOTE: User is returning after a break. Avoid high-risk compound movements week 1.' : ''}
+
+APPROVED EXERCISES ONLY (use names exactly as listed):
+${exerciseSummary}
+
+${progressContext ? progressContext + '\n' : ''}
+RULES:
+- Only use exercises from the approved list above
+- Match volume and intensity to fitness level
+- Beginner: 3 sets, higher reps, more rest, simpler movements
+- Advanced: higher volume, progressive overload, compound focus
+- Include 1-2 rest or active recovery days
+- All text in English only
+- Return ONLY valid JSON, no markdown, no explanation
+
+FORMAT:
 {
   "coachId": "${coachId}",
   "days": [
     {
       "day": "Saturday",
-      "focus": "brief focus in English",
-      "exercises": ["Exercise Name 4x8", ...]
+      "focus": "Chest & Triceps",
+      "type": "training",
+      "exercises": [
+        { "name": "Leg Press (Machine)", "sets": "3", "reps": "12-15", "rest": "60s" }
+      ]
     }
   ]
-}
-
-Rules:
-- 7 days (Saturday to Friday)
-- At least 1 full rest day
-- 3-5 exercises per training day
-- All text in English only`;
+}`;
 
   const { GoogleGenerativeAI } = await import("@google/generative-ai");
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
