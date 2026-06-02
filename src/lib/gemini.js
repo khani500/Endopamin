@@ -442,3 +442,43 @@ export const transcribeAudioWithGemini = async audioBlob => {
   return extractText(data);
 };
 
+export async function generateWorkoutPlan(coachId, user) {
+  const coachPersona = {
+    aria:  "You are Aria, a scientific, data-driven fitness coach. Be professional and precise.",
+    kane:  "You are Kane, a hardcore intense coach. Be aggressive and motivating.",
+    blaze: "You are Blaze, a high-energy hype coach. Be explosive and enthusiastic.",
+    nova:  "You are Nova, a mindset-focused coach. Be calm, deep, and philosophical.",
+    zara:  "You are Zara, a strength specialist. Be precise and technical.",
+  };
+
+  const prompt = `${coachPersona[coachId] || coachPersona.aria}
+
+Create a 7-day weekly workout plan for the user.
+Return ONLY valid JSON, no markdown, no explanation.
+Format:
+{
+  "coachId": "${coachId}",
+  "days": [
+    {
+      "day": "Saturday",
+      "focus": "brief focus in English",
+      "exercises": ["Exercise Name 4x8", ...]
+    }
+  ]
+}
+
+Rules:
+- 7 days (Saturday to Friday)
+- At least 1 full rest day
+- 3-5 exercises per training day
+- All text in English only`;
+
+  const { GoogleGenerativeAI } = await import("@google/generative-ai");
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+  const result = await model.generateContent(prompt);
+  const text = result.response.text().trim();
+  const clean = text.replace(/```json|```/g, "").trim();
+  return JSON.parse(clean);
+}

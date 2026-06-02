@@ -12,6 +12,7 @@ import AuthPage from './pages/AuthPage';
 import OnboardingPage from './pages/OnboardingPage';
 import ExerciseLibrary from './pages/ExerciseLibrary';
 import WorkoutSession from './pages/WorkoutSession';
+import WorkoutPlanPage from './pages/WorkoutPlanPage';
 import GroupSession from './pages/GroupSession';
 import DeskBreakSession from './pages/DeskBreakSession';
 import { useAuth } from './context/AuthContext';
@@ -145,6 +146,7 @@ function App() {
           <Route path="/exercises/:id" element={<ExerciseLibrary />} />
           <Route path="/workout/:type" element={<WorkoutSession />} />
           <Route path="/plan/workout" element={<WorkoutSession planMode />} />
+          <Route path="/workout-plan" element={<WorkoutPlanPage />} />
           <Route path="/plan/nutrition" element={<ErrorBoundary label="Nutrition plan shortcut"><NutritionHub /></ErrorBoundary>} />
           <Route path="/group" element={<GroupSession />} />
           <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
