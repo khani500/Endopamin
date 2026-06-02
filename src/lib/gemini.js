@@ -499,6 +499,8 @@ RULES:
 - Advanced: 4-5 sets, 5-8 reps, 90-120s rest
 - Include exactly 2 rest or active recovery days (not more)
 - Progressive structure: easier days early in week, harder mid-week
+- NEVER repeat the same exercise twice in the same day
+- NEVER use the same exercise more than twice across the entire week
 - All text in English only
 - Return ONLY valid JSON, no markdown, no explanation
 

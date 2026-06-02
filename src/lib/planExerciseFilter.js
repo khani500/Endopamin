@@ -39,6 +39,6 @@ export function buildExerciseSummary(exercises) {
   });
 
   return Object.entries(byCategory)
-    .map(([cat, names]) => `${cat}: ${names.slice(0, 5).join(', ')}`)
+    .map(([cat, names]) => `${cat}: ${names.join(', ')}`)
     .join('\n');
 }
