@@ -1,4 +1,5 @@
 import { askGemini, askGeminiChat, buildKnowledgeContext } from '../lib/gemini';
+import { supabase } from '../lib/supabase';
 import {
   buildCoachSystemPrompt,
   buildProfileContext,
@@ -118,6 +119,31 @@ export const chatWithCoach = async (
   const profileContext = buildProfileContext(profile, workoutTime, location, equipment);
   const uid = userId || profile?.user_id || null;
 
+  // Fetch active workout plan
+  let weeklyPlanContext = '';
+  if (uid) {
+    try {
+      const { data: activePlan } = await supabase
+        .from('workout_plans')
+        .select('plan_data, week_start')
+        .eq('user_id', uid)
+        .eq('is_active', true)
+        .order('generated_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (activePlan?.plan_data?.days) {
+        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+        const todayPlan = activePlan.plan_data.days.find(d => d.day === today);
+        const planSummary = activePlan.plan_data.days
+          .map(d => `${d.day}: ${d.focus} (${d.type === 'rest' ? 'REST' : d.exercises?.map(e => e.name).join(', ')})`)
+          .join('\n');
+
+        weeklyPlanContext = `\n--- USER'S ACTIVE WEEKLY PLAN ---\nWeek of: ${activePlan.week_start}\n${planSummary}\n${todayPlan ? `\nTODAY (${today}): ${todayPlan.focus}\nExercises: ${todayPlan.exercises?.map(e => `${e.name} ${e.sets}x${e.reps}`).join(', ')}` : `\nToday (${today}): Rest day`}\nUse this plan when giving advice. Reference today's workout specifically.\n--- END PLAN ---`;
+      }
+    } catch (_) {}
+  }
+
   const isAssessmentTime = shouldTriggerAssessment(profile);
 
   const historyMessages = [
@@ -150,6 +176,8 @@ export const chatWithCoach = async (
   const basePrompt = `${coach.personality}
 
 ${coachMemoryBlock}
+
+${weeklyPlanContext}
 
 ${assessmentNote}
 

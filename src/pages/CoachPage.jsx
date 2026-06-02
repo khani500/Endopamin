@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useCoachSession } from '../context/CoachContext';
+import { useCoachSession, getAssessmentGreeting } from '../context/CoachContext';
 import { useVoiceSession } from '../hooks/useVoiceSession';
 import { askGeminiChat, askGeminiChatStream, buildKnowledgeContext } from '../lib/gemini';
 import {
@@ -193,6 +193,13 @@ function saveHistory(messages) {
   }
 }
 
+function freshCoachSession(coachId, greeting) {
+  return [{
+    role: 'assistant',
+    text: getAssessmentGreeting(coachId, greeting),
+  }];
+}
+
 export default function CoachPage() {
   const { user, profile, updateCoachPersona } = useAuth() || {};
   const {
@@ -316,6 +323,13 @@ export default function CoachPage() {
     saveCoachId(selectedCoach.id);
     setCoach(selectedCoach);
     setView('chat');
+    switchCoach(selectedCoach.id, selectedCoach.greeting);
+    setCoachMessages(selectedCoach.id, freshCoachSession(selectedCoach.id, selectedCoach.greeting));
+    try {
+      sessionStorage.removeItem(HISTORY_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
     const selectedCoachId = selectedCoach.id;
     if (user?.id) {
       await supabase
@@ -331,7 +345,7 @@ export default function CoachPage() {
     if (profile?.coach_persona !== selectedCoach.id) {
       await updateCoachPersona?.(selectedCoach.id);
     }
-  }, [profile?.coach_persona, updateCoachPersona, user?.id]);
+  }, [profile?.coach_persona, updateCoachPersona, user?.id, switchCoach, setCoachMessages]);
 
   useEffect(() => {
     referenceContextRef.current = buildCoachReferenceContext({
@@ -755,7 +769,8 @@ export default function CoachPage() {
 
   useEffect(() => {
     const prevCoachId = prevCoachIdRef.current;
-    if (prevCoachId && prevCoachId !== coach.id) {
+    const coachChanged = Boolean(prevCoachId && prevCoachId !== coach.id);
+    if (coachChanged) {
       void persistCoachMemoryRef.current?.(prevCoachId);
     }
     prevCoachIdRef.current = coach.id;
@@ -764,6 +779,19 @@ export default function CoachPage() {
     coachSwitchRef.current = coach.id;
 
     switchCoach(coach.id, coach.greeting);
+
+    if (coachChanged) {
+      setCoachMessages(coach.id, freshCoachSession(coach.id, coach.greeting));
+      try {
+        sessionStorage.removeItem(HISTORY_STORAGE_KEY);
+      } catch {
+        // ignore
+      }
+      stopVoiceSession();
+      sendingRef.current = false;
+      return;
+    }
+
     if (isInitialRestore) {
       const savedHistory = loadSavedHistory();
       if (savedHistory?.length) {
