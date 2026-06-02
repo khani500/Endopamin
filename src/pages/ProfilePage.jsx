@@ -229,7 +229,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!profile) return;
+    if (!profile || form.display_name) return;
     setForm(prev => ({
       ...prev,
       display_name: profile.display_name || '',
@@ -321,6 +321,13 @@ export default function ProfilePage() {
 
   const next = async () => {
     if (isLoading) return;
+    const payload = buildPayload();
+    console.log('[ProfilePage] Continue/save clicked', {
+      step,
+      isFinalStep: step >= STEPS.length - 1,
+      equipment: form.equipment,
+      payload,
+    });
     if (step < STEPS.length - 1) {
       void persistProfile();
       setStep(s => s + 1);
