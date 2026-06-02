@@ -213,6 +213,7 @@ const DEFAULT = {
   goal: 'fat_loss',
   activity: 'moderate',
   location: 'gym',
+  equipment: 'full_gym',
   experience: 'intermediate',
   last_workout: 'this_week',
   session_duration: 45,
@@ -243,6 +244,7 @@ export default function ProfilePage() {
       session_duration: profile.session_duration || 45,
       diet: profile.diet || 'none',
       location: profile.location || 'gym',
+      equipment: profile.equipment || 'full_gym',
       activity: profile.activity || 'moderate',
       last_workout: profile.last_workout || 'this_week',
     }));
@@ -264,6 +266,7 @@ export default function ProfilePage() {
     goal: form.goal,
     activity: form.activity,
     location: form.location,
+    equipment: form.equipment,
     experience: form.experience,
     last_workout: form.last_workout,
     session_duration: form.session_duration,
@@ -436,6 +439,34 @@ export default function ProfilePage() {
             <span style={{ fontSize: 13, color: form.location === val ? '#CCFF00' : '#888' }}>{label}</span>
           </SelectCard>
         ))}
+      </div>
+
+      <SectionLabel>Available Equipment</SectionLabel>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
+        {[
+          { id: 'full_gym', label: 'Full Gym', icon: '🏋️' },
+          { id: 'home_basic', label: 'Home Setup', icon: '🏠' },
+          { id: 'bodyweight', label: 'Bodyweight', icon: '💪' },
+          { id: 'home_full', label: 'Home + Weights', icon: '🔧' },
+        ].map(e => {
+          const sel = form.equipment === e.id;
+          return (
+            <motion.div
+              key={e.id}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => set('equipment', e.id)}
+              style={{
+                background: sel ? '#111900' : '#0e0e0e',
+                border: `0.5px solid ${sel ? '#CCFF00' : '#1e1e1e'}`,
+                borderRadius: 14, padding: '12px 14px',
+                display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
+              }}
+            >
+              <span style={{ fontSize: 18 }}>{e.icon}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: sel ? '#CCFF00' : '#888' }}>{e.label}</span>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Activity Level */}

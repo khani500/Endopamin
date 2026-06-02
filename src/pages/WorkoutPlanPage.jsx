@@ -95,7 +95,7 @@ export default function WorkoutPlanPage() {
 
     const userProfile = {
       fitnessLevel: profile?.experience || "beginner",
-      availableEquipment: EQUIPMENT_MAP[profile?.activity] || "full_gym",
+      availableEquipment: profile?.equipment || "full_gym",
       goal: profile?.goal || "general fitness",
       injuries: profile?.injuries || profile?.health_conditions || "none",
       age: profile?.age || null,
