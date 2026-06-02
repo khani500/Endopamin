@@ -127,6 +127,7 @@ export const chatWithCoach = async (
         .from('workout_plans')
         .select('plan_data, week_start')
         .eq('user_id', uid)
+        .eq('coach_id', resolvedId)
         .eq('is_active', true)
         .order('generated_at', { ascending: false })
         .limit(1)
