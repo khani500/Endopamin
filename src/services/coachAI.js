@@ -133,13 +133,16 @@ export const chatWithCoach = async (
         .single();
 
       if (activePlan?.plan_data?.days) {
-        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+        const todayDate = new Date().toLocaleDateString('en-US', {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        });
+        const today = todayDate.split(',')[0].trim();
         const todayPlan = activePlan.plan_data.days.find(d => d.day === today);
         const planSummary = activePlan.plan_data.days
           .map(d => `${d.day}: ${d.focus} (${d.type === 'rest' ? 'REST' : d.exercises?.map(e => e.name).join(', ')})`)
           .join('\n');
 
-        weeklyPlanContext = `\n--- USER'S ACTIVE WEEKLY PLAN ---\nWeek of: ${activePlan.week_start}\n${planSummary}\n${todayPlan ? `\nTODAY (${today}): ${todayPlan.focus}\nExercises: ${todayPlan.exercises?.map(e => `${e.name} ${e.sets}x${e.reps}`).join(', ')}` : `\nToday (${today}): Rest day`}\nUse this plan when giving advice. Reference today's workout specifically.\n--- END PLAN ---`;
+        weeklyPlanContext = `\n--- USER'S ACTIVE WEEKLY PLAN ---\nToday's date: ${todayDate}\nWeek of: ${activePlan.week_start}\n${planSummary}\n${todayPlan ? `\nTODAY (${today}): ${todayPlan.focus}\nExercises: ${todayPlan.exercises?.map(e => `${e.name} ${e.sets}x${e.reps}`).join(', ')}` : `\nToday (${today}): Rest day`}\nUse this plan when giving advice. Reference today's workout specifically.\n--- END PLAN ---`;
       }
     } catch (_) {}
   }
