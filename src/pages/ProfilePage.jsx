@@ -291,6 +291,14 @@ export default function ProfilePage() {
         console.error('Profile save failed:', error);
       } else {
         savedProfile = data;
+
+        // If equipment changed, deactivate old plans so coach gets fresh plan
+        if (profile?.equipment !== payload.equipment) {
+          await supabase
+            .from('workout_plans')
+            .update({ is_active: false })
+            .eq('user_id', user?.id);
+        }
       }
     }
 

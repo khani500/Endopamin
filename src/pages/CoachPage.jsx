@@ -207,6 +207,7 @@ export default function CoachPage() {
     switchCoach,
     setCoachMessages,
     getCoachMessages,
+    clearCoachSession,
   } = useCoachSession();
   const [coach, setCoach] = useState(() => {
     const savedCoach = getSavedCoachId();
@@ -321,10 +322,11 @@ export default function CoachPage() {
 
   const handleSelectCoach = useCallback(async selectedCoach => {
     saveCoachId(selectedCoach.id);
+    clearCoachSession(selectedCoach.id);
+    switchCoach(selectedCoach.id, selectedCoach.greeting);
+    setCoachMessages(selectedCoach.id, []);
     setCoach(selectedCoach);
     setView('chat');
-    switchCoach(selectedCoach.id, selectedCoach.greeting);
-    setCoachMessages(selectedCoach.id, freshCoachSession(selectedCoach.id, selectedCoach.greeting));
     try {
       sessionStorage.removeItem(HISTORY_STORAGE_KEY);
     } catch {
@@ -345,7 +347,7 @@ export default function CoachPage() {
     if (profile?.coach_persona !== selectedCoach.id) {
       await updateCoachPersona?.(selectedCoach.id);
     }
-  }, [profile?.coach_persona, updateCoachPersona, user?.id, switchCoach, setCoachMessages]);
+  }, [profile?.coach_persona, updateCoachPersona, user?.id, switchCoach, setCoachMessages, clearCoachSession]);
 
   useEffect(() => {
     referenceContextRef.current = buildCoachReferenceContext({
@@ -719,6 +721,18 @@ export default function CoachPage() {
       voiceState === VOICE_SESSION_STATE.SPEAKING || isSpeaking()
     ));
 
+  const handleClearChat = useCallback(() => {
+    clearCoachSession(coach.id);
+    setCoachMessages(coach.id, []);
+    try {
+      sessionStorage.removeItem(HISTORY_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+    sendingRef.current = false;
+    stopVoiceSession();
+  }, [coach.id, clearCoachSession, setCoachMessages, stopVoiceSession]);
+
   const handleMicPress = useCallback(() => {
     if (needsContinueTap) {
       resumeFromTap();
@@ -781,7 +795,7 @@ export default function CoachPage() {
     switchCoach(coach.id, coach.greeting);
 
     if (coachChanged) {
-      setCoachMessages(coach.id, freshCoachSession(coach.id, coach.greeting));
+      setCoachMessages(coach.id, []);
       try {
         sessionStorage.removeItem(HISTORY_STORAGE_KEY);
       } catch {
@@ -1306,6 +1320,18 @@ export default function CoachPage() {
           </div>
 
           {/* Messages */}
+          <div className="flex items-center justify-between px-5 mb-2 flex-shrink-0">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-white/25">Chat</p>
+            {messages.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClearChat}
+                className="text-[10px] font-bold px-2.5 py-1 rounded-[8px] border transition-all active:scale-95 text-white/40 hover:text-white/70"
+                style={{ borderColor: 'rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)' }}>
+                Clear chat
+              </button>
+            )}
+          </div>
           <div className="flex-1 min-h-0 overflow-y-auto px-5 space-y-3 pb-3">
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role==='user'?'justify-end':'justify-start'} gap-2`}>
