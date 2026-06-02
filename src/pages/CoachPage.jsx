@@ -24,6 +24,7 @@ import {
   toGeminiContents,
 } from '../lib/coachChat';
 import { getExerciseData } from '../lib/exerciseDB';
+import { supabase } from '../lib/supabase';
 import { COACH_SYSTEM_PROMPTS, formatCoachMemoryForPrompt } from '../config/coachPrompts';
 import { buildCoachReferenceContext, buildCoachReferenceContextAsync, buildWgerExercisePromptContext } from '../lib/coachContext';
 import {
@@ -315,10 +316,22 @@ export default function CoachPage() {
     saveCoachId(selectedCoach.id);
     setCoach(selectedCoach);
     setView('chat');
+    const selectedCoachId = selectedCoach.id;
+    if (user?.id) {
+      await supabase
+        .from('profiles')
+        .update({
+          coach_persona: selectedCoachId,
+          selected_coach: selectedCoachId,
+          current_coach: selectedCoachId,
+          coach_id: selectedCoachId,
+        })
+        .eq('id', user.id);
+    }
     if (profile?.coach_persona !== selectedCoach.id) {
       await updateCoachPersona?.(selectedCoach.id);
     }
-  }, [profile?.coach_persona, updateCoachPersona]);
+  }, [profile?.coach_persona, updateCoachPersona, user?.id]);
 
   useEffect(() => {
     referenceContextRef.current = buildCoachReferenceContext({
