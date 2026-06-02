@@ -162,7 +162,7 @@ export default function WorkoutPlanPage() {
       {/* Header */}
       <div style={{ padding: "20px 16px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => navigate(-1)} style={{ background: "none", border: "none", color: "#fff", fontSize: 22, cursor: "pointer" }}>←</button>
+          <button onClick={() => navigate('/')} style={{ background: "none", border: "none", color: "#fff", fontSize: 22, cursor: "pointer" }}>←</button>
           <div>
             <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>Weekly Plan</h1>
             <p style={{ margin: 0, fontSize: 12, color: accent }}>Coach {label}</p>
