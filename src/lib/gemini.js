@@ -1,6 +1,8 @@
 import { extractGeminiModelText } from '../services/foodScanner';
 import { TRAINING_KNOWLEDGE } from '../data/trainingKnowledge';
 import { supabase } from './supabase';
+import { getFilteredExercises, buildExerciseSummary } from './planExerciseFilter';
+import { getPlanProgressSummary, buildProgressPrompt } from './planMemory';
 
 const BEGINNER_FORBIDDEN_RULES =
   'FORBIDDEN exercises for beginners: barbell squat, goblet squat, deadlift, barbell bench press, overhead press, pull-ups. Always use NASM progression alternatives.';
@@ -454,11 +456,8 @@ export async function generateWorkoutPlan(coachId, user, userProfile = {}) {
     setting = 'gym',
   } = userProfile;
 
-  const { getPlanProgressSummary, buildProgressPrompt } = await import('./planMemory');
   const progressSummary = await getPlanProgressSummary(user?.id);
   const progressContext = buildProgressPrompt(progressSummary);
-
-  const { getFilteredExercises, buildExerciseSummary } = await import('./planExerciseFilter');
 
   const filtered = getFilteredExercises({ setting, fitnessLevel, availableEquipment, isReturning });
   const exerciseSummary = buildExerciseSummary(filtered);
