@@ -45,7 +45,7 @@ export default function WorkoutPlanPage() {
   const coach = profile?.coach_persona || profile?.selected_coach || profile?.current_coach || profile?.coach_id || "aria";
   const { accent, label } = COACH_COLORS[coach] || COACH_COLORS.aria;
 
-  const isMonday = new Date().getDay() === 1;
+  const isMonday = false;
 
   useEffect(() => { init(); }, []);
 

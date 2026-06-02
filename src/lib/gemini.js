@@ -488,10 +488,17 @@ ${exerciseSummary}
 ${progressContext ? progressContext + '\n' : ''}
 RULES:
 - Only use exercises from the approved list above
-- Match volume and intensity to fitness level
-- Beginner: 3 sets, higher reps, more rest, simpler movements
-- Advanced: higher volume, progressive overload, compound focus
-- Include 1-2 rest or active recovery days
+- Each TRAINING day MUST have 5 to 7 exercises minimum — never less than 5
+- Structure each training day properly:
+  * 1 compound movement (main lift)
+  * 2-3 accessory movements  
+  * 1-2 isolation exercises
+  * 1 core or cardio finisher
+- Beginner: 3-4 sets, 12-15 reps, 60-90s rest
+- Intermediate: 4 sets, 8-12 reps, 60-90s rest  
+- Advanced: 4-5 sets, 5-8 reps, 90-120s rest
+- Include exactly 2 rest or active recovery days (not more)
+- Progressive structure: easier days early in week, harder mid-week
 - All text in English only
 - Return ONLY valid JSON, no markdown, no explanation
 
