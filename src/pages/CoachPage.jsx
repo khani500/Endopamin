@@ -892,17 +892,16 @@ export default function CoachPage() {
         <h1 className="text-[24px] font-bold">Your Coach</h1>
       </div>
 
-      {/* NAV TABS — centered, 3 only, with labels */}
+      {/* NAV TABS — 2 tabs, full width */}
       {view === 'chat' && (
         <div className="px-5 mb-4 flex-shrink-0">
-          <div className="flex gap-2 justify-center">
+          <div className="flex gap-2 w-full">
             {[
-              { v: 'workout', label: 'Workout', icon: <><path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/></> },
               { v: 'roster', label: 'Coaches', icon: <><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4"/><circle cx="17" cy="11" r="3"/><path d="M21 21v-1a3 3 0 00-3-3h-2a3 3 0 00-3 3v1"/></> },
               { v: 'group', label: 'Train Together', icon: <><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></> },
             ].map(tab => (
               <button key={tab.v} type="button" onClick={() => setView(tab.v)}
-                className="flex flex-col items-center gap-2 px-5 py-3 rounded-[18px] transition-all active:scale-95 border flex-1"
+                className="flex flex-col items-center gap-2 px-5 py-3 rounded-[18px] transition-all active:scale-95 border flex-1 min-w-0"
                 style={{
                   background: `${coach.color}12`,
                   borderColor: `${coach.color}35`,
