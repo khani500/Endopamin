@@ -489,6 +489,7 @@ PLAN REQUIREMENTS:
 - Use periodization: Push / Pull / Legs / Upper / Full Body split
 - Each day must train DIFFERENT muscle groups than the previous day
 - NO exercise should repeat more than once per week
+- CRITICAL: Each exercise name must appear only ONCE across the entire 7-day plan — no exceptions, zero repeats
 - Use a wide variety of exercises — compound lifts, isolation, core, cardio finishers
 - Sets/reps based on goal:
   * Muscle gain: 3-4 sets × 8-12 reps
