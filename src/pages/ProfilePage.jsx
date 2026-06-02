@@ -227,9 +227,10 @@ export default function ProfilePage() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(DEFAULT);
   const [isLoading, setIsLoading] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
-    if (!profile || form.display_name) return;
+    if (!profile || profileLoaded) return;
     setForm(prev => ({
       ...prev,
       display_name: profile.display_name || '',
@@ -248,7 +249,8 @@ export default function ProfilePage() {
       activity: profile.activity || 'moderate',
       last_workout: profile.last_workout || 'this_week',
     }));
-  }, [profile]);
+    setProfileLoaded(true);
+  }, [profile, profileLoaded]);
 
   const set = (key, val) => setForm(p => ({ ...p, [key]: val }));
 
