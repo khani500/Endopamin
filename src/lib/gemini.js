@@ -1,7 +1,6 @@
 import { extractGeminiModelText } from '../services/foodScanner';
 import { TRAINING_KNOWLEDGE } from '../data/trainingKnowledge';
 import { supabase } from './supabase';
-import { getFilteredExercises, buildExerciseSummary } from './planExerciseFilter';
 import { getPlanProgressSummary, buildProgressPrompt } from './planMemory';
 
 const BEGINNER_FORBIDDEN_RULES =
@@ -459,9 +458,6 @@ export async function generateWorkoutPlan(coachId, user, userProfile = {}) {
   const progressSummary = await getPlanProgressSummary(user?.id);
   const progressContext = buildProgressPrompt(progressSummary);
 
-  const filtered = getFilteredExercises({ setting, fitnessLevel, availableEquipment, isReturning });
-  const exerciseSummary = buildExerciseSummary(filtered);
-
   const coachPersona = {
     aria:  "You are Aria, a scientific NASM-certified coach. Be precise and evidence-based.",
     kane:  "You are Kane, a hardcore strength coach. Be intense but smart about injury prevention.",
@@ -472,36 +468,36 @@ export async function generateWorkoutPlan(coachId, user, userProfile = {}) {
 
   const prompt = `${coachPersona[coachId] || coachPersona.aria}
 
+You are building a science-based weekly workout plan. Use your full knowledge of exercise science (NASM, NSCA, ACSM principles).
+
 USER PROFILE:
 - Fitness level: ${fitnessLevel}
 - Goal: ${goal}
-- Equipment available: ${availableEquipment}
-- Setting: ${setting}
-- Injuries or limitations: ${injuries}
+- Equipment: ${availableEquipment === 'full_gym' ? 'Full gym (barbells, dumbbells, cables, machines)' : availableEquipment === 'home_basic' ? 'Home (dumbbells, resistance bands, bodyweight)' : 'Bodyweight only'}
+- Days per week: 5 training days, 2 rest days
+- Injuries: ${injuries}
 ${age ? `- Age: ${age}` : ''}
 ${weight ? `- Weight: ${weight}kg` : ''}
-${isReturning ? '- NOTE: User is returning after a break. Avoid high-risk compound movements week 1.' : ''}
-
-APPROVED EXERCISES ONLY (use names exactly as listed):
-${exerciseSummary}
+${isReturning ? '- Returning after break: start conservatively, no heavy compounds week 1' : ''}
 
 ${progressContext ? progressContext + '\n' : ''}
-RULES:
-- Only use exercises from the approved list above
-- Each TRAINING day MUST have 5 to 7 exercises minimum — never less than 5
-- Structure each training day properly:
-  * 1 compound movement (main lift)
-  * 2-3 accessory movements  
-  * 1-2 isolation exercises
-  * 1 core or cardio finisher
-- Beginner: 3-4 sets, 12-15 reps, 60-90s rest
-- Intermediate: 4 sets, 8-12 reps, 60-90s rest  
-- Advanced: 4-5 sets, 5-8 reps, 90-120s rest
-- Include exactly 2 rest or active recovery days (not more)
-- Progressive structure: easier days early in week, harder mid-week
-- NEVER repeat the same exercise twice in the same day
-- NEVER use the same exercise more than twice across the entire week
-- All text in English only
+
+PLAN REQUIREMENTS:
+- 7 days total (Monday to Sunday)
+- Exactly 5 training days, exactly 2 rest/recovery days
+- Each training day: 5-7 exercises minimum
+- Use periodization: Push / Pull / Legs / Upper / Full Body split
+- Each day must train DIFFERENT muscle groups than the previous day
+- NO exercise should repeat more than once per week
+- Use a wide variety of exercises — compound lifts, isolation, core, cardio finishers
+- Sets/reps based on goal:
+  * Muscle gain: 3-4 sets × 8-12 reps
+  * Strength: 4-5 sets × 3-6 reps  
+  * Fat loss: 3-4 sets × 12-15 reps, shorter rest
+  * General fitness: 3 sets × 10-15 reps
+- Beginner: simpler movements, machines over free weights, higher reps
+- Intermediate/Advanced: compound lifts, progressive overload, free weights
+- All exercise names in English
 - Return ONLY valid JSON, no markdown, no explanation
 
 FORMAT:
@@ -509,11 +505,11 @@ FORMAT:
   "coachId": "${coachId}",
   "days": [
     {
-      "day": "Saturday",
-      "focus": "Chest & Triceps",
+      "day": "Monday",
+      "focus": "Push — Chest & Shoulders",
       "type": "training",
       "exercises": [
-        { "name": "Leg Press (Machine)", "sets": "3", "reps": "12-15", "rest": "60s" }
+        { "name": "Barbell Bench Press", "sets": "4", "reps": "8-10", "rest": "90s" }
       ]
     }
   ]
