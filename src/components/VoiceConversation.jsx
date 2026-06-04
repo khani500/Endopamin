@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getCoach } from '../config/coaches';
 import { useAuth } from '../context/AuthContext';
+import { useWorkout } from '../context/WorkoutContext';
 import {
   buildCoachSystemPrompt,
   buildProfileContext,
@@ -24,6 +25,7 @@ const WELCOME_TRIGGER =
 
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
+  const { todayWorkout, nextWorkout } = useWorkout();
   const isIOS = isIOSDevice();
   const [status, setStatus] = useState('idle');
   const [transcript, setTranscript] = useState('');
@@ -116,8 +118,17 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const canStartMic = status === 'idle' || status === 'closed' || status === 'ready';
 
   const buildSystemPrompt = () => {
+    const workout = todayWorkout || nextWorkout;
+    const workoutBlock = workout
+      ? `CRITICAL OVERRIDE - THESE ARE THE ONLY EXERCISES ALLOWED TODAY:
+Focus: ${workout.focus}
+${workout.exercises?.map((e, i) => `${i + 1}. ${e?.name}: ${e?.sets} sets x ${e?.reps}, rest ${e?.rest}`).join('\n')}
+DO NOT suggest any other exercises. DO NOT add warm-up or cool-down. ONLY use exercises listed above.
+VOICE RULE: Max 2 sentences per response. No long introductions.`
+      : 'No workout plan found.';
+
     const ctx = buildProfileContext(profile, profile?.session_duration, profile?.location, []);
-    return buildCoachSystemPrompt(coach.personality, { name: coach.name, id: coachId }, [], ctx, {
+    const existingSystemPrompt = buildCoachSystemPrompt(coach.personality, { name: coach.name, id: coachId }, [], ctx, {
       profile,
       knowledgeContext: knowledgeContextRef.current,
       referenceContext: buildCoachReferenceContext({
@@ -128,6 +139,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         goal: profile?.goal,
       }),
     });
+
+    return `${workoutBlock}\n\n${existingSystemPrompt}`;
   };
 
   const cleanupIosRecognition = () => {
