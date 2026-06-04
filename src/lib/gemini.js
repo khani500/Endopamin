@@ -77,7 +77,7 @@ export async function buildKnowledgeContext(userLevel) {
 }
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
-const GEMINI_MODEL = 'gemini-2.5-flash-lite';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 function useGeminiProxy() {
   return typeof window !== 'undefined' && window.location.hostname !== 'localhost';
@@ -403,7 +403,7 @@ export const askGeminiWithImage = async (base64Image, prompt) => {
       response = await fetch('/api/gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...body, model: 'gemini-2.5-flash-lite', action: 'generateContent' }),
+        body: JSON.stringify({ ...body, model: 'gemini-2.5-flash', action: 'generateContent' }),
       });
     } else {
       if (!GEMINI_API_KEY) return null;
@@ -518,7 +518,7 @@ FORMAT:
 
   const { GoogleGenerativeAI } = await import("@google/generative-ai");
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const result = await model.generateContent(prompt);
   const text = result.response.text().trim();
