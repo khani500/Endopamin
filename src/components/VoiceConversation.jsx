@@ -431,18 +431,20 @@ VOICE RULE: Max 2 sentences per response. No long introductions.`
       return () => stopVoiceSession();
     }
 
-    if (isIOS) {
-      setStatus('ready');
-      return () => stopVoiceSession();
-    }
-
-    if (fallbackModeRef.current) {
-      setStatus('ready');
-      return () => stopVoiceSession();
-    }
-
     void startSession();
-    return () => stopVoiceSession();
+
+    // Auto-send welcome message after a short delay
+    const welcomeTimer = window.setTimeout(() => {
+      if (isOpen && !welcomeSentRef.current) {
+        welcomeSentRef.current = true;
+        void runIosTurn(WELCOME_TRIGGER);
+      }
+    }, 500);
+
+    return () => {
+      window.clearTimeout(welcomeTimer);
+      stopVoiceSession();
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
