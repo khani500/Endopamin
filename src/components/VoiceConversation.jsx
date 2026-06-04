@@ -26,8 +26,13 @@ const WELCOME_TRIGGER =
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
   const { todayWorkout, nextWorkout } = useWorkout();
-  console.log('VoiceConversation - todayWorkout:', todayWorkout);
-  console.log('VoiceConversation - nextWorkout:', nextWorkout);
+
+  useEffect(() => {
+    console.log('=== VOICE WORKOUT DEBUG ===');
+    console.log('todayWorkout:', todayWorkout);
+    console.log('nextWorkout:', nextWorkout);
+  }, [todayWorkout, nextWorkout]);
+
   const isIOS = isIOSDevice();
   const [status, setStatus] = useState('idle');
   const [transcript, setTranscript] = useState('');
