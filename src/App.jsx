@@ -16,6 +16,7 @@ import WorkoutPlanPage from './pages/WorkoutPlanPage';
 import GroupSession from './pages/GroupSession';
 import DeskBreakSession from './pages/DeskBreakSession';
 import { useAuth } from './context/AuthContext';
+import { WorkoutProvider } from './context/WorkoutContext';
 import { checkUserAbsence, updateLastActive } from './services/absenceDetector';
 import { onForegroundMessage } from './lib/firebase';
 import { getNotificationSettings, sendNotification, registerForNotifications } from './services/notificationService';
@@ -124,6 +125,7 @@ function App() {
   }, [user?.id, profile?.job_type]);
 
   return (
+    <WorkoutProvider>
     <Router>
       <div className="mx-auto flex min-h-screen w-full max-w-[430px] flex-col bg-[#0A0A0A] pb-16">
         <Routes>
@@ -176,6 +178,7 @@ function App() {
         <BottomNav />
       </div>
     </Router>
+    </WorkoutProvider>
   );
 }
 
