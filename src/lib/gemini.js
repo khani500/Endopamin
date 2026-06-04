@@ -134,7 +134,7 @@ const COACH_GENERATION_CONFIG = {
   temperature: 0.1,
   topP: 0.85,
   topK: 20,
-  maxOutputTokens: 512,
+  maxOutputTokens: 1024,
 };
 
 async function generateContent({ prompt, systemPrompt = '', generationConfig = {} }) {
@@ -269,15 +269,15 @@ export const askGeminiChat = async ({ messages, systemPrompt = '', signal } = {}
     return 'Coach is offline — API key missing';
   }
 
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const data = await generateChatContent({ contents: messages, systemPrompt, signal });
       return extractText(data) || 'No response';
     } catch (err) {
       if (err.name === 'AbortError') throw err;
-      if (attempt === 0) {
-        console.warn('Gemini chat attempt 1 failed, retrying...', err.message);
-        await new Promise(r => setTimeout(r, 800));
+      if (attempt < 2) {
+        console.warn(`Gemini chat attempt ${attempt + 1} failed, retrying...`, err.message);
+        await new Promise(r => setTimeout(r, 1500));
         continue;
       }
       console.error('Gemini chat error after retry:', err.message);
