@@ -60,7 +60,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   }, [profile?.experience]);
 
   /** iOS Safari blocks Gemini Live WebSocket — always use SpeechRecognition + TTS. */
-  const usesSpeechPath = () => isIOS || fallbackModeRef.current;
+  const usesSpeechPath = () => true;
 
   const clearIosRestartTimer = () => {
     if (iosRestartTimerRef.current != null) {
