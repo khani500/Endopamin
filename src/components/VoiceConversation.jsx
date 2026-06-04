@@ -26,6 +26,7 @@ const WELCOME_TRIGGER =
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
   const { todayWorkout, nextWorkout } = useWorkout();
+  console.log('WorkoutContext values:', { todayWorkout, nextWorkout });
   const isIOS = isIOSDevice();
   const [status, setStatus] = useState('idle');
   const [transcript, setTranscript] = useState('');
@@ -118,6 +119,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const canStartMic = status === 'idle' || status === 'closed' || status === 'ready';
 
   const buildSystemPrompt = () => {
+    console.log('WORKOUT INJECTED:', todayWorkout || nextWorkout);
     const workout = todayWorkout || nextWorkout;
     const workoutBlock = workout
       ? `CRITICAL OVERRIDE - THESE ARE THE ONLY EXERCISES ALLOWED TODAY:
