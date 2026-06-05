@@ -267,6 +267,40 @@ export async function lookupBarcodeProduct(barcode, { weightG, signal } = {}) {
     return parseOffProduct(product, code, weightG);
   } catch (offError) {
     console.warn('Open Food Facts lookup failed, trying Gemini fallback:', offError?.message);
+    try {
+      const usdaRes = await fetch(
+        `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(code)}&api_key=DEMO_KEY&pageSize=1`,
+      );
+      const usdaData = await usdaRes.json();
+      const item = usdaData.foods?.[0];
+      if (item) {
+        const nutrients = item.foodNutrients || [];
+        const get = name => nutrients.find(n => n.nutrientName?.toLowerCase().includes(name))?.value || 0;
+        const per100 = {
+          calories: Math.round(get('energy')),
+          protein: Math.round(get('protein') * 10) / 10,
+          carbs: Math.round(get('carbohydrate') * 10) / 10,
+          fat: Math.round(get('total lipid') * 10) / 10,
+        };
+        const servingG = weightG != null ? parseNum(weightG) : 100;
+        const scale = servingG / 100;
+        return toScanResult([toFoodItem({
+          name: item.description,
+          weight: servingG,
+          calories: per100.calories * scale,
+          protein: per100.protein * scale,
+          carbs: per100.carbs * scale,
+          fat: per100.fat * scale,
+        })], 'medium', {
+          barcode: code,
+          source: 'usda',
+          per100,
+          servingG: Math.round(servingG),
+        });
+      }
+    } catch (e) {
+      console.warn('USDA lookup failed:', e);
+    }
     const fallback = await fetchFromGeminiFallback(code, { signal });
     if (weightG != null) {
       const scaled = scaleFoodItem(fallback.items[0], weightG);
