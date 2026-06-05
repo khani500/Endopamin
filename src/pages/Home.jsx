@@ -31,6 +31,9 @@ const QUICK_START = [
 ];
 
 const PLANS = [
+  { id: 'workout', title: 'Workout Plan', sub: 'Your weekly program', path: '/workout-plan',
+    svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>,
+    bgColor: 'rgba(204,255,0,0.1)', borderColor: 'rgba(204,255,0,0.18)', iconColor: '#CCFF00' },
   { id: 'nutrition', title: 'Nutrition Plan', sub: '1,840 kcal today', path: '/plan/nutrition',
     svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>,
     bgColor: 'rgba(255,165,60,0.1)', borderColor: 'rgba(255,165,60,0.18)', iconColor: '#FFA53C' },
@@ -291,7 +294,7 @@ export default function Home() {
 
       {/* My Plans */}
       <p className="px-[18px] text-[10px] tracking-[2.5px] uppercase text-white/40 font-bold mb-3">My Plans</p>
-      <div className="px-[18px] grid grid-cols-1 gap-[10px] mb-5">
+      <div className="px-[18px] grid grid-cols-2 gap-[10px] mb-5">
         {PLANS.map(plan => (
           <Link key={plan.id} to={plan.path} className="no-underline rounded-[20px] p-4 flex items-center gap-3 border transition-transform duration-200 active:scale-95"
             style={{ background: `linear-gradient(135deg,${plan.bgColor},rgba(0,0,0,0))`, borderColor: plan.borderColor, boxShadow: '0 8px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)' }}>

@@ -3,19 +3,10 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { useWorkout } from '../context/WorkoutContext';
-import { COACHES, getCoach } from '../config/coaches';
 import { supabase } from '../lib/supabase';
-import { syncCoachPrefs } from '../lib/coachPrefs';
-import {
-  hasPlanRelevantChanges,
-  recommendCoachFromProfile,
-  regenerateWorkoutPlan,
-} from '../services/workoutPlanService';
 
 const PROFILE_STORAGE_KEY = 'endopamin_profile';
-const WHEEL_SPIN_MS = 2800;
-const COACH_WHEEL = Object.values(COACHES);
+const LOADING_DELAY_MS = 2500;
 
 // ── SVG Icons ──────────────────────────────────────────────────────────────
 const IconMale = ({ color = '#888' }) => (
@@ -232,15 +223,10 @@ const DEFAULT = {
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { user, profile, setProfile, signOut, updateCoachPersona } = useAuth();
-  const { reloadPlan } = useWorkout();
+  const { user, profile, setProfile, signOut } = useAuth();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(DEFAULT);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingPhase, setLoadingPhase] = useState(null);
-  const [matchedCoach, setMatchedCoach] = useState(null);
-  const [weeklyPlan, setWeeklyPlan] = useState(null);
-  const [wheelRotation, setWheelRotation] = useState(0);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
@@ -290,10 +276,9 @@ export default function ProfilePage() {
     injuries: form.injuries,
   });
 
-  const persistProfile = async ({ regeneratePlan = false } = {}) => {
+  const persistProfile = async () => {
     const payload = buildPayload();
     let savedProfile = null;
-    const planChanged = hasPlanRelevantChanges(profile, payload);
 
     if (user?.id && supabase) {
       const { data, error } = await supabase
@@ -306,6 +291,14 @@ export default function ProfilePage() {
         console.error('Profile save failed:', error);
       } else {
         savedProfile = data;
+
+        // If equipment changed, deactivate old plans so coach gets fresh plan
+        if (profile?.equipment !== payload.equipment) {
+          await supabase
+            .from('workout_plans')
+            .update({ is_active: false })
+            .eq('user_id', user?.id);
+        }
       }
     }
 
@@ -318,25 +311,6 @@ export default function ProfilePage() {
       console.error('Failed to cache profile locally:', error);
     }
 
-    const shouldRegenerate = regeneratePlan
-      || (profileData.onboarding_completed && planChanged);
-
-    if (shouldRegenerate && user?.id) {
-      const coachId = recommendCoachFromProfile(profileData);
-      try {
-        if (coachId !== profileData.coach_persona) {
-          await updateCoachPersona?.(coachId);
-          syncCoachPrefs(coachId);
-          profileData.coach_persona = coachId;
-        }
-        await regenerateWorkoutPlan(user.id, profileData, coachId);
-        await reloadPlan?.();
-        console.log('[ProfilePage] Workout plan regenerated for profile change');
-      } catch (err) {
-        console.error('Plan regeneration failed:', err);
-      }
-    }
-
     return profileData;
   };
 
@@ -344,40 +318,15 @@ export default function ProfilePage() {
     if (isLoading) return;
 
     setIsLoading(true);
-    setLoadingPhase('wheel');
-    setMatchedCoach(null);
-    setWeeklyPlan(null);
-
-    const recommendedId = recommendCoachFromProfile(form);
-    const coachIndex = Math.max(0, COACH_WHEEL.findIndex(c => c.id === recommendedId));
-    const sliceAngle = 360 / COACH_WHEEL.length;
-    const spins = 4 * 360 + coachIndex * sliceAngle + sliceAngle / 2;
-    setWheelRotation(spins);
 
     try {
-      await new Promise(r => window.setTimeout(r, WHEEL_SPIN_MS));
-      setLoadingPhase('generating');
-
-      const profileData = await persistProfile({ regeneratePlan: false });
-      const coachId = recommendCoachFromProfile(profileData);
-      const coach = getCoach(coachId);
-
-      await updateCoachPersona?.(coachId);
-      setMatchedCoach(coach);
-
-      const result = await regenerateWorkoutPlan(user?.id, { ...profileData, coach_persona: coachId }, coachId);
-      await reloadPlan?.();
-
-      setWeeklyPlan(result?.planData?.days || []);
-      setProfile(prev => ({ ...(prev || {}), ...profileData, coach_persona: coachId }));
-
+      await persistProfile();
       localStorage.setItem('onboarding_done', 'true');
-      setLoadingPhase('ready');
     } catch (err) {
       console.error('Profile save failed:', err);
-      setLoadingPhase(null);
-      setIsLoading(false);
     }
+
+    navigate('/coach', { replace: true });
   };
 
   const next = async () => {
@@ -501,13 +450,7 @@ export default function ProfilePage() {
           { val: 'gym', label: 'Gym', Icon: IconGym },
           { val: 'home', label: 'Home', Icon: IconHome },
         ].map(({ val, label, Icon }) => (
-          <SelectCard key={val} selected={form.location === val} onClick={() => {
-            setForm(p => ({
-              ...p,
-              location: val,
-              equipment: val === 'home' && p.equipment === 'full_gym' ? 'bodyweight' : p.equipment,
-            }));
-          }}
+          <SelectCard key={val} selected={form.location === val} onClick={() => set('location', val)}
             style={{ padding: '14px 10px', display: 'flex', alignItems: 'center', gap: 10 }}>
             <Icon color={form.location === val ? '#CCFF00' : '#555'} />
             <span style={{ fontSize: 13, color: form.location === val ? '#CCFF00' : '#888' }}>{label}</span>
@@ -799,172 +742,43 @@ export default function ProfilePage() {
                 transition={{ duration: 0.35, ease: 'easeOut' }}
                 style={{
                   width: '100%',
-                  maxWidth: loadingPhase === 'ready' ? 400 : 340,
-                  maxHeight: loadingPhase === 'ready' ? '85vh' : 'none',
+                  maxWidth: 320,
                   background: '#111',
                   border: '0.5px solid #2a2a2a',
                   borderRadius: 20,
-                  padding: loadingPhase === 'ready' ? '24px 20px' : '32px 24px',
+                  padding: '32px 24px',
                   textAlign: 'center',
                   boxShadow: '0 24px 80px rgba(0, 0, 0, 0.55)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  overflow: loadingPhase === 'ready' ? 'hidden' : 'visible',
                 }}
               >
-                {loadingPhase === 'wheel' && (
-                  <>
-                    <div style={{ position: 'relative', width: 200, height: 200, margin: '0 auto 20px' }}>
-                      <motion.div
-                        animate={{ rotate: wheelRotation }}
-                        transition={{ duration: WHEEL_SPIN_MS / 1000, ease: [0.2, 0.8, 0.2, 1] }}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          borderRadius: '50%',
-                          border: '3px solid #222',
-                          background: `conic-gradient(${COACH_WHEEL.map((c, i) => {
-                            const start = (i / COACH_WHEEL.length) * 100;
-                            const end = ((i + 1) / COACH_WHEEL.length) * 100;
-                            return `${c.color} ${start}% ${end}%`;
-                          }).join(', ')})`,
-                          position: 'relative',
-                        }}
-                      />
-                      <div style={{
-                        position: 'absolute',
-                        top: -8,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: 0,
-                        height: 0,
-                        borderLeft: '10px solid transparent',
-                        borderRight: '10px solid transparent',
-                        borderBottom: '16px solid #CCFF00',
-                      }} />
-                      <div style={{
-                        position: 'absolute',
-                        inset: 28,
-                        borderRadius: '50%',
-                        background: '#0A0A0A',
-                        border: '2px solid #222',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 28,
-                      }}>
-                        🎯
-                      </div>
-                    </div>
-                    <p style={{ fontSize: 16, fontWeight: 800, color: '#CCFF00', marginBottom: 8 }}>
-                      Matching your perfect coach...
-                    </p>
-                    <p style={{ fontSize: 12, color: '#666' }}>Based on your goals and training setup</p>
-                  </>
-                )}
-
-                {loadingPhase === 'generating' && (
-                  <>
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1.1, repeat: Infinity, ease: 'linear' }}
-                      style={{
-                        width: 56,
-                        height: 56,
-                        margin: '0 auto 20px',
-                        borderRadius: '50%',
-                        border: '3px solid #222',
-                        borderTopColor: '#CCFF00',
-                      }}
-                    />
-                    <p style={{ fontSize: 16, fontWeight: 800, color: '#CCFF00', marginBottom: 8 }}>
-                      Building your weekly plan...
-                    </p>
-                    <p style={{ fontSize: 12, color: '#666' }}>
-                      {form.location === 'home' ? 'Home / bodyweight exercises' : 'Gym program'} · {form.goal?.replace('_', ' ')}
-                    </p>
-                  </>
-                )}
-
-                {loadingPhase === 'ready' && matchedCoach && (
-                  <>
-                    <div style={{ fontSize: 40, marginBottom: 8 }}>{matchedCoach.avatar}</div>
-                    <p style={{ fontSize: 17, fontWeight: 900, color: matchedCoach.color || '#CCFF00', marginBottom: 2 }}>
-                      Coach {matchedCoach.name}
-                    </p>
-                    <p style={{ fontSize: 11, color: '#888', marginBottom: 14 }}>{matchedCoach.title}</p>
-
-                    <div style={{ fontSize: 10, color: '#667a00', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 10 }}>
-                      Your Weekly Plan
-                    </div>
-
-                    <div style={{ flex: 1, overflowY: 'auto', textAlign: 'left', marginBottom: 16, paddingRight: 4 }}>
-                      {(weeklyPlan || []).map(day => {
-                        const isToday = day.day === new Date().toLocaleDateString('en-US', { weekday: 'long' });
-                        const isRest = day.type === 'rest';
-                        return (
-                          <div
-                            key={day.day}
-                            style={{
-                              background: isToday ? '#0d1a00' : '#0e0e0e',
-                              border: `0.5px solid ${isToday ? '#3a5a00' : '#1e1e1e'}`,
-                              borderRadius: 12,
-                              padding: '12px 14px',
-                              marginBottom: 8,
-                            }}
-                          >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                              <span style={{ fontSize: 13, fontWeight: 700, color: isToday ? '#CCFF00' : '#ddd' }}>
-                                {day.day}{isToday ? ' · Today' : ''}
-                              </span>
-                              <span style={{
-                                fontSize: 9,
-                                fontWeight: 700,
-                                letterSpacing: '0.08em',
-                                textTransform: 'uppercase',
-                                color: isRest ? '#666' : '#CCFF00',
-                                background: isRest ? '#1a1a1a' : '#141f00',
-                                padding: '3px 8px',
-                                borderRadius: 20,
-                              }}>
-                                {isRest ? 'Rest' : 'Training'}
-                              </span>
-                            </div>
-                            <div style={{ fontSize: 12, color: '#aaa', marginBottom: isRest ? 0 : 8 }}>{day.focus}</div>
-                            {!isRest && (day.exercises || []).map((ex, i) => (
-                              <div key={`${day.day}-${ex.name}-${i}`} style={{ fontSize: 11, color: '#666', padding: '3px 0', borderTop: i > 0 ? '0.5px solid #1a1a1a' : 'none' }}>
-                                {ex.name} — {ex.sets}×{ex.reps}{ex.rest ? ` · rest ${ex.rest}` : ''}
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    <motion.button
-                      whileTap={{ scale: 0.97 }}
-                      type="button"
-                      onClick={() => {
-                        syncCoachPrefs(matchedCoach.id);
-                        navigate('/coach', { replace: true });
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '14px',
-                        borderRadius: 14,
-                        border: 'none',
-                        background: '#CCFF00',
-                        color: '#0a0a0a',
-                        fontSize: 14,
-                        fontWeight: 900,
-                        cursor: 'pointer',
-                        fontFamily: 'inherit',
-                      }}
-                    >
-                      Start with {matchedCoach.name}
-                    </motion.button>
-                  </>
-                )}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1.1, repeat: Infinity, ease: 'linear' }}
+                  style={{
+                    width: 56,
+                    height: 56,
+                    margin: '0 auto 20px',
+                    borderRadius: '50%',
+                    border: '3px solid #222',
+                    borderTopColor: '#CCFF00',
+                  }}
+                />
+                <motion.p
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 800,
+                    color: '#CCFF00',
+                    letterSpacing: '-0.02em',
+                    marginBottom: 8,
+                  }}
+                >
+                  AI is customizing your plan...
+                </motion.p>
+                <p style={{ fontSize: 12, color: '#666', lineHeight: 1.6 }}>
+                  Syncing your stats with your coaches
+                </p>
               </motion.div>
             </motion.div>
           )}

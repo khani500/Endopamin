@@ -49,7 +49,7 @@ export const WorkoutProvider = ({ children }) => {
     try {
       const { data, error } = await supabase
         .from('workout_plans')
-        .select('id, plan_data, week_start, coach_id, generated_at')
+        .select('id, plan_data')
         .eq('user_id', user.id)
         .eq('is_active', true)
         .order('generated_at', { ascending: false })
@@ -91,9 +91,8 @@ export const WorkoutProvider = ({ children }) => {
       planDays,
       todayWorkout,
       nextWorkout,
-      reloadPlan: loadPlan,
     }),
-    [activePlan, planId, planDays, todayWorkout, nextWorkout, loadPlan],
+    [activePlan, planId, planDays, todayWorkout, nextWorkout],
   );
 
   return <WorkoutContext.Provider value={value}>{children}</WorkoutContext.Provider>;

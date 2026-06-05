@@ -498,24 +498,12 @@ You are building a science-based weekly workout plan. Use your full knowledge of
 USER PROFILE:
 - Fitness level: ${fitnessLevel}
 - Goal: ${goal}
-- Training environment: ${setting === 'home' ? 'HOME' : 'GYM'}
-- Equipment: ${
-  availableEquipment === 'full_gym'
-    ? 'Full gym (barbells, dumbbells, cables, machines)'
-    : availableEquipment === 'home_full'
-      ? 'Home with dumbbells and basic weights'
-      : availableEquipment === 'home_basic'
-        ? 'Home (dumbbells, resistance bands, bodyweight)'
-        : 'Bodyweight only — NO barbells, NO machines, NO cables'
-}
+- Equipment: ${availableEquipment === 'full_gym' ? 'Full gym (barbells, dumbbells, cables, machines)' : availableEquipment === 'home_basic' ? 'Home (dumbbells, resistance bands, bodyweight)' : 'Bodyweight only'}
 - Days per week: 5 training days, 2 rest days
 - Injuries: ${injuries}
 ${age ? `- Age: ${age}` : ''}
 ${weight ? `- Weight: ${weight}kg` : ''}
 ${isReturning ? '- Returning after break: start conservatively, no heavy compounds week 1' : ''}
-${setting === 'home' || availableEquipment === 'bodyweight'
-  ? '- CRITICAL: Every exercise must work at HOME with listed equipment only. No barbell bench, leg press, cable machines, or smith machine.'
-  : ''}
 
 ${progressContext ? progressContext + '\n' : ''}
 
@@ -553,48 +541,12 @@ FORMAT:
   ]
 }`;
 
-  const isProduction =
-    typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+  const { GoogleGenerativeAI } = await import("@google/generative-ai");
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-  const body = {
-    contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.2, maxOutputTokens: 4096 },
-  };
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 25000);
-
-  try {
-    let response;
-    if (isProduction) {
-      response = await fetch('/api/gemini', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: GEMINI_MODEL, action: 'generateContent', ...body }),
-        signal: controller.signal,
-      });
-    } else if (GEMINI_API_KEY) {
-      response = await fetch(endpoint(), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildRequestPayload(body)),
-        signal: controller.signal,
-      });
-    } else {
-      throw new Error('Gemini API key missing');
-    }
-
-    const raw = await response.text();
-    if (!response.ok) {
-      console.error('Plan generation Gemini error:', raw.slice(0, 300));
-      throw new Error(`Plan generation failed: ${response.status}`);
-    }
-
-    const data = JSON.parse(raw);
-    const text = extractText(data);
-    const clean = text.replace(/```json|```/g, '').trim();
-    return JSON.parse(clean);
-  } finally {
-    clearTimeout(timeoutId);
-  }
+  const result = await model.generateContent(prompt);
+  const text = result.response.text().trim();
+  const clean = text.replace(/```json|```/g, "").trim();
+  return JSON.parse(clean);
 }

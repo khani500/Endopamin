@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useWorkout } from '../context/WorkoutContext';
 import { useCoachSession, getAssessmentGreeting } from '../context/CoachContext';
 import { useVoiceSession } from '../hooks/useVoiceSession';
 import { askGeminiChat, askGeminiChatStream, buildKnowledgeContext } from '../lib/gemini';
@@ -20,12 +19,10 @@ import {
 import {
   buildCoachSystemPrompt,
   buildProfileContext,
-  buildWeeklyPlanSystemPrefix,
   sanitizeCoachResponse,
   sanitizeTranscript,
   toGeminiContents,
 } from '../lib/coachChat';
-import { getSavedCoachId, saveCoachId, syncCoachPrefs } from '../lib/coachPrefs';
 import { getExerciseData } from '../lib/exerciseDB';
 import { supabase } from '../lib/supabase';
 import { COACH_SYSTEM_PROMPTS, formatCoachMemoryForPrompt } from '../config/coachPrompts';
@@ -158,7 +155,24 @@ function getCoachImageSrc(coachId) {
   return `/coaches/${coachId}.${ext}`;
 }
 
+const COACH_STORAGE_KEY = 'endopamin_coach';
 const HISTORY_STORAGE_KEY = 'endopamin_history';
+
+function getSavedCoachId() {
+  try {
+    return sessionStorage.getItem(COACH_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function saveCoachId(coachId) {
+  try {
+    sessionStorage.setItem(COACH_STORAGE_KEY, coachId);
+  } catch {
+    // ignore quota errors
+  }
+}
 
 function loadSavedHistory() {
   try {
@@ -188,7 +202,6 @@ function freshCoachSession(coachId, greeting) {
 
 export default function CoachPage() {
   const { user, profile, updateCoachPersona } = useAuth() || {};
-  const { todayWorkout, nextWorkout } = useWorkout();
   const {
     messages,
     switchCoach,
@@ -197,10 +210,9 @@ export default function CoachPage() {
     clearCoachSession,
   } = useCoachSession();
   const [coach, setCoach] = useState(() => {
-    if (profile?.coach_persona) return getCoachById(profile.coach_persona);
     const savedCoach = getSavedCoachId();
     if (savedCoach) return getCoachById(savedCoach);
-    return COACHES[0];
+    return getCoachById(profile?.coach_persona) || COACHES[0];
   });
   const [view, setView] = useState('chat');
   const [location, setLocation] = useState(() => normalizeTrainingLocation(profile?.location));
@@ -241,14 +253,12 @@ export default function CoachPage() {
   const prevCoachIdRef = useRef(coach.id);
 
   useEffect(() => {
+    if (getSavedCoachId()) return;
     const personaId = profile?.coach_persona;
     if (!personaId) return;
     const profileCoach = getCoachById(personaId);
-    if (profileCoach.id === coach.id) return;
-    saveCoachId(profileCoach.id);
-    setCoach(profileCoach);
-    switchCoach(profileCoach.id, profileCoach.greeting);
-  }, [profile?.coach_persona, coach.id, switchCoach]);
+    if (profileCoach && profileCoach.id !== coach.id) setCoach(profileCoach);
+  }, [profile?.coach_persona, coach.id]);
 
   useEffect(() => {
     if (profile?.location) setLocation(normalizeTrainingLocation(profile.location));
@@ -265,8 +275,6 @@ export default function CoachPage() {
     if (coachInitRef.current) return;
     coachInitRef.current = true;
 
-    if (profile?.coach_persona) return;
-
     const savedCoachId = getSavedCoachId();
     if (!savedCoachId) return;
 
@@ -278,7 +286,7 @@ export default function CoachPage() {
     if (savedHistory?.length) {
       setCoachMessages(savedCoachId, savedHistory);
     }
-  }, [profile?.coach_persona, switchCoach, setCoachMessages]);
+  }, [switchCoach, setCoachMessages]);
 
   useEffect(() => {
     saveCoachId(coach.id);
@@ -313,7 +321,7 @@ export default function CoachPage() {
   }, [switchCoach, setCoachMessages]);
 
   const handleSelectCoach = useCallback(async selectedCoach => {
-    syncCoachPrefs(selectedCoach.id);
+    saveCoachId(selectedCoach.id);
     clearCoachSession(selectedCoach.id);
     switchCoach(selectedCoach.id, selectedCoach.greeting);
     setCoachMessages(selectedCoach.id, []);
@@ -576,8 +584,7 @@ export default function CoachPage() {
         ? `${baseReferenceContext}\n\n${wgerContext}`
         : baseReferenceContext;
       const basePrompt = `${coach.systemPrompt}\n\n${coachMemoryBlock}`;
-      const planWorkout = todayWorkout || nextWorkout;
-      const coachSystemPrompt = buildCoachSystemPrompt(
+      const systemPrompt = buildCoachSystemPrompt(
         basePrompt,
         coach,
         apiHistory,
@@ -587,15 +594,8 @@ export default function CoachPage() {
           profile,
           knowledgeContext,
           referenceContext,
-          activePlanWorkout: planWorkout,
         },
       );
-      const planPrefix = buildWeeklyPlanSystemPrefix(planWorkout);
-      const systemPrompt = planPrefix ? `${planPrefix}\n\n${coachSystemPrompt}` : coachSystemPrompt;
-      if (planWorkout) {
-        console.log('[CoachPage] injecting workout plan:', planWorkout.day, planWorkout.focus, planWorkout.exercises?.length);
-      }
-      console.log('[CoachPage] system prompt length:', systemPrompt.length);
       const contents = toGeminiContents(apiHistory);
 
       const rawReply = streaming
@@ -644,7 +644,7 @@ export default function CoachPage() {
       sendingRef.current = false;
       setLoading(false);
     }
-  }, [coach, profile, user?.id, workoutTime, location, equipment, todayWorkout, nextWorkout, getCoachMessages, setCoachMessages, speakCoachText, voiceMode]);
+  }, [coach, profile, user?.id, workoutTime, location, equipment, getCoachMessages, setCoachMessages, speakCoachText, voiceMode]);
 
   /** Text input only — updates chat, never triggers TTS. */
   const handleSendText = useCallback(async rawText => {
