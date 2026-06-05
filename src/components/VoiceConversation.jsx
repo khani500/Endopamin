@@ -183,10 +183,25 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       }),
     });
 
-    const result = `${planContext}\n\n${coachSystemPrompt}`;
+    let activePlanOverride = '';
+    if (workout?.exercises?.length > 0) {
+      activePlanOverride = `ACTIVE PLAN OVERRIDE — IGNORE ALL PREVIOUS WORKOUT MEMORY:
+Today is ${workout.day}. Focus: ${workout.focus}.
+Exercises (follow EXACTLY, in this order):
+${workout.exercises.map((ex, i) => `${i + 1}. ${ex.name}: ${ex.sets} sets x ${ex.reps} reps`).join('\n')}
+
+DO NOT say "Session 1 of Week 1". DO NOT say "Session X of Week Y". DO NOT create a new workout.
+Ignore any stored memory about previous sessions or program weeks.
+Start immediately with: "Today is ${workout.focus}. Let's go — first exercise is ${workout.exercises[0]?.name}."
+
+`;
+    }
+
+    const result = `${activePlanOverride}${planContext}\n\n${coachSystemPrompt}`;
     console.log('[buildSystemPrompt] workout:', workout ? { day: workout.day, focus: workout.focus } : null);
+    console.log('[buildSystemPrompt] activePlanOverride set:', Boolean(activePlanOverride));
     console.log('[buildSystemPrompt] knowledgeContext length:', knowledgeContextRef.current.length);
-    console.log('[buildSystemPrompt] prompt preview:', result.slice(0, 100));
+    console.log('[buildSystemPrompt] prompt preview:', result.slice(0, 150));
     return result;
   };
 
