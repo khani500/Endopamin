@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useWorkout } from '../context/WorkoutContext';
 import { useCoachSession, getAssessmentGreeting } from '../context/CoachContext';
 import { useVoiceSession } from '../hooks/useVoiceSession';
 import { askGeminiChat, askGeminiChatStream, buildKnowledgeContext } from '../lib/gemini';
@@ -19,6 +20,7 @@ import {
 import {
   buildCoachSystemPrompt,
   buildProfileContext,
+  buildWeeklyPlanSystemPrefix,
   sanitizeCoachResponse,
   sanitizeTranscript,
   toGeminiContents,
@@ -202,6 +204,7 @@ function freshCoachSession(coachId, greeting) {
 
 export default function CoachPage() {
   const { user, profile, updateCoachPersona } = useAuth() || {};
+  const { todayWorkout, nextWorkout } = useWorkout();
   const {
     messages,
     switchCoach,
@@ -584,7 +587,8 @@ export default function CoachPage() {
         ? `${baseReferenceContext}\n\n${wgerContext}`
         : baseReferenceContext;
       const basePrompt = `${coach.systemPrompt}\n\n${coachMemoryBlock}`;
-      const systemPrompt = buildCoachSystemPrompt(
+      const planWorkout = todayWorkout || nextWorkout;
+      const coachSystemPrompt = buildCoachSystemPrompt(
         basePrompt,
         coach,
         apiHistory,
@@ -594,8 +598,14 @@ export default function CoachPage() {
           profile,
           knowledgeContext,
           referenceContext,
+          activePlanWorkout: planWorkout,
         },
       );
+      const planPrefix = buildWeeklyPlanSystemPrefix(planWorkout);
+      const systemPrompt = planPrefix ? `${planPrefix}\n\n${coachSystemPrompt}` : coachSystemPrompt;
+      if (planWorkout) {
+        console.log('[CoachPage] injecting workout plan:', planWorkout.day, planWorkout.focus, planWorkout.exercises?.length);
+      }
       const contents = toGeminiContents(apiHistory);
 
       const rawReply = streaming
@@ -644,7 +654,7 @@ export default function CoachPage() {
       sendingRef.current = false;
       setLoading(false);
     }
-  }, [coach, profile, user?.id, workoutTime, location, equipment, getCoachMessages, setCoachMessages, speakCoachText, voiceMode]);
+  }, [coach, profile, user?.id, workoutTime, location, equipment, todayWorkout, nextWorkout, getCoachMessages, setCoachMessages, speakCoachText, voiceMode]);
 
   /** Text input only — updates chat, never triggers TTS. */
   const handleSendText = useCallback(async rawText => {
