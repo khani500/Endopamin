@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { ensureActivePlan } from '../services/workoutPlanService';
 import { useAuth } from './AuthContext';
 
 const WorkoutContext = createContext(null);
@@ -28,48 +28,50 @@ function getNextWorkoutAfterToday(planDays, todayWorkout) {
   return trainingDays[0];
 }
 
+function applyPlanRecord(data, setters) {
+  const days = data?.plan_data?.days || [];
+  const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  const today = days.find(d => d.day === todayName) || null;
+
+  console.log('todayName:', todayName, 'todayWorkout:', today);
+  setters.setActivePlan(data);
+  setters.setPlanId(data?.id || null);
+  setters.setPlanDays(days);
+  setters.setTodayWorkout(today);
+  setters.setNextWorkout(getNextWorkoutAfterToday(days, today));
+}
+
 export const WorkoutProvider = ({ children }) => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [activePlan, setActivePlan] = useState(null);
   const [planId, setPlanId] = useState(null);
   const [planDays, setPlanDays] = useState([]);
   const [todayWorkout, setTodayWorkout] = useState(null);
   const [nextWorkout, setNextWorkout] = useState(null);
+  const [planLoading, setPlanLoading] = useState(false);
 
   const loadPlan = useCallback(async () => {
-    if (!user?.id || !supabase) {
+    if (!user?.id) {
       setActivePlan(null);
       setPlanId(null);
       setPlanDays([]);
       setTodayWorkout(null);
       setNextWorkout(null);
+      setPlanLoading(false);
       return;
     }
 
+    setPlanLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('workout_plans')
-        .select('id, plan_data, week_start, coach_id, generated_at')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .order('generated_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      console.log('WorkoutContext fetch result:', data, error);
-
-      if (error) throw error;
-
-      const days = data?.plan_data?.days || [];
-      const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-      const today = days.find(d => d.day === todayName) || null;
-
-      console.log('todayName:', todayName, 'todayWorkout:', today);
-      setActivePlan(data);
-      setPlanId(data?.id || null);
-      setPlanDays(days);
-      setTodayWorkout(today);
-      setNextWorkout(getNextWorkoutAfterToday(days, today));
+      const data = await ensureActivePlan(user.id, profile);
+      console.log('WorkoutContext fetch result:', data);
+      applyPlanRecord(data, {
+        setActivePlan,
+        setPlanId,
+        setPlanDays,
+        setTodayWorkout,
+        setNextWorkout,
+      });
     } catch (err) {
       console.error('Failed to load workout plan:', err);
       setActivePlan(null);
@@ -77,8 +79,10 @@ export const WorkoutProvider = ({ children }) => {
       setPlanDays([]);
       setTodayWorkout(null);
       setNextWorkout(null);
+    } finally {
+      setPlanLoading(false);
     }
-  }, [user?.id]);
+  }, [user?.id, profile]);
 
   useEffect(() => {
     void loadPlan();
@@ -91,9 +95,10 @@ export const WorkoutProvider = ({ children }) => {
       planDays,
       todayWorkout,
       nextWorkout,
+      planLoading,
       reloadPlan: loadPlan,
     }),
-    [activePlan, planId, planDays, todayWorkout, nextWorkout, loadPlan],
+    [activePlan, planId, planDays, todayWorkout, nextWorkout, planLoading, loadPlan],
   );
 
   return <WorkoutContext.Provider value={value}>{children}</WorkoutContext.Provider>;

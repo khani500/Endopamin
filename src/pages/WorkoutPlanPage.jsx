@@ -4,11 +4,16 @@ import { useAuth } from '../context/AuthContext';
 import { useWorkout } from '../context/WorkoutContext';
 import { getCoach, resolveCoachId } from '../config/coaches';
 import {
-  isPlanStale,
-  PLAN_VALID_DAYS,
   recommendCoachFromProfile,
   regenerateWorkoutPlan,
 } from '../services/workoutPlanService';
+
+function isRestDay(day) {
+  const focus = day?.focus || '';
+  return day?.type === 'rest'
+    || focus.includes('Rest')
+    || focus.includes('Recovery');
+}
 
 const COACH_COLORS = {
   aria: { accent: '#CCFF00', label: 'Aria' },
@@ -21,7 +26,7 @@ const COACH_COLORS = {
 export default function WorkoutPlanPage() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
-  const { planDays, activePlan, reloadPlan } = useWorkout();
+  const { planDays, activePlan, planLoading, reloadPlan } = useWorkout();
   const [generating, setGenerating] = useState(false);
   const [activeDay, setActiveDay] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -52,16 +57,16 @@ export default function WorkoutPlanPage() {
       {showConfirm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '0 24px' }}>
           <div style={{ background: '#111', border: '1px solid #333', borderRadius: 20, padding: '28px 24px', maxWidth: 340, width: '100%' }}>
-            <h3 style={{ margin: '0 0 8px', fontSize: 17, fontWeight: 700 }}>Rebuild your plan?</h3>
+            <h3 style={{ margin: '0 0 8px', fontSize: 17, fontWeight: 700 }}>Create a new plan?</h3>
             <p style={{ margin: '0 0 24px', fontSize: 13, color: '#888', lineHeight: 1.6 }}>
-              A new plan will match your current profile — location, equipment, goal, and experience.
+              Your current plan will be replaced with a fresh weekly plan based on your profile.
             </p>
             <div style={{ display: 'flex', gap: 10 }}>
               <button type="button" onClick={() => setShowConfirm(false)} style={{ flex: 1, background: '#1a1a1a', border: '1px solid #333', color: '#fff', borderRadius: 12, padding: '12px', fontSize: 14, cursor: 'pointer' }}>
                 Cancel
               </button>
               <button type="button" onClick={rebuildPlan} style={{ flex: 1, background: accent, border: 'none', color: '#000', borderRadius: 12, padding: '12px', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
-                Rebuild
+                New Plan
               </button>
             </div>
           </div>
@@ -78,51 +83,58 @@ export default function WorkoutPlanPage() {
         </div>
         {hasPlan && (
           <button type="button" onClick={() => setShowConfirm(true)} disabled={generating} style={{ background: 'transparent', border: `1px solid ${accent}`, color: accent, borderRadius: 8, padding: '8px 14px', fontSize: 12, cursor: 'pointer' }}>
-            {generating ? '...' : '🔄 Rebuild'}
+            {generating ? '...' : '🔄 New Plan'}
           </button>
         )}
       </div>
 
       <div style={{ padding: '20px 16px' }}>
-        {!hasPlan ? (
+        {planLoading || generating ? (
+          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+            <h2 style={{ margin: '0 0 8px', fontSize: 18 }}>Building your plan...</h2>
+            <p style={{ color: '#666', fontSize: 14, lineHeight: 1.6 }}>
+              Coach {label} is preparing your weekly plan.
+            </p>
+          </div>
+        ) : !hasPlan ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <h2 style={{ margin: '0 0 8px', fontSize: 18 }}>No active plan</h2>
             <p style={{ color: '#666', marginBottom: 32, fontSize: 14, lineHeight: 1.6 }}>
-              Complete your profile or rebuild a plan matched to your current setup.
+              Complete your profile, then your first plan will be created automatically.
             </p>
             <button type="button" onClick={() => navigate('/profile')} style={{ background: 'transparent', border: '1px solid #444', color: '#aaa', borderRadius: 12, padding: '12px 24px', fontSize: 14, marginRight: 8, cursor: 'pointer' }}>
               Edit Profile
             </button>
             <button type="button" onClick={rebuildPlan} disabled={generating} style={{ background: accent, color: '#000', border: 'none', borderRadius: 12, padding: '14px 24px', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
-              {generating ? 'Building...' : `Build with ${label}`}
+              New Plan
             </button>
           </div>
         ) : (
           <>
             <p style={{ fontSize: 11, color: '#666', marginBottom: 12 }}>
-              {weekStart ? `Week of ${weekStart}` : 'Current week'} · valid {PLAN_VALID_DAYS} days
-              {stale ? ' · consider rebuilding' : ''}
+              {weekStart ? `Week of ${weekStart}` : 'Current week'}
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {planDays.map((d, i) => {
                 const isToday = d.day === new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                const restDay = isRestDay(d);
                 return (
                   <div
                     key={d.day}
                     onClick={() => setActiveDay(activeDay === i ? null : i)}
                     style={{
                       background: isToday ? '#0d1a00' : '#111',
-                      border: `1px solid ${activeDay === i ? accent : isToday ? '#3a5a00' : d.type === 'rest' ? '#1a1a1a' : '#222'}`,
+                      border: `1px solid ${activeDay === i ? accent : isToday ? '#3a5a00' : restDay ? '#1a1a1a' : '#222'}`,
                       borderRadius: 14,
                       padding: '14px 16px',
                       cursor: 'pointer',
-                      opacity: d.type === 'rest' ? 0.75 : 1,
+                      opacity: restDay ? 0.75 : 1,
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: d.type === 'rest' ? '#1a1a1a' : `${accent}22`, color: d.type === 'rest' ? '#444' : accent, fontWeight: 600 }}>
-                          {d.type === 'rest' ? 'REST' : 'TRAIN'}
+                        <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: restDay ? '#1a1a1a' : `${accent}22`, color: restDay ? '#666' : accent, fontWeight: 600 }}>
+                          {restDay ? 'REST' : 'TRAIN'}
                         </span>
                         <div>
                           <span style={{ fontWeight: 700, fontSize: 14 }}>{d.day}{isToday ? ' · Today' : ''}</span>

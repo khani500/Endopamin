@@ -89,6 +89,33 @@ export function isPlanStale(weekStart) {
   return ageDays >= PLAN_VALID_DAYS;
 }
 
+export async function fetchActivePlan(userId) {
+  if (!userId || !supabase) return null;
+
+  const { data, error } = await supabase
+    .from('workout_plans')
+    .select('id, plan_data, week_start, coach_id, generated_at')
+    .eq('user_id', userId)
+    .eq('is_active', true)
+    .order('generated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+/** Load active plan, or create one only when none exists. */
+export async function ensureActivePlan(userId, profile) {
+  const existing = await fetchActivePlan(userId);
+  if (existing) return existing;
+  if (!profile?.onboarding_completed) return null;
+
+  const coachId = profile.coach_persona || recommendCoachFromProfile(profile);
+  await regenerateWorkoutPlan(userId, profile, coachId);
+  return fetchActivePlan(userId);
+}
+
 export async function regenerateWorkoutPlan(userId, profile, coachId) {
   if (!userId || !supabase) return null;
 
