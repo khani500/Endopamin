@@ -1,6 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCoach } from '../hooks/useCoach';
+import { useWorkout } from '../context/WorkoutContext';
+import { getCoach, resolveCoachId } from '../config/coaches';
+import { syncCoachPrefs } from '../lib/coachPrefs';
 import { useState } from 'react';
 
 const iconClass = 'h-full w-full';
@@ -46,9 +49,144 @@ export default function Home() {
   const navigate = useNavigate();
   const { profile } = useAuth() || {};
   const { message, loadingMessage } = useCoach();
+  const { planDays, activePlan } = useWorkout();
   const [selectedMood, setSelectedMood] = useState('strong');
 
   const displayName = profile?.display_name || 'Athlete';
+  const coachId = resolveCoachId(activePlan?.coach_id || profile?.coach_persona);
+  const coach = getCoach(coachId);
+  const showWeeklyPlanView = profile?.onboarding_completed === true;
+  const hasWeeklyPlan = Array.isArray(planDays) && planDays.length > 0;
+  const weekDays = planDays || [];
+
+  // After onboarding: show ONLY the weekly plan content on Home.
+  if (showWeeklyPlanView) {
+    return (
+      <main className="min-h-screen bg-[#080808] text-white pb-28 overflow-x-hidden">
+        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-72 h-48 rounded-full bg-[#CCFF00] opacity-[0.04] blur-3xl" />
+
+        <div className="px-6 pt-10 pb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-[22px] font-bold tracking-tight leading-tight">Weekly Plan</h1>
+              <p className="text-[11px] text-white/40 mt-1">
+                Coach {coach?.name || 'Aria'}
+              </p>
+            </div>
+            {activePlan?.week_start && (
+              <div className="text-[10px] text-white/30">
+                {activePlan.week_start}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {!hasWeeklyPlan ? (
+          <div className="px-6 pb-10">
+            <div className="rounded-[20px] border border-white/[0.07] bg-[#111] p-6 text-center">
+              <p className="text-[14px] font-bold text-[#CCFF00]">Loading your weekly plan...</p>
+              <p className="text-[12px] text-white/40 mt-2">Please wait a moment.</p>
+            </div>
+          </div>
+        ) : (
+          <div className="px-6 pb-6">
+            <div className="rounded-[20px] border border-white/[0.07] bg-[#111] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.55)]">
+              <div className="text-[10px] text-[#667a00] tracking-[0.12em] uppercase font-bold mb-3">
+                Your Weekly Plan
+              </div>
+
+              <div className="weekly-plan-scroll" style={{ maxHeight: '52vh', overflowY: 'auto', paddingRight: 8 }}>
+                {weekDays.map((day) => {
+                  const isToday = day.day === new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                  const focus = day.focus || '';
+                  const isRest = day.type === 'rest'
+                    || focus.includes('Rest')
+                    || focus.includes('Recovery')
+                    || focus.includes('Mobility');
+
+                  return (
+                    <div
+                      key={day.day}
+                      style={{
+                        background: isToday ? '#0d1a00' : '#0e0e0e',
+                        border: `0.5px solid ${isToday ? '#3a5a00' : '#1e1e1e'}`,
+                        borderRadius: 12,
+                        padding: '12px 14px',
+                        marginBottom: 8,
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: isToday ? '#CCFF00' : '#ddd' }}>
+                          {day.day}{isToday ? ' · Today' : ''}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 9,
+                            fontWeight: 700,
+                            letterSpacing: '0.08em',
+                            textTransform: 'uppercase',
+                            color: isRest ? '#666' : '#CCFF00',
+                            background: isRest ? '#1a1a1a' : '#141f00',
+                            padding: '3px 8px',
+                            borderRadius: 20,
+                          }}
+                        >
+                          {isRest ? 'Rest' : 'Training'}
+                        </span>
+                      </div>
+
+                      <div style={{ fontSize: 12, color: '#aaa', marginBottom: isRest ? 0 : 8 }}>
+                        {day.focus}
+                      </div>
+
+                      {!isRest && (day.exercises || []).map((ex, i) => (
+                        <div
+                          key={`${day.day}-${ex.name}-${i}`}
+                          style={{
+                            fontSize: 11,
+                            color: '#666',
+                            padding: '3px 0',
+                            borderTop: i > 0 ? '0.5px solid #1a1a1a' : 'none',
+                          }}
+                        >
+                          {ex.name} — {ex.sets}×{ex.reps}{ex.rest ? ` · rest ${ex.rest}` : ''}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  syncCoachPrefs(coach.id);
+                  navigate('/coach', { replace: true });
+                }}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: 14,
+                  border: 'none',
+                  background: coach?.color || '#CCFF00',
+                  color: '#0a0a0a',
+                  fontSize: 14,
+                  fontWeight: 900,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                Start with {coach?.name || 'Aria'}
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+    );
+  }
+
   const streak = profile?.streak_count || 0;
   const endoScore = profile?.dopa_xp ? Math.min(100, Math.round((profile.dopa_xp / 500) * 100)) : 0;
   const xp = profile?.dopa_xp || 0;

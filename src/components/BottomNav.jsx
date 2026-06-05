@@ -38,9 +38,9 @@ const NAV_ITEMS = [
     ),
   },
   {
-    id: 'progress',
-    label: 'Progress',
-    path: '/progress',
+    id: 'workout',
+    label: 'My Workout',
+    path: '/workout-plan',
     svg: (
       <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="2 18 8 11 13 15 22 4" />

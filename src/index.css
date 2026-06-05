@@ -32,3 +32,22 @@ body {
   box-sizing: border-box;
   overflow-x: hidden;
 }
+
+.weekly-plan-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #3a5a00 #1a1a1a;
+}
+
+.weekly-plan-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.weekly-plan-scroll::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.weekly-plan-scroll::-webkit-scrollbar-thumb {
+  background: #3a5a00;
+  border-radius: 4px;
+}

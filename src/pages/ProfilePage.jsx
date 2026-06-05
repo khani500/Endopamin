@@ -800,7 +800,7 @@ export default function ProfilePage() {
                 style={{
                   width: '100%',
                   maxWidth: loadingPhase === 'ready' ? 400 : 340,
-                  maxHeight: loadingPhase === 'ready' ? '85vh' : 'none',
+                  maxHeight: loadingPhase === 'ready' ? '90vh' : 'none',
                   background: '#111',
                   border: '0.5px solid #2a2a2a',
                   borderRadius: 20,
@@ -810,6 +810,7 @@ export default function ProfilePage() {
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: loadingPhase === 'ready' ? 'hidden' : 'visible',
+                  minHeight: 0,
                 }}
               >
                 {loadingPhase === 'wheel' && (
@@ -898,10 +899,25 @@ export default function ProfilePage() {
                       Your Weekly Plan
                     </div>
 
-                    <div style={{ flex: 1, overflowY: 'auto', textAlign: 'left', marginBottom: 16, paddingRight: 4 }}>
+                    <div
+                      className="weekly-plan-scroll"
+                      style={{
+                        flex: 1,
+                        minHeight: 0,
+                        maxHeight: '52vh',
+                        overflowY: 'auto',
+                        textAlign: 'left',
+                        marginBottom: 16,
+                        paddingRight: 8,
+                      }}
+                    >
                       {(weeklyPlan || []).map(day => {
                         const isToday = day.day === new Date().toLocaleDateString('en-US', { weekday: 'long' });
-                        const isRest = day.type === 'rest';
+                        const focus = day.focus || '';
+                        const isRest = day.type === 'rest'
+                          || focus.includes('Rest')
+                          || focus.includes('Recovery')
+                          || focus.includes('Mobility');
                         return (
                           <div
                             key={day.day}
