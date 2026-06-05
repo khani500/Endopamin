@@ -26,6 +26,7 @@ const WELCOME_TRIGGER =
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
   const { todayWorkout, nextWorkout } = useWorkout();
+  console.log('VoiceConversation mounted, todayWorkout:', todayWorkout, 'nextWorkout:', nextWorkout);
 
   useEffect(() => {
     console.log('=== VOICE WORKOUT DEBUG ===');
