@@ -39,13 +39,20 @@ export async function fetchTrainingKnowledge(category) {
     try {
       const { data, error } = await supabase
         .from('training_knowledge')
-        .select('id, source, topics, levels, summary')
-        .order('source', { ascending: true });
+        .select('id, content, category, level')
+        .order('category', { ascending: true });
 
       if (error) {
         console.error('fetchTrainingKnowledge Supabase error:', error.message, error.code, error.details);
       } else if (Array.isArray(data) && data.length) {
-        return category ? data.filter(row => matchesCategory(row, category)) : data;
+        const normalized = data.map(row => ({
+          id: row.id,
+          source: row.category || '',
+          topics: row.category ? [row.category] : [],
+          levels: row.level ? [row.level] : [],
+          summary: row.content || '',
+        }));
+        return category ? normalized.filter(row => matchesCategory(row, category)) : normalized;
       }
     } catch (err) {
       console.warn('fetchTrainingKnowledge Supabase error, using local fallback:', err);

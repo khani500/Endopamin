@@ -33,7 +33,9 @@ Follow THIS exact workout. Do NOT invent a new one.`;
     .map((e, i) => `${i + 1}. ${e?.name}: ${e?.sets} sets x ${e?.reps}, rest ${e?.rest || '60s'}`)
     .join('\n');
 
-  return `WEEKLY PLAN — TODAY'S SESSION
+  return `⚠️ OVERRIDE: The user has an active workout plan. You MUST start with: "Today is ${workout.focus}. Here are your exercises: ${(workout.exercises || []).map(e => `${e?.name} ${e?.sets}×${e?.reps}`).join(', ')}". Do NOT suggest warm-ups, mobility work, or any exercises not in this list unless the user explicitly asks.
+
+WEEKLY PLAN — TODAY'S SESSION
 Day: ${workout.day}
 Focus: ${workout.focus}
 ${exerciseLines ? `Exercises:\n${exerciseLines}` : 'Exercises: none listed'}
