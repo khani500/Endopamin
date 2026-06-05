@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getCoach } from '../config/coaches';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../lib/supabase';
+import { useWorkout } from '../context/WorkoutContext';
 import {
   buildCoachSystemPrompt,
   buildProfileContext,
@@ -23,9 +23,28 @@ import {
 const WELCOME_TRIGGER =
   '[VOICE_SESSION_START] Greet the athlete by first name in fluent professional English. Ask only about energy and mood today. Max 2 sentences. Plain spoken English for TTS.';
 
+function buildPlanContext(workout) {
+  if (!workout) {
+    return `No workout plan found for today. Tell the user to build a weekly plan first.
+Follow THIS exact workout. Do NOT invent a new one.`;
+  }
+
+  const exerciseLines = (workout.exercises || [])
+    .map((e, i) => `${i + 1}. ${e?.name}: ${e?.sets} sets x ${e?.reps}, rest ${e?.rest || '60s'}`)
+    .join('\n');
+
+  return `WEEKLY PLAN — TODAY'S SESSION
+Day: ${workout.day}
+Focus: ${workout.focus}
+${exerciseLines ? `Exercises:\n${exerciseLines}` : 'Exercises: none listed'}
+
+Follow THIS exact workout. Do NOT invent a new one. Do NOT add, remove, or swap exercises. Do NOT create a different workout for this session.
+VOICE RULE: Max 2 sentences per response. No long introductions.`;
+}
+
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
-  const todayWorkoutRef = useRef(null);
+  const { todayWorkout, nextWorkout } = useWorkout();
   const isIOS = isIOSDevice();
   const [status, setStatus] = useState('idle');
   const [transcript, setTranscript] = useState('');
@@ -46,28 +65,15 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const iosRestartTimerRef = useRef(null);
   const micReadyRef = useRef(false);
   const knowledgeContextRef = useRef('');
+  const planWorkoutRef = useRef(null);
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
 
   useEffect(() => {
-    if (!profile?.id) return;
-    const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-    supabase
-      .from('workout_plans')
-      .select('plan_data')
-      .eq('user_id', profile.id)
-      .eq('is_active', true)
-      .order('generated_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-      .then(({ data, error }) => {
-        console.log('Direct fetch:', data, error);
-        if (!data?.plan_data?.days) return;
-        const today = data.plan_data.days.find(d => d.day === todayName);
-        todayWorkoutRef.current = today || null;
-        console.log('todayWorkoutRef set:', todayWorkoutRef.current);
-      });
-  }, [profile?.id]);
+    planWorkoutRef.current = todayWorkout || nextWorkout || null;
+    console.log('🏋️ planWorkoutRef:', planWorkoutRef.current);
+    console.log('🏋️ todayWorkout from context:', todayWorkout);
+  }, [todayWorkout, nextWorkout]);
 
   useEffect(() => {
     let cancelled = false;
@@ -138,18 +144,11 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const canStartMic = status === 'idle' || status === 'closed' || status === 'ready';
 
   const buildSystemPrompt = () => {
-    console.log('WORKOUT INJECTED:', todayWorkoutRef.current);
-    const workout = todayWorkoutRef.current;
-    const workoutBlock = workout
-      ? `CRITICAL OVERRIDE - THESE ARE THE ONLY EXERCISES ALLOWED TODAY:
-Focus: ${workout.focus}
-${workout.exercises?.map((e, i) => `${i + 1}. ${e?.name}: ${e?.sets} sets x ${e?.reps}, rest ${e?.rest}`).join('\n')}
-DO NOT suggest any other exercises. DO NOT add warm-up or cool-down. ONLY use exercises listed above.
-VOICE RULE: Max 2 sentences per response. No long introductions.`
-      : 'No workout plan found.';
+    const workout = planWorkoutRef.current || todayWorkout || nextWorkout;
+    const planContext = buildPlanContext(workout);
 
     const ctx = buildProfileContext(profile, profile?.session_duration, profile?.location, []);
-    const existingSystemPrompt = buildCoachSystemPrompt(coach.personality, { name: coach.name, id: coachId }, [], ctx, {
+    const coachSystemPrompt = buildCoachSystemPrompt(coach.personality, { name: coach.name, id: coachId }, [], ctx, {
       profile,
       knowledgeContext: knowledgeContextRef.current,
       referenceContext: buildCoachReferenceContext({
@@ -161,7 +160,7 @@ VOICE RULE: Max 2 sentences per response. No long introductions.`
       }),
     });
 
-    return `${workoutBlock}\n\n${existingSystemPrompt}`;
+    return `${planContext}\n\n${coachSystemPrompt}`;
   };
 
   const cleanupIosRecognition = () => {
