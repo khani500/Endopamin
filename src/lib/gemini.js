@@ -42,7 +42,9 @@ export async function fetchTrainingKnowledge(category) {
         .select('id, source, topics, levels, summary')
         .order('source', { ascending: true });
 
-      if (!error && Array.isArray(data) && data.length) {
+      if (error) {
+        console.error('fetchTrainingKnowledge Supabase error:', error.message, error.code, error.details);
+      } else if (Array.isArray(data) && data.length) {
         return category ? data.filter(row => matchesCategory(row, category)) : data;
       }
     } catch (err) {
@@ -144,7 +146,7 @@ async function generateContent({ prompt, systemPrompt = '', generationConfig = {
   };
 
   if (systemPrompt) {
-    body.system_instruction = {
+    body.systemInstruction = {
       parts: [{ text: systemPrompt }],
     };
   }
@@ -174,7 +176,7 @@ async function generateChatContent({ contents, systemPrompt = '', signal } = {})
   };
 
   if (systemPrompt) {
-    body.system_instruction = {
+    body.systemInstruction = {
       parts: [{ text: systemPrompt }],
     };
   }
@@ -201,8 +203,19 @@ async function generateChatContent({ contents, systemPrompt = '', signal } = {})
     });
   }
 
-  const data = await response.json();
+  const responseText = await response.text();
+  let data;
+  try {
+    data = responseText ? JSON.parse(responseText) : {};
+  } catch {
+    console.error('Gemini error body:', responseText);
+    throw new Error(
+      `Gemini request failed with status ${response.status}: ${responseText.slice(0, 200)} [model: ${GEMINI_MODEL}]`,
+    );
+  }
+
   if (!response.ok || data.error) {
+    console.error('Gemini error body:', responseText);
     const message = data.error?.message || `Gemini request failed with status ${response.status}`;
     throw new Error(`${message} [model: ${GEMINI_MODEL}]`);
   }
@@ -264,8 +277,9 @@ export const askGemini = async (prompt, systemPrompt = '') => {
  * Coach chat with full multi-turn history.
  * @param {{ messages: { role: 'user'|'assistant', text: string }[], systemPrompt?: string }} params
  */
-export const askGeminiChat = async ({ messages, systemPrompt = '', signal } = {}) => {
+export const askGeminiChat = async ({ messages, systemPrompt = '', signal, throwOnError = false } = {}) => {
   if (!isConfigured()) {
+    if (throwOnError) throw new Error('Coach is offline — API key missing');
     return 'Coach is offline — API key missing';
   }
 
@@ -281,6 +295,7 @@ export const askGeminiChat = async ({ messages, systemPrompt = '', signal } = {}
         continue;
       }
       console.error('Gemini chat error after retry:', err.message);
+      if (throwOnError) throw err;
       return 'Coach is having connection issues. Try again.';
     }
   }
@@ -316,7 +331,7 @@ export async function askGeminiChatStream({
   };
 
   if (systemPrompt) {
-    body.system_instruction = {
+    body.systemInstruction = {
       parts: [{ text: systemPrompt }],
     };
   }
@@ -329,12 +344,14 @@ export async function askGeminiChatStream({
   });
 
   if (!response.ok) {
+    const errText = await response.text();
+    console.error('Gemini error body:', errText);
     let message = `Gemini stream failed with status ${response.status}`;
     try {
-      const errData = await response.json();
+      const errData = JSON.parse(errText);
       message = errData.error?.message || message;
     } catch {
-      // ignore
+      if (errText) message = errText.slice(0, 300);
     }
     throw new Error(`${message} [model: ${GEMINI_MODEL}]`);
   }

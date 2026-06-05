@@ -51,6 +51,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const [coachReply, setCoachReply] = useState('');
   const [listenHint] = useState('');
   const [conversation, setConversation] = useState([]);
+  const [workoutLoaded, setWorkoutLoaded] = useState(false);
+  const [knowledgeContextReady, setKnowledgeContextReady] = useState(false);
   const sessionRef = useRef(null);
   const recognitionRef = useRef(null);
   const iosHistoryRef = useRef([]);
@@ -66,11 +68,13 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const micReadyRef = useRef(false);
   const knowledgeContextRef = useRef('');
   const planWorkoutRef = useRef(null);
+  const welcomeFallbackTimerRef = useRef(null);
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
 
   useEffect(() => {
     planWorkoutRef.current = todayWorkout || nextWorkout || null;
+    setWorkoutLoaded(true);
     console.log('🏋️ planWorkoutRef:', planWorkoutRef.current);
     console.log('🏋️ todayWorkout from context:', todayWorkout);
   }, [todayWorkout, nextWorkout]);
@@ -78,12 +82,27 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   useEffect(() => {
     let cancelled = false;
     void buildKnowledgeContext(profile?.experience).then(context => {
-      if (!cancelled) knowledgeContextRef.current = context;
+      if (!cancelled) {
+        knowledgeContextRef.current = context;
+        setKnowledgeContextReady(true);
+      }
     });
     return () => {
       cancelled = true;
     };
   }, [profile?.experience]);
+
+  useEffect(() => {
+    if (!isOpen || welcomeSentRef.current) return;
+    if (!workoutLoaded || !knowledgeContextReady) return;
+
+    welcomeSentRef.current = true;
+    if (welcomeFallbackTimerRef.current != null) {
+      window.clearTimeout(welcomeFallbackTimerRef.current);
+      welcomeFallbackTimerRef.current = null;
+    }
+    void runIosTurn(WELCOME_TRIGGER);
+  }, [isOpen, workoutLoaded, knowledgeContextReady]);
 
   /** iOS Safari blocks Gemini Live WebSocket — always use SpeechRecognition + TTS. */
   const usesSpeechPath = () => true;
@@ -160,7 +179,11 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       }),
     });
 
-    return `${planContext}\n\n${coachSystemPrompt}`;
+    const result = `${planContext}\n\n${coachSystemPrompt}`;
+    console.log('[buildSystemPrompt] workout:', workout ? { day: workout.day, focus: workout.focus } : null);
+    console.log('[buildSystemPrompt] knowledgeContext length:', knowledgeContextRef.current.length);
+    console.log('[buildSystemPrompt] prompt preview:', result.slice(0, 100));
+    return result;
   };
 
   const cleanupIosRecognition = () => {
@@ -198,10 +221,14 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     iosAbortRef.current = controller;
 
     try {
+      const systemPrompt = buildSystemPrompt();
+      console.log('Voice system prompt length:', systemPrompt.length);
+
       const rawReply = await askGeminiChat({
         messages: toGeminiContents(historyWithUser),
-        systemPrompt: buildSystemPrompt(),
+        systemPrompt,
         signal: controller.signal,
+        throwOnError: true,
       });
       const reply = sanitizeCoachResponse(rawReply, coach.name);
       if (!reply) {
@@ -227,6 +254,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
     } catch (err) {
       if (err?.name !== 'AbortError') {
         console.error('iOS voice turn failed:', err);
+        console.error('Gemini error body:', err?.message || String(err));
         setCoachReply('ERR: ' + (err?.message || String(err)));
       }
       isSpeakingRef.current = false;
@@ -445,16 +473,20 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
 
     void startSession();
 
-    // Auto-send welcome message after a short delay
-    const welcomeTimer = window.setTimeout(() => {
-      if (isOpen && !welcomeSentRef.current) {
+    // Fallback: fire welcome after 3000ms if workoutLoaded/knowledgeContextReady never resolve
+    welcomeFallbackTimerRef.current = window.setTimeout(() => {
+      welcomeFallbackTimerRef.current = null;
+      if (!welcomeSentRef.current) {
         welcomeSentRef.current = true;
         void runIosTurn(WELCOME_TRIGGER);
       }
-    }, 500);
+    }, 3000);
 
     return () => {
-      window.clearTimeout(welcomeTimer);
+      if (welcomeFallbackTimerRef.current != null) {
+        window.clearTimeout(welcomeFallbackTimerRef.current);
+        welcomeFallbackTimerRef.current = null;
+      }
       stopVoiceSession();
     };
   }, [isOpen]);

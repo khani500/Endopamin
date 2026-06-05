@@ -112,14 +112,27 @@ export default async function handler(req, res) {
     }
     if (!response) throw lastErr || new Error('Gemini unreachable');
 
+    const text = await response.text();
+
+    if (!response.ok) {
+      let errorMessage = text;
+      try {
+        const parsed = JSON.parse(text);
+        errorMessage = parsed?.error?.message || parsed?.error || text;
+      } catch {
+        // use raw text
+      }
+      console.error('Gemini API error:', errorMessage, response.status);
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(response.status).send(text);
+    }
+
     if (alt === 'sse') {
-      const text = await response.text();
       res.status(response.status);
       res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
       return res.send(text);
     }
 
-    const text = await response.text();
     res.setHeader('Content-Type', 'application/json');
     return res.status(response.status).send(text);
   } catch (err) {
@@ -129,6 +142,10 @@ export default async function handler(req, res) {
         maxBytes: MAX_BODY_BYTES,
       });
     }
-    return res.status(500).json({ error: err.message });
+    console.error('Gemini API error:', err.message, err.status);
+    return res.status(500).json({
+      error: err.message || 'Internal Server Error',
+      details: err.message,
+    });
   }
 }
