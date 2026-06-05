@@ -56,12 +56,15 @@ export const WorkoutProvider = ({ children }) => {
         .limit(1)
         .maybeSingle();
 
+      console.log('WorkoutContext fetch result:', data, error);
+
       if (error) throw error;
 
       const days = data?.plan_data?.days || [];
       const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
       const today = days.find(d => d.day === todayName) || null;
 
+      console.log('todayName:', todayName, 'todayWorkout:', today);
       setActivePlan(data);
       setPlanId(data?.id || null);
       setPlanDays(days);
