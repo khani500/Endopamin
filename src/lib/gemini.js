@@ -498,12 +498,24 @@ You are building a science-based weekly workout plan. Use your full knowledge of
 USER PROFILE:
 - Fitness level: ${fitnessLevel}
 - Goal: ${goal}
-- Equipment: ${availableEquipment === 'full_gym' ? 'Full gym (barbells, dumbbells, cables, machines)' : availableEquipment === 'home_basic' ? 'Home (dumbbells, resistance bands, bodyweight)' : 'Bodyweight only'}
+- Training environment: ${setting === 'home' ? 'HOME' : 'GYM'}
+- Equipment: ${
+  availableEquipment === 'full_gym'
+    ? 'Full gym (barbells, dumbbells, cables, machines)'
+    : availableEquipment === 'home_full'
+      ? 'Home with dumbbells and basic weights'
+      : availableEquipment === 'home_basic'
+        ? 'Home (dumbbells, resistance bands, bodyweight)'
+        : 'Bodyweight only — NO barbells, NO machines, NO cables'
+}
 - Days per week: 5 training days, 2 rest days
 - Injuries: ${injuries}
 ${age ? `- Age: ${age}` : ''}
 ${weight ? `- Weight: ${weight}kg` : ''}
 ${isReturning ? '- Returning after break: start conservatively, no heavy compounds week 1' : ''}
+${setting === 'home' || availableEquipment === 'bodyweight'
+  ? '- CRITICAL: Every exercise must work at HOME with listed equipment only. No barbell bench, leg press, cable machines, or smith machine.'
+  : ''}
 
 ${progressContext ? progressContext + '\n' : ''}
 

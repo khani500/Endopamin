@@ -91,8 +91,9 @@ export const WorkoutProvider = ({ children }) => {
       planDays,
       todayWorkout,
       nextWorkout,
+      reloadPlan: loadPlan,
     }),
-    [activePlan, planId, planDays, todayWorkout, nextWorkout],
+    [activePlan, planId, planDays, todayWorkout, nextWorkout, loadPlan],
   );
 
   return <WorkoutContext.Provider value={value}>{children}</WorkoutContext.Provider>;
