@@ -39,18 +39,19 @@ export async function fetchTrainingKnowledge(category) {
     try {
       const { data, error } = await supabase
         .from('training_knowledge')
-        .select('id, content, category, level')
-        .order('category', { ascending: true });
+        .select('*')
+        .order('id', { ascending: true });
 
       if (error) {
         console.error('fetchTrainingKnowledge Supabase error:', error.message, error.code, error.details);
       } else if (Array.isArray(data) && data.length) {
+        console.log('[fetchTrainingKnowledge] columns:', Object.keys(data[0] || {}));
         const normalized = data.map(row => ({
           id: row.id,
-          source: row.category || '',
-          topics: row.category ? [row.category] : [],
-          levels: row.level ? [row.level] : [],
-          summary: row.content || '',
+          source: row.source || row.category || '',
+          topics: row.topics || (row.category ? [row.category] : []),
+          levels: row.levels || (row.level ? [row.level] : []),
+          summary: row.summary || row.content || '',
         }));
         return category ? normalized.filter(row => matchesCategory(row, category)) : normalized;
       }

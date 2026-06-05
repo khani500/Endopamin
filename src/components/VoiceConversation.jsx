@@ -24,6 +24,7 @@ const WELCOME_TRIGGER =
   '[VOICE_SESSION_START] Greet the athlete by first name in fluent professional English. Ask only about energy and mood today. Max 2 sentences. Plain spoken English for TTS.';
 
 function buildPlanContext(workout) {
+  console.log('🏋️ buildPlanContext called with:', workout?.day, workout?.focus, workout?.exercises?.length);
   if (!workout) {
     return `No workout plan found for today. Tell the user to build a weekly plan first.
 Follow THIS exact workout. Do NOT invent a new one.`;
@@ -165,6 +166,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const canStartMic = status === 'idle' || status === 'closed' || status === 'ready';
 
   const buildSystemPrompt = () => {
+    console.log('🏋️ planWorkoutRef.current:', planWorkoutRef.current?.day, planWorkoutRef.current?.focus);
     const workout = planWorkoutRef.current || todayWorkout || nextWorkout;
     const planContext = buildPlanContext(workout);
 
