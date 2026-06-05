@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getCoach } from '../config/coaches';
 import { useAuth } from '../context/AuthContext';
-import { useWorkout } from '../context/WorkoutContext';
+import { supabase } from '../lib/supabase';
 import {
   buildCoachSystemPrompt,
   buildProfileContext,
@@ -25,15 +25,7 @@ const WELCOME_TRIGGER =
 
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
-  const { todayWorkout, nextWorkout } = useWorkout();
-  console.log('VoiceConversation mounted, todayWorkout:', todayWorkout, 'nextWorkout:', nextWorkout);
-
-  useEffect(() => {
-    console.log('=== VOICE WORKOUT DEBUG ===');
-    console.log('todayWorkout:', todayWorkout);
-    console.log('nextWorkout:', nextWorkout);
-  }, [todayWorkout, nextWorkout]);
-
+  const todayWorkoutRef = useRef(null);
   const isIOS = isIOSDevice();
   const [status, setStatus] = useState('idle');
   const [transcript, setTranscript] = useState('');
@@ -56,6 +48,26 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const knowledgeContextRef = useRef('');
   const coachId = profile?.coach_persona || 'elias';
   const coach = getCoach(coachId);
+
+  useEffect(() => {
+    if (!profile?.id) return;
+    const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+    supabase
+      .from('workout_plans')
+      .select('plan_data')
+      .eq('user_id', profile.id)
+      .eq('is_active', true)
+      .order('generated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        console.log('Direct fetch:', data, error);
+        if (!data?.plan_data?.days) return;
+        const today = data.plan_data.days.find(d => d.day === todayName);
+        todayWorkoutRef.current = today || null;
+        console.log('todayWorkoutRef set:', todayWorkoutRef.current);
+      });
+  }, [profile?.id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -126,8 +138,8 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
   const canStartMic = status === 'idle' || status === 'closed' || status === 'ready';
 
   const buildSystemPrompt = () => {
-    console.log('WORKOUT INJECTED:', todayWorkout || nextWorkout);
-    const workout = todayWorkout || nextWorkout;
+    console.log('WORKOUT INJECTED:', todayWorkoutRef.current);
+    const workout = todayWorkoutRef.current;
     const workoutBlock = workout
       ? `CRITICAL OVERRIDE - THESE ARE THE ONLY EXERCISES ALLOWED TODAY:
 Focus: ${workout.focus}
