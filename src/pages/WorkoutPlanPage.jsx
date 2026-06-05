@@ -33,14 +33,6 @@ export default function WorkoutPlanPage() {
   const stale = isPlanStale(weekStart);
   const hasPlan = planDays.length > 0;
 
-  function isRestDay(day) {
-    const focus = day?.focus || '';
-    return day?.type === 'rest'
-      || focus.includes('Rest')
-      || focus.includes('Recovery')
-      || focus.includes('Mobility');
-  }
-
   async function rebuildPlan() {
     if (!user?.id || generating) return;
     setShowConfirm(false);
@@ -114,24 +106,23 @@ export default function WorkoutPlanPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {planDays.map((d, i) => {
                 const isToday = d.day === new Date().toLocaleDateString('en-US', { weekday: 'long' });
-                const restDay = isRestDay(d);
                 return (
                   <div
                     key={d.day}
                     onClick={() => setActiveDay(activeDay === i ? null : i)}
                     style={{
                       background: isToday ? '#0d1a00' : '#111',
-                      border: `1px solid ${activeDay === i ? accent : isToday ? '#3a5a00' : restDay ? '#1a1a1a' : '#222'}`,
+                      border: `1px solid ${activeDay === i ? accent : isToday ? '#3a5a00' : d.type === 'rest' ? '#1a1a1a' : '#222'}`,
                       borderRadius: 14,
                       padding: '14px 16px',
                       cursor: 'pointer',
-                      opacity: restDay ? 0.75 : 1,
+                      opacity: d.type === 'rest' ? 0.75 : 1,
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: restDay ? '#1a1a1a' : `${accent}22`, color: restDay ? '#444' : accent, fontWeight: 600 }}>
-                          {restDay ? 'REST' : 'TRAIN'}
+                        <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: d.type === 'rest' ? '#1a1a1a' : `${accent}22`, color: d.type === 'rest' ? '#444' : accent, fontWeight: 600 }}>
+                          {d.type === 'rest' ? 'REST' : 'TRAIN'}
                         </span>
                         <div>
                           <span style={{ fontWeight: 700, fontSize: 14 }}>{d.day}{isToday ? ' · Today' : ''}</span>

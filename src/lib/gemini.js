@@ -1,5 +1,4 @@
 import { extractGeminiModelText } from '../services/foodScanner';
-import { buildExerciseCatalogForPrompt } from './planExerciseCatalog';
 import { TRAINING_KNOWLEDGE } from '../data/trainingKnowledge';
 import { supabase } from './supabase';
 import { getPlanProgressSummary, buildProgressPrompt } from './planMemory';
@@ -479,17 +478,10 @@ export async function generateWorkoutPlan(coachId, user, userProfile = {}) {
     weight = null,
     isReturning = false,
     setting = 'gym',
-    sessionDuration = 45,
   } = userProfile;
 
   const progressSummary = await getPlanProgressSummary(user?.id);
   const progressContext = buildProgressPrompt(progressSummary);
-  const knowledgeContext = await buildKnowledgeContext(fitnessLevel);
-  const exerciseCatalog = buildExerciseCatalogForPrompt({
-    experience: fitnessLevel,
-    location: setting === 'home' ? 'home' : 'gym',
-    equipment: availableEquipment,
-  });
 
   const coachPersona = {
     aria:  "You are Aria, a scientific NASM-certified coach. Be precise and evidence-based.",
@@ -516,8 +508,7 @@ USER PROFILE:
         ? 'Home (dumbbells, resistance bands, bodyweight)'
         : 'Bodyweight only — NO barbells, NO machines, NO cables'
 }
-- Days per week: 5 training days, 2 rest/recovery days
-- Session length: ~${sessionDuration} minutes per training day
+- Days per week: 5 training days, 2 rest days
 - Injuries: ${injuries}
 ${age ? `- Age: ${age}` : ''}
 ${weight ? `- Weight: ${weight}kg` : ''}
@@ -526,31 +517,17 @@ ${setting === 'home' || availableEquipment === 'bodyweight'
   ? '- CRITICAL: Every exercise must work at HOME with listed equipment only. No barbell bench, leg press, cable machines, or smith machine.'
   : ''}
 
-${knowledgeContext}
-
-VALIDATED EXERCISE LIBRARY (prefer these; NASM/NSCA/ACSM-aligned):
-${exerciseCatalog}
-
 ${progressContext ? progressContext + '\n' : ''}
-
-WEEKLY SPLIT (follow exactly — no repeating focus across days):
-- Monday: PUSH (chest, shoulders, triceps)
-- Tuesday: PULL (back, biceps, rear delts)
-- Wednesday: REST / active recovery
-- Thursday: LEGS (quads, hamstrings, glutes, calves)
-- Friday: UPPER (balanced push + pull, no leg compounds)
-- Saturday: FULL BODY conditioning + core
-- Sunday: REST
 
 PLAN REQUIREMENTS:
 - 7 days total (Monday to Sunday)
 - Exactly 5 training days, exactly 2 rest/recovery days
-- Each training day: 4-6 exercises (minimum 4, target 5-6)
-- Science-based periodization: push / pull / legs / upper / full body — never repeat the same split focus on consecutive training days
-- Each day must train DIFFERENT muscle groups than the previous training day
-- NO exercise name may repeat across the entire week — zero duplicates
-- Mix compound movements first, then isolation; include core or conditioning where appropriate
-- Use only evidence-based exercises from sports science (NASM, NSCA, ACSM)
+- Each training day: 5-7 exercises minimum
+- Use periodization: Push / Pull / Legs / Upper / Full Body split
+- Each day must train DIFFERENT muscle groups than the previous day
+- NO exercise should repeat more than once per week
+- CRITICAL: Each exercise name must appear only ONCE across the entire 7-day plan — no exceptions, zero repeats
+- Use a wide variety of exercises — compound lifts, isolation, core, cardio finishers
 - Sets/reps based on goal:
   * Muscle gain: 3-4 sets × 8-12 reps
   * Strength: 4-5 sets × 3-6 reps  
@@ -581,11 +558,11 @@ FORMAT:
 
   const body = {
     contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: { temperature: 0.25, maxOutputTokens: 8192 },
+    generationConfig: { temperature: 0.2, maxOutputTokens: 4096 },
   };
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 40000);
+  const timeoutId = setTimeout(() => controller.abort(), 25000);
 
   try {
     let response;
