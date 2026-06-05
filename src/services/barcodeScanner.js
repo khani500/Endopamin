@@ -3,6 +3,12 @@
  * Output shape matches NutritionHub scan results: { items[], total, confidence }.
  */
 
+const OFF_TIMEOUT_MS = 8000;
+const OFF_HEADERS = {
+  Accept: 'application/json',
+  'User-Agent': 'Endopamin/1.0',
+};
+
 function parseNum(value) {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
@@ -90,6 +96,22 @@ function extractGeminiText(rawText) {
   return raw;
 }
 
+function productHasNutritionData(product) {
+  const n = product?.nutriments || {};
+  const calories = parseNum(n['energy-kcal_100g'] ?? n['energy-kcal']);
+  const protein = parseNum(n.proteins_100g ?? n.proteins);
+  const carbs = parseNum(n.carbohydrates_100g ?? n.carbohydrates);
+  const fat = parseNum(n.fat_100g ?? n.fat);
+  return calories > 0 || protein > 0 || carbs > 0 || fat > 0;
+}
+
+function isNetworkFailure(err) {
+  if (!err) return false;
+  if (err.name === 'TypeError') return true;
+  const msg = String(err.message || '').toLowerCase();
+  return msg.includes('network') || msg.includes('failed to fetch') || msg.includes('load failed');
+}
+
 function parseOffProduct(product, barcode, weightG = null) {
   const n = product.nutriments || {};
   const per100 = {
@@ -127,7 +149,7 @@ function parseOffProduct(product, barcode, weightG = null) {
   });
 }
 
-export async function fetchFromOpenFoodFacts(barcode, { signal } = {}) {
+async function fetchOffProductOnce(barcode, { signal } = {}) {
   const code = normalizeBarcode(barcode);
   if (!code) throw new Error('Invalid barcode');
 
@@ -142,15 +164,51 @@ export async function fetchFromOpenFoodFacts(barcode, { signal } = {}) {
     'code',
   ].join(',');
 
-  const res = await fetch(
-    `https://world.openfoodfacts.org/api/v2/product/${code}.json?fields=${fields}`,
-    { signal, headers: { Accept: 'application/json' } },
-  );
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), OFF_TIMEOUT_MS);
 
-  if (!res.ok) throw new Error('Product not found');
-  const data = await res.json();
-  if (data.status !== 1 || !data.product) throw new Error('Product not found');
-  return data.product;
+  const onExternalAbort = () => controller.abort();
+  if (signal?.aborted) {
+    controller.abort();
+  } else {
+    signal?.addEventListener('abort', onExternalAbort, { once: true });
+  }
+
+  try {
+    const res = await fetch(
+      `https://world.openfoodfacts.org/api/v2/product/${code}.json?fields=${fields}`,
+      { signal: controller.signal, headers: OFF_HEADERS },
+    );
+
+    if (!res.ok) throw new Error('Product not found');
+    const data = await res.json();
+    if (data.status !== 1 || !data.product) throw new Error('Product not found');
+    return data.product;
+  } catch (err) {
+    if (err?.name === 'AbortError' && !signal?.aborted) {
+      throw new Error('Open Food Facts request timed out');
+    }
+    throw err;
+  } finally {
+    window.clearTimeout(timeoutId);
+    signal?.removeEventListener('abort', onExternalAbort);
+  }
+}
+
+export async function fetchFromOpenFoodFacts(barcode, { signal } = {}) {
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      return await fetchOffProductOnce(barcode, { signal });
+    } catch (err) {
+      lastError = err;
+      if (attempt === 0 && isNetworkFailure(err) && !signal?.aborted) {
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastError || new Error('Product not found');
 }
 
 export async function fetchFromGeminiFallback(barcode, { signal } = {}) {
@@ -203,9 +261,10 @@ export async function lookupBarcodeProduct(barcode, { weightG, signal } = {}) {
 
   try {
     const product = await fetchFromOpenFoodFacts(code, { signal });
-    const result = parseOffProduct(product, code, weightG);
-    if (result.total.calories > 0 || result.total.protein > 0) return result;
-    throw new Error('Incomplete nutrition data');
+    if (!productHasNutritionData(product)) {
+      throw new Error('Incomplete nutrition data');
+    }
+    return parseOffProduct(product, code, weightG);
   } catch (offError) {
     console.warn('Open Food Facts lookup failed, trying Gemini fallback:', offError?.message);
     const fallback = await fetchFromGeminiFallback(code, { signal });
