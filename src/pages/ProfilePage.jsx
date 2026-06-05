@@ -7,7 +7,6 @@ import { useWorkout } from '../context/WorkoutContext';
 import { COACHES, getCoach } from '../config/coaches';
 import { supabase } from '../lib/supabase';
 import {
-  getTodayWorkoutFromPlan,
   hasPlanRelevantChanges,
   recommendCoachFromProfile,
   regenerateWorkoutPlan,
@@ -15,7 +14,6 @@ import {
 
 const PROFILE_STORAGE_KEY = 'endopamin_profile';
 const WHEEL_SPIN_MS = 2800;
-const REVEAL_HOLD_MS = 2200;
 const COACH_WHEEL = Object.values(COACHES);
 
 // ── SVG Icons ──────────────────────────────────────────────────────────────
@@ -240,7 +238,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState(null);
   const [matchedCoach, setMatchedCoach] = useState(null);
-  const [todayPreview, setTodayPreview] = useState(null);
+  const [weeklyPlan, setWeeklyPlan] = useState(null);
   const [wheelRotation, setWheelRotation] = useState(0);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
@@ -342,7 +340,7 @@ export default function ProfilePage() {
     setIsLoading(true);
     setLoadingPhase('wheel');
     setMatchedCoach(null);
-    setTodayPreview(null);
+    setWeeklyPlan(null);
 
     const recommendedId = recommendCoachFromProfile(form);
     const coachIndex = Math.max(0, COACH_WHEEL.findIndex(c => c.id === recommendedId));
@@ -364,14 +362,11 @@ export default function ProfilePage() {
       const result = await regenerateWorkoutPlan(user?.id, { ...profileData, coach_persona: coachId }, coachId);
       await reloadPlan?.();
 
-      const today = getTodayWorkoutFromPlan(result?.planData);
-      setTodayPreview(today);
+      setWeeklyPlan(result?.planData?.days || []);
       setProfile(prev => ({ ...(prev || {}), ...profileData, coach_persona: coachId }));
 
       localStorage.setItem('onboarding_done', 'true');
       setLoadingPhase('ready');
-      await new Promise(r => window.setTimeout(r, REVEAL_HOLD_MS));
-      navigate('/coach', { replace: true });
     } catch (err) {
       console.error('Profile save failed:', err);
       setLoadingPhase(null);
@@ -798,13 +793,17 @@ export default function ProfilePage() {
                 transition={{ duration: 0.35, ease: 'easeOut' }}
                 style={{
                   width: '100%',
-                  maxWidth: 340,
+                  maxWidth: loadingPhase === 'ready' ? 400 : 340,
+                  maxHeight: loadingPhase === 'ready' ? '85vh' : 'none',
                   background: '#111',
                   border: '0.5px solid #2a2a2a',
                   borderRadius: 20,
-                  padding: '32px 24px',
+                  padding: loadingPhase === 'ready' ? '24px 20px' : '32px 24px',
                   textAlign: 'center',
                   boxShadow: '0 24px 80px rgba(0, 0, 0, 0.55)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflow: loadingPhase === 'ready' ? 'hidden' : 'visible',
                 }}
               >
                 {loadingPhase === 'wheel' && (
@@ -883,20 +882,78 @@ export default function ProfilePage() {
 
                 {loadingPhase === 'ready' && matchedCoach && (
                   <>
-                    <div style={{ fontSize: 48, marginBottom: 12 }}>{matchedCoach.avatar}</div>
-                    <p style={{ fontSize: 18, fontWeight: 900, color: matchedCoach.color || '#CCFF00', marginBottom: 4 }}>
+                    <div style={{ fontSize: 40, marginBottom: 8 }}>{matchedCoach.avatar}</div>
+                    <p style={{ fontSize: 17, fontWeight: 900, color: matchedCoach.color || '#CCFF00', marginBottom: 2 }}>
                       Coach {matchedCoach.name}
                     </p>
-                    <p style={{ fontSize: 12, color: '#888', marginBottom: 16 }}>{matchedCoach.title}</p>
-                    {todayPreview && (
-                      <div style={{ background: '#0d1a00', border: '0.5px solid #2a3a00', borderRadius: 12, padding: 14, textAlign: 'left' }}>
-                        <div style={{ fontSize: 10, color: '#667a00', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>Today</div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: '#CCFF00' }}>{todayPreview.focus}</div>
-                        <div style={{ fontSize: 11, color: '#666', marginTop: 6 }}>
-                          {(todayPreview.exercises || []).slice(0, 3).map(e => e.name).join(' · ')}
-                        </div>
-                      </div>
-                    )}
+                    <p style={{ fontSize: 11, color: '#888', marginBottom: 14 }}>{matchedCoach.title}</p>
+
+                    <div style={{ fontSize: 10, color: '#667a00', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 10 }}>
+                      Your Weekly Plan
+                    </div>
+
+                    <div style={{ flex: 1, overflowY: 'auto', textAlign: 'left', marginBottom: 16, paddingRight: 4 }}>
+                      {(weeklyPlan || []).map(day => {
+                        const isToday = day.day === new Date().toLocaleDateString('en-US', { weekday: 'long' });
+                        const isRest = day.type === 'rest';
+                        return (
+                          <div
+                            key={day.day}
+                            style={{
+                              background: isToday ? '#0d1a00' : '#0e0e0e',
+                              border: `0.5px solid ${isToday ? '#3a5a00' : '#1e1e1e'}`,
+                              borderRadius: 12,
+                              padding: '12px 14px',
+                              marginBottom: 8,
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                              <span style={{ fontSize: 13, fontWeight: 700, color: isToday ? '#CCFF00' : '#ddd' }}>
+                                {day.day}{isToday ? ' · Today' : ''}
+                              </span>
+                              <span style={{
+                                fontSize: 9,
+                                fontWeight: 700,
+                                letterSpacing: '0.08em',
+                                textTransform: 'uppercase',
+                                color: isRest ? '#666' : '#CCFF00',
+                                background: isRest ? '#1a1a1a' : '#141f00',
+                                padding: '3px 8px',
+                                borderRadius: 20,
+                              }}>
+                                {isRest ? 'Rest' : 'Training'}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: 12, color: '#aaa', marginBottom: isRest ? 0 : 8 }}>{day.focus}</div>
+                            {!isRest && (day.exercises || []).map((ex, i) => (
+                              <div key={`${day.day}-${ex.name}-${i}`} style={{ fontSize: 11, color: '#666', padding: '3px 0', borderTop: i > 0 ? '0.5px solid #1a1a1a' : 'none' }}>
+                                {ex.name} — {ex.sets}×{ex.reps}{ex.rest ? ` · rest ${ex.rest}` : ''}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      type="button"
+                      onClick={() => navigate('/coach', { replace: true })}
+                      style={{
+                        width: '100%',
+                        padding: '14px',
+                        borderRadius: 14,
+                        border: 'none',
+                        background: '#CCFF00',
+                        color: '#0a0a0a',
+                        fontSize: 14,
+                        fontWeight: 900,
+                        cursor: 'pointer',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      Start with {matchedCoach.name}
+                    </motion.button>
                   </>
                 )}
               </motion.div>
