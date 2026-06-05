@@ -37,14 +37,28 @@ function getVoiceSessionPending() {
   }
 }
 
-function setupMediaSession({ coachName, coachId }, handlers) {
+function getCoachImageSrc(coachId) {
+  const pngIds = new Set(['blaze', 'zara']);
+  const ext = pngIds.has(coachId) ? 'png' : 'jpg';
+  return `/coaches/${coachId}.${ext}`;
+}
+
+function updateMediaSessionMetadata({ coachName, coachId, title = 'Listening...' }) {
   if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
 
+  const artworkSrc = getCoachImageSrc(coachId);
+  const mimeType = artworkSrc.endsWith('.png') ? 'image/png' : 'image/jpeg';
+  const displayTitle = String(title || 'Listening...').trim().slice(0, 120) || 'Listening...';
+
   navigator.mediaSession.metadata = new MediaMetadata({
-    title: 'Endopamin Coach',
+    title: displayTitle,
     artist: coachName,
-    artwork: [{ src: `/coaches/${coachId}.jpg`, sizes: '512x512', type: 'image/jpeg' }],
+    artwork: [{ src: artworkSrc, sizes: '512x512', type: mimeType }],
   });
+}
+
+function setupMediaSessionHandlers(handlers) {
+  if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return;
 
   navigator.mediaSession.setActionHandler('play', handlers.onPlay);
   navigator.mediaSession.setActionHandler('pause', handlers.onPause);
@@ -121,6 +135,8 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
   const keepAliveRef = useRef(createSilentKeepAlive());
   const wasActiveBeforeHideRef = useRef(false);
   const pendingRecoveryRef = useRef(false);
+  const lastCoachReplyRef = useRef('');
+  const foregroundResumeTimerRef = useRef(null);
 
   useEffect(() => {
     processUtteranceRef.current = processUtterance;
@@ -151,25 +167,50 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
     }
   }, []);
 
-  const registerMediaSession = useCallback(() => {
+  const syncMediaSessionForState = useCallback((state, replyText = '') => {
+    const meta = coachMetaRef.current;
+    if (!meta?.name || !meta?.id || !sessionRef.current?.isActive()) return;
+
+    if (replyText) lastCoachReplyRef.current = replyText;
+
+    let title = 'Listening...';
+    if (state === VOICE_SESSION_STATE.PROCESSING) {
+      title = 'Thinking...';
+    } else if (state === VOICE_SESSION_STATE.SPEAKING) {
+      title = lastCoachReplyRef.current || 'Coach speaking...';
+    } else if (state === VOICE_SESSION_STATE.AWAITING_TAP) {
+      title = lastCoachReplyRef.current || 'Paused';
+    }
+
+    updateMediaSessionMetadata({
+      coachName: meta.name,
+      coachId: meta.id,
+      title,
+    });
+  }, []);
+
+  const registerMediaSession = useCallback((title = 'Listening...') => {
     const meta = coachMetaRef.current;
     if (!meta?.name || !meta?.id) return;
 
-    setupMediaSession(
-      { coachName: meta.name, coachId: meta.id },
-      {
-        onPlay: () => {
-          if (!sessionRef.current?.isActive()) return;
-          sessionRef.current?.suspendForBackground?.();
-          setNeedsContinueTap(true);
-          syncMediaSessionPlaybackState('paused');
-        },
-        onPause: () => {
-          sessionRef.current?.pauseToAwaitingTap?.();
-          syncMediaSessionPlaybackState('paused');
-        },
+    updateMediaSessionMetadata({
+      coachName: meta.name,
+      coachId: meta.id,
+      title,
+    });
+
+    setupMediaSessionHandlers({
+      onPlay: () => {
+        if (!sessionRef.current?.isActive()) return;
+        sessionRef.current?.suspendForBackground?.();
+        setNeedsContinueTap(true);
+        syncMediaSessionPlaybackState('paused');
       },
-    );
+      onPause: () => {
+        sessionRef.current?.pauseToAwaitingTap?.();
+        syncMediaSessionPlaybackState('paused');
+      },
+    });
   }, [syncMediaSessionPlaybackState]);
 
   const startSessionMediaFromGesture = useCallback(async ctx => {
@@ -192,22 +233,12 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
     session.suspendForBackground?.();
   }, []);
 
-  const handleAppForeground = useCallback(() => {
-    const session = sessionRef.current;
-    if (!session?.isActive()) return;
-    if (!wasActiveBeforeHideRef.current && !session.isAwaitingTap?.()) return;
-
-    wasActiveBeforeHideRef.current = false;
-    if (!session.isAwaitingTap?.()) {
-      session.suspendForBackground?.();
-    }
-    setNeedsContinueTap(true);
-    syncMediaSessionPlaybackState('paused');
-  }, [syncMediaSessionPlaybackState]);
-
   useEffect(() => {
     const session = createVoiceSession({
-      onStateChange: setVoiceState,
+      onStateChange: state => {
+        setVoiceState(state);
+        syncMediaSessionForState(state);
+      },
       onInterimTranscript: setLiveTranscript,
       onBargeIn: () => {
         turnIdRef.current += 1;
@@ -236,6 +267,9 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
                   }
                 : undefined,
             });
+            if (reply) {
+              syncMediaSessionForState(VOICE_SESSION_STATE.SPEAKING, reply);
+            }
             if (turnId !== turnIdRef.current || !sessionRef.current?.isActive()) return;
           } catch (err) {
             if (err?.name === 'AbortError') return;
@@ -257,7 +291,7 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
       session.stop();
       teardownSessionMedia();
     };
-  }, [beginTurn, cancelActiveTurn, teardownSessionMedia]);
+  }, [beginTurn, cancelActiveTurn, syncMediaSessionForState, teardownSessionMedia]);
 
   useEffect(() => {
     const pendingCoachId = getVoiceSessionPending();
@@ -279,42 +313,6 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
       }
     })();
   }, [coachMeta?.id]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || typeof document === 'undefined') return undefined;
-
-    const onVisibilityChange = () => {
-      if (document.hidden) {
-        handleAppBackground();
-        return;
-      }
-      handleAppForeground();
-    };
-
-    const onPageHide = () => {
-      handleAppBackground();
-    };
-
-    const onPageShow = () => {
-      handleAppForeground();
-    };
-
-    const onWindowFocus = () => {
-      handleAppForeground();
-    };
-
-    document.addEventListener('visibilitychange', onVisibilityChange);
-    window.addEventListener('pagehide', onPageHide);
-    window.addEventListener('pageshow', onPageShow);
-    window.addEventListener('focus', onWindowFocus);
-
-    return () => {
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-      window.removeEventListener('pagehide', onPageHide);
-      window.removeEventListener('pageshow', onPageShow);
-      window.removeEventListener('focus', onWindowFocus);
-    };
-  }, [handleAppBackground, handleAppForeground]);
 
   const runWelcomeTurn = useCallback(async () => {
     const session = sessionRef.current;
@@ -367,13 +365,68 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
         await prepareSpeechInputOnUserGesture();
         await startSessionMediaFromGesture(ctx);
         session.resumeFromTap?.();
+        syncMediaSessionForState(VOICE_SESSION_STATE.LISTENING);
+        syncMediaSessionPlaybackState('playing');
       } catch (err) {
         console.error('Voice session resume failed:', err);
         session.suspendForBackground?.();
         setNeedsContinueTap(true);
       }
     })();
-  }, [startSessionMediaFromGesture]);
+  }, [startSessionMediaFromGesture, syncMediaSessionForState, syncMediaSessionPlaybackState]);
+
+  const handleAppForeground = useCallback(() => {
+    const session = sessionRef.current;
+    if (!session?.isActive()) return;
+    if (!wasActiveBeforeHideRef.current && !session.isAwaitingTap?.()) return;
+
+    wasActiveBeforeHideRef.current = false;
+
+    if (foregroundResumeTimerRef.current != null) {
+      window.clearTimeout(foregroundResumeTimerRef.current);
+    }
+
+    foregroundResumeTimerRef.current = window.setTimeout(() => {
+      foregroundResumeTimerRef.current = null;
+      resumeFromTap();
+    }, 500);
+  }, [resumeFromTap]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return undefined;
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        handleAppBackground();
+        return;
+      }
+      handleAppForeground();
+    };
+
+    const onPageHide = () => {
+      handleAppBackground();
+    };
+
+    const onPageShow = () => {
+      handleAppForeground();
+    };
+
+    const onWindowFocus = () => {
+      handleAppForeground();
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('pagehide', onPageHide);
+    window.addEventListener('pageshow', onPageShow);
+    window.addEventListener('focus', onWindowFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('pagehide', onPageHide);
+      window.removeEventListener('pageshow', onPageShow);
+      window.removeEventListener('focus', onWindowFocus);
+    };
+  }, [handleAppBackground, handleAppForeground]);
 
   const toggleVoiceSession = useCallback(() => {
     const session = sessionRef.current;
@@ -434,10 +487,15 @@ export function useVoiceSession({ processUtterance, speakReply, voiceMode, coach
   ]);
 
   const stopVoiceSession = useCallback(() => {
+    if (foregroundResumeTimerRef.current != null) {
+      window.clearTimeout(foregroundResumeTimerRef.current);
+      foregroundResumeTimerRef.current = null;
+    }
     cancelActiveTurn();
     stopCoachAudio();
     sessionRef.current?.stop();
     setLiveTranscript('');
+    lastCoachReplyRef.current = '';
     startingRef.current = false;
     setNeedsContinueTap(false);
     wasActiveBeforeHideRef.current = false;

@@ -409,7 +409,6 @@ export function createVoiceSession({
     stopRecognition();
     stopVadMonitor();
     releaseMicStream();
-    stopSpeaking();
     coachOutputActive = false;
     pausedForProcessing = false;
     bargeInArmed = false;
