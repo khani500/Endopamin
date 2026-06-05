@@ -25,6 +25,7 @@ import {
   sanitizeTranscript,
   toGeminiContents,
 } from '../lib/coachChat';
+import { getSavedCoachId, saveCoachId, syncCoachPrefs } from '../lib/coachPrefs';
 import { getExerciseData } from '../lib/exerciseDB';
 import { supabase } from '../lib/supabase';
 import { COACH_SYSTEM_PROMPTS, formatCoachMemoryForPrompt } from '../config/coachPrompts';
@@ -157,24 +158,7 @@ function getCoachImageSrc(coachId) {
   return `/coaches/${coachId}.${ext}`;
 }
 
-const COACH_STORAGE_KEY = 'endopamin_coach';
 const HISTORY_STORAGE_KEY = 'endopamin_history';
-
-function getSavedCoachId() {
-  try {
-    return sessionStorage.getItem(COACH_STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function saveCoachId(coachId) {
-  try {
-    sessionStorage.setItem(COACH_STORAGE_KEY, coachId);
-  } catch {
-    // ignore quota errors
-  }
-}
 
 function loadSavedHistory() {
   try {
@@ -213,9 +197,10 @@ export default function CoachPage() {
     clearCoachSession,
   } = useCoachSession();
   const [coach, setCoach] = useState(() => {
+    if (profile?.coach_persona) return getCoachById(profile.coach_persona);
     const savedCoach = getSavedCoachId();
     if (savedCoach) return getCoachById(savedCoach);
-    return getCoachById(profile?.coach_persona) || COACHES[0];
+    return COACHES[0];
   });
   const [view, setView] = useState('chat');
   const [location, setLocation] = useState(() => normalizeTrainingLocation(profile?.location));
@@ -256,12 +241,14 @@ export default function CoachPage() {
   const prevCoachIdRef = useRef(coach.id);
 
   useEffect(() => {
-    if (getSavedCoachId()) return;
     const personaId = profile?.coach_persona;
     if (!personaId) return;
     const profileCoach = getCoachById(personaId);
-    if (profileCoach && profileCoach.id !== coach.id) setCoach(profileCoach);
-  }, [profile?.coach_persona, coach.id]);
+    if (profileCoach.id === coach.id) return;
+    saveCoachId(profileCoach.id);
+    setCoach(profileCoach);
+    switchCoach(profileCoach.id, profileCoach.greeting);
+  }, [profile?.coach_persona, coach.id, switchCoach]);
 
   useEffect(() => {
     if (profile?.location) setLocation(normalizeTrainingLocation(profile.location));
@@ -278,6 +265,8 @@ export default function CoachPage() {
     if (coachInitRef.current) return;
     coachInitRef.current = true;
 
+    if (profile?.coach_persona) return;
+
     const savedCoachId = getSavedCoachId();
     if (!savedCoachId) return;
 
@@ -289,7 +278,7 @@ export default function CoachPage() {
     if (savedHistory?.length) {
       setCoachMessages(savedCoachId, savedHistory);
     }
-  }, [switchCoach, setCoachMessages]);
+  }, [profile?.coach_persona, switchCoach, setCoachMessages]);
 
   useEffect(() => {
     saveCoachId(coach.id);
@@ -324,7 +313,7 @@ export default function CoachPage() {
   }, [switchCoach, setCoachMessages]);
 
   const handleSelectCoach = useCallback(async selectedCoach => {
-    saveCoachId(selectedCoach.id);
+    syncCoachPrefs(selectedCoach.id);
     clearCoachSession(selectedCoach.id);
     switchCoach(selectedCoach.id, selectedCoach.greeting);
     setCoachMessages(selectedCoach.id, []);

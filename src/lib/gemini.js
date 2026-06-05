@@ -553,12 +553,48 @@ FORMAT:
   ]
 }`;
 
-  const { GoogleGenerativeAI } = await import("@google/generative-ai");
-  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const isProduction =
+    typeof window !== 'undefined' && window.location.hostname !== 'localhost';
 
-  const result = await model.generateContent(prompt);
-  const text = result.response.text().trim();
-  const clean = text.replace(/```json|```/g, "").trim();
-  return JSON.parse(clean);
+  const body = {
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.2, maxOutputTokens: 4096 },
+  };
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 25000);
+
+  try {
+    let response;
+    if (isProduction) {
+      response = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: GEMINI_MODEL, action: 'generateContent', ...body }),
+        signal: controller.signal,
+      });
+    } else if (GEMINI_API_KEY) {
+      response = await fetch(endpoint(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildRequestPayload(body)),
+        signal: controller.signal,
+      });
+    } else {
+      throw new Error('Gemini API key missing');
+    }
+
+    const raw = await response.text();
+    if (!response.ok) {
+      console.error('Plan generation Gemini error:', raw.slice(0, 300));
+      throw new Error(`Plan generation failed: ${response.status}`);
+    }
+
+    const data = JSON.parse(raw);
+    const text = extractText(data);
+    const clean = text.replace(/```json|```/g, '').trim();
+    return JSON.parse(clean);
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }

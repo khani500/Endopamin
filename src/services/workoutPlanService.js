@@ -79,6 +79,16 @@ export function recommendCoachFromProfile(profile = {}) {
   return 'aria';
 }
 
+export const PLAN_VALID_DAYS = 7;
+
+export function isPlanStale(weekStart) {
+  if (!weekStart) return false;
+  const start = new Date(weekStart);
+  if (Number.isNaN(start.getTime())) return false;
+  const ageDays = (Date.now() - start.getTime()) / (1000 * 60 * 60 * 24);
+  return ageDays >= PLAN_VALID_DAYS;
+}
+
 export async function regenerateWorkoutPlan(userId, profile, coachId) {
   if (!userId || !supabase) return null;
 

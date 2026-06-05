@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useWorkout } from '../context/WorkoutContext';
 import { COACHES, getCoach } from '../config/coaches';
 import { supabase } from '../lib/supabase';
+import { syncCoachPrefs } from '../lib/coachPrefs';
 import {
   hasPlanRelevantChanges,
   recommendCoachFromProfile,
@@ -321,8 +322,13 @@ export default function ProfilePage() {
       || (profileData.onboarding_completed && planChanged);
 
     if (shouldRegenerate && user?.id) {
-      const coachId = profileData.coach_persona || recommendCoachFromProfile(profileData);
+      const coachId = recommendCoachFromProfile(profileData);
       try {
+        if (coachId !== profileData.coach_persona) {
+          await updateCoachPersona?.(coachId);
+          syncCoachPrefs(coachId);
+          profileData.coach_persona = coachId;
+        }
         await regenerateWorkoutPlan(user.id, profileData, coachId);
         await reloadPlan?.();
         console.log('[ProfilePage] Workout plan regenerated for profile change');
@@ -938,7 +944,10 @@ export default function ProfilePage() {
                     <motion.button
                       whileTap={{ scale: 0.97 }}
                       type="button"
-                      onClick={() => navigate('/coach', { replace: true })}
+                      onClick={() => {
+                        syncCoachPrefs(matchedCoach.id);
+                        navigate('/coach', { replace: true });
+                      }}
                       style={{
                         width: '100%',
                         padding: '14px',
