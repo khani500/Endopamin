@@ -267,6 +267,20 @@ export function getConversationPhase(messages) {
   return 'coaching';
 }
 
+function inferWarmupMoves(workout) {
+  const focus = String(workout?.focus || '').toLowerCase();
+  if (focus.includes('upper') || focus.includes('push') || focus.includes('pull') || focus.includes('chest') || focus.includes('shoulder')) {
+    return 'arm circles, band pull-aparts, light push-up or incline push-up ramp';
+  }
+  if (focus.includes('leg') || focus.includes('lower') || focus.includes('squat') || focus.includes('glute')) {
+    return 'leg swings, bodyweight squat ramp, hip circles, glute bridges';
+  }
+  if (focus.includes('core') || focus.includes('cardio')) {
+    return 'marching in place, cat-cow, dead bug activation';
+  }
+  return '5 minutes light cardio, dynamic mobility for today\'s muscles, 1-2 activation drills';
+}
+
 /** Format today's session from WorkoutContext for coach system prompts. */
 export function buildPlanContext(workout) {
   if (!workout) {
@@ -278,29 +292,47 @@ Follow THIS exact workout. Do NOT invent a new one.`;
     .map((e, i) => `${i + 1}. ${e?.name}: ${e?.sets} sets x ${e?.reps}, rest ${e?.rest || '60s'}`)
     .join('\n');
 
-  return `⚠️ OVERRIDE: The user has an active workout plan. You MUST start with: "Today is ${workout.focus}. Here are your exercises: ${(workout.exercises || []).map(e => `${e?.name} ${e?.sets}×${e?.reps}`).join(', ')}". Do NOT suggest warm-ups, mobility work, or any exercises not in this list unless the user explicitly asks.
+  const warmupMoves = inferWarmupMoves(workout);
 
-WEEKLY PLAN — TODAY'S SESSION
+  return `ACTIVE WEEKLY PLAN — TODAY'S SESSION
 Day: ${workout.day}
 Focus: ${workout.focus}
-${exerciseLines ? `Exercises:\n${exerciseLines}` : 'Exercises: none listed'}
+Main exercises (use EXACTLY in this order during MAIN WORK phase only):
+${exerciseLines || 'none listed'}
 
-Follow THIS exact workout. Do NOT invent a new one. Do NOT add, remove, or swap exercises. Do NOT create a different workout for this session.
-VOICE RULE: Max 2 sentences per response. No long introductions.`;
+SESSION FLOW (MANDATORY — coach like you are standing beside the athlete):
+1. WARM-UP (5-8 min FIRST): ${warmupMoves}. Prep only — not part of the main exercise list.
+2. MAIN WORK: Coach through each planned exercise ONE AT A TIME — sets, reps, rest, form cues. Never dump the full list in one reply.
+3. COOL-DOWN (5 min LAST): static stretch for muscles worked today.
+
+LIVE COACH RULES:
+- Short spoken cues (2-3 sentences). One step at a time.
+- Between sets: "Strong — rest 60 seconds, ready for set 2?"
+- After warm-up, say you're moving to main work, then name only the first planned exercise.
+- Do NOT invent, swap, or skip main exercises. Warm-up and cool-down are separate from the plan list.
+- Do NOT say "Session X of Week Y". Use today's focus name instead.`;
 }
 
 /** Hard override block — forces coach to follow the active weekly plan, not generic templates. */
 export function buildActivePlanOverride(workout) {
   if (!workout?.exercises?.length) return '';
 
-  return `ACTIVE PLAN OVERRIDE — IGNORE ALL PREVIOUS WORKOUT MEMORY:
-Today is ${workout.day}. Focus: ${workout.focus}.
-Exercises (follow EXACTLY, in this order):
+  const warmupMoves = inferWarmupMoves(workout);
+  const firstMain = workout.exercises[0]?.name;
+
+  return `ACTIVE PLAN OVERRIDE — IGNORE GENERIC WORKOUT MEMORY:
+Today: ${workout.day} — ${workout.focus}
+Main work exercises (in order, after warm-up):
 ${workout.exercises.map((ex, i) => `${i + 1}. ${ex.name}: ${ex.sets} sets x ${ex.reps} reps`).join('\n')}
 
-DO NOT say "Session 1 of Week 1". DO NOT say "Session X of Week Y". DO NOT create a new workout.
-Ignore any stored memory about previous sessions or program weeks.
-Start immediately with: "Today is ${workout.focus}. Let's go — first exercise is ${workout.exercises[0]?.name}."
+SESSION START ORDER:
+1. Brief greeting + optional one-sentence energy check.
+2. WARM-UP FIRST (${warmupMoves}) — do NOT start main exercises until warm-up is done.
+3. Then main work begins with: ${firstMain}
+4. End with cool-down stretch.
+
+You are a real coach in the gym with the athlete — not a chatbot reading a list.
+DO NOT create a new workout. DO NOT say "Session 1 of Week 1".
 
 `;
 }
@@ -343,21 +375,36 @@ export function buildCoachSystemPrompt(basePrompt, coach, messages, profileConte
     .replace('${profile?.goal}', profile?.goal || '')
     .replace('${profile?.experience}', profile?.experience || '');
   const phase = getConversationPhase(messages);
+  const activePlan = options.activePlanWorkout;
 
-  const phaseRules = {
-    awaiting_checkin: `SESSION PHASE: Session start
+  const phaseRules = activePlan
+    ? {
+      awaiting_checkin: `SESSION PHASE: Start — warm-up first
+- Greet by first name. Optional one-sentence energy check only.
+- START WITH WARM-UP for ${activePlan.focus}. Give the first warm-up move now — do NOT list main exercises yet.
+- Sound like you're beside them in the gym: direct, encouraging, one cue at a time.`,
+      pre_workout_assessment: `SESSION PHASE: Warm-up or transition to main
+- If warm-up is not finished, give the next warm-up or activation cue.
+- When the athlete is warm and ready, transition to MAIN WORK — first exercise only: ${activePlan.exercises?.[0]?.name || 'first planned move'}.
+- One instruction per message. No full workout dump.`,
+      coaching: `SESSION PHASE: Main work or cool-down
+- Coach the current planned exercise set by set. Form cues, rest, encouragement.
+- After all main exercises, guide a 5-minute cool-down.
+- Stay on the active plan — no invented main exercises.`,
+    }[phase]
+    : {
+      awaiting_checkin: `SESSION PHASE: Session start
 - Do NOT run a sleep/energy/medical questionnaire — onboarding is done.
 - Open with session frame and today's plan: warm-up, main focus, cool-down.
-- Example: "Session 2 of Week 1 — lower body. Five minutes hip mobility, then ramp to working sets."`,
-    pre_workout_assessment: `SESSION PHASE: Active coaching (early exchange)
+- Example: "Five minutes hip mobility, then ramp to working sets."`,
+      pre_workout_assessment: `SESSION PHASE: Active coaching (early exchange)
 - Continue the session — prescribe or adjust the next block (warm-up, main, or cool-down).
-- Only ask about pain or energy if the user reports discomfort or asks for recovery guidance.
-- State session position when relevant (Session X of Week Y).`,
-    coaching: `SESSION PHASE: Active coaching
+- Only ask about pain or energy if the user reports discomfort or asks for recovery guidance.`,
+      coaching: `SESSION PHASE: Active coaching
 - Coach the next move with periodization context. Reference prior progress when available.
 - Full session structure: warm-up → main → cool-down unless user asks for one specific detail.
 - Handle expert form/anatomy challenges with precise answers. No robotic filler openers.`,
-  }[phase];
+    }[phase];
 
   const personaBlocks = preservePersona
     ? `${KANE_COACH_INSTRUCTIONS}

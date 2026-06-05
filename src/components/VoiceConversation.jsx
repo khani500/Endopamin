@@ -23,7 +23,7 @@ import {
 } from '../lib/voice';
 
 const WELCOME_TRIGGER =
-  '[VOICE_SESSION_START] Greet the athlete by first name in fluent professional English. Ask only about energy and mood today. Max 2 sentences. Plain spoken English for TTS.';
+  '[VOICE_SESSION_START] Greet the athlete by first name. One quick energy check in one sentence. Then start today\'s warm-up immediately — first warm-up move only, do NOT list main exercises yet. Max 2 sentences. Plain spoken English for TTS.';
 
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
@@ -161,6 +161,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
         injuries: profile?.injuries,
         goal: profile?.goal,
       }),
+      activePlanWorkout: workout,
     });
 
     const activePlanOverride = buildActivePlanOverride(workout);

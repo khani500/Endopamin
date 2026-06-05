@@ -9,7 +9,7 @@ import {
 import { createVoiceSession, VOICE_SESSION_STATE } from '../services/voiceSession';
 
 const WELCOME_TRIGGER =
-  '[VOICE_SESSION_START] Greet the athlete by first name in fluent professional English. Ask only about energy and mood today. Max 2 sentences. Plain spoken English for TTS.';
+  '[VOICE_SESSION_START] Greet the athlete by first name. One quick energy check in one sentence. Then start today\'s warm-up immediately — first warm-up move only, do NOT list main exercises yet. Max 2 sentences. Plain spoken English for TTS.';
 
 const VOICE_PENDING_KEY = 'endopamin_voice_pending_resume';
 

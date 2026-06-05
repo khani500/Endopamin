@@ -587,6 +587,7 @@ export default function CoachPage() {
         ? `${baseReferenceContext}\n\n${wgerContext}`
         : baseReferenceContext;
       const basePrompt = `${coach.systemPrompt}\n\n${coachMemoryBlock}`;
+      const planWorkout = todayWorkout || nextWorkout;
       const coachSystemPrompt = buildCoachSystemPrompt(
         basePrompt,
         coach,
@@ -597,9 +598,9 @@ export default function CoachPage() {
           profile,
           knowledgeContext,
           referenceContext,
+          activePlanWorkout: planWorkout,
         },
       );
-      const planWorkout = todayWorkout || nextWorkout;
       const planPrefix = buildWeeklyPlanSystemPrefix(planWorkout);
       const systemPrompt = planPrefix ? `${planPrefix}\n\n${coachSystemPrompt}` : coachSystemPrompt;
       if (planWorkout) {
