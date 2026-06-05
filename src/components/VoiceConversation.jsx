@@ -3,7 +3,9 @@ import { getCoach } from '../config/coaches';
 import { useAuth } from '../context/AuthContext';
 import { useWorkout } from '../context/WorkoutContext';
 import {
+  buildActivePlanOverride,
   buildCoachSystemPrompt,
+  buildPlanContext,
   buildProfileContext,
   sanitizeCoachResponse,
   toGeminiContents,
@@ -22,28 +24,6 @@ import {
 
 const WELCOME_TRIGGER =
   '[VOICE_SESSION_START] Greet the athlete by first name in fluent professional English. Ask only about energy and mood today. Max 2 sentences. Plain spoken English for TTS.';
-
-function buildPlanContext(workout) {
-  console.log('🏋️ buildPlanContext called with:', workout?.day, workout?.focus, workout?.exercises?.length);
-  if (!workout) {
-    return `No workout plan found for today. Tell the user to build a weekly plan first.
-Follow THIS exact workout. Do NOT invent a new one.`;
-  }
-
-  const exerciseLines = (workout.exercises || [])
-    .map((e, i) => `${i + 1}. ${e?.name}: ${e?.sets} sets x ${e?.reps}, rest ${e?.rest || '60s'}`)
-    .join('\n');
-
-  return `⚠️ OVERRIDE: The user has an active workout plan. You MUST start with: "Today is ${workout.focus}. Here are your exercises: ${(workout.exercises || []).map(e => `${e?.name} ${e?.sets}×${e?.reps}`).join(', ')}". Do NOT suggest warm-ups, mobility work, or any exercises not in this list unless the user explicitly asks.
-
-WEEKLY PLAN — TODAY'S SESSION
-Day: ${workout.day}
-Focus: ${workout.focus}
-${exerciseLines ? `Exercises:\n${exerciseLines}` : 'Exercises: none listed'}
-
-Follow THIS exact workout. Do NOT invent a new one. Do NOT add, remove, or swap exercises. Do NOT create a different workout for this session.
-VOICE RULE: Max 2 sentences per response. No long introductions.`;
-}
 
 export const VoiceConversation = ({ isOpen, onClose }) => {
   const { profile } = useAuth();
@@ -183,20 +163,7 @@ export const VoiceConversation = ({ isOpen, onClose }) => {
       }),
     });
 
-    let activePlanOverride = '';
-    if (workout?.exercises?.length > 0) {
-      activePlanOverride = `ACTIVE PLAN OVERRIDE — IGNORE ALL PREVIOUS WORKOUT MEMORY:
-Today is ${workout.day}. Focus: ${workout.focus}.
-Exercises (follow EXACTLY, in this order):
-${workout.exercises.map((ex, i) => `${i + 1}. ${ex.name}: ${ex.sets} sets x ${ex.reps} reps`).join('\n')}
-
-DO NOT say "Session 1 of Week 1". DO NOT say "Session X of Week Y". DO NOT create a new workout.
-Ignore any stored memory about previous sessions or program weeks.
-Start immediately with: "Today is ${workout.focus}. Let's go — first exercise is ${workout.exercises[0]?.name}."
-
-`;
-    }
-
+    const activePlanOverride = buildActivePlanOverride(workout);
     const result = `${activePlanOverride}${planContext}\n\n${coachSystemPrompt}`;
     console.log('[buildSystemPrompt] workout:', workout ? { day: workout.day, focus: workout.focus } : null);
     console.log('[buildSystemPrompt] activePlanOverride set:', Boolean(activePlanOverride));

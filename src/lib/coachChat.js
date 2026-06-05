@@ -267,6 +267,52 @@ export function getConversationPhase(messages) {
   return 'coaching';
 }
 
+/** Format today's session from WorkoutContext for coach system prompts. */
+export function buildPlanContext(workout) {
+  if (!workout) {
+    return `No workout plan found for today. Tell the user to build a weekly plan first.
+Follow THIS exact workout. Do NOT invent a new one.`;
+  }
+
+  const exerciseLines = (workout.exercises || [])
+    .map((e, i) => `${i + 1}. ${e?.name}: ${e?.sets} sets x ${e?.reps}, rest ${e?.rest || '60s'}`)
+    .join('\n');
+
+  return `⚠️ OVERRIDE: The user has an active workout plan. You MUST start with: "Today is ${workout.focus}. Here are your exercises: ${(workout.exercises || []).map(e => `${e?.name} ${e?.sets}×${e?.reps}`).join(', ')}". Do NOT suggest warm-ups, mobility work, or any exercises not in this list unless the user explicitly asks.
+
+WEEKLY PLAN — TODAY'S SESSION
+Day: ${workout.day}
+Focus: ${workout.focus}
+${exerciseLines ? `Exercises:\n${exerciseLines}` : 'Exercises: none listed'}
+
+Follow THIS exact workout. Do NOT invent a new one. Do NOT add, remove, or swap exercises. Do NOT create a different workout for this session.
+VOICE RULE: Max 2 sentences per response. No long introductions.`;
+}
+
+/** Hard override block — forces coach to follow the active weekly plan, not generic templates. */
+export function buildActivePlanOverride(workout) {
+  if (!workout?.exercises?.length) return '';
+
+  return `ACTIVE PLAN OVERRIDE — IGNORE ALL PREVIOUS WORKOUT MEMORY:
+Today is ${workout.day}. Focus: ${workout.focus}.
+Exercises (follow EXACTLY, in this order):
+${workout.exercises.map((ex, i) => `${i + 1}. ${ex.name}: ${ex.sets} sets x ${ex.reps} reps`).join('\n')}
+
+DO NOT say "Session 1 of Week 1". DO NOT say "Session X of Week Y". DO NOT create a new workout.
+Ignore any stored memory about previous sessions or program weeks.
+Start immediately with: "Today is ${workout.focus}. Let's go — first exercise is ${workout.exercises[0]?.name}."
+
+`;
+}
+
+/** Prepends active-plan override + session context to the coach system prompt. */
+export function buildWeeklyPlanSystemPrefix(workout) {
+  if (!workout) return '';
+  const override = buildActivePlanOverride(workout);
+  const planContext = buildPlanContext(workout);
+  return `${override}${planContext}`;
+}
+
 /** Kane-specific rules — no global scientific identity overlay. */
 export const KANE_COACH_INSTRUCTIONS = `CRITICAL INSTRUCTIONS — KANE MODE:
 
