@@ -152,6 +152,8 @@ const MEAL_META = {
   },
   snack: {
     color: '#FF6B00',
+    background: '#431407',
+    borderColor: 'rgba(255,107,0,0.4)',
     icon: <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />,
   },
 };
@@ -193,7 +195,7 @@ export default function NutritionHub() {
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
-  const [macros, setMacros] = useState({ calories: 1240, protein: 89, carbs: 134, fat: 38 });
+  const [macros, setMacros] = useState({ protein: 0, carbs: 0, fat: 0 });
   const [usdaResults, setUsdaResults] = useState([]);
   const [usdaSearching, setUsdaSearching] = useState(false);
   const [usdaSearchError, setUsdaSearchError] = useState('');
@@ -214,8 +216,13 @@ export default function NutritionHub() {
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
+  const loggedCalories = useMemo(
+    () => meals.reduce((sum, meal) => sum + meal.cal, 0),
+    [meals],
+  );
+
   const calDash = 226;
-  const calOffset = calDash - (calDash * Math.min(100, Math.round((macros.calories / macroGoals.calories) * 100))) / 100;
+  const calOffset = calDash - (calDash * Math.min(100, Math.round((loggedCalories / macroGoals.calories) * 100))) / 100;
 
   useEffect(() => {
     if (activeTab !== 'foods') return undefined;
@@ -257,6 +264,7 @@ export default function NutritionHub() {
     const protein = Math.round(food.protein * scale * 10) / 10;
     const carbs = Math.round(food.carbs * scale * 10) / 10;
     const fat = Math.round(food.fat * scale * 10) / 10;
+    const targetMealId = pendingMealId || 'snack';
     const added = applyScanData({
       items: [{
         name: food.name,
@@ -273,21 +281,9 @@ export default function NutritionHub() {
         fat,
       },
       confidence: 'medium',
-    });
+    }, { mealId: targetMealId });
     if (!added) return;
 
-    const entryLabel = `${food.name} (${g}g)`;
-    const targetMealId = pendingMealId || 'snack';
-    setMeals(prev => prev.map(meal => (
-      meal.id === targetMealId
-        ? {
-            ...meal,
-            items: [...meal.items, entryLabel],
-            cal: meal.cal + calories,
-            done: true,
-          }
-        : meal
-    )));
     setPendingMealId(null);
     setSelectedUsdaFood(null);
     setFoodBankGrams('100');
@@ -296,7 +292,7 @@ export default function NutritionHub() {
     window.setTimeout(() => setLogSuccessMessage(''), 3000);
   };
 
-  const applyScanData = (data, { errorMessage = 'Could not analyze image. Try again.' } = {}) => {
+  const applyScanData = (data, { errorMessage = 'Could not analyze image. Try again.', mealId = 'snack' } = {}) => {
     const items = Array.isArray(data?.items) ? data.items : [];
     const total = data?.total ?? { calories: 0, protein: 0, carbs: 0, fat: 0 };
 
@@ -311,10 +307,19 @@ export default function NutritionHub() {
       confidence: data?.confidence ?? 'medium',
     });
     setMacros(prev => ({
-      calories: Math.round(prev.calories + total.calories),
       protein: Math.round((prev.protein + total.protein) * 10) / 10,
       carbs: Math.round((prev.carbs + total.carbs) * 10) / 10,
       fat: Math.round((prev.fat + total.fat) * 10) / 10,
+    }));
+    setMeals(prev => prev.map(meal => {
+      if (meal.id !== mealId) return meal;
+      const entryLabels = items.map(item => `${item.name} (${item.weight}g)`);
+      return {
+        ...meal,
+        items: [...meal.items, ...entryLabels],
+        cal: meal.cal + Math.round(total.calories),
+        done: true,
+      };
     }));
     return true;
   };
@@ -343,8 +348,11 @@ export default function NutritionHub() {
   };
 
   const markMealDone = mealId => {
+    const targetCal = mealTargets[mealId] ?? 0;
     setMeals(prev => prev.map(meal => (
-      meal.id === mealId ? { ...meal, done: true } : meal
+      meal.id === mealId
+        ? { ...meal, done: true, cal: meal.cal > 0 ? meal.cal : targetCal }
+        : meal
     )));
     setMealActionId(null);
   };
@@ -437,14 +445,14 @@ export default function NutritionHub() {
                     style={{ filter: 'drop-shadow(0 0 6px #CCFF00)', transition: 'stroke-dashoffset 1s ease' }}/>
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-[18px] font-extrabold leading-none">{macros.calories}</span>
+                  <span className="text-[18px] font-extrabold leading-none">{loggedCalories}</span>
                   <span className="text-[8px] text-white/40 mt-0.5">kcal</span>
                 </div>
               </div>
               <div>
                 <p className="text-[10px] text-white/40 uppercase tracking-wider font-bold mb-1">Today's Calories</p>
-                <p className="text-[22px] font-bold">{macros.calories} <span className="text-white/30 text-[14px]">/ {macroGoals.calories}</span></p>
-                <p className="text-[11px] text-white/40 mt-1">{Math.max(0, macroGoals.calories - macros.calories)} kcal remaining</p>
+                <p className="text-[22px] font-bold">{loggedCalories} <span className="text-white/30 text-[14px]">/ {macroGoals.calories}</span></p>
+                <p className="text-[11px] text-white/40 mt-1">{Math.max(0, macroGoals.calories - loggedCalories)} kcal remaining</p>
               </div>
             </div>
             <div className="space-y-3">
@@ -567,19 +575,24 @@ export default function NutritionHub() {
                 {waterGlasses} <span className="text-white/30 font-normal text-[9px]">/ {WATER_GOAL} glasses</span>
               </span>
             </div>
-            <div className="flex gap-1.5">
+            <div className="flex gap-2">
               {Array.from({ length: WATER_GOAL }).map((_, i) => (
                 <button
                   key={i}
                   type="button"
                   aria-label={`Glass ${i + 1}`}
+                  aria-pressed={waterFilled[i]}
                   onClick={() => toggleWaterGlass(i)}
-                  className="flex-1 h-[6px] rounded-full transition-all duration-300"
-                  style={{
-                    background: waterFilled[i] ? '#5088FF' : 'rgba(255,255,255,0.07)',
-                    boxShadow: waterFilled[i] ? '0 0 6px rgba(80,136,255,0.5)' : 'none',
-                  }}
-                />
+                  className="flex-1 min-h-[32px] flex items-center justify-center rounded-full transition-all duration-300 active:scale-95"
+                >
+                  <span
+                    className="w-full h-[10px] rounded-full transition-all duration-300"
+                    style={{
+                      background: waterFilled[i] ? '#5088FF' : 'rgba(255,255,255,0.07)',
+                      boxShadow: waterFilled[i] ? '0 0 8px rgba(80,136,255,0.5)' : 'none',
+                    }}
+                  />
+                </button>
               ))}
             </div>
           </div>
@@ -754,7 +767,7 @@ export default function NutritionHub() {
                 })}
                 <div className="flex items-center justify-between pt-1 border-t border-white/[0.06]">
                   <span className="text-[10px] text-white/35">Calories</span>
-                  <span className="text-[13px] font-black text-[#CCFF00]">{macros.calories} <span className="text-white/30 text-[9px] font-normal">/ {macroGoals.calories}</span></span>
+                  <span className="text-[13px] font-black text-[#CCFF00]">{loggedCalories} <span className="text-white/30 text-[9px] font-normal">/ {macroGoals.calories}</span></span>
                 </div>
               </div>
             </div>
