@@ -7,6 +7,67 @@ import { supabase } from '../lib/supabase';
 
 const DESK_BREAK_XP = 10;
 
+const PERIOD_ICONS = {
+  morning: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+    </svg>
+  ),
+  midday: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  ),
+  evening: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+    </svg>
+  ),
+};
+
+function getTimeSlot(hour) {
+  if (hour < 12) return 'morning';
+  if (hour <= 17) return 'midday';
+  return 'evening';
+}
+
+const TIME_SLOT_CONTENT = {
+  morning: {
+    label: 'Good Morning',
+    exercises: [
+      { name: 'Jumping Jacks', duration: 30 },
+      { name: 'Arm Circles', duration: 30 },
+      { name: 'High Knees', duration: 30 },
+      { name: 'Push-ups', duration: 30 },
+      { name: 'Squat Jumps', duration: 30 },
+      { name: 'Deep Breath', duration: 30 },
+    ],
+  },
+  midday: {
+    label: 'Midday Reset',
+    exercises: [
+      { name: 'Neck Rolls', duration: 30 },
+      { name: 'Shoulder Shrugs', duration: 30 },
+      { name: 'Chest Opener', duration: 45 },
+      { name: 'Wrist Stretches', duration: 30 },
+      { name: 'Seated Spinal Twist', duration: 45 },
+      { name: 'Eye Rest', duration: 30 },
+    ],
+  },
+  evening: {
+    label: 'Evening Wind Down',
+    exercises: [
+      { name: 'Cat-Cow', duration: 45 },
+      { name: 'Child Pose', duration: 45 },
+      { name: 'Hip Circles', duration: 30 },
+      { name: 'Spinal Twist', duration: 45 },
+      { name: 'Deep Breathing', duration: 60 },
+      { name: 'Body Scan', duration: 30 },
+    ],
+  },
+};
+
 const EXERCISE_ICONS = {
   default: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
@@ -65,10 +126,58 @@ const EXERCISE_ICONS = {
       <line x1="5" y1="20" x2="19" y2="20" />
     </svg>
   ),
+  jumping: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M12 3v18M8 7l4-4 4 4M8 17l4 4 4-4" />
+    </svg>
+  ),
+  arms: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M4 12a8 8 0 0116 0" />
+      <path d="M12 12l-3-3M12 12l3-3" />
+    </svg>
+  ),
+  knees: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M6 20h12M9 20V10l3-4 3 4v10" />
+    </svg>
+  ),
+  pushup: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M4 14h16M6 14l2-4h8l2 4" />
+      <path d="M8 18v2M16 18v2" />
+    </svg>
+  ),
+  squat: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M8 20V12a4 4 0 018 0v8" />
+      <path d="M6 12h12" />
+    </svg>
+  ),
+  child: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M12 14c-3 0-5 2-5 5M12 14c3 0 5 2 5 5" />
+      <circle cx="12" cy="8" r="3" />
+    </svg>
+  ),
+  scan: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
 };
 
 function getIcon(name) {
   const n = (name || '').toLowerCase();
+  if (n.includes('jumping')) return EXERCISE_ICONS.jumping;
+  if (n.includes('arm circle')) return EXERCISE_ICONS.arms;
+  if (n.includes('high knee')) return EXERCISE_ICONS.knees;
+  if (n.includes('push-up') || n.includes('push up')) return EXERCISE_ICONS.pushup;
+  if (n.includes('squat')) return EXERCISE_ICONS.squat;
+  if (n.includes('child pose')) return EXERCISE_ICONS.child;
+  if (n.includes('body scan')) return EXERCISE_ICONS.scan;
+  if (n.includes('hip circle')) return EXERCISE_ICONS.hip;
   if (n.includes('neck')) return EXERCISE_ICONS.neck;
   if (n.includes('shoulder')) return EXERCISE_ICONS.shoulder;
   if (n.includes('chest') || n.includes('opener')) return EXERCISE_ICONS.chest;
@@ -83,27 +192,40 @@ function getIcon(name) {
   return EXERCISE_ICONS.default;
 }
 
+function TimeLabel({ slot, label }) {
+  return (
+    <div className="mb-4 flex items-center gap-2 text-[#CCFF00]">
+      {PERIOD_ICONS[slot]}
+      <span className="text-[10px] font-bold uppercase tracking-[2.5px]">{label}</span>
+    </div>
+  );
+}
+
 export default function DeskBreakSession() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { profile, user, setProfile } = useAuth();
   const breakData = DESK_BREAKS.find(item => item.id === id) || DESK_BREAKS[0];
+  const hour = new Date().getHours();
+  const timeSlot = getTimeSlot(hour);
+  const { label: timeLabel, exercises } = TIME_SLOT_CONTENT[timeSlot];
+  const durationMin = Math.ceil(exercises.reduce((sum, ex) => sum + ex.duration, 0) / 60);
   const [phase, setPhase] = useState('intro');
   const [currentIdx, setCurrentIdx] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const timerRef = useRef(null);
   const xpAwardedRef = useRef(false);
-  const exercise = breakData.exercises[currentIdx];
+  const exercise = exercises[currentIdx];
   const coachId = profile?.coach_persona || 'elias';
 
   const startExercise = (index) => {
-    const ex = breakData.exercises[index];
+    const ex = exercises[index];
     setCurrentIdx(index);
     setPhase('exercise');
     setTimeLeft(ex.duration);
     setIsRunning(true);
-    speak(index === 0 ? `Starting ${breakData.title}. First: ${ex.name}` : ex.name, coachId);
+    speak(index === 0 ? `Starting ${timeLabel}. First: ${ex.name}` : ex.name, coachId);
   };
 
   const startSession = () => startExercise(0);
@@ -115,10 +237,10 @@ export default function DeskBreakSession() {
       setTimeLeft(prev => {
         if (prev <= 1) {
           window.clearInterval(timerRef.current);
-          if (currentIdx < breakData.exercises.length - 1) {
+          if (currentIdx < exercises.length - 1) {
             const next = currentIdx + 1;
             setCurrentIdx(next);
-            const nextEx = breakData.exercises[next];
+            const nextEx = exercises[next];
             setTimeLeft(nextEx.duration);
             speak(nextEx.name, coachId);
             setIsRunning(true);
@@ -134,7 +256,7 @@ export default function DeskBreakSession() {
     }, 1000);
 
     return () => window.clearInterval(timerRef.current);
-  }, [breakData.exercises, breakData.title, coachId, currentIdx, isRunning]);
+  }, [coachId, currentIdx, exercises, isRunning, timeLabel]);
 
   useEffect(() => {
     if (phase !== 'complete' || xpAwardedRef.current) return;
@@ -171,6 +293,7 @@ export default function DeskBreakSession() {
     return (
       <div className="flex min-h-screen flex-col bg-[#0a0a0a] p-4">
         <button type="button" onClick={() => navigate(-1)} className="mb-4 text-left text-gray-400">← Back</button>
+        <TimeLabel slot={timeSlot} label={timeLabel} />
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#CCFF00]/10 text-[#CCFF00]">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8">
@@ -180,10 +303,10 @@ export default function DeskBreakSession() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white">{breakData.title}</h1>
-          <p className="mt-1 text-sm text-gray-400">{breakData.duration} min · {breakData.exercises.length} exercises</p>
+          <p className="mt-1 text-sm text-gray-400">{durationMin} min · {exercises.length} exercises</p>
         </div>
         <div className="flex-1 space-y-2">
-          {breakData.exercises.map((item, index) => (
+          {exercises.map((item, index) => (
             <button
               type="button"
               key={`${item.name}-${index}`}
@@ -230,8 +353,9 @@ export default function DeskBreakSession() {
   return (
     <div className="flex min-h-screen flex-col bg-[#0a0a0a] p-4">
       <button type="button" onClick={() => navigate(-1)} className="mb-4 text-left text-gray-400">← Back</button>
+      <TimeLabel slot={timeSlot} label={timeLabel} />
       <div className="mb-6 flex gap-1">
-        {breakData.exercises.map((_, index) => (
+        {exercises.map((_, index) => (
           <div key={index} className={`h-1 flex-1 rounded-full ${index <= currentIdx ? 'bg-[#CCFF00]' : 'bg-[#2a2a2a]'}`} />
         ))}
       </div>
@@ -261,7 +385,7 @@ export default function DeskBreakSession() {
             <span className="text-3xl font-bold text-white">{timeLeft}</span>
           </div>
         </div>
-        <p className="mt-4 text-sm text-gray-500">{currentIdx + 1} of {breakData.exercises.length}</p>
+        <p className="mt-4 text-sm text-gray-500">{currentIdx + 1} of {exercises.length}</p>
       </div>
       <div className="flex justify-end">
         <button type="button" onClick={skipExercise} className="rounded-xl bg-[#1a1a1a] px-4 py-3 text-sm text-gray-400">
@@ -273,10 +397,10 @@ export default function DeskBreakSession() {
 
   function skipExercise() {
     window.clearInterval(timerRef.current);
-    if (currentIdx < breakData.exercises.length - 1) {
+    if (currentIdx < exercises.length - 1) {
       const next = currentIdx + 1;
       setCurrentIdx(next);
-      setTimeLeft(breakData.exercises[next].duration);
+      setTimeLeft(exercises[next].duration);
       setIsRunning(true);
     } else {
       setPhase('complete');
