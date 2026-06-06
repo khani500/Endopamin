@@ -49,6 +49,37 @@ function dedupeUsdaResults(foods) {
   return Array.from(byName.values()).slice(0, 5);
 }
 
+const WATER_GOAL = 8;
+
+const MEAL_META = {
+  breakfast: {
+    color: '#FFB800',
+    icon: (
+      <>
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+      </>
+    ),
+  },
+  lunch: {
+    color: '#22C55E',
+    icon: (
+      <>
+        <path d="M11 20A7 7 0 0113 4a7 7 0 018 12" />
+        <path d="M11 20v-6" />
+      </>
+    ),
+  },
+  dinner: {
+    color: '#818CF8',
+    icon: <path d="M21 14.5A8.5 8.5 0 1112 6v8h9z" />,
+  },
+  snack: {
+    color: '#FF6B00',
+    icon: <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />,
+  },
+};
+
 function MacroBar({ label, current, goal, color }) {
   const pct = Math.min(100, Math.round((current / goal) * 100));
   return (
@@ -97,6 +128,9 @@ export default function NutritionHub() {
     { id: 'dinner', label: 'Dinner', time: '7:00 PM', items: ['Salmon + brown rice'], cal: 480, done: false },
     { id: 'snack', label: 'Snack', time: 'Anytime', items: [], cal: 0, done: false },
   ]);
+  const [mealActionId, setMealActionId] = useState(null);
+  const [pendingMealId, setPendingMealId] = useState(null);
+  const [waterGlasses, setWaterGlasses] = useState(6);
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
@@ -163,8 +197,9 @@ export default function NutritionHub() {
     if (!added) return;
 
     const entryLabel = `${food.name} (${g}g)`;
+    const targetMealId = pendingMealId || 'snack';
     setMeals(prev => prev.map(meal => (
-      meal.id === 'snack'
+      meal.id === targetMealId
         ? {
             ...meal,
             items: [...meal.items, entryLabel],
@@ -173,6 +208,7 @@ export default function NutritionHub() {
           }
         : meal
     )));
+    setPendingMealId(null);
     setSelectedUsdaFood(null);
     setFoodBankGrams('100');
     setLogSuccessMessage('Added ✓');
@@ -224,6 +260,23 @@ export default function NutritionHub() {
   const handleBarcodeResult = (data) => {
     setShowBarcodeScanner(false);
     applyScanData(data, { errorMessage: 'Could not load product from barcode.' });
+  };
+
+  const markMealDone = mealId => {
+    setMeals(prev => prev.map(meal => (
+      meal.id === mealId ? { ...meal, done: true } : meal
+    )));
+    setMealActionId(null);
+  };
+
+  const handleMealAddFood = mealId => {
+    setPendingMealId(mealId);
+    setMealActionId(null);
+    setActiveTab('foods');
+  };
+
+  const toggleWaterGlass = index => {
+    setWaterGlasses(prev => (prev === index + 1 ? index : index + 1));
   };
 
   const ITEM_COLORS = ['#CCFF00', '#5088FF', '#FFA53C', '#FF6B6B', '#A064FF'];
@@ -326,57 +379,92 @@ export default function NutritionHub() {
               <button type="button" className="text-[10px] text-[#CCFF00] font-bold">+ Add Meal</button>
             </div>
             <div className="space-y-2">
-              {meals.map(meal => (
-                <div key={meal.id} className="rounded-[18px] border p-4 flex items-center justify-between transition-all"
-                  style={{
-                    background: meal.done ? 'rgba(204,255,0,0.04)' : 'rgba(255,255,255,0.025)',
-                    borderColor: meal.done ? 'rgba(204,255,0,0.15)' : 'rgba(255,255,255,0.07)',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.3)'
-                  }}>
-                  <div className="flex items-center gap-3">
-                    {/* Meal icon */}
-                    <div className="w-9 h-9 rounded-[11px] flex items-center justify-center flex-shrink-0"
+              {meals.map(meal => {
+                const meta = MEAL_META[meal.id] || MEAL_META.snack;
+                const showActions = mealActionId === meal.id;
+                return (
+                  <div key={meal.id}>
+                    <button
+                      type="button"
+                      onClick={() => setMealActionId(showActions ? null : meal.id)}
+                      className="w-full rounded-[18px] border p-4 flex items-center justify-between transition-all text-left active:scale-[0.99]"
                       style={{
-                        background: meal.done ? 'rgba(204,255,0,0.12)' : 'rgba(255,255,255,0.04)',
-                        border: `1px solid ${meal.done ? 'rgba(204,255,0,0.25)' : 'rgba(255,255,255,0.08)'}`
-                      }}>
-                      <svg viewBox="0 0 24 24" fill="none"
-                        stroke={meal.done ? '#CCFF00' : 'rgba(255,255,255,0.3)'}
-                        strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                        {meal.id === 'breakfast' && <><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></>}
-                        {meal.id === 'lunch' && <><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></>}
-                        {meal.id === 'dinner' && <><path d="M3 11l19-9-9 19-2-8-8-2z"/></>}
-                        {meal.id === 'snack' && <><path d="M12 2a10 10 0 110 20 10 10 0 010-20z"/><path d="M12 6v6l4 2"/></>}
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="text-[12px] font-bold text-white">{meal.label}</p>
-                        {meal.done && (
-                          <span className="text-[8px] bg-[#CCFF00]/15 text-[#CCFF00] border border-[#CCFF00]/25 px-1.5 py-0.5 rounded-full font-bold">
-                            ✓ Done
+                        background: meal.done ? 'rgba(204,255,0,0.04)' : 'rgba(255,255,255,0.025)',
+                        borderColor: showActions ? 'rgba(204,255,0,0.35)' : meal.done ? 'rgba(204,255,0,0.15)' : 'rgba(255,255,255,0.07)',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+                      }}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className="w-9 h-9 rounded-[11px] flex items-center justify-center flex-shrink-0"
+                          style={{
+                            background: `${meta.color}18`,
+                            border: `1px solid ${meta.color}40`,
+                          }}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke={meta.color}
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="w-4 h-4"
+                          >
+                            {meta.icon}
+                          </svg>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="text-[12px] font-bold text-white">{meal.label}</p>
+                            {meal.done && (
+                              <span className="text-[8px] bg-[#CCFF00]/15 text-[#CCFF00] border border-[#CCFF00]/25 px-1.5 py-0.5 rounded-full font-bold">
+                                ✓ Done
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-white/35 mt-0.5 truncate">
+                            {meal.items.length > 0 ? meal.items.join(' · ') : meal.time}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right flex-shrink-0 ml-3">
+                        {meal.cal > 0 ? (
+                          <>
+                            <p className="text-[14px] font-black" style={{ color: meal.done ? '#CCFF00' : 'rgba(255,255,255,0.6)' }}>{meal.cal}</p>
+                            <p className="text-[9px] text-white/30">kcal</p>
+                          </>
+                        ) : (
+                          <span className="text-[11px] text-white/20 font-medium border border-white/[0.08] px-2 py-1 rounded-full">
+                            + Add
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] text-white/35 mt-0.5">
-                        {meal.items.length > 0 ? meal.items.join(' · ') : meal.time}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    {meal.cal > 0 ? (
-                      <>
-                        <p className="text-[14px] font-black" style={{ color: meal.done ? '#CCFF00' : 'rgba(255,255,255,0.6)' }}>{meal.cal}</p>
-                        <p className="text-[9px] text-white/30">kcal</p>
-                      </>
-                    ) : (
-                      <span className="text-[11px] text-white/20 font-medium border border-white/[0.08] px-2 py-1 rounded-full">
-                        + Add
-                      </span>
+                    </button>
+
+                    {showActions && (
+                      <div className="mt-2 flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => markMealDone(meal.id)}
+                          className="flex-1 rounded-[12px] py-2.5 text-[11px] font-black transition-all active:scale-[0.98]"
+                          style={{ background: 'rgba(204,255,0,0.12)', border: '1px solid rgba(204,255,0,0.25)', color: '#CCFF00' }}
+                        >
+                          Mark as Done
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleMealAddFood(meal.id)}
+                          className="flex-1 rounded-[12px] py-2.5 text-[11px] font-black transition-all active:scale-[0.98]"
+                          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff' }}
+                        >
+                          Add Food
+                        </button>
+                      </div>
                     )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -391,15 +479,23 @@ export default function NutritionHub() {
                 </svg>
                 <p className="text-[11px] font-bold text-white">Water Intake</p>
               </div>
-              <span className="text-[11px] font-black text-[#5088FF]">6 <span className="text-white/30 font-normal text-[9px]">/ 8 glasses</span></span>
+              <span className="text-[11px] font-black text-[#5088FF]">
+                {waterGlasses} <span className="text-white/30 font-normal text-[9px]">/ {WATER_GOAL} glasses</span>
+              </span>
             </div>
             <div className="flex gap-1.5">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="flex-1 h-[6px] rounded-full transition-all duration-300"
+              {Array.from({ length: WATER_GOAL }).map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`Glass ${i + 1}`}
+                  onClick={() => toggleWaterGlass(i)}
+                  className="flex-1 h-[6px] rounded-full transition-all duration-300"
                   style={{
-                    background: i < 6 ? '#5088FF' : 'rgba(255,255,255,0.07)',
-                    boxShadow: i < 6 ? '0 0 6px rgba(80,136,255,0.5)' : 'none'
-                  }} />
+                    background: i < waterGlasses ? '#5088FF' : 'rgba(255,255,255,0.07)',
+                    boxShadow: i < waterGlasses ? '0 0 6px rgba(80,136,255,0.5)' : 'none',
+                  }}
+                />
               ))}
             </div>
           </div>
