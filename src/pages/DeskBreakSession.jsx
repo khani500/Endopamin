@@ -215,7 +215,7 @@ export default function DeskBreakSession() {
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
-        <h1 className="mb-2 text-2xl font-bold text-[#CCFF00]">Complete! +{DESK_BREAK_XP} XP</h1>
+        <h1 className="mb-2 text-2xl font-bold text-[#CCFF00]">Done! +{DESK_BREAK_XP} XP</h1>
         <p className="mb-8 text-sm text-gray-400">Returning to Home…</p>
         <button type="button" onClick={() => navigate('/')} className="w-full rounded-2xl bg-[#CCFF00] px-8 py-4 font-bold text-black">
           Back to Home
@@ -229,6 +229,7 @@ export default function DeskBreakSession() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#0a0a0a] p-4">
+      <button type="button" onClick={() => navigate(-1)} className="mb-4 text-left text-gray-400">← Back</button>
       <div className="mb-6 flex gap-1">
         {breakData.exercises.map((_, index) => (
           <div key={index} className={`h-1 flex-1 rounded-full ${index <= currentIdx ? 'bg-[#CCFF00]' : 'bg-[#2a2a2a]'}`} />
@@ -262,9 +263,11 @@ export default function DeskBreakSession() {
         </div>
         <p className="mt-4 text-sm text-gray-500">{currentIdx + 1} of {breakData.exercises.length}</p>
       </div>
-      <button type="button" onClick={skipExercise} className="rounded-xl bg-[#1a1a1a] py-3 text-sm text-gray-400">
-        Skip →
-      </button>
+      <div className="flex justify-end">
+        <button type="button" onClick={skipExercise} className="rounded-xl bg-[#1a1a1a] px-4 py-3 text-sm text-gray-400">
+          Skip →
+        </button>
+      </div>
     </div>
   );
 
