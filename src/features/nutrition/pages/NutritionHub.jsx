@@ -72,6 +72,8 @@ const MEAL_META = {
   },
   dinner: {
     color: '#818CF8',
+    background: '#1e1b4b',
+    borderColor: 'rgba(129,140,248,0.4)',
     icon: <path d="M21 14.5A8.5 8.5 0 1112 6v8h9z" />,
   },
   snack: {
@@ -130,7 +132,9 @@ export default function NutritionHub() {
   ]);
   const [mealActionId, setMealActionId] = useState(null);
   const [pendingMealId, setPendingMealId] = useState(null);
-  const [waterGlasses, setWaterGlasses] = useState(6);
+  const [waterFilled, setWaterFilled] = useState(() =>
+    Array.from({ length: WATER_GOAL }, (_, i) => i < 6),
+  );
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
@@ -276,8 +280,10 @@ export default function NutritionHub() {
   };
 
   const toggleWaterGlass = index => {
-    setWaterGlasses(prev => (prev === index + 1 ? index : index + 1));
+    setWaterFilled(prev => prev.map((filled, i) => (i === index ? !filled : filled)));
   };
+
+  const waterGlasses = waterFilled.filter(Boolean).length;
 
   const ITEM_COLORS = ['#CCFF00', '#5088FF', '#FFA53C', '#FF6B6B', '#A064FF'];
 
@@ -398,8 +404,8 @@ export default function NutritionHub() {
                         <div
                           className="w-9 h-9 rounded-[11px] flex items-center justify-center flex-shrink-0"
                           style={{
-                            background: `${meta.color}18`,
-                            border: `1px solid ${meta.color}40`,
+                            background: meta.background || `${meta.color}18`,
+                            border: `1px solid ${meta.borderColor || `${meta.color}40`}`,
                           }}
                         >
                           <svg
@@ -492,8 +498,8 @@ export default function NutritionHub() {
                   onClick={() => toggleWaterGlass(i)}
                   className="flex-1 h-[6px] rounded-full transition-all duration-300"
                   style={{
-                    background: i < waterGlasses ? '#5088FF' : 'rgba(255,255,255,0.07)',
-                    boxShadow: i < waterGlasses ? '0 0 6px rgba(80,136,255,0.5)' : 'none',
+                    background: waterFilled[i] ? '#5088FF' : 'rgba(255,255,255,0.07)',
+                    boxShadow: waterFilled[i] ? '0 0 6px rgba(80,136,255,0.5)' : 'none',
                   }}
                 />
               ))}
