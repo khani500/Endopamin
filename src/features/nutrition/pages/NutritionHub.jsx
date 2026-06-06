@@ -90,6 +90,13 @@ export default function NutritionHub() {
   const [usdaSearchError, setUsdaSearchError] = useState('');
   const [selectedUsdaFood, setSelectedUsdaFood] = useState(null);
   const [foodBankGrams, setFoodBankGrams] = useState('100');
+  const [logSuccessMessage, setLogSuccessMessage] = useState('');
+  const [meals, setMeals] = useState([
+    { id: 'breakfast', label: 'Breakfast', time: '8:00 AM', items: ['Oats + egg whites', 'Black coffee'], cal: 380, done: true },
+    { id: 'lunch', label: 'Lunch', time: '1:00 PM', items: ['Chicken + sweet potato', 'Mixed greens'], cal: 520, done: true },
+    { id: 'dinner', label: 'Dinner', time: '7:00 PM', items: ['Salmon + brown rice'], cal: 480, done: false },
+    { id: 'snack', label: 'Snack', time: 'Anytime', items: [], cal: 0, done: false },
+  ]);
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
@@ -136,7 +143,7 @@ export default function NutritionHub() {
     const protein = Math.round(food.protein * scale * 10) / 10;
     const carbs = Math.round(food.carbs * scale * 10) / 10;
     const fat = Math.round(food.fat * scale * 10) / 10;
-    applyScanData({
+    const added = applyScanData({
       items: [{
         name: food.name,
         weight: g,
@@ -153,8 +160,24 @@ export default function NutritionHub() {
       },
       confidence: 'medium',
     });
+    if (!added) return;
+
+    const entryLabel = `${food.name} (${g}g)`;
+    setMeals(prev => prev.map(meal => (
+      meal.id === 'snack'
+        ? {
+            ...meal,
+            items: [...meal.items, entryLabel],
+            cal: meal.cal + calories,
+            done: true,
+          }
+        : meal
+    )));
     setSelectedUsdaFood(null);
     setFoodBankGrams('100');
+    setLogSuccessMessage('Added ✓');
+    setActiveTab('log');
+    window.setTimeout(() => setLogSuccessMessage(''), 3000);
   };
 
   const applyScanData = (data, { errorMessage = 'Could not analyze image. Try again.' } = {}) => {
@@ -261,6 +284,12 @@ export default function NutritionHub() {
       {/* ── DAILY LOG ── */}
       {activeTab === 'log' && (
         <div className="px-6 space-y-4">
+          {logSuccessMessage && (
+            <div className="rounded-[16px] border border-[#CCFF00]/30 px-4 py-3 text-center"
+              style={{ background: 'rgba(204,255,0,0.08)' }}>
+              <p className="text-[13px] font-black text-[#CCFF00]">{logSuccessMessage}</p>
+            </div>
+          )}
           {/* Calorie ring + macros */}
           <div className="rounded-[24px] border border-white/[0.07] p-5"
             style={{ background: 'linear-gradient(145deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))', boxShadow: '0 8px 28px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.06)' }}>
@@ -297,12 +326,7 @@ export default function NutritionHub() {
               <button type="button" className="text-[10px] text-[#CCFF00] font-bold">+ Add Meal</button>
             </div>
             <div className="space-y-2">
-              {[
-                { id: 'breakfast', label: 'Breakfast', time: '8:00 AM', items: ['Oats + egg whites', 'Black coffee'], cal: 380, done: true },
-                { id: 'lunch', label: 'Lunch', time: '1:00 PM', items: ['Chicken + sweet potato', 'Mixed greens'], cal: 520, done: true },
-                { id: 'dinner', label: 'Dinner', time: '7:00 PM', items: ['Salmon + brown rice'], cal: 480, done: false },
-                { id: 'snack', label: 'Snack', time: 'Anytime', items: [], cal: 0, done: false },
-              ].map(meal => (
+              {meals.map(meal => (
                 <div key={meal.id} className="rounded-[18px] border p-4 flex items-center justify-between transition-all"
                   style={{
                     background: meal.done ? 'rgba(204,255,0,0.04)' : 'rgba(255,255,255,0.025)',
@@ -468,9 +492,14 @@ export default function NutritionHub() {
               <button type="button" onClick={() => setShowBarcodeScanner(true)}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] font-bold text-[12px] border transition-all active:scale-95"
                 style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.12)', color: '#fff' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" style={{ filter: 'drop-shadow(0 0 4px rgba(204,255,0,0.45))' }}>
-                  <path d="M3 5h2v14H3zM8 5h1v14H8zM11 5h2v14h-2zM15 5h1v14h-1zM18 5h3v14h-3z"/>
-                </svg>
+                <span
+                  className="inline-flex items-center justify-center flex-shrink-0"
+                  style={{ border: '2px solid #CCFF00', borderRadius: '50%', padding: '6px' }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 24, height: 24 }}>
+                    <path d="M3 5h2v14H3zM8 5h1v14H8zM11 5h2v14h-2zM15 5h1v14h-1zM18 5h3v14h-3z"/>
+                  </svg>
+                </span>
                 Scan Barcode
               </button>
             </div>
