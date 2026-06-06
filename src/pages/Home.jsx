@@ -1,17 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCoach } from '../hooks/useCoach';
-import { useState } from 'react';
 
 const iconClass = 'h-full w-full';
-
-const MOODS = [
-  { id: 'fired', label: 'Fired', svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2c0 0-5 4-5 9a5 5 0 0010 0c0-5-5-9-5-9z"/><path d="M12 12c0 0-2 1.5-2 3a2 2 0 004 0c0-1.5-2-3-2-3z" fill="currentColor"/></svg> },
-  { id: 'strong', label: 'Strong', svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4h2l1 3h6l1-3h2"/><path d="M9 7v10M15 7v10"/><path d="M6 20h12"/><path d="M8 11h8"/></svg> },
-  { id: 'tired', label: 'Tired', svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 15s1.5-1 4-1 4 1 4 1"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/><path d="M8 9.5c.5-.5 1-.5 1.5 0M14.5 9.5c.5-.5 1-.5 1.5 0"/></svg> },
-  { id: 'calm', label: 'Calm', svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg> },
-  { id: 'hyped', label: 'Hyped', svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> },
-];
 
 const TRAINING_ENV_ICONS = [
   { label: 'Gym', path: 'M6 4v16M18 4v16M4 8h4M16 8h4M4 16h4M16 16h4M8 12h8', nav: '/gym' },
@@ -39,17 +30,10 @@ const PLANS = [
     bgColor: 'rgba(255,165,60,0.1)', borderColor: 'rgba(255,165,60,0.18)', iconColor: '#FFA53C' },
 ];
 
-const ACTIVE_STATUS_SVG = (
-  <svg className="h-2 w-2 shrink-0" viewBox="0 0 8 8" fill="none">
-    <circle cx="4" cy="4" r="4" fill="#CCFF00" />
-  </svg>
-);
-
 export default function Home() {
   const navigate = useNavigate();
   const { profile } = useAuth() || {};
   const { message, loadingMessage } = useCoach();
-  const [selectedMood, setSelectedMood] = useState('strong');
 
   const displayName = profile?.display_name || 'Athlete';
   const streak = profile?.streak_count || 0;
@@ -184,33 +168,6 @@ export default function Home() {
         <div className="flex justify-between text-[10px]">
           <span className="text-white/30">{xp} XP · {xpToNext - xp} to Level {level + 1}</span>
           <span className="text-[#CCFF00] font-bold">Lv.{level + 1} →</span>
-        </div>
-      </div>
-
-      {/* Athlete Status / Mood */}
-      <div className="mx-[18px] mb-5 rounded-[24px] border border-white/[0.07] p-4"
-        style={{ background: 'linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.015))', boxShadow: '0 8px 28px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)' }}>
-        <div className="flex justify-between items-center mb-3">
-          <p className="text-[10px] tracking-[2px] uppercase text-white/40 font-bold">Athlete Status</p>
-          <span className="flex items-center gap-1.5 text-[10px] text-[#CCFF00] font-bold bg-[#CCFF00]/10 border border-[#CCFF00]/20 px-2 py-0.5 rounded-full">
-            {ACTIVE_STATUS_SVG}
-            Active
-          </span>
-        </div>
-        <div className="flex gap-2">
-          {MOODS.map(mood => (
-            <button key={mood.id} type="button"
-              onClick={() => setSelectedMood(mood.id)}
-              className={`flex-1 py-2 rounded-[14px] border text-center transition-all duration-200 ${
-                selectedMood === mood.id
-                  ? 'border-[#CCFF00]/35 bg-[#CCFF00]/08'
-                  : 'border-white/[0.07] bg-white/[0.03]'
-              }`}
-              style={selectedMood === mood.id ? { boxShadow: '0 0 12px rgba(204,255,0,0.08)' } : {}}>
-              <div className={`w-5 h-5 ${selectedMood === mood.id ? 'text-[#CCFF00]' : 'text-white/40'}`}>{mood.svg}</div>
-              <div className={`text-[9px] mt-0.5 font-medium ${selectedMood === mood.id ? 'text-[#CCFF00]' : 'text-white/40'}`}>{mood.label}</div>
-            </button>
-          ))}
         </div>
       </div>
 
