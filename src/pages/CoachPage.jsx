@@ -1413,8 +1413,8 @@ export default function CoachPage() {
 
           {/* Input */}
           <div className="px-5 flex-shrink-0 pb-2">
-            <div className="flex gap-2 items-center p-2.5 rounded-[18px] border"
-              style={{ background:'rgba(255,255,255,0.04)', borderColor:'rgba(255,255,255,0.09)' }}>
+            <div className="flex gap-2 items-center p-2.5 rounded-[12px] border"
+              style={{ background: '#1a1a1a', borderColor: '#2a2a2a' }}>
               <input type="text" value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && !loading && void handleSendText(input)}
