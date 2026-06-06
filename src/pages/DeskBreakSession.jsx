@@ -3,26 +3,110 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { DESK_BREAKS } from '../data/deskBreaks';
 import { speak } from '../lib/voice';
+import { supabase } from '../lib/supabase';
+
+const DESK_BREAK_XP = 10;
+
+const EXERCISE_ICONS = {
+  default: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
+    </svg>
+  ),
+  neck: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <circle cx="12" cy="6" r="3" />
+      <path d="M12 9v6" />
+      <path d="M9 12h6" />
+    </svg>
+  ),
+  shoulder: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M6 12h12M12 6l6 6-6 6" />
+    </svg>
+  ),
+  chest: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M4 8c0-2.2 1.8-4 4-4h8c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4H8c-2.2 0-4-1.8-4-4V8z" />
+      <path d="M12 8v8M8 12h8" />
+    </svg>
+  ),
+  wrist: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M12 2a5 5 0 015 5v5a5 5 0 01-10 0V7a5 5 0 015-5z" />
+      <path d="M12 17v5" />
+    </svg>
+  ),
+  spine: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M12 2v20M8 6h8M8 10h8M8 14h8M8 18h8" />
+    </svg>
+  ),
+  eye: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8S2 12 2 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
+  breath: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M12 2v20M2 12c4 0 6-4 10-4s6 4 10 4" />
+    </svg>
+  ),
+  hip: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M5 20l4-8 6 6 4-10" />
+    </svg>
+  ),
+  calf: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+      <path d="M8 20V12a4 4 0 018 0v8" />
+      <line x1="5" y1="20" x2="19" y2="20" />
+    </svg>
+  ),
+};
+
+function getIcon(name) {
+  const n = (name || '').toLowerCase();
+  if (n.includes('neck')) return EXERCISE_ICONS.neck;
+  if (n.includes('shoulder')) return EXERCISE_ICONS.shoulder;
+  if (n.includes('chest') || n.includes('opener')) return EXERCISE_ICONS.chest;
+  if (n.includes('wrist')) return EXERCISE_ICONS.wrist;
+  if (n.includes('spine') || n.includes('spinal') || n.includes('twist') || n.includes('cat-cow') || n.includes('thoracic')) return EXERCISE_ICONS.spine;
+  if (n.includes('eye')) return EXERCISE_ICONS.eye;
+  if (n.includes('breath')) return EXERCISE_ICONS.breath;
+  if (n.includes('hip')) return EXERCISE_ICONS.hip;
+  if (n.includes('calf') || n.includes('standing')) return EXERCISE_ICONS.calf;
+  if (n.includes('power pose') || n.includes('pose')) return EXERCISE_ICONS.shoulder;
+  if (n.includes('water') || n.includes('splash')) return EXERCISE_ICONS.default;
+  return EXERCISE_ICONS.default;
+}
 
 export default function DeskBreakSession() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { profile, user, setProfile } = useAuth();
   const breakData = DESK_BREAKS.find(item => item.id === id) || DESK_BREAKS[0];
   const [phase, setPhase] = useState('intro');
   const [currentIdx, setCurrentIdx] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const timerRef = useRef(null);
+  const xpAwardedRef = useRef(false);
   const exercise = breakData.exercises[currentIdx];
   const coachId = profile?.coach_persona || 'elias';
 
-  const startSession = () => {
+  const startExercise = (index) => {
+    const ex = breakData.exercises[index];
+    setCurrentIdx(index);
     setPhase('exercise');
-    setTimeLeft(exercise.duration);
+    setTimeLeft(ex.duration);
     setIsRunning(true);
-    speak(`Starting ${breakData.title}. First: ${exercise.name}`, coachId);
+    speak(index === 0 ? `Starting ${breakData.title}. First: ${ex.name}` : ex.name, coachId);
   };
+
+  const startSession = () => startExercise(0);
 
   useEffect(() => {
     if (!isRunning) return undefined;
@@ -41,7 +125,7 @@ export default function DeskBreakSession() {
           } else {
             setPhase('complete');
             setIsRunning(false);
-            speak('Great job! Break complete. Back to work!', coachId);
+            speak('Great job! Break complete.', coachId);
           }
           return 0;
         }
@@ -50,26 +134,70 @@ export default function DeskBreakSession() {
     }, 1000);
 
     return () => window.clearInterval(timerRef.current);
-  }, [breakData.exercises, coachId, currentIdx, isRunning]);
+  }, [breakData.exercises, breakData.title, coachId, currentIdx, isRunning]);
+
+  useEffect(() => {
+    if (phase !== 'complete' || xpAwardedRef.current) return;
+    xpAwardedRef.current = true;
+
+    const awardXp = async () => {
+      const newXp = (profile?.dopa_xp || 0) + DESK_BREAK_XP;
+      const newLevel = Math.floor(newXp / 500) + 1;
+
+      if (supabase && user?.id) {
+        await supabase
+          .from('profiles')
+          .update({ dopa_xp: newXp, dopa_level: newLevel })
+          .eq('id', user.id);
+      }
+
+      setProfile(prev => ({
+        ...prev,
+        dopa_xp: newXp,
+        dopa_level: newLevel,
+      }));
+    };
+
+    awardXp();
+  }, [phase, profile?.dopa_xp, setProfile, user?.id]);
+
+  useEffect(() => {
+    if (phase !== 'complete') return undefined;
+    const homeTimer = window.setTimeout(() => navigate('/'), 2500);
+    return () => window.clearTimeout(homeTimer);
+  }, [phase, navigate]);
 
   if (phase === 'intro') {
     return (
       <div className="flex min-h-screen flex-col bg-[#0a0a0a] p-4">
         <button type="button" onClick={() => navigate(-1)} className="mb-4 text-left text-gray-400">← Back</button>
         <div className="mb-6 text-center">
-          <div className="mb-3 text-6xl">{breakData.emoji}</div>
+          <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#CCFF00]/10 text-[#CCFF00]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8">
+              <rect x="2" y="14" width="20" height="3" rx="1" />
+              <path d="M6 17v3M18 17v3M12 14V9" />
+              <circle cx="12" cy="7" r="2" />
+            </svg>
+          </div>
           <h1 className="text-2xl font-bold text-white">{breakData.title}</h1>
           <p className="mt-1 text-sm text-gray-400">{breakData.duration} min · {breakData.exercises.length} exercises</p>
         </div>
         <div className="flex-1 space-y-2">
           {breakData.exercises.map((item, index) => (
-            <div key={`${item.name}-${index}`} className="flex items-center gap-3 rounded-xl bg-[#1a1a1a] p-3">
-              <span className="text-2xl">{item.emoji || item.gif}</span>
+            <button
+              type="button"
+              key={`${item.name}-${index}`}
+              onClick={() => startExercise(index)}
+              className="flex w-full items-center gap-3 rounded-xl bg-[#1a1a1a] p-3 text-left transition-all active:scale-[0.98] hover:bg-[#222222]"
+            >
+              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#CCFF00]/10 text-[#CCFF00]">
+                {getIcon(item.name)}
+              </span>
               <div>
                 <p className="text-sm font-medium text-white">{item.name}</p>
                 <p className="text-xs text-gray-500">{item.duration}s</p>
               </div>
-            </div>
+            </button>
           ))}
         </div>
         <button type="button" onClick={startSession} className="mt-4 rounded-2xl bg-[#CCFF00] py-4 text-lg font-bold text-black">
@@ -82,11 +210,15 @@ export default function DeskBreakSession() {
   if (phase === 'complete') {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0a] p-4">
-        <div className="mb-4 text-6xl">✅</div>
-        <h1 className="mb-2 text-2xl font-bold text-[#CCFF00]">Break Complete!</h1>
-        <p className="mb-8 text-sm text-gray-400">+{breakData.exercises.length * 5} XP earned</p>
-        <button type="button" onClick={() => navigate(-1)} className="w-full rounded-2xl bg-[#CCFF00] px-8 py-4 font-bold text-black">
-          Back to Work
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#CCFF00]/10 text-[#CCFF00]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+        <h1 className="mb-2 text-2xl font-bold text-[#CCFF00]">Complete! +{DESK_BREAK_XP} XP</h1>
+        <p className="mb-8 text-sm text-gray-400">Returning to Home…</p>
+        <button type="button" onClick={() => navigate('/')} className="w-full rounded-2xl bg-[#CCFF00] px-8 py-4 font-bold text-black">
+          Back to Home
         </button>
       </div>
     );
@@ -103,7 +235,9 @@ export default function DeskBreakSession() {
         ))}
       </div>
       <div className="flex flex-1 flex-col items-center justify-center">
-        <div className="mb-4 animate-bounce text-6xl">{exercise.emoji || exercise.gif}</div>
+        <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#CCFF00]/10 text-[#CCFF00]">
+          {getIcon(exercise.name)}
+        </div>
         <h2 className="mb-2 text-xl font-bold text-white">{exercise.name}</h2>
         <p className="mb-6 px-4 text-center text-sm text-gray-400">{exercise.instruction}</p>
         <div className="relative h-32 w-32">
@@ -143,6 +277,7 @@ export default function DeskBreakSession() {
       setIsRunning(true);
     } else {
       setPhase('complete');
+      setIsRunning(false);
     }
   }
 }
