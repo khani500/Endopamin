@@ -1414,14 +1414,13 @@ export default function CoachPage() {
 
           {/* Input */}
           <div className="px-5 flex-shrink-0 pb-2">
-            <div className="flex gap-2 items-center p-2.5 rounded-[12px] border"
-              style={{ background: '#111111', borderColor: '#2a2a2a' }}>
+            <div className="flex gap-2 items-center">
               <input type="text" value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && !loading && void handleSendText(input)}
                 placeholder={`Ask ${coach.name}...`}
-                className="flex-1 bg-transparent text-[13px] outline-none px-2"
-                style={{ color: '#ffffff' }} />
+                className="flex-1 rounded-[12px] py-2.5 text-[13px] outline-none px-3 border transition-all"
+                style={{ background: '#111111', borderColor: '#2a2a2a', color: '#ffffff' }} />
               <button type="button" onClick={() => void handleSendText(input)} disabled={!input.trim() || loading}
                 className="w-9 h-9 rounded-[11px] flex items-center justify-center transition-all active:scale-90 flex-shrink-0 border"
                 style={{ background: '#1a1a1a', borderColor: '#2a2a2a' }}>
