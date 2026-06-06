@@ -125,6 +125,15 @@ function dedupeUsdaResults(foods) {
 
 const WATER_GOAL = 8;
 
+function macrosFromCalories(calories) {
+  const cal = Number(calories) || 0;
+  return {
+    protein: cal * 0.30 / 4,
+    carbs: cal * 0.40 / 4,
+    fat: cal * 0.30 / 9,
+  };
+}
+
 const MEAL_META = {
   breakfast: {
     color: '#FFB800',
@@ -195,7 +204,6 @@ export default function NutritionHub() {
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
-  const [macros, setMacros] = useState({ protein: 0, carbs: 0, fat: 0 });
   const [usdaResults, setUsdaResults] = useState([]);
   const [usdaSearching, setUsdaSearching] = useState(false);
   const [usdaSearchError, setUsdaSearchError] = useState('');
@@ -220,6 +228,18 @@ export default function NutritionHub() {
     () => meals.reduce((sum, meal) => sum + meal.cal, 0),
     [meals],
   );
+
+  const loggedMacros = useMemo(() => meals.reduce((acc, meal) => {
+    if (!meal.done) return acc;
+    const cal = meal.cal > 0 ? meal.cal : (mealTargets[meal.id] ?? 0);
+    if (cal <= 0) return acc;
+    const m = macrosFromCalories(cal);
+    return {
+      protein: Math.round((acc.protein + m.protein) * 10) / 10,
+      carbs: Math.round((acc.carbs + m.carbs) * 10) / 10,
+      fat: Math.round((acc.fat + m.fat) * 10) / 10,
+    };
+  }, { protein: 0, carbs: 0, fat: 0 }), [meals, mealTargets]);
 
   const calDash = 226;
   const calOffset = calDash - (calDash * Math.min(100, Math.round((loggedCalories / macroGoals.calories) * 100))) / 100;
@@ -306,11 +326,6 @@ export default function NutritionHub() {
       total,
       confidence: data?.confidence ?? 'medium',
     });
-    setMacros(prev => ({
-      protein: Math.round((prev.protein + total.protein) * 10) / 10,
-      carbs: Math.round((prev.carbs + total.carbs) * 10) / 10,
-      fat: Math.round((prev.fat + total.fat) * 10) / 10,
-    }));
     setMeals(prev => prev.map(meal => {
       if (meal.id !== mealId) return meal;
       const entryLabels = items.map(item => `${item.name} (${item.weight}g)`);
@@ -456,9 +471,9 @@ export default function NutritionHub() {
               </div>
             </div>
             <div className="space-y-3">
-              <MacroBar label="Protein" current={macros.protein} goal={macroGoals.protein} color="#CCFF00" />
-              <MacroBar label="Carbs" current={macros.carbs} goal={macroGoals.carbs} color="#5088FF" />
-              <MacroBar label="Fat" current={macros.fat} goal={macroGoals.fat} color="#FFA53C" />
+              <MacroBar label="Protein" current={loggedMacros.protein} goal={macroGoals.protein} color="#CCFF00" />
+              <MacroBar label="Carbs" current={loggedMacros.carbs} goal={macroGoals.carbs} color="#5088FF" />
+              <MacroBar label="Fat" current={loggedMacros.fat} goal={macroGoals.fat} color="#FFA53C" />
             </div>
           </div>
 
@@ -489,7 +504,7 @@ export default function NutritionHub() {
                         <div
                           className="w-9 h-9 rounded-[11px] flex items-center justify-center flex-shrink-0"
                           style={{
-                            background: meta.background || `${meta.color}18`,
+                            backgroundColor: meta.background || `${meta.color}18`,
                             border: `1px solid ${meta.borderColor || `${meta.color}40`}`,
                           }}
                         >
@@ -718,33 +733,33 @@ export default function NutritionHub() {
                   {/* Protein - neon green */}
                   <circle cx="55" cy="55" r="42" fill="none" stroke="#CCFF00" strokeWidth="14"
                     strokeLinecap="butt"
-                    strokeDasharray={`${(macros.protein / (macros.protein + macros.carbs + macros.fat)) * 264} 264`}
+                    strokeDasharray={`${(loggedMacros.protein / (loggedMacros.protein + loggedMacros.carbs + loggedMacros.fat || 1)) * 264} 264`}
                     strokeDashoffset="0"
                     style={{ filter: 'drop-shadow(0 0 4px rgba(204,255,0,0.5))' }}/>
                   {/* Carbs - blue */}
                   <circle cx="55" cy="55" r="42" fill="none" stroke="#5088FF" strokeWidth="14"
                     strokeLinecap="butt"
-                    strokeDasharray={`${(macros.carbs / (macros.protein + macros.carbs + macros.fat)) * 264} 264`}
-                    strokeDashoffset={`-${(macros.protein / (macros.protein + macros.carbs + macros.fat)) * 264}`}
+                    strokeDasharray={`${(loggedMacros.carbs / (loggedMacros.protein + loggedMacros.carbs + loggedMacros.fat || 1)) * 264} 264`}
+                    strokeDashoffset={`-${(loggedMacros.protein / (loggedMacros.protein + loggedMacros.carbs + loggedMacros.fat || 1)) * 264}`}
                     style={{ filter: 'drop-shadow(0 0 4px rgba(80,136,255,0.5))' }}/>
                   {/* Fat - orange */}
                   <circle cx="55" cy="55" r="42" fill="none" stroke="#FFA53C" strokeWidth="14"
                     strokeLinecap="butt"
-                    strokeDasharray={`${(macros.fat / (macros.protein + macros.carbs + macros.fat)) * 264} 264`}
-                    strokeDashoffset={`-${((macros.protein + macros.carbs) / (macros.protein + macros.carbs + macros.fat)) * 264}`}
+                    strokeDasharray={`${(loggedMacros.fat / (loggedMacros.protein + loggedMacros.carbs + loggedMacros.fat || 1)) * 264} 264`}
+                    strokeDashoffset={`-${((loggedMacros.protein + loggedMacros.carbs) / (loggedMacros.protein + loggedMacros.carbs + loggedMacros.fat || 1)) * 264}`}
                     style={{ filter: 'drop-shadow(0 0 4px rgba(255,165,60,0.5))' }}/>
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-[18px] font-black text-white">{macros.protein + macros.carbs + macros.fat}g</span>
+                  <span className="text-[18px] font-black text-white">{loggedMacros.protein + loggedMacros.carbs + loggedMacros.fat}g</span>
                   <span className="text-[8px] text-white/40 uppercase tracking-wider">total</span>
                 </div>
               </div>
               {/* Legend */}
               <div className="flex-1 space-y-3">
                 {[
-                  { label: 'Protein', val: macros.protein, goal: macroGoals.protein, color: '#CCFF00' },
-                  { label: 'Carbs', val: macros.carbs, goal: macroGoals.carbs, color: '#5088FF' },
-                  { label: 'Fat', val: macros.fat, goal: macroGoals.fat, color: '#FFA53C' },
+                  { label: 'Protein', val: loggedMacros.protein, goal: macroGoals.protein, color: '#CCFF00' },
+                  { label: 'Carbs', val: loggedMacros.carbs, goal: macroGoals.carbs, color: '#5088FF' },
+                  { label: 'Fat', val: loggedMacros.fat, goal: macroGoals.fat, color: '#FFA53C' },
                 ].map(m => {
                   const pct = Math.min(100, Math.round((m.val / m.goal) * 100));
                   return (
