@@ -19,11 +19,34 @@ function parseUsdaFood(item) {
   return {
     fdcId: item.fdcId,
     name: item.description,
+    brand: item.brandOwner || item.brandName || '',
     calories: Math.round(get('energy')),
     protein: Math.round(get('protein') * 10) / 10,
     carbs: Math.round(get('carbohydrate') * 10) / 10,
     fat: Math.round(get('total lipid') * 10) / 10,
   };
+}
+
+function nutritionCompletenessScore(food) {
+  let score = 0;
+  if (food.calories > 0) score += 4;
+  if (food.protein > 0) score += 2;
+  if (food.carbs > 0) score += 1;
+  if (food.fat > 0) score += 1;
+  return score + (food.calories + food.protein + food.carbs + food.fat) / 1000;
+}
+
+function dedupeUsdaResults(foods) {
+  const byName = new Map();
+  for (const food of foods) {
+    const key = String(food.name || '').trim().toLowerCase();
+    if (!key) continue;
+    const existing = byName.get(key);
+    if (!existing || nutritionCompletenessScore(food) > nutritionCompletenessScore(existing)) {
+      byName.set(key, food);
+    }
+  }
+  return Array.from(byName.values()).slice(0, 5);
 }
 
 function MacroBar({ label, current, goal, color }) {
@@ -87,11 +110,11 @@ export default function NutritionHub() {
       setUsdaSearchError('');
       try {
         const res = await fetch(
-          `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&api_key=DEMO_KEY&pageSize=10`,
+          `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&api_key=DEMO_KEY&pageSize=5`,
         );
         if (!res.ok) throw new Error('USDA search failed');
         const data = await res.json();
-        setUsdaResults((data.foods || []).map(parseUsdaFood));
+        setUsdaResults(dedupeUsdaResults((data.foods || []).map(parseUsdaFood)));
       } catch (err) {
         console.warn('USDA food search failed:', err);
         setUsdaSearchError('Could not search USDA. Try again.');
@@ -656,6 +679,9 @@ export default function NutritionHub() {
                       <div className="w-2 h-8 rounded-full flex-shrink-0" style={{ background: color, boxShadow: `0 0 8px ${color}66` }} />
                       <div className="min-w-0">
                         <p className="text-[13px] font-bold text-white truncate">{food.name}</p>
+                        {food.brand && (
+                          <p className="text-[10px] text-white/45 truncate">{food.brand}</p>
+                        )}
                         <p className="text-[10px] text-white/35">per 100g · tap to add</p>
                       </div>
                     </div>
