@@ -1,9 +1,83 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { scanFoodHub } from '../../../services/foodScanner';
 import { BarcodeScanner } from '../components/BarcodeScanner';
 
-const MACRO_GOALS = { calories: 2200, protein: 160, carbs: 220, fat: 65 };
+const ACTIVITY_MULTIPLIERS = {
+  sedentary: 1.2,
+  moderate: 1.55,
+  active: 1.725,
+};
+
+const MEAL_CAL_SPLIT = {
+  breakfast: 0.25,
+  lunch: 0.35,
+  dinner: 0.30,
+  snack: 0.10,
+};
+
+function toKg(weight, unit) {
+  const w = Number(weight);
+  if (!w || w <= 0) return 70;
+  return unit === 'lb' ? w * 0.453592 : w;
+}
+
+function toCm(height, unit) {
+  const h = Number(height);
+  if (!h || h <= 0) return 175;
+  return unit === 'in' ? h * 2.54 : h;
+}
+
+function normalizeGoal(goal) {
+  const g = String(goal || '').toLowerCase();
+  if (g.includes('fat') || g.includes('loss') || g === 'cut') return 'fat_loss';
+  if (g.includes('muscle') || g.includes('bulk') || g.includes('gain') || g === 'muscle') return 'muscle_gain';
+  return 'maintain';
+}
+
+function calculateNutritionTargets(profile) {
+  const weightKg = toKg(profile?.weight, profile?.weight_unit);
+  const heightCm = toCm(profile?.height, profile?.height_unit);
+  const age = Math.max(15, Number(profile?.age) || 30);
+  const gender = String(profile?.gender || 'male').toLowerCase();
+  const isFemale = gender === 'female' || gender === 'f';
+
+  const bmr = 10 * weightKg + 6.25 * heightCm - 5 * age + (isFemale ? -161 : 5);
+
+  const activityKey = String(profile?.activity_level || profile?.activity || 'moderate').toLowerCase();
+  const activityMultiplier = ACTIVITY_MULTIPLIERS[activityKey] ?? ACTIVITY_MULTIPLIERS.moderate;
+
+  let tdee = bmr * activityMultiplier;
+  const goal = normalizeGoal(profile?.goal);
+  if (goal === 'fat_loss') tdee -= 500;
+  else if (goal === 'muscle_gain') tdee += 300;
+
+  const calories = Math.round(Math.max(1200, tdee));
+
+  let proteinPerKg;
+  let fatPerKg;
+  if (goal === 'fat_loss') {
+    proteinPerKg = 2;
+    fatPerKg = 0.8;
+  } else if (goal === 'muscle_gain') {
+    proteinPerKg = 2.2;
+    fatPerKg = 1;
+  } else {
+    proteinPerKg = 1.8;
+    fatPerKg = 1;
+  }
+
+  const protein = Math.round(proteinPerKg * weightKg);
+  const fat = Math.round(fatPerKg * weightKg);
+  const carbs = Math.max(0, Math.round((calories - protein * 4 - fat * 9) / 4));
+
+  const mealTargets = {};
+  for (const [mealId, pct] of Object.entries(MEAL_CAL_SPLIT)) {
+    mealTargets[mealId] = Math.round(calories * pct);
+  }
+
+  return { calories, protein, carbs, fat, mealTargets };
+}
 
 const SUPPLEMENTS = [
   { name: 'Creatine', dose: '5g daily', benefit: 'Strength & power', color: '#CCFF00' },
@@ -111,6 +185,8 @@ function SvgIcon({ d, viewBox = "0 0 24 24", fill = "none", className = "w-5 h-5
 
 export default function NutritionHub() {
   const { profile } = useAuth() || {};
+  const macroGoals = useMemo(() => calculateNutritionTargets(profile), [profile]);
+  const mealTargets = macroGoals.mealTargets;
   const [activeTab, setActiveTab] = useState('log');
   const [searchQuery, setSearchQuery] = useState('');
   const [scannedImage, setScannedImage] = useState(null);
@@ -125,9 +201,9 @@ export default function NutritionHub() {
   const [foodBankGrams, setFoodBankGrams] = useState('100');
   const [logSuccessMessage, setLogSuccessMessage] = useState('');
   const [meals, setMeals] = useState([
-    { id: 'breakfast', label: 'Breakfast', time: '8:00 AM', items: ['Oats + egg whites', 'Black coffee'], cal: 380, done: true },
-    { id: 'lunch', label: 'Lunch', time: '1:00 PM', items: ['Chicken + sweet potato', 'Mixed greens'], cal: 520, done: true },
-    { id: 'dinner', label: 'Dinner', time: '7:00 PM', items: ['Salmon + brown rice'], cal: 480, done: false },
+    { id: 'breakfast', label: 'Breakfast', time: '8:00 AM', items: ['Oats + egg whites', 'Black coffee'], cal: 0, done: true },
+    { id: 'lunch', label: 'Lunch', time: '1:00 PM', items: ['Chicken + sweet potato', 'Mixed greens'], cal: 0, done: true },
+    { id: 'dinner', label: 'Dinner', time: '7:00 PM', items: ['Salmon + brown rice'], cal: 0, done: false },
     { id: 'snack', label: 'Snack', time: 'Anytime', items: [], cal: 0, done: false },
   ]);
   const [mealActionId, setMealActionId] = useState(null);
@@ -139,7 +215,7 @@ export default function NutritionHub() {
   const cameraInputRef = useRef(null);
 
   const calDash = 226;
-  const calOffset = calDash - (calDash * Math.min(100, Math.round((macros.calories / MACRO_GOALS.calories) * 100))) / 100;
+  const calOffset = calDash - (calDash * Math.min(100, Math.round((macros.calories / macroGoals.calories) * 100))) / 100;
 
   useEffect(() => {
     if (activeTab !== 'foods') return undefined;
@@ -367,14 +443,14 @@ export default function NutritionHub() {
               </div>
               <div>
                 <p className="text-[10px] text-white/40 uppercase tracking-wider font-bold mb-1">Today's Calories</p>
-                <p className="text-[22px] font-bold">{macros.calories} <span className="text-white/30 text-[14px]">/ {MACRO_GOALS.calories}</span></p>
-                <p className="text-[11px] text-white/40 mt-1">{Math.max(0, MACRO_GOALS.calories - macros.calories)} kcal remaining</p>
+                <p className="text-[22px] font-bold">{macros.calories} <span className="text-white/30 text-[14px]">/ {macroGoals.calories}</span></p>
+                <p className="text-[11px] text-white/40 mt-1">{Math.max(0, macroGoals.calories - macros.calories)} kcal remaining</p>
               </div>
             </div>
             <div className="space-y-3">
-              <MacroBar label="Protein" current={macros.protein} goal={MACRO_GOALS.protein} color="#CCFF00" />
-              <MacroBar label="Carbs" current={macros.carbs} goal={MACRO_GOALS.carbs} color="#5088FF" />
-              <MacroBar label="Fat" current={macros.fat} goal={MACRO_GOALS.fat} color="#FFA53C" />
+              <MacroBar label="Protein" current={macros.protein} goal={macroGoals.protein} color="#CCFF00" />
+              <MacroBar label="Carbs" current={macros.carbs} goal={macroGoals.carbs} color="#5088FF" />
+              <MacroBar label="Fat" current={macros.fat} goal={macroGoals.fat} color="#FFA53C" />
             </div>
           </div>
 
@@ -387,6 +463,7 @@ export default function NutritionHub() {
             <div className="space-y-2">
               {meals.map(meal => {
                 const meta = MEAL_META[meal.id] || MEAL_META.snack;
+                const targetCal = mealTargets[meal.id] ?? 0;
                 const showActions = mealActionId === meal.id;
                 return (
                   <div key={meal.id}>
@@ -438,12 +515,13 @@ export default function NutritionHub() {
                         {meal.cal > 0 ? (
                           <>
                             <p className="text-[14px] font-black" style={{ color: meal.done ? '#CCFF00' : 'rgba(255,255,255,0.6)' }}>{meal.cal}</p>
-                            <p className="text-[9px] text-white/30">kcal</p>
+                            <p className="text-[9px] text-white/30">/ {targetCal} kcal</p>
                           </>
                         ) : (
-                          <span className="text-[11px] text-white/20 font-medium border border-white/[0.08] px-2 py-1 rounded-full">
-                            + Add
-                          </span>
+                          <>
+                            <p className="text-[14px] font-black text-white/50">{targetCal}</p>
+                            <p className="text-[9px] text-white/30">kcal target</p>
+                          </>
                         )}
                       </div>
                     </button>
@@ -651,9 +729,9 @@ export default function NutritionHub() {
               {/* Legend */}
               <div className="flex-1 space-y-3">
                 {[
-                  { label: 'Protein', val: macros.protein, goal: MACRO_GOALS.protein, color: '#CCFF00' },
-                  { label: 'Carbs', val: macros.carbs, goal: MACRO_GOALS.carbs, color: '#5088FF' },
-                  { label: 'Fat', val: macros.fat, goal: MACRO_GOALS.fat, color: '#FFA53C' },
+                  { label: 'Protein', val: macros.protein, goal: macroGoals.protein, color: '#CCFF00' },
+                  { label: 'Carbs', val: macros.carbs, goal: macroGoals.carbs, color: '#5088FF' },
+                  { label: 'Fat', val: macros.fat, goal: macroGoals.fat, color: '#FFA53C' },
                 ].map(m => {
                   const pct = Math.min(100, Math.round((m.val / m.goal) * 100));
                   return (
@@ -676,7 +754,7 @@ export default function NutritionHub() {
                 })}
                 <div className="flex items-center justify-between pt-1 border-t border-white/[0.06]">
                   <span className="text-[10px] text-white/35">Calories</span>
-                  <span className="text-[13px] font-black text-[#CCFF00]">{macros.calories} <span className="text-white/30 text-[9px] font-normal">/ {MACRO_GOALS.calories}</span></span>
+                  <span className="text-[13px] font-black text-[#CCFF00]">{macros.calories} <span className="text-white/30 text-[9px] font-normal">/ {macroGoals.calories}</span></span>
                 </div>
               </div>
             </div>
