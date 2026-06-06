@@ -28,17 +28,17 @@ export function ProPaywall({ featureName = 'This feature', isVisible, onClose, o
 
         <div className="mt-4 rounded-2xl border border-[#CCFF00]/25 bg-[#0f0f10] p-4">
           <p className="m-0 text-[11px] font-black uppercase tracking-[0.18em] text-[#CCFF00]">Endopamin Pro</p>
-          <p className="m-0 mt-2 text-2xl font-black">$9.99 <span className="text-sm text-white/45">/ month</span></p>
+          <p className="m-0 mt-2 text-2xl font-black">$14.99 <span className="text-sm text-white/45">/ month</span></p>
 
           <div className="mt-4 rounded-2xl border border-yellow-400/35 bg-yellow-400/10 p-3">
             <span className="rounded-full bg-yellow-400 px-2 py-1 text-[10px] font-black text-black">BEST VALUE</span>
-            <p className="m-0 mt-3 text-lg font-black">$59.99 / year</p>
-            <p className="m-0 mt-1 text-sm font-bold text-yellow-200">Save 50%</p>
+            <p className="m-0 mt-3 text-lg font-black">$119.99 / year</p>
+            <p className="m-0 mt-1 text-sm font-bold text-yellow-200">Save 33%</p>
           </div>
         </div>
 
         <button type="button" onClick={subscribe} className="mt-4 w-full rounded-2xl bg-[#CCFF00] py-4 text-[15px] font-black text-black">
-          Start 7-Day Free Trial
+          Unlock Pro — $14.99/month
         </button>
         <button type="button" onClick={onClose} className="mt-3 w-full border-0 bg-transparent py-2 text-sm font-bold text-white/45">
           Maybe later
@@ -47,4 +47,3 @@ export function ProPaywall({ featureName = 'This feature', isVisible, onClose, o
     </div>
   );
 }
-

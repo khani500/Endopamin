@@ -20,6 +20,8 @@ export const PRO_FEATURES = {
   prTracker: true,
 };
 
-// فعلاً همه کاربران Pro هستند برای تست:
-export const userTier = 'pro';
+export const FREE_COACH_MESSAGE_LIMIT = 10;
 
+export function isProUser(profile) {
+  return profile?.is_pro === true;
+}

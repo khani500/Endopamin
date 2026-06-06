@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
 import { Share2, X } from 'lucide-react';
-import { FREE_LIMITS, userTier } from '../../config/tiers';
+import { useAuth } from '../../context/AuthContext';
+import { FREE_LIMITS, isProUser } from '../../config/tiers';
 import { ProPaywall } from '../paywall/ProPaywall';
 
 export function ShareCard({ streak = 12, level = 4, weeklyWorkouts = 5, highlight = '14% strength gain' }) {
+  const { profile } = useAuth();
   const [open, setOpen] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const cardRef = useRef(null);
@@ -57,7 +59,7 @@ export function ShareCard({ streak = 12, level = 4, weeklyWorkouts = 5, highligh
       <button
         type="button"
         onClick={() => {
-          if (userTier === 'free' && !FREE_LIMITS.shareCard) {
+          if (!isProUser(profile) && !FREE_LIMITS.shareCard) {
             setShowPaywall(true);
             return;
           }

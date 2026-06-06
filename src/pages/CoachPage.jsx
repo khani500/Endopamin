@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useWorkout } from '../context/WorkoutContext';
 import { useCoachSession, getAssessmentGreeting } from '../context/CoachContext';
 import { useVoiceSession } from '../hooks/useVoiceSession';
+import { useTokenGuard } from '../hooks/useTokenGuard';
 import { askGeminiChat, askGeminiChatStream, buildKnowledgeContext } from '../lib/gemini';
 import {
   coachAudioRef,
@@ -34,6 +35,8 @@ import {
   fetchCoachMemory,
   upsertCoachMemory,
 } from '../lib/coachMemory';
+import { ProPaywall } from '../components/paywall/ProPaywall';
+import { FREE_COACH_MESSAGE_LIMIT, isProUser } from '../config/tiers';
 
 const COACHES = [
   {
@@ -252,6 +255,8 @@ export default function CoachPage() {
     return mode;
   });
   const [showIosVoiceWarning, setShowIosVoiceWarning] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const { checkAndConsume } = useTokenGuard();
   const messagesEndRef = useRef(null);
   const coachInitRef = useRef(false);
   const coachSwitchRef = useRef(null);
@@ -556,6 +561,14 @@ export default function CoachPage() {
     if (!text || (!options.voiceTurn && sendingRef.current)) return null;
     if (signal?.aborted) return null;
 
+    if (!skipHistory && !isProUser(profile)) {
+      const guard = await checkAndConsume();
+      if (!guard.allowed) {
+        setShowPaywall(true);
+        return null;
+      }
+    }
+
     sendingRef.current = true;
     setInput('');
     setLoading(true);
@@ -663,7 +676,7 @@ export default function CoachPage() {
       sendingRef.current = false;
       setLoading(false);
     }
-  }, [coach, profile, user?.id, workoutTime, location, equipment, todayWorkout, nextWorkout, getCoachMessages, setCoachMessages, speakCoachText, voiceMode]);
+  }, [coach, profile, user?.id, workoutTime, location, equipment, todayWorkout, nextWorkout, getCoachMessages, setCoachMessages, speakCoachText, voiceMode, checkAndConsume]);
 
   /** Text input only — updates chat, never triggers TTS. */
   const handleSendText = useCallback(async rawText => {
@@ -1587,6 +1600,13 @@ export default function CoachPage() {
           </div>
         </div>
       )}
+
+      <ProPaywall
+        featureName="AI Coach"
+        isVisible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onSubscribe={() => console.log('Payment integration coming soon')}
+      />
 
       <style>{`
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }

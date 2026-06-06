@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { FREE_LIMITS, userTier } from '../../config/tiers';
+import { useAuth } from '../../context/AuthContext';
+import { FREE_LIMITS, isProUser } from '../../config/tiers';
 import { ProPaywall } from '../paywall/ProPaywall';
 
 const STORAGE_KEY = 'endopamin_prs';
@@ -28,6 +29,7 @@ function trend(pr) {
 }
 
 export function PRTracker() {
+  const { profile } = useAuth();
   const [prs, setPrs] = useState(loadPrs);
   const [open, setOpen] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -79,7 +81,7 @@ export function PRTracker() {
       <button
         type="button"
         onClick={() => {
-          if (userTier === 'free' && !FREE_LIMITS.prTracker) {
+          if (!isProUser(profile) && !FREE_LIMITS.prTracker) {
             setShowPaywall(true);
             return;
           }

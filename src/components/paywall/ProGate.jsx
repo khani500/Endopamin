@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { userTier } from '../../config/tiers';
+import { isProUser } from '../../config/tiers';
 import { ProPaywall } from './ProPaywall';
 
 const FEATURE_NAMES = {
@@ -20,7 +20,7 @@ export function ProGate({
 }) {
   const { profile } = useAuth();
   const [showPaywall, setShowPaywall] = useState(false);
-  const isPro = profile?.is_pro || userTier === 'pro';
+  const isPro = isProUser(profile);
   const locked = !isPro && isLockedFeature(feature, historyDays);
 
   if (!locked) return children;
