@@ -1,4 +1,4 @@
-const FEATURES = ['AI Coach با صدا', 'Nutrition کامل', 'Progress نامحدود', 'Group Sessions'];
+const FEATURES = ['AI Voice Coach', 'Full Nutrition Tracking', 'Unlimited Progress History', 'Group Sessions'];
 
 export function ProPaywall({ featureName = 'This feature', isVisible, onClose, onSubscribe }) {
   if (!isVisible) return null;

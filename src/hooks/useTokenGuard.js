@@ -7,9 +7,13 @@ export function useTokenGuard() {
   const { user, profile } = useAuth();
 
   const checkAndConsume = useCallback(async () => {
-    if (!supabase || !user?.id) return { allowed: true };
+    if (isProUser(profile)) {
+      return { allowed: true, unlimited: true };
+    }
 
-    if (isProUser(profile)) return { allowed: true };
+    if (!supabase || !user?.id) {
+      return { allowed: true };
+    }
 
     const { data, error } = await supabase
       .from('token_usage')
@@ -22,9 +26,10 @@ export function useTokenGuard() {
       return { allowed: true };
     }
 
-    const currentCount = data?.count ?? 0;
+    const currentCount = Number(data?.count) || 0;
+    const nextCount = currentCount + 1;
 
-    if (currentCount >= FREE_COACH_MESSAGE_LIMIT) {
+    if (nextCount > FREE_COACH_MESSAGE_LIMIT) {
       return {
         allowed: false,
         used: currentCount,
@@ -33,18 +38,23 @@ export function useTokenGuard() {
       };
     }
 
-    await supabase
+    const { error: upsertError } = await supabase
       .from('token_usage')
       .upsert(
-        { user_id: user.id, count: currentCount + 1, updated_at: new Date().toISOString() },
+        { user_id: user.id, count: nextCount, updated_at: new Date().toISOString() },
         { onConflict: 'user_id' },
       );
 
+    if (upsertError) {
+      import.meta.env.DEV && console.error('Token upsert error:', upsertError);
+      return { allowed: true };
+    }
+
     return {
       allowed: true,
-      used: currentCount + 1,
+      used: nextCount,
       limit: FREE_COACH_MESSAGE_LIMIT,
-      remaining: FREE_COACH_MESSAGE_LIMIT - (currentCount + 1),
+      remaining: FREE_COACH_MESSAGE_LIMIT - nextCount,
     };
   }, [user, profile]);
 
