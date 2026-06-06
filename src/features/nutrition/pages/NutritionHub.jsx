@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { scanFoodHub } from '../../../services/foodScanner';
 import { BarcodeScanner } from '../components/BarcodeScanner';
@@ -13,16 +13,18 @@ const SUPPLEMENTS = [
   { name: 'Magnesium', dose: '400mg before bed', benefit: 'Sleep & recovery', color: '#A064FF' },
 ];
 
-const FOOD_DB = [
-  { id: 1, name: 'Chicken Breast', cal: 165, p: 31, c: 0, f: 3.6, color: '#CCFF00' },
-  { id: 2, name: 'Brown Rice', cal: 216, p: 5, c: 45, f: 1.8, color: '#5088FF' },
-  { id: 3, name: 'Egg Whites', cal: 52, p: 11, c: 0.7, f: 0.2, color: '#CCFF00' },
-  { id: 4, name: 'Sweet Potato', cal: 103, p: 2.3, c: 24, f: 0.1, color: '#FFA53C' },
-  { id: 5, name: 'Salmon', cal: 208, p: 20, c: 0, f: 13, color: '#FF6B6B' },
-  { id: 6, name: 'Greek Yogurt', cal: 100, p: 17, c: 6, f: 0.7, color: '#A064FF' },
-  { id: 7, name: 'Oats', cal: 389, p: 17, c: 66, f: 7, color: '#FFA53C' },
-  { id: 8, name: 'Whey Protein', cal: 120, p: 25, c: 3, f: 1.5, color: '#CCFF00' },
-];
+function parseUsdaFood(item) {
+  const nutrients = item.foodNutrients || [];
+  const get = name => nutrients.find(n => n.nutrientName?.toLowerCase().includes(name))?.value || 0;
+  return {
+    fdcId: item.fdcId,
+    name: item.description,
+    calories: Math.round(get('energy')),
+    protein: Math.round(get('protein') * 10) / 10,
+    carbs: Math.round(get('carbohydrate') * 10) / 10,
+    fat: Math.round(get('total lipid') * 10) / 10,
+  };
+}
 
 function MacroBar({ label, current, goal, color }) {
   const pct = Math.min(100, Math.round((current / goal) * 100));
@@ -60,15 +62,67 @@ export default function NutritionHub() {
   const [scanResult, setScanResult] = useState(null);
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [macros, setMacros] = useState({ calories: 1240, protein: 89, carbs: 134, fat: 38 });
+  const [usdaResults, setUsdaResults] = useState([]);
+  const [usdaSearching, setUsdaSearching] = useState(false);
+  const [usdaSearchError, setUsdaSearchError] = useState('');
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
   const calDash = 226;
   const calOffset = calDash - (calDash * Math.min(100, Math.round((macros.calories / MACRO_GOALS.calories) * 100))) / 100;
 
-  const filteredFood = FOOD_DB.filter(f =>
-    f.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    if (activeTab !== 'foods') return undefined;
+
+    const query = searchQuery.trim();
+    if (query.length < 2) {
+      setUsdaResults([]);
+      setUsdaSearchError('');
+      setUsdaSearching(false);
+      return undefined;
+    }
+
+    const timer = window.setTimeout(async () => {
+      setUsdaSearching(true);
+      setUsdaSearchError('');
+      try {
+        const res = await fetch(
+          `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&api_key=DEMO_KEY&pageSize=10`,
+        );
+        if (!res.ok) throw new Error('USDA search failed');
+        const data = await res.json();
+        setUsdaResults((data.foods || []).map(parseUsdaFood));
+      } catch (err) {
+        console.warn('USDA food search failed:', err);
+        setUsdaSearchError('Could not search USDA. Try again.');
+        setUsdaResults([]);
+      } finally {
+        setUsdaSearching(false);
+      }
+    }, 400);
+
+    return () => window.clearTimeout(timer);
+  }, [searchQuery, activeTab]);
+
+  const handleAddUsdaFood = food => {
+    applyScanData({
+      items: [{
+        name: food.name,
+        weight: 100,
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+      }],
+      total: {
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+      },
+      confidence: 'medium',
+    });
+  };
 
   const applyScanData = (data, { errorMessage = 'Could not analyze image. Try again.' } = {}) => {
     const items = Array.isArray(data?.items) ? data.items : [];
@@ -545,45 +599,87 @@ export default function NutritionHub() {
       {/* ── FOOD BANK ── */}
       {activeTab === 'foods' && (
         <div className="px-6 space-y-4">
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-            </div>
-            <input type="text" placeholder="Search foods..." value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-3.5 rounded-[16px] text-[13px] text-white placeholder-white/25 outline-none border"
-              style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)' }} />
-          </div>
-          <div className="space-y-2">
-            {filteredFood.map(food => (
-              <div key={food.id} className="rounded-[18px] border border-white/[0.06] p-4"
-                style={{ background: 'rgba(255,255,255,0.025)', boxShadow: '0 4px 14px rgba(0,0,0,0.3)' }}>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-8 rounded-full" style={{ background: food.color, boxShadow: `0 0 8px ${food.color}66` }} />
-                    <div>
-                      <p className="text-[13px] font-bold text-white">{food.name}</p>
-                      <p className="text-[10px] text-white/35">per 100g</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[15px] font-black" style={{ color: food.color }}>{food.cal}</p>
-                    <p className="text-[9px] text-white/30">kcal</p>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  {[{ l: 'P', v: food.p, c: '#CCFF00' }, { l: 'C', v: food.c, c: '#5088FF' }, { l: 'F', v: food.f, c: '#FFA53C' }].map(m => (
-                    <div key={m.l} className="flex-1 rounded-[10px] py-1.5 text-center"
-                      style={{ background: `${m.c}14`, border: `1px solid ${m.c}25` }}>
-                      <p className="text-[9px] font-bold" style={{ color: m.c }}>{m.l}</p>
-                      <p className="text-[11px] font-black text-white">{m.v}g</p>
-                    </div>
-                  ))}
-                </div>
+          <div>
+            <p className="text-[10px] tracking-[2px] uppercase text-white/40 font-bold mb-3">USDA Food Bank</p>
+            <div className="relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
               </div>
-            ))}
+              <input
+                type="search"
+                placeholder="Search USDA foods..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full pl-11 pr-4 py-3.5 rounded-[16px] text-[13px] text-white placeholder-white/25 outline-none border"
+                style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)' }}
+              />
+            </div>
+            <p className="mt-2 text-[10px] text-white/35">Search FoodData Central, then tap a result to log 100g.</p>
+          </div>
+
+          {usdaSearching && (
+            <div className="rounded-[18px] border border-white/[0.06] p-4 text-center"
+              style={{ background: 'rgba(255,255,255,0.025)' }}>
+              <p className="text-[12px] font-bold text-[#CCFF00]">Searching USDA...</p>
+            </div>
+          )}
+
+          {usdaSearchError && (
+            <div className="rounded-[18px] border border-red-500/20 p-4 text-center"
+              style={{ background: 'rgba(255,100,100,0.05)' }}>
+              <p className="text-[12px] text-red-400">{usdaSearchError}</p>
+            </div>
+          )}
+
+          {!usdaSearching && !usdaSearchError && searchQuery.trim().length >= 2 && usdaResults.length === 0 && (
+            <div className="rounded-[18px] border border-white/[0.06] p-4 text-center"
+              style={{ background: 'rgba(255,255,255,0.025)' }}>
+              <p className="text-[12px] text-white/45">No USDA results found.</p>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            {usdaResults.map((food, index) => {
+              const color = ITEM_COLORS[index % ITEM_COLORS.length];
+              return (
+                <button
+                  key={food.fdcId || `${food.name}-${index}`}
+                  type="button"
+                  onClick={() => handleAddUsdaFood(food)}
+                  className="w-full text-left rounded-[18px] border border-white/[0.06] p-4 transition-all active:scale-[0.99]"
+                  style={{ background: 'rgba(255,255,255,0.025)', boxShadow: '0 4px 14px rgba(0,0,0,0.3)' }}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-2 h-8 rounded-full flex-shrink-0" style={{ background: color, boxShadow: `0 0 8px ${color}66` }} />
+                      <div className="min-w-0">
+                        <p className="text-[13px] font-bold text-white truncate">{food.name}</p>
+                        <p className="text-[10px] text-white/35">per 100g · tap to add</p>
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0 ml-3">
+                      <p className="text-[15px] font-black" style={{ color }}>{food.calories}</p>
+                      <p className="text-[9px] text-white/30">kcal</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    {[
+                      { l: 'P', v: food.protein, c: '#CCFF00' },
+                      { l: 'C', v: food.carbs, c: '#5088FF' },
+                      { l: 'F', v: food.fat, c: '#FFA53C' },
+                    ].map(m => (
+                      <div key={m.l} className="flex-1 rounded-[10px] py-1.5 text-center"
+                        style={{ background: `${m.c}14`, border: `1px solid ${m.c}25` }}>
+                        <p className="text-[9px] font-bold" style={{ color: m.c }}>{m.l}</p>
+                        <p className="text-[11px] font-black text-white">{m.v}g</p>
+                      </div>
+                    ))}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
