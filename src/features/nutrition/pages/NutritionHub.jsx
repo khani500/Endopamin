@@ -110,7 +110,7 @@ export default function NutritionHub() {
       setUsdaSearchError('');
       try {
         const res = await fetch(
-          `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&api_key=DEMO_KEY&pageSize=5`,
+          `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&api_key=${import.meta.env.VITE_USDA_API_KEY}&pageSize=5`,
         );
         if (!res.ok) throw new Error('USDA search failed');
         const data = await res.json();

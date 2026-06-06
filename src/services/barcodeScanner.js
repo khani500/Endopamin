@@ -269,7 +269,7 @@ export async function lookupBarcodeProduct(barcode, { weightG, signal } = {}) {
     console.warn('Open Food Facts lookup failed, trying Gemini fallback:', offError?.message);
     try {
       const usdaRes = await fetch(
-        `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(code)}&api_key=DEMO_KEY&pageSize=1`,
+        `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(code)}&api_key=${import.meta.env.VITE_USDA_API_KEY}&pageSize=1`,
       );
       const usdaData = await usdaRes.json();
       const item = usdaData.foods?.[0];
