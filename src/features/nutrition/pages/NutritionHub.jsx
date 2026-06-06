@@ -88,6 +88,8 @@ export default function NutritionHub() {
   const [usdaResults, setUsdaResults] = useState([]);
   const [usdaSearching, setUsdaSearching] = useState(false);
   const [usdaSearchError, setUsdaSearchError] = useState('');
+  const [selectedUsdaFood, setSelectedUsdaFood] = useState(null);
+  const [foodBankGrams, setFoodBankGrams] = useState('100');
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
@@ -127,24 +129,32 @@ export default function NutritionHub() {
     return () => window.clearTimeout(timer);
   }, [searchQuery, activeTab]);
 
-  const handleAddUsdaFood = food => {
+  const handleAddUsdaFood = (food, grams = 100) => {
+    const g = Math.max(1, Number(grams) || 100);
+    const scale = g / 100;
+    const calories = Math.round(food.calories * scale);
+    const protein = Math.round(food.protein * scale * 10) / 10;
+    const carbs = Math.round(food.carbs * scale * 10) / 10;
+    const fat = Math.round(food.fat * scale * 10) / 10;
     applyScanData({
       items: [{
         name: food.name,
-        weight: 100,
-        calories: food.calories,
-        protein: food.protein,
-        carbs: food.carbs,
-        fat: food.fat,
+        weight: g,
+        calories,
+        protein,
+        carbs,
+        fat,
       }],
       total: {
-        calories: food.calories,
-        protein: food.protein,
-        carbs: food.carbs,
-        fat: food.fat,
+        calories,
+        protein,
+        carbs,
+        fat,
       },
       confidence: 'medium',
     });
+    setSelectedUsdaFood(null);
+    setFoodBankGrams('100');
   };
 
   const applyScanData = (data, { errorMessage = 'Could not analyze image. Try again.' } = {}) => {
@@ -458,7 +468,7 @@ export default function NutritionHub() {
               <button type="button" onClick={() => setShowBarcodeScanner(true)}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] font-bold text-[12px] border transition-all active:scale-95"
                 style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.12)', color: '#fff' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" style={{ filter: 'drop-shadow(0 0 4px rgba(204,255,0,0.45))' }}>
                   <path d="M3 5h2v14H3zM8 5h1v14H8zM11 5h2v14h-2zM15 5h1v14h-1zM18 5h3v14h-3z"/>
                 </svg>
                 Scan Barcode
@@ -639,7 +649,7 @@ export default function NutritionHub() {
                 style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)' }}
               />
             </div>
-            <p className="mt-2 text-[10px] text-white/35">Search FoodData Central, then tap a result to log 100g.</p>
+            <p className="mt-2 text-[10px] text-white/35">Search FoodData Central, tap a result, set grams, then add to log.</p>
           </div>
 
           {usdaSearching && (
@@ -666,44 +676,90 @@ export default function NutritionHub() {
           <div className="space-y-2">
             {usdaResults.map((food, index) => {
               const color = ITEM_COLORS[index % ITEM_COLORS.length];
+              const isSelected = selectedUsdaFood?.fdcId === food.fdcId
+                && selectedUsdaFood?.name === food.name;
+              const grams = Math.max(1, Number(foodBankGrams) || 100);
+              const scale = isSelected ? grams / 100 : 1;
+              const displayCalories = Math.round(food.calories * scale);
+              const displayProtein = Math.round(food.protein * scale * 10) / 10;
+              const displayCarbs = Math.round(food.carbs * scale * 10) / 10;
+              const displayFat = Math.round(food.fat * scale * 10) / 10;
               return (
-                <button
+                <div
                   key={food.fdcId || `${food.name}-${index}`}
-                  type="button"
-                  onClick={() => handleAddUsdaFood(food)}
-                  className="w-full text-left rounded-[18px] border border-white/[0.06] p-4 transition-all active:scale-[0.99]"
-                  style={{ background: 'rgba(255,255,255,0.025)', boxShadow: '0 4px 14px rgba(0,0,0,0.3)' }}
+                  className="w-full text-left rounded-[18px] border p-4 transition-all"
+                  style={{
+                    background: 'rgba(255,255,255,0.025)',
+                    boxShadow: '0 4px 14px rgba(0,0,0,0.3)',
+                    borderColor: isSelected ? 'rgba(204,255,0,0.35)' : 'rgba(255,255,255,0.06)',
+                  }}
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-2 h-8 rounded-full flex-shrink-0" style={{ background: color, boxShadow: `0 0 8px ${color}66` }} />
-                      <div className="min-w-0">
-                        <p className="text-[13px] font-bold text-white truncate">{food.name}</p>
-                        {food.brand && (
-                          <p className="text-[10px] text-white/45 truncate">{food.brand}</p>
-                        )}
-                        <p className="text-[10px] text-white/35">per 100g · tap to add</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedUsdaFood(food);
+                      setFoodBankGrams('100');
+                    }}
+                    className="w-full text-left active:scale-[0.99] transition-transform"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-2 h-8 rounded-full flex-shrink-0" style={{ background: color, boxShadow: `0 0 8px ${color}66` }} />
+                        <div className="min-w-0">
+                          <p className="text-[13px] font-bold text-white truncate">{food.name}</p>
+                          {food.brand && (
+                            <p className="text-[10px] text-white/45 truncate">{food.brand}</p>
+                          )}
+                          <p className="text-[10px] text-white/35">
+                            {isSelected ? `${grams}g portion` : 'per 100g · tap to select'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right flex-shrink-0 ml-3">
+                        <p className="text-[15px] font-black" style={{ color }}>{displayCalories}</p>
+                        <p className="text-[9px] text-white/30">kcal</p>
                       </div>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-3">
-                      <p className="text-[15px] font-black" style={{ color }}>{food.calories}</p>
-                      <p className="text-[9px] text-white/30">kcal</p>
+                    <div className="flex gap-2">
+                      {[
+                        { l: 'P', v: displayProtein, c: '#CCFF00' },
+                        { l: 'C', v: displayCarbs, c: '#5088FF' },
+                        { l: 'F', v: displayFat, c: '#FFA53C' },
+                      ].map(m => (
+                        <div key={m.l} className="flex-1 rounded-[10px] py-1.5 text-center"
+                          style={{ background: `${m.c}14`, border: `1px solid ${m.c}25` }}>
+                          <p className="text-[9px] font-bold" style={{ color: m.c }}>{m.l}</p>
+                          <p className="text-[11px] font-black text-white">{m.v}g</p>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    {[
-                      { l: 'P', v: food.protein, c: '#CCFF00' },
-                      { l: 'C', v: food.carbs, c: '#5088FF' },
-                      { l: 'F', v: food.fat, c: '#FFA53C' },
-                    ].map(m => (
-                      <div key={m.l} className="flex-1 rounded-[10px] py-1.5 text-center"
-                        style={{ background: `${m.c}14`, border: `1px solid ${m.c}25` }}>
-                        <p className="text-[9px] font-bold" style={{ color: m.c }}>{m.l}</p>
-                        <p className="text-[11px] font-black text-white">{m.v}g</p>
+                  </button>
+
+                  {isSelected && (
+                    <div className="mt-4 pt-4 border-t border-white/[0.08]">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2">Portion size</p>
+                      <div className="flex items-center gap-3 mb-4">
+                        <input
+                          type="number"
+                          min="1"
+                          value={foodBankGrams}
+                          onChange={e => setFoodBankGrams(e.target.value)}
+                          className="w-24 rounded-[12px] border px-3 py-2.5 text-center text-[14px] font-bold text-white outline-none"
+                          style={{ background: '#0A0A0A', borderColor: 'rgba(204,255,0,0.35)' }}
+                        />
+                        <span className="text-[12px] text-white/45">grams</span>
                       </div>
-                    ))}
-                  </div>
-                </button>
+                      <button
+                        type="button"
+                        onClick={() => handleAddUsdaFood(food, grams)}
+                        className="w-full rounded-[14px] py-3 text-[12px] font-black transition-all active:scale-[0.99]"
+                        style={{ background: '#CCFF00', color: '#000' }}
+                      >
+                        Add to Log
+                      </button>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
