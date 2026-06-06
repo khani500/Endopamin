@@ -1379,7 +1379,8 @@ export default function CoachPage() {
               </button>
             )}
           </div>
-          <div className="flex-1 min-h-0 overflow-y-auto px-5 space-y-3 pb-3">
+          <div className="flex-1 min-h-0 overflow-y-auto mx-5 space-y-3 pb-3 px-3 rounded-[12px]"
+            style={{ background: '#0d0d0d' }}>
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role==='user'?'justify-end':'justify-start'} gap-2`}>
                 {msg.role==='assistant' && <CoachAvatar size={30} />}
@@ -1414,16 +1415,17 @@ export default function CoachPage() {
           {/* Input */}
           <div className="px-5 flex-shrink-0 pb-2">
             <div className="flex gap-2 items-center p-2.5 rounded-[12px] border"
-              style={{ background: '#1a1a1a', borderColor: '#2a2a2a' }}>
+              style={{ background: '#111111', borderColor: '#2a2a2a' }}>
               <input type="text" value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && !loading && void handleSendText(input)}
                 placeholder={`Ask ${coach.name}...`}
-                className="flex-1 bg-transparent text-[13px] text-white placeholder-white/25 outline-none px-2" />
+                className="flex-1 bg-transparent text-[13px] outline-none px-2"
+                style={{ color: '#ffffff' }} />
               <button type="button" onClick={() => void handleSendText(input)} disabled={!input.trim() || loading}
-                className="w-9 h-9 rounded-[11px] flex items-center justify-center transition-all active:scale-90 flex-shrink-0"
-                style={{ background:input.trim()?coach.color:'rgba(255,255,255,0.06)' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke={input.trim()?'#000':'rgba(255,255,255,0.25)'}
+                className="w-9 h-9 rounded-[11px] flex items-center justify-center transition-all active:scale-90 flex-shrink-0 border"
+                style={{ background: '#1a1a1a', borderColor: '#2a2a2a' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke={input.trim() ? '#ffffff' : 'rgba(255,255,255,0.25)'}
                   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                   <line x1="22" y1="2" x2="11" y2="13"/>
                   <polygon points="22 2 15 22 11 13 2 9 22 2"/>
