@@ -326,7 +326,7 @@ export default function WorkoutPlanPage() {
           <button
             onClick={refreshPlan}
             disabled={generating}
-            style={{ background: "transparent", border: `1px solid ${accent}`, color: accent, borderRadius: 8, padding: "8px 14px", fontSize: 12, cursor: generating ? "wait" : "pointer", opacity: generating ? 0.6 : 1 }}
+            style={{ background: "transparent", border: `1px solid ${ACTIVE_DAY_COLOR}`, color: ACTIVE_DAY_COLOR, borderRadius: 8, padding: "8px 14px", fontSize: 12, cursor: generating ? "wait" : "pointer", opacity: generating ? 0.6 : 1 }}
           >
             {generating ? "..." : "Refresh Plan"}
           </button>
@@ -356,7 +356,7 @@ export default function WorkoutPlanPage() {
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: d.type === "rest" ? "#1a1a1a" : `${accent}22`, color: d.type === "rest" ? "#444" : accent, fontWeight: 600 }}>
+                    <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: d.type === "rest" ? "#1a1a1a" : `${ACTIVE_DAY_COLOR}22`, color: d.type === "rest" ? "#444" : ACTIVE_DAY_COLOR, fontWeight: 600 }}>
                       {d.type === "rest" ? "REST" : "TRAIN"}
                     </span>
                     <div>
