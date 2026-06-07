@@ -317,16 +317,35 @@ function SectionLabel({ children, style = {} }) {
 function getBmiInfo(height, heightUnit, weight, weightUnit) {
   const heightStr = String(height ?? '').trim();
   const weightStr = String(weight ?? '').trim();
-  if (!heightStr || !weightStr) return null;
 
-  const h = Number(heightStr);
+  const parseHeightM = () => {
+    if (!heightStr) return null;
+    const h = Number(heightStr);
+    if (!Number.isFinite(h) || h <= 0) return null;
+    return heightUnit === 'cm' ? h / 100 : h * 0.0254;
+  };
+
+  const heightM = parseHeightM();
+  const toDisplayWeight = kg => (weightUnit === 'kg'
+    ? Math.round(kg)
+    : Math.round(kg / 0.453592));
+
+  const idealRange = heightM ? {
+    idealMin: toDisplayWeight(18.5 * heightM * heightM),
+    idealMax: toDisplayWeight(24.9 * heightM * heightM),
+    weightUnit,
+  } : null;
+
+  if (!heightStr || !weightStr || !heightM) {
+    return { valid: false, idealRange };
+  }
+
   const w = Number(weightStr);
-  if (!Number.isFinite(h) || !Number.isFinite(w) || h <= 0 || w <= 0) return null;
+  if (!Number.isFinite(w) || w <= 0) {
+    return { valid: false, idealRange };
+  }
 
-  const heightM = heightUnit === 'cm' ? h / 100 : h * 0.0254;
   const weightKg = weightUnit === 'kg' ? w : w * 0.453592;
-  if (heightM <= 0) return null;
-
   const bmi = weightKg / (heightM * heightM);
 
   let category;
@@ -345,19 +364,15 @@ function getBmiInfo(height, heightUnit, weight, weightUnit) {
     color = '#FF4444';
   }
 
-  const minIdealKg = 18.5 * heightM * heightM;
-  const maxIdealKg = 24.9 * heightM * heightM;
-  const toDisplayWeight = kg => (weightUnit === 'kg'
-    ? Math.round(kg)
-    : Math.round(kg / 0.453592));
-
   return {
+    valid: true,
     bmi: Math.round(bmi * 10) / 10,
     category,
     color,
-    idealMin: toDisplayWeight(minIdealKg),
-    idealMax: toDisplayWeight(maxIdealKg),
+    idealMin: idealRange.idealMin,
+    idealMax: idealRange.idealMax,
     weightUnit,
+    idealRange,
   };
 }
 
@@ -368,12 +383,24 @@ function bmiSegmentWidth(start, end) {
   return `${((end - start) / (BMI_BAR_MAX - BMI_BAR_MIN)) * 100}%`;
 }
 
-function BMICalculatorCard({ info }) {
+function BMICalculatorCard({ height, heightUnit, weight, weightUnit }) {
+  const info = useMemo(
+    () => getBmiInfo(height, heightUnit, weight, weightUnit),
+    [height, heightUnit, weight, weightUnit],
+  );
+
+  const hasBmi = info.valid;
+  const displayColor = hasBmi ? info.color : '#444';
+  const markerLeft = hasBmi
+    ? `${Math.min(100, Math.max(0, ((info.bmi - BMI_BAR_MIN) / (BMI_BAR_MAX - BMI_BAR_MIN)) * 100))}%`
+    : '0%';
+
   return (
     <div style={{
-      marginTop: 12,
+      marginTop: 16,
+      marginBottom: 4,
       background: '#111',
-      border: '0.5px solid #2a2a2a',
+      border: `0.5px solid ${hasBmi ? `${info.color}33` : '#2a2a2a'}`,
       borderRadius: 12,
       padding: '16px 14px',
     }}>
@@ -388,79 +415,80 @@ function BMICalculatorCard({ info }) {
         BMI Calculator
       </div>
 
-      {!info ? (
-        <>
-          <p style={{ margin: '0 0 14px', fontSize: 12, color: '#444', lineHeight: 1.5 }}>
-            Enter height and current weight — BMI updates automatically
-          </p>
-          <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', opacity: 0.35 }}>
-            <div style={{ width: bmiSegmentWidth(BMI_BAR_MIN, 18.5), background: '#4DA6FF' }} />
-            <div style={{ width: bmiSegmentWidth(18.5, 25), background: '#CCFF00' }} />
-            <div style={{ width: bmiSegmentWidth(25, 30), background: '#FFA53C' }} />
-            <div style={{ width: bmiSegmentWidth(30, BMI_BAR_MAX), background: '#FF4444' }} />
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
+        <div>
+          <div style={{
+            fontSize: 42,
+            fontWeight: 900,
+            color: displayColor,
+            lineHeight: 1,
+            letterSpacing: '-0.04em',
+            transition: 'color 0.2s ease',
+          }}
+          >
+            {hasBmi ? info.bmi : '—'}
           </div>
-        </>
+          <div style={{ fontSize: 11, color: '#444', marginTop: 4 }}>Body Mass Index</div>
+        </div>
+        <div style={{
+          fontSize: 12,
+          fontWeight: 700,
+          color: hasBmi ? info.color : '#555',
+          background: hasBmi ? `${info.color}18` : '#1a1a1a',
+          border: `0.5px solid ${hasBmi ? `${info.color}44` : '#2a2a2a'}`,
+          borderRadius: 20,
+          padding: '5px 12px',
+          transition: 'all 0.2s ease',
+        }}
+        >
+          {hasBmi ? info.category : 'Enter stats'}
+        </div>
+      </div>
+
+      <div style={{ position: 'relative', marginBottom: 6 }}>
+        <div style={{ display: 'flex', height: 10, borderRadius: 5, overflow: 'hidden', opacity: hasBmi ? 1 : 0.45 }}>
+          <div style={{ width: bmiSegmentWidth(BMI_BAR_MIN, 18.5), background: '#4DA6FF' }} />
+          <div style={{ width: bmiSegmentWidth(18.5, 25), background: '#CCFF00' }} />
+          <div style={{ width: bmiSegmentWidth(25, 30), background: '#FFA53C' }} />
+          <div style={{ width: bmiSegmentWidth(30, BMI_BAR_MAX), background: '#FF4444' }} />
+        </div>
+        {hasBmi && (
+          <div style={{
+            position: 'absolute',
+            top: -4,
+            left: markerLeft,
+            transform: 'translateX(-50%)',
+            width: 16,
+            height: 16,
+            borderRadius: '50%',
+            background: '#fff',
+            border: `2px solid ${info.color}`,
+            boxShadow: `0 0 10px ${info.color}88`,
+            transition: 'left 0.2s ease, border-color 0.2s ease',
+          }} />
+        )}
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#333', marginBottom: 12 }}>
+        <span>15</span>
+        <span>18.5</span>
+        <span>25</span>
+        <span>30</span>
+        <span>40</span>
+      </div>
+
+      {info.idealRange ? (
+        <p style={{ margin: 0, fontSize: 11, color: '#555' }}>
+          Ideal weight for your height:
+          {' '}
+          <span style={{ color: '#CCFF00', fontWeight: 600 }}>
+            {info.idealRange.idealMin}–{info.idealRange.idealMax} {info.idealRange.weightUnit}
+          </span>
+        </p>
       ) : (
-        <>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
-            <div>
-              <div style={{ fontSize: 36, fontWeight: 900, color: info.color, lineHeight: 1, letterSpacing: '-0.03em' }}>
-                {info.bmi}
-              </div>
-              <div style={{ fontSize: 11, color: '#444', marginTop: 4 }}>Body Mass Index</div>
-            </div>
-            <div style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: info.color,
-              background: `${info.color}18`,
-              border: `0.5px solid ${info.color}44`,
-              borderRadius: 20,
-              padding: '5px 12px',
-            }}
-            >
-              {info.category}
-            </div>
-          </div>
-
-          <div style={{ position: 'relative', marginBottom: 6 }}>
-            <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{ width: bmiSegmentWidth(BMI_BAR_MIN, 18.5), background: '#4DA6FF' }} />
-              <div style={{ width: bmiSegmentWidth(18.5, 25), background: '#CCFF00' }} />
-              <div style={{ width: bmiSegmentWidth(25, 30), background: '#FFA53C' }} />
-              <div style={{ width: bmiSegmentWidth(30, BMI_BAR_MAX), background: '#FF4444' }} />
-            </div>
-            <div style={{
-              position: 'absolute',
-              top: -3,
-              left: `${Math.min(100, Math.max(0, ((info.bmi - BMI_BAR_MIN) / (BMI_BAR_MAX - BMI_BAR_MIN)) * 100))}%`,
-              transform: 'translateX(-50%)',
-              width: 14,
-              height: 14,
-              borderRadius: '50%',
-              background: '#fff',
-              border: `2px solid ${info.color}`,
-              boxShadow: `0 0 8px ${info.color}66`,
-              transition: 'left 0.2s ease',
-            }} />
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#333', marginBottom: 10 }}>
-            <span>15</span>
-            <span>18.5</span>
-            <span>25</span>
-            <span>30</span>
-            <span>40</span>
-          </div>
-
-          <p style={{ margin: 0, fontSize: 11, color: '#555' }}>
-            Ideal weight for your height:
-            {' '}
-            <span style={{ color: '#CCFF00', fontWeight: 600 }}>
-              {info.idealMin}–{info.idealMax} {info.weightUnit}
-            </span>
-          </p>
-        </>
+        <p style={{ margin: 0, fontSize: 12, color: '#444', lineHeight: 1.5 }}>
+          Enter height and current weight — BMI updates as you type
+        </p>
       )}
     </div>
   );
@@ -510,7 +538,9 @@ export default function ProfilePage() {
       age: profile.age ? String(profile.age) : '',
       gender: profile.gender || 'male',
       height: profile.height ? String(profile.height) : '',
+      height_unit: profile.height_unit || 'cm',
       weight: profile.weight ? String(profile.weight) : '',
+      weight_unit: profile.weight_unit || 'kg',
       target_weight: profile.target_weight ? String(profile.target_weight) : '',
       goal: profile.goal || 'fat_loss',
       experience: profile.experience || 'intermediate',
@@ -721,11 +751,6 @@ export default function ProfilePage() {
     setStep(s => s - 1);
   };
 
-  const bmiInfo = useMemo(
-    () => getBmiInfo(form.height, form.height_unit, form.weight, form.weight_unit),
-    [form.height, form.height_unit, form.weight, form.weight_unit],
-  );
-
   // ── Step 1: Body Stats ───────────────────────────────────────────────────
   const Step1 = (
     <motion.div key="s1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
@@ -782,7 +807,12 @@ export default function ProfilePage() {
         />
       </div>
 
-      <BMICalculatorCard info={bmiInfo} />
+      <BMICalculatorCard
+        height={form.height}
+        heightUnit={form.height_unit}
+        weight={form.weight}
+        weightUnit={form.weight_unit}
+      />
 
       {/* Gender */}
       <SectionLabel>Gender</SectionLabel>
