@@ -508,14 +508,6 @@ export default function Progress() {
           .lte('logged_at', weekEnd.toISOString()),
       ]);
 
-      const { data: allLogs } = await supabase
-        .from('workout_logs')
-        .select('*')
-        .eq('user_id', user.id)
-        .limit(1);
-
-      console.log('workout_logs first row:', JSON.stringify(allLogs));
-
       if (cancelled) return;
 
       if (nutritionResult.error) {
