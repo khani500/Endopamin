@@ -550,3 +550,150 @@ FORMAT:
   const clean = text.replace(/```json|```/g, "").trim();
   return JSON.parse(clean);
 }
+
+function parseGeminiJson(text) {
+  const clean = String(text || '').replace(/```json|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+async function generateJsonFromPrompt(prompt, maxOutputTokens = 4096) {
+  const data = await generateContent({
+    prompt,
+    generationConfig: { maxOutputTokens, temperature: 0.2 },
+  });
+  const text = extractText(data);
+  if (!text) throw new Error('Empty Gemini response');
+  return parseGeminiJson(text);
+}
+
+/** Fetch training knowledge content for onboarding plan generation. */
+export async function fetchTrainingKnowledgeForOnboarding(limit = 20) {
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('training_knowledge')
+      .select('*')
+      .limit(limit);
+
+    if (!error && Array.isArray(data) && data.length) {
+      return data.map(row => row.content || row.summary).filter(Boolean).join('\n\n');
+    }
+  }
+
+  const entries = await fetchTrainingKnowledge();
+  return entries.slice(0, limit).map(row => row.summary).join('\n\n');
+}
+
+function normalizeOnboardingWorkoutPlan(raw, coachId) {
+  const days = (raw?.days || []).map(day => ({
+    day: day.day || day.name,
+    focus: day.focus || '',
+    type: day.type === 'rest' ? 'rest' : 'training',
+    exercises: (day.exercises || []).map(exercise => ({
+      name: exercise.name,
+      sets: String(exercise.sets ?? '3'),
+      reps: String(exercise.reps ?? '10'),
+      rest: exercise.rest || '60s',
+      ...(exercise.notes ? { notes: exercise.notes } : {}),
+    })),
+  }));
+
+  return {
+    coachId: raw?.coachId || coachId,
+    days,
+  };
+}
+
+export async function generateOnboardingWorkoutPlan(athlete, knowledgeContent) {
+  const coachId = String(athlete.coach_persona || 'aria').toLowerCase();
+  const prompt = `You are an elite fitness coach with expertise from NASM, NSCA, ACSM, ACE, ISSN, and WHO guidelines.
+
+SCIENTIFIC KNOWLEDGE BASE:
+${knowledgeContent}
+
+ATHLETE PROFILE:
+- Name: ${athlete.display_name || 'Athlete'}, Age: ${athlete.age ?? 'unknown'}, Gender: ${athlete.gender || 'unknown'}
+- Height: ${athlete.height_cm ?? 'unknown'}cm, Weight: ${athlete.weight_kg ?? 'unknown'}kg, Target weight: ${athlete.target_weight_kg ?? 'unknown'}kg
+- BMI: ${athlete.bmi ?? 'unknown'}
+- Primary goal: ${athlete.goal || 'general fitness'}
+- Experience level: ${athlete.experience_level || 'intermediate'}
+- Activity level: ${athlete.activity_level || 'moderate'}
+- Training location: ${athlete.location || 'gym'}
+- Available equipment: ${athlete.equipment || 'full_gym'}
+- Training days per week: ${athlete.days_per_week ?? 4}
+- Injuries or limitations: ${athlete.injuries || 'none'}
+- Coach persona: ${coachId}
+
+Based on the scientific knowledge base and athlete profile above, create a highly personalized, evidence-based 7-day workout plan.
+
+Apply these principles:
+- Progressive overload based on experience level
+- Proper volume landmarks (MEV, MAV, MRV) for goal
+- Appropriate rep ranges for goal (strength: 1-5, hypertrophy: 6-20, endurance: 20+)
+- Correct rest periods
+- Injury prevention based on limitations
+- Periodization appropriate for experience level
+
+Return ONLY valid JSON:
+{
+  "coachId": "${coachId}",
+  "days": [
+    {
+      "name": "Saturday",
+      "type": "train",
+      "focus": "muscle group focus",
+      "exercises": [
+        {
+          "name": "exercise name",
+          "sets": 3,
+          "reps": "8-12",
+          "rest": "90s",
+          "notes": "form tip"
+        }
+      ]
+    }
+  ]
+}`;
+
+  const raw = await generateJsonFromPrompt(prompt, 8192);
+  return normalizeOnboardingWorkoutPlan(raw, coachId);
+}
+
+export async function generateOnboardingNutritionPlan(athlete) {
+  const prompt = `You are a sports nutritionist certified by ISSN and WHO.
+
+ATHLETE PROFILE:
+- Age: ${athlete.age ?? 'unknown'}, Gender: ${athlete.gender || 'unknown'}
+- Height: ${athlete.height_cm ?? 'unknown'}cm, Weight: ${athlete.weight_kg ?? 'unknown'}kg, Target: ${athlete.target_weight_kg ?? 'unknown'}kg
+- Goal: ${athlete.goal || 'general fitness'}
+- Activity level: ${athlete.activity_level || 'moderate'}
+- Training days: ${athlete.days_per_week ?? 4} per week
+
+Calculate using:
+- Mifflin-St Jeor equation for BMR
+- Activity multiplier for TDEE
+- Adjust calories based on goal (deficit for fat loss, surplus for muscle gain)
+- ISSN protein recommendations (1.6-2.2g/kg for muscle, 1.2-1.6g/kg for fat loss)
+
+Return ONLY valid JSON:
+{
+  "daily_calories": 2200,
+  "protein_g": 160,
+  "carbs_g": 220,
+  "fat_g": 65,
+  "meals": [
+    {
+      "name": "Breakfast",
+      "time": "8:00 AM",
+      "calories": 500,
+      "foods": ["food 1", "food 2"],
+      "protein_g": 30,
+      "carbs_g": 50,
+      "fat_g": 15
+    }
+  ],
+  "water_glasses": 8,
+  "notes": "personalized advice"
+}`;
+
+  return generateJsonFromPrompt(prompt, 4096);
+}
