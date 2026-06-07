@@ -517,7 +517,7 @@ export default function ProfilePage() {
       console.error('Profile save failed:', err);
     }
 
-    navigate('/coach', { replace: true });
+    navigate('/', { replace: true });
   };
 
   const next = async () => {
