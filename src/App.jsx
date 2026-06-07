@@ -15,7 +15,7 @@ import WorkoutSession from './pages/WorkoutSession';
 import WorkoutPlanPage from './pages/WorkoutPlanPage';
 import GroupSession from './pages/GroupSession';
 import DeskBreakSession from './pages/DeskBreakSession';
-import { useAuth } from './context/AuthContext';
+import { useAuth, isProfileComplete } from './context/AuthContext';
 import { WorkoutProvider } from './context/WorkoutContext';
 import { checkUserAbsence, updateLastActive } from './services/absenceDetector';
 import { onForegroundMessage } from './lib/firebase';
@@ -29,21 +29,38 @@ import NutritionCoachPage from './features/nutrition/pages/NutritionCoachPage';
 
 function RootRedirect() {
   const { profile, loading } = useAuth();
-  if (loading) return null;
 
-  const localDone = localStorage.getItem('onboarding_done') === 'true';
-  const profileDone = profile?.onboarding_completed === true;
-  const hasProfile = Boolean(profile?.goal && profile?.experience);
-  const hasBodyData = Boolean(profile?.height || profile?.weight || profile?.age);
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0A0A0A]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#CCFF00]/30 border-t-[#CCFF00]" />
+      </div>
+    );
+  }
 
-  if (!hasBodyData && !profileDone) {
+  if (!isProfileComplete(profile)) {
     return <Navigate to="/onboarding" replace />;
   }
 
-  if (!profileDone && !localDone && !hasProfile) {
-    return <Navigate to="/onboarding" replace />;
-  }
   return <Home />;
+}
+
+function OnboardingRoute() {
+  const { profile, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0A0A0A]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#CCFF00]/30 border-t-[#CCFF00]" />
+      </div>
+    );
+  }
+
+  if (isProfileComplete(profile)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <OnboardingPage />;
 }
 
 function App() {
@@ -131,6 +148,7 @@ function App() {
         <Routes>
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/" element={<ProtectedRoute><RootRedirect /></ProtectedRoute>} />
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
           <Route path="/coach" element={<ProtectedRoute><CoachPage /></ProtectedRoute>} />
           <Route path="/log" element={<ProtectedRoute><ErrorBoundary label="Nutrition route"><NutritionLayout /></ErrorBoundary></ProtectedRoute>}>
             <Route index element={<ErrorBoundary label="Nutrition hub"><NutritionHub /></ErrorBoundary>} />
@@ -139,21 +157,21 @@ function App() {
             <Route path="plan" element={<NutritionPlanPage />} />
             <Route path="coach" element={<NutritionCoachPage />} />
           </Route>
-          <Route path="/nutrition" element={<Navigate to="/log" replace />} />
+          <Route path="/nutrition" element={<ProtectedRoute><Navigate to="/log" replace /></ProtectedRoute>} />
           <Route path="/scan" element={<Navigate to="/log/scan" replace />} />
           <Route path="/gym" element={<ProtectedRoute><GymPage /></ProtectedRoute>} />
-          <Route path="/gym/desk-break/:breakId" element={<GymPage />} />
-          <Route path="/desk-break/:id" element={<DeskBreakSession />} />
+          <Route path="/gym/desk-break/:breakId" element={<ProtectedRoute><GymPage /></ProtectedRoute>} />
+          <Route path="/desk-break/:id" element={<ProtectedRoute><DeskBreakSession /></ProtectedRoute>} />
           <Route path="/exercises" element={<ExerciseLibrary />} />
           <Route path="/exercises/:id" element={<ExerciseLibrary />} />
-          <Route path="/workout/:type" element={<WorkoutSession />} />
-          <Route path="/plan/workout" element={<WorkoutSession planMode />} />
-          <Route path="/workout-plan" element={<WorkoutPlanPage />} />
-          <Route path="/plan/nutrition" element={<ErrorBoundary label="Nutrition plan shortcut"><NutritionHub /></ErrorBoundary>} />
+          <Route path="/workout/:type" element={<ProtectedRoute><WorkoutSession /></ProtectedRoute>} />
+          <Route path="/plan/workout" element={<ProtectedRoute><WorkoutSession planMode /></ProtectedRoute>} />
+          <Route path="/workout-plan" element={<ProtectedRoute><WorkoutPlanPage /></ProtectedRoute>} />
+          <Route path="/plan/nutrition" element={<ProtectedRoute><ErrorBoundary label="Nutrition plan shortcut"><NutritionHub /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/group" element={<GroupSession />} />
           <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="/onboarding" element={<OnboardingPage />} />
+          <Route path="/onboarding" element={<ProtectedRoute requireProfile={false}><OnboardingRoute /></ProtectedRoute>} />
         </Routes>
 
         {toast && (

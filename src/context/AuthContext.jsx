@@ -4,6 +4,21 @@ import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext(null);
 
+export function isProfileComplete(profile) {
+  if (!profile) return false;
+  if (profile.onboarding_completed === true) return true;
+
+  const localDone = typeof window !== 'undefined'
+    && localStorage.getItem('onboarding_done') === 'true';
+  if (localDone) return true;
+
+  return Boolean(
+    profile.display_name?.trim()
+    && profile.goal
+    && profile.coach_persona,
+  );
+}
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
