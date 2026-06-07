@@ -583,6 +583,118 @@ export async function fetchTrainingKnowledgeForOnboarding(limit = 20) {
   return entries.slice(0, limit).map(row => row.summary).join('\n\n');
 }
 
+const fallbackEx = (name, sets = '3', reps = '10-12', rest = '60s') => ({ name, sets, reps, rest });
+
+const FALLBACK_WORKOUT_MALE = (coachId) => ({
+  coachId,
+  days: [
+    { day: 'Saturday', focus: 'Push', type: 'training', exercises: [fallbackEx('Bench Press', '4', '8-10', '90s'), fallbackEx('OHP', '3', '8-10', '90s'), fallbackEx('Tricep Pushdown', '3', '12', '45s')] },
+    { day: 'Sunday', focus: 'Pull', type: 'training', exercises: [fallbackEx('Deadlift', '4', '5', '120s'), fallbackEx('Barbell Row', '3', '8-10', '90s'), fallbackEx('Lat Pulldown', '3', '10-12', '60s')] },
+    { day: 'Monday', focus: 'Active Rest', type: 'rest', exercises: [fallbackEx('30 min walk', '-', '-', '-')] },
+    { day: 'Tuesday', focus: 'Legs', type: 'training', exercises: [fallbackEx('Squat', '4', '8', '120s'), fallbackEx('Leg Press', '3', '12', '90s'), fallbackEx('Romanian Deadlift', '3', '10', '90s')] },
+    { day: 'Wednesday', focus: 'Core + Cardio', type: 'training', exercises: [fallbackEx('Plank', '3', '60s', '45s'), fallbackEx('Mountain Climber', '3', '30s', '30s')] },
+    { day: 'Thursday', focus: 'Upper Mix', type: 'training', exercises: [fallbackEx('Incline Press', '3', '10', '60s'), fallbackEx('Cable Row', '3', '10-12', '60s')] },
+    { day: 'Friday', focus: 'Full Rest', type: 'rest', exercises: [fallbackEx('Recovery', '-', '-', '-')] },
+  ],
+});
+
+const FALLBACK_WORKOUT_FEMALE = (coachId) => ({
+  coachId,
+  days: [
+    {
+      day: 'Saturday',
+      focus: 'Lower Body',
+      type: 'training',
+      exercises: [
+        fallbackEx('Squat', '4', '8-10', '90s'),
+        fallbackEx('Romanian Deadlift', '3', '10-12', '90s'),
+        fallbackEx('Hip Thrust', '3', '12-15', '60s'),
+        fallbackEx('Leg Curl', '3', '12-15', '60s'),
+        fallbackEx('Glute Bridge', '3', '15', '45s'),
+        fallbackEx('Calf Raise', '3', '15-20', '45s'),
+        fallbackEx('Step Up', '3', '10 each leg', '60s'),
+      ],
+    },
+    {
+      day: 'Sunday',
+      focus: 'Upper Body',
+      type: 'training',
+      exercises: [
+        fallbackEx('Push Up', '3', '10-15', '60s'),
+        fallbackEx('DB Row', '3', '10-12', '60s'),
+        fallbackEx('Shoulder Press', '3', '8-10', '90s'),
+        fallbackEx('Lat Pulldown', '3', '10-12', '60s'),
+        fallbackEx('Tricep Extension', '3', '12-15', '45s'),
+        fallbackEx('Bicep Curl', '3', '12-15', '45s'),
+        fallbackEx('Face Pull', '3', '15', '45s'),
+      ],
+    },
+    {
+      day: 'Monday',
+      focus: 'Active Rest / Yoga',
+      type: 'rest',
+      exercises: [fallbackEx('Active Rest / Yoga', '-', '-', '-')],
+    },
+    {
+      day: 'Tuesday',
+      focus: 'Full Body',
+      type: 'training',
+      exercises: [
+        fallbackEx('Deadlift', '4', '6-8', '120s'),
+        fallbackEx('Goblet Squat', '3', '10-12', '60s'),
+        fallbackEx('DB Lunge', '3', '10 each leg', '60s'),
+        fallbackEx('Plank', '3', '45-60s', '45s'),
+        fallbackEx('Mountain Climber', '3', '30s', '30s'),
+        fallbackEx('Russian Twist', '3', '20', '45s'),
+        fallbackEx('Bird Dog', '3', '12 each side', '45s'),
+      ],
+    },
+    {
+      day: 'Wednesday',
+      focus: 'Cardio + Core',
+      type: 'training',
+      exercises: [
+        fallbackEx('Jump Rope', '3', '60s', '30s'),
+        fallbackEx('Bicycle Crunch', '3', '20', '45s'),
+        fallbackEx('Dead Bug', '3', '12', '45s'),
+        fallbackEx('Hip Thrust', '3', '15', '60s'),
+        fallbackEx('Lateral Band Walk', '3', '15 each side', '45s'),
+        fallbackEx('Glute Kickback', '3', '15 each leg', '45s'),
+        fallbackEx('Side Plank', '3', '30s each side', '45s'),
+      ],
+    },
+    {
+      day: 'Thursday',
+      focus: 'Upper + Core',
+      type: 'training',
+      exercises: [
+        fallbackEx('Cable Row', '3', '10-12', '60s'),
+        fallbackEx('Chest Press', '3', '10-12', '60s'),
+        fallbackEx('Shoulder Raise', '3', '12-15', '45s'),
+        fallbackEx('Pull Down', '3', '10-12', '60s'),
+        fallbackEx('Ab Rollout', '3', '10-12', '45s'),
+        fallbackEx('Hollow Hold', '3', '30s', '45s'),
+        fallbackEx('Superman', '3', '15', '45s'),
+      ],
+    },
+    {
+      day: 'Friday',
+      focus: 'Full Rest',
+      type: 'rest',
+      exercises: [fallbackEx('Full Rest', '-', '-', '-')],
+    },
+  ],
+});
+
+/** Gender-aware fallback when Gemini plan generation fails. */
+export function getFallbackWorkoutPlan(coachId, gender = 'male') {
+  const normalizedGender = String(gender || 'male').toLowerCase();
+  if (normalizedGender === 'female') {
+    return FALLBACK_WORKOUT_FEMALE(coachId);
+  }
+  return FALLBACK_WORKOUT_MALE(coachId);
+}
+
 function normalizeOnboardingWorkoutPlan(raw, coachId) {
   const days = (raw?.days || []).map(day => ({
     day: day.day || day.name,

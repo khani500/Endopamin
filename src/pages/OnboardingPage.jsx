@@ -6,6 +6,7 @@ import {
   fetchTrainingKnowledgeForOnboarding,
   generateOnboardingNutritionPlan,
   generateOnboardingWorkoutPlan,
+  getFallbackWorkoutPlan,
 } from '../lib/gemini';
 
 const LOADING_PHASES = [
@@ -49,7 +50,7 @@ function buildAthleteProfile(form, savedProfile = {}) {
   return {
     display_name: form.display_name || savedProfile.display_name || 'Athlete',
     age: form.age ? Number(form.age) : savedProfile.age,
-    gender: form.gender || savedProfile.gender || 'male',
+    gender: String(form.gender || savedProfile.gender || 'male').toLowerCase(),
     height_cm: heightCm,
     weight_kg: weightKg ? Math.round(weightKg * 10) / 10 : null,
     target_weight_kg: targetWeightKg ? Math.round(targetWeightKg * 10) / 10 : null,
@@ -64,19 +65,6 @@ function buildAthleteProfile(form, savedProfile = {}) {
     coach_persona: form.coach_persona || savedProfile.coach_persona || 'aria',
   };
 }
-
-const FALLBACK_WORKOUT = (coachId) => ({
-  coachId,
-  days: [
-    { day: 'Saturday', focus: 'Push', type: 'training', exercises: [{ name: 'Bench Press', sets: '4', reps: '8-10', rest: '90s' }, { name: 'OHP', sets: '3', reps: '8-10', rest: '90s' }, { name: 'Tricep Pushdown', sets: '3', reps: '12', rest: '45s' }] },
-    { day: 'Sunday', focus: 'Pull', type: 'training', exercises: [{ name: 'Deadlift', sets: '4', reps: '5', rest: '120s' }, { name: 'Barbell Row', sets: '3', reps: '8-10', rest: '90s' }, { name: 'Lat Pulldown', sets: '3', reps: '10-12', rest: '60s' }] },
-    { day: 'Monday', focus: 'Active Rest', type: 'rest', exercises: [{ name: '30 min walk', sets: '-', reps: '-', rest: '-' }] },
-    { day: 'Tuesday', focus: 'Legs', type: 'training', exercises: [{ name: 'Squat', sets: '4', reps: '8', rest: '120s' }, { name: 'Leg Press', sets: '3', reps: '12', rest: '90s' }, { name: 'Romanian Deadlift', sets: '3', reps: '10', rest: '90s' }] },
-    { day: 'Wednesday', focus: 'Core + Cardio', type: 'training', exercises: [{ name: 'Plank', sets: '3', reps: '60s', rest: '45s' }, { name: 'Mountain Climber', sets: '3', reps: '30s', rest: '30s' }] },
-    { day: 'Thursday', focus: 'Upper Mix', type: 'training', exercises: [{ name: 'Incline Press', sets: '3', reps: '10', rest: '60s' }, { name: 'Cable Row', sets: '3', reps: '10-12', rest: '60s' }] },
-    { day: 'Friday', focus: 'Full Rest', type: 'rest', exercises: [{ name: 'Recovery', sets: '-', reps: '-', rest: '-' }] },
-  ],
-});
 
 const FALLBACK_NUTRITION = {
   daily_calories: 2200,
@@ -375,7 +363,7 @@ export default function OnboardingPage() {
       workoutPlan = await generateOnboardingWorkoutPlan(athlete, knowledgeContent);
     } catch (err) {
       console.error('Workout plan generation failed, using fallback:', err);
-      workoutPlan = FALLBACK_WORKOUT(coachId);
+      workoutPlan = getFallbackWorkoutPlan(coachId, athlete.gender);
     }
 
     let nutritionPlan;
