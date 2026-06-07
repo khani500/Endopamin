@@ -147,6 +147,8 @@ async function generateWorkoutPlanWithRetry(coach, user, userProfile) {
   }
 }
 
+const ACTIVE_DAY_COLOR = "#CCFF00";
+
 const COACH_COLORS = {
   aria:  { accent: "#00FFFF", label: "Aria" },
   kane:  { accent: "#FF4500", label: "Kane" },
@@ -350,7 +352,7 @@ export default function WorkoutPlanPage() {
               <div
                 key={i}
                 onClick={() => setActiveDay(activeDay === i ? null : i)}
-                style={{ background: "#111", border: `1px solid ${activeDay === i ? accent : d.type === "rest" ? "#1a1a1a" : "#222"}`, borderRadius: 14, padding: "14px 16px", cursor: "pointer", opacity: d.type === "rest" ? 0.6 : 1 }}
+                style={{ background: "#111", border: `1px solid ${activeDay === i ? ACTIVE_DAY_COLOR : d.type === "rest" ? "#1a1a1a" : "#222"}`, borderRadius: 14, padding: "14px 16px", cursor: "pointer", opacity: d.type === "rest" ? 0.6 : 1 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -362,7 +364,7 @@ export default function WorkoutPlanPage() {
                       <span style={{ color: "#555", fontSize: 12, marginLeft: 8 }}>— {d.focus}</span>
                     </div>
                   </div>
-                  <span style={{ color: accent, fontSize: 14 }}>{activeDay === i ? "▲" : "▼"}</span>
+                  <span style={{ color: ACTIVE_DAY_COLOR, fontSize: 14 }}>{activeDay === i ? "▲" : "▼"}</span>
                 </div>
 
                 {activeDay === i && d.exercises?.length > 0 && (

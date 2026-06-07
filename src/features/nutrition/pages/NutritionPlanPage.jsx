@@ -13,53 +13,83 @@ const PLAN_TABS = [
 
 function formatFoods(foods) {
   if (!Array.isArray(foods) || foods.length === 0) return null;
-  return foods.join(' · ');
+  return foods.filter(Boolean).join(' · ');
 }
 
-function truncateWords(text, maxWords = 15) {
-  const words = String(text || '').trim().split(/\s+/).filter(Boolean);
-  if (words.length <= maxWords) return words.join(' ');
-  return `${words.slice(0, maxWords).join(' ')}…`;
-}
+const GOAL_COACH_NOTES = {
+  muscle_gain: [
+    'Consume 1.6-2.2g protein/kg bodyweight (ISSN 2017)',
+    'Caloric surplus of 300-500 kcal supports lean mass gain',
+    'Distribute protein across 4+ meals for optimal MPS',
+    'Post-workout: 20-40g protein within 2 hours (ACSM)',
+  ],
+  fat_loss: [
+    'Moderate deficit of 500 kcal/day for 0.5kg/week loss',
+    'High protein (1.8-2.0g/kg) preserves muscle during deficit',
+    'Prioritize whole foods and fiber for satiety',
+    'Hydrate 2.5-3L daily, especially around training',
+  ],
+  maintain: [
+    'Carb timing around training improves performance',
+    '1.2-1.6g protein/kg for endurance athletes (ACSM)',
+    'Replenish glycogen within 30min post-workout',
+    'Consistent hydration: 500ml pre-workout minimum',
+  ],
+};
 
-function getCoachNoteBullets(profile, planData, meals) {
+function getCoachNoteBullets(profile) {
   const goal = normalizeNutritionGoal(profile?.goal);
-  const mealCount = meals.length;
-  const fallback = [];
+  if (goal === 'fat_loss') return GOAL_COACH_NOTES.fat_loss;
+  if (goal === 'muscle_gain') return GOAL_COACH_NOTES.muscle_gain;
+  return GOAL_COACH_NOTES.maintain;
+}
 
-  if (goal === 'fat_loss') fallback.push('Prioritize protein at every meal to protect lean mass.');
-  else if (goal === 'muscle_gain') fallback.push('Hit protein targets to support muscle repair and growth.');
-  else fallback.push('Keep meals balanced to maintain steady energy all day.');
+function MealCard({ meal, index }) {
+  const color = MEAL_COLORS[index % MEAL_COLORS.length];
+  const foods = formatFoods(meal.foods);
 
-  if (planData?.protein_g) {
-    fallback.push(`Aim for ${planData.protein_g}g protein daily across ${mealCount || 'your'} meals.`);
-  } else {
-    fallback.push(`Spread intake evenly across ${mealCount || 'your'} planned meals.`);
-  }
+  return (
+    <div
+      className="np-card"
+      style={{ borderColor: `${color}33` }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: foods ? 10 : 8 }}>
+        <div>
+          <p style={{ margin: 0, fontSize: 11, color, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            {meal.name || `Meal ${index + 1}`}
+          </p>
+          {meal.time && (
+            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#888' }}>{meal.time}</p>
+          )}
+        </div>
+        {meal.calories != null && (
+          <p style={{ margin: 0, fontSize: 18, fontWeight: 900, color: '#CCFF00', flexShrink: 0 }}>
+            {meal.calories} kcal
+          </p>
+        )}
+      </div>
 
-  if (planData?.water_glasses) {
-    fallback.push(`Drink ${planData.water_glasses} glasses of water throughout the day.`);
-  } else {
-    fallback.push('Stay hydrated, especially around training sessions.');
-  }
+      {foods && (
+        <p style={{ margin: '0 0 10px', fontSize: 14, color: '#e4e4e7', lineHeight: 1.5, fontWeight: 500 }}>
+          {foods}
+        </p>
+      )}
 
-  const noteText = planData?.notes;
-  if (!noteText) return fallback.slice(0, 3);
-
-  const fromNotes = String(noteText)
-    .split(/[.!?]+/)
-    .map(s => truncateWords(s.trim()))
-    .filter(Boolean)
-    .slice(0, 3);
-
-  if (fromNotes.length === 0) return fallback.slice(0, 3);
-
-  const bullets = [...fromNotes];
-  for (const item of fallback) {
-    if (bullets.length >= 3) break;
-    bullets.push(item);
-  }
-  return bullets.slice(0, 3);
+      {(meal.protein_g != null || meal.carbs_g != null || meal.fat_g != null) && (
+        <div style={{ display: 'flex', gap: 14, fontSize: 12, color: '#888', flexWrap: 'wrap' }}>
+          {meal.protein_g != null && (
+            <span><span style={{ color: '#aaa', fontWeight: 600 }}>P</span> {meal.protein_g}g</span>
+          )}
+          {meal.carbs_g != null && (
+            <span><span style={{ color: '#aaa', fontWeight: 600 }}>C</span> {meal.carbs_g}g</span>
+          )}
+          {meal.fat_g != null && (
+            <span><span style={{ color: '#aaa', fontWeight: 600 }}>F</span> {meal.fat_g}g</span>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function NutritionPlanPage() {
@@ -121,8 +151,8 @@ export default function NutritionPlanPage() {
   const waterGlasses = planData?.water_glasses ?? null;
   const planSubtitle = getNutritionPlanSubtitle(profile?.goal, meals.length);
   const coachNotes = useMemo(
-    () => getCoachNoteBullets(profile, planData, meals),
-    [profile, planData, meals],
+    () => getCoachNoteBullets(profile),
+    [profile],
   );
 
   return (
@@ -270,6 +300,19 @@ export default function NutritionPlanPage() {
                   ))}
                 </ul>
               </div>
+
+              {meals.length > 0 && (
+                <div>
+                  <p style={{ margin: '0 0 10px', fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
+                    Planned Meals
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {meals.map((meal, index) => (
+                      <MealCard key={`${meal.name || 'meal'}-${index}`} meal={meal} index={index} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
 
@@ -281,45 +324,9 @@ export default function NutritionPlanPage() {
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {meals.map((meal, index) => {
-                    const color = MEAL_COLORS[index % MEAL_COLORS.length];
-                    const foods = formatFoods(meal.foods);
-                    return (
-                      <div
-                        key={`${meal.name || 'meal'}-${index}`}
-                        className="np-card"
-                        style={{ borderColor: `${color}33` }}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: foods ? 8 : 0 }}>
-                          <div>
-                            <p style={{ margin: 0, fontSize: 11, color, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                              {meal.name || `Meal ${index + 1}`}
-                            </p>
-                            {meal.time && (
-                              <p style={{ margin: '4px 0 0', fontSize: 12, color: '#888' }}>{meal.time}</p>
-                            )}
-                          </div>
-                          {meal.calories != null && (
-                            <p style={{ margin: 0, fontSize: 18, fontWeight: 900, color: '#CCFF00', flexShrink: 0 }}>
-                              {meal.calories} kcal
-                            </p>
-                          )}
-                        </div>
-
-                        {foods && (
-                          <p style={{ margin: '0 0 10px', fontSize: 13, color: '#ccc', lineHeight: 1.5 }}>{foods}</p>
-                        )}
-
-                        {(meal.protein_g != null || meal.carbs_g != null || meal.fat_g != null) && (
-                          <div style={{ display: 'flex', gap: 12, fontSize: 12, color: '#888' }}>
-                            {meal.protein_g != null && <span>P {meal.protein_g}g</span>}
-                            {meal.carbs_g != null && <span>C {meal.carbs_g}g</span>}
-                            {meal.fat_g != null && <span>F {meal.fat_g}g</span>}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {meals.map((meal, index) => (
+                    <MealCard key={`${meal.name || 'meal'}-${index}`} meal={meal} index={index} />
+                  ))}
                 </div>
               )}
             </div>
