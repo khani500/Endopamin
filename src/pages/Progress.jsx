@@ -171,6 +171,44 @@ function getCurrentMonthMeta() {
   };
 }
 
+function getWorkoutLogTimestamp(log) {
+  return log.created_at || log.logged_at || null;
+}
+
+async function fetchWeeklyWorkoutLogs(userId, weekStart, weekEnd) {
+  const weekStartIso = weekStart.toISOString();
+  const weekEndIso = weekEnd.toISOString();
+
+  const createdResult = await supabase
+    .from('workout_logs')
+    .select('created_at, logged_at')
+    .eq('user_id', userId)
+    .gte('created_at', weekStartIso)
+    .lte('created_at', weekEndIso);
+
+  console.log('raw workout_logs (created_at filter):', createdResult.data, createdResult.error);
+
+  if (!createdResult.error && createdResult.data?.length) {
+    return createdResult.data;
+  }
+
+  const loggedResult = await supabase
+    .from('workout_logs')
+    .select('created_at, logged_at')
+    .eq('user_id', userId)
+    .gte('logged_at', weekStartIso)
+    .lte('logged_at', weekEndIso);
+
+  console.log('raw workout_logs (logged_at filter):', loggedResult.data, loggedResult.error);
+
+  if (loggedResult.error) {
+    console.error('Failed to load weekly workout logs:', loggedResult.error);
+    return [];
+  }
+
+  return loggedResult.data ?? [];
+}
+
 function buildActiveDays(logs) {
   const days = new Set();
   for (const log of logs) {
@@ -213,8 +251,9 @@ function buildWeeklyChart(logs) {
 
   const workoutDays = new Set();
   for (const log of logs) {
-    if (!log.logged_at) continue;
-    const date = new Date(log.logged_at);
+    const timestamp = getWorkoutLogTimestamp(log);
+    if (!timestamp) continue;
+    const date = new Date(timestamp);
     date.setHours(0, 0, 0, 0);
     workoutDays.add(date.getTime());
   }
@@ -245,18 +284,19 @@ function buildWeeklyChart(logs) {
   };
 }
 
-function countDistinctLogDays(logs) {
+function countDistinctLogDays(logs, getTimestamp = log => log.logged_at) {
   const days = new Set();
   for (const log of logs) {
-    if (!log.logged_at) continue;
-    const date = new Date(log.logged_at);
+    const value = getTimestamp(log);
+    if (!value) continue;
+    const date = new Date(value);
     days.add(`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`);
   }
   return days.size;
 }
 
 function calculateActivityRings(workoutLogs, nutritionLogs, goalDays) {
-  const workoutDayCount = countDistinctLogDays(workoutLogs);
+  const workoutDayCount = countDistinctLogDays(workoutLogs, getWorkoutLogTimestamp);
   const nutritionDayCount = countDistinctLogDays(nutritionLogs);
   const safeGoalDays = goalDays > 0 ? goalDays : 4;
 
@@ -481,13 +521,8 @@ export default function Progress() {
       const { weekStart, weekEnd } = getCurrentWeekRange();
       const goalDays = profile?.days_per_week || 4;
 
-      const [workoutResult, nutritionResult] = await Promise.all([
-        supabase
-          .from('workout_logs')
-          .select('logged_at')
-          .eq('user_id', user.id)
-          .gte('logged_at', weekStart.toISOString())
-          .lte('logged_at', weekEnd.toISOString()),
+      const [workoutLogs, nutritionResult] = await Promise.all([
+        fetchWeeklyWorkoutLogs(user.id, weekStart, weekEnd),
         supabase
           .from('nutrition_logs')
           .select('logged_at')
@@ -498,14 +533,9 @@ export default function Progress() {
 
       if (cancelled) return;
 
-      if (workoutResult.error) {
-        console.error('Failed to load workout ring data:', workoutResult.error);
-      }
       if (nutritionResult.error) {
         console.error('Failed to load nutrition ring data:', nutritionResult.error);
       }
-
-      const workoutLogs = workoutResult.error ? [] : workoutResult.data ?? [];
 
       setActivityRings(
         calculateActivityRings(
