@@ -156,6 +156,44 @@ function formatTotalTime(totalMinutes) {
   return `${Math.round(minutes / 60)}h`;
 }
 
+function getCurrentMonthMeta() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const monthStart = new Date(year, month, 1);
+  monthStart.setHours(0, 0, 0, 0);
+
+  return {
+    today: now.getDate(),
+    daysInMonth: new Date(year, month + 1, 0).getDate(),
+    monthName: now.toLocaleString(undefined, { month: 'long' }),
+    monthStart,
+  };
+}
+
+function buildActiveDays(logs) {
+  const days = new Set();
+  for (const log of logs) {
+    if (!log.logged_at) continue;
+    days.add(new Date(log.logged_at).getDate());
+  }
+  return days;
+}
+
+function getStreakDayClass(day, today, activeDays) {
+  if (day === today) return 'today';
+  if (day > today) return 'empty';
+  if (activeDays.has(day)) return 'done';
+  return 'miss';
+}
+
+const STREAK_DAY_STYLES = {
+  done: { bg: 'rgba(204,255,0,0.15)', border: 'rgba(204,255,0,0.3)', color: '#CCFF00' },
+  today: { bg: '#CCFF00', border: '#CCFF00', color: '#000' },
+  miss: { bg: 'rgba(255,107,107,0.1)', border: 'rgba(255,107,107,0.2)', color: 'rgba(255,107,107,0.6)' },
+  empty: { bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.15)' },
+};
+
 function buildPrRows(records) {
   const byExercise = new Map();
 
@@ -195,8 +233,10 @@ export default function Progress() {
   const [prLoading, setPrLoading] = useState(true);
   const [workoutStats, setWorkoutStats] = useState({ workouts: 0, time: '0h' });
   const [workoutStatsLoading, setWorkoutStatsLoading] = useState(true);
+  const [activeDays, setActiveDays] = useState(() => new Set());
   const d = DATA[rangeIdx];
   const pct = Math.round((rangeIdx / 5) * 100);
+  const monthMeta = useMemo(() => getCurrentMonthMeta(), []);
 
   const streak = profile?.streak_count ?? d.streak;
   const xp = profile?.dopa_xp ?? d.xp;
@@ -293,6 +333,38 @@ export default function Progress() {
       cancelled = true;
     };
   }, [user?.id, rangeIdx]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchMonthWorkouts() {
+      if (!user?.id || !supabase) {
+        if (!cancelled) setActiveDays(new Set());
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('workout_logs')
+        .select('logged_at')
+        .eq('user_id', user.id)
+        .gte('logged_at', monthMeta.monthStart.toISOString());
+
+      if (cancelled) return;
+
+      if (error) {
+        console.error('Failed to load streak calendar:', error);
+        setActiveDays(new Set());
+      } else {
+        setActiveDays(buildActiveDays(data ?? []));
+      }
+    }
+
+    void fetchMonthWorkouts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id, monthMeta.monthStart]);
 
   const prRows = useMemo(() => buildPrRows(prRecords), [prRecords]);
 
@@ -415,20 +487,15 @@ export default function Progress() {
             <svg viewBox="0 0 24 24" fill="none" stroke="#FFA53C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
               <path d="M12 2c0 0-5 4-5 9a5 5 0 0010 0c0-5-5-9-5-9z"/>
             </svg>
-            Streak Chain — May
+            Streak Chain — {monthMeta.monthName}
           </div>
-          <span className="text-[10px] text-[#FFA53C] font-bold">{d.chainCount}</span>
+          <span className="text-[10px] text-[#FFA53C] font-bold">{streak} days strong</span>
         </div>
         <div className="flex flex-wrap gap-1">
-          {Array.from({ length: 31 }).map((_, i) => {
+          {Array.from({ length: monthMeta.daysInMonth }).map((_, i) => {
             const day = i + 1;
-            const cls = day === 22 ? 'today' : day === 4 ? 'miss' : day >= 2 && day <= 22 ? 'done' : 'empty';
-            const styles = {
-              done: { bg: 'rgba(204,255,0,0.15)', border: 'rgba(204,255,0,0.3)', color: '#CCFF00' },
-              today: { bg: '#CCFF00', border: '#CCFF00', color: '#000' },
-              miss: { bg: 'rgba(255,107,107,0.1)', border: 'rgba(255,107,107,0.2)', color: 'rgba(255,107,107,0.6)' },
-              empty: { bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.15)' },
-            }[cls];
+            const cls = getStreakDayClass(day, monthMeta.today, activeDays);
+            const styles = STREAK_DAY_STYLES[cls];
             return (
               <div key={i} className="w-[26px] h-[26px] rounded-[7px] flex items-center justify-center text-[8px] font-bold border"
                 style={{ background: styles.bg, borderColor: styles.border, color: styles.color, boxShadow: cls === 'today' ? '0 0 10px rgba(204,255,0,0.5)' : 'none' }}>
