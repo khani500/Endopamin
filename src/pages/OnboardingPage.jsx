@@ -64,6 +64,7 @@ function buildAthleteProfile(form, savedProfile = {}) {
     days_per_week: savedProfile.days_per_week || 4,
     session_duration: form.session_duration || savedProfile.session_duration || 45,
     injuries: form.injuries || savedProfile.injuries || 'none',
+    diet: form.diet || savedProfile.diet || 'none',
     coach_persona: form.coach_persona || savedProfile.coach_persona || 'aria',
   };
 }
@@ -263,6 +264,7 @@ export default function OnboardingPage() {
   const [loadingMessage, setLoadingMessage] = useState(LOADING_PHASES[0].text);
   const [generatingPlans, setGeneratingPlans] = useState(false);
   const [generatedPlans, setGeneratedPlans] = useState(null);
+  const [planError, setPlanError] = useState(null);
   const loadingTimerRef = useRef(null);
   const generationStartedRef = useRef(null);
   const [form, setForm] = useState({
@@ -329,7 +331,7 @@ export default function OnboardingPage() {
     }
   };
 
-  const generateAndSavePlans = async (profileData) => {
+  const generatePlans = async (profileData) => {
     if (!user?.id || !supabase) return null;
 
     const athlete = buildAthleteProfile(form, profileData);
@@ -347,7 +349,13 @@ export default function OnboardingPage() {
       workoutPlan = await generateOnboardingWorkoutPlan(athlete, knowledgeContent);
     } catch (err) {
       console.error('Workout plan generation failed, using fallback:', err);
-      workoutPlan = getFallbackWorkoutPlan(coachId, athlete.gender, athlete.session_duration);
+      workoutPlan = getFallbackWorkoutPlan(
+        coachId,
+        athlete.gender,
+        athlete.session_duration,
+        athlete.equipment,
+        athlete.location,
+      );
     }
 
     let nutritionPlan;
@@ -357,6 +365,14 @@ export default function OnboardingPage() {
       console.error('Nutrition plan generation failed, using fallback:', err);
       nutritionPlan = getFallbackNutritionPlan(athlete);
     }
+
+    if (!workoutPlan || !nutritionPlan) return null;
+
+    return { workoutPlan, nutritionPlan, coachId, athlete };
+  };
+
+  const saveNewPlans = async ({ workoutPlan, nutritionPlan, coachId, athlete }) => {
+    if (!user?.id || !supabase) return false;
 
     await supabase
       .from('workout_plans')
@@ -373,6 +389,7 @@ export default function OnboardingPage() {
 
     if (workoutInsertError) {
       console.error('Workout plan save failed:', workoutInsertError);
+      return false;
     }
 
     await supabase
@@ -387,10 +404,11 @@ export default function OnboardingPage() {
     });
 
     if (nutritionInsertError) {
-      console.warn('Nutrition plan save failed (run nutrition_plans migration):', nutritionInsertError.message);
+      console.error('Nutrition plan save failed:', nutritionInsertError);
+      return false;
     }
 
-    return { workoutPlan, nutritionPlan, coachId };
+    return true;
   };
 
   const save = async () => {
@@ -425,28 +443,32 @@ export default function OnboardingPage() {
 
     next();
     setGeneratingPlans(true);
+    setPlanError(null);
     startLoadingTimer();
 
     try {
-      const result = await generateAndSavePlans(profileData);
+      const generated = await generatePlans(profileData);
       if (!pageMountedRef.current) return;
-      if (result) {
-        setGeneratedPlans(result);
-      } else {
-        setGeneratedPlans({
-          workoutPlan: getFallbackWorkoutPlan(form.coach_persona, form.gender, 45),
-          nutritionPlan: getFallbackNutritionPlan(buildAthleteProfile(form, profileData)),
-          coachId: form.coach_persona || 'aria',
-        });
+
+      if (!generated) {
+        setPlanError('Could not generate your plans. Your existing plans were kept.');
+        return;
       }
+
+      const saved = await saveNewPlans(generated);
+      if (!pageMountedRef.current) return;
+
+      if (!saved) {
+        setPlanError('Plans were generated but could not be saved. Please try again.');
+        return;
+      }
+
+      setGeneratedPlans(generated);
     } catch (err) {
       console.error('Plan generation failed:', err);
-      if (!pageMountedRef.current) return;
-      setGeneratedPlans({
-        workoutPlan: getFallbackWorkoutPlan(form.coach_persona, form.gender, 45),
-        nutritionPlan: getFallbackNutritionPlan(buildAthleteProfile(form, profileData)),
-        coachId: form.coach_persona || 'aria',
-      });
+      if (pageMountedRef.current) {
+        setPlanError('Something went wrong. Your existing plans were kept.');
+      }
     } finally {
       stopLoadingTimer();
       if (!pageMountedRef.current) return;
@@ -483,6 +505,7 @@ export default function OnboardingPage() {
           loadingMessage={loadingMessage}
           generating={generatingPlans}
           generatedPlans={generatedPlans}
+          planError={planError}
           onPreviewComplete={finalizeOnboarding}
         />
       )}
@@ -801,7 +824,25 @@ function StatsScreen({ form, set, onNext, onBack, saving }) {
 }
 
 // ── Screen 5: Init ─────────────────────────────────────────────────────────
-function InitScreen({ done, loadingMessage, generating, generatedPlans, onPreviewComplete }) {
+function InitScreen({ done, loadingMessage, generating, generatedPlans, planError, onPreviewComplete }) {
+  if (done && planError) {
+    return (
+      <div className="onboarding-init-overlay">
+        <p style={{
+          color: '#FF6B6B',
+          fontSize: 16,
+          fontWeight: 600,
+          margin: 0,
+          lineHeight: 1.6,
+          maxWidth: 320,
+        }}
+        >
+          {planError}
+        </p>
+      </div>
+    );
+  }
+
   if (done && generatedPlans) {
     return (
       <PlanPreviewScreen

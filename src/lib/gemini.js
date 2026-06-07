@@ -147,7 +147,7 @@ const COACH_GENERATION_CONFIG = {
   maxOutputTokens: 1024,
 };
 
-async function generateContent({ prompt, systemPrompt = '', generationConfig = {} }) {
+async function generateContent({ prompt, systemPrompt = '', generationConfig = {}, signal } = {}) {
   const body = {
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: { ...COACH_GENERATION_CONFIG, ...generationConfig },
@@ -163,7 +163,7 @@ async function generateContent({ prompt, systemPrompt = '', generationConfig = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(buildRequestPayload(body)),
-    signal: generationConfig.signal,
+    signal,
   });
   const data = await response.json();
   if (!response.ok || data.error) {
@@ -558,35 +558,34 @@ function parseGeminiJson(text) {
 
 const PLAN_GENERATION_TIMEOUT_MS = 8000;
 
-function createTimeoutPromise(ms, message) {
-  return new Promise((_, reject) => {
-    window.setTimeout(() => reject(new Error(message)), ms);
-  });
-}
-
-function withPlanGenerationTimeout(promise, timeoutMs = PLAN_GENERATION_TIMEOUT_MS) {
-  return Promise.race([
-    promise,
-    createTimeoutPromise(
-      timeoutMs,
-      `Gemini plan generation timed out after ${timeoutMs / 1000}s`,
-    ),
-  ]);
-}
-
 async function generateJsonFromPrompt(prompt, maxOutputTokens = 4096, { timeoutMs } = {}) {
-  const run = async () => {
-    const data = await generateContent({
-      prompt,
-      generationConfig: { maxOutputTokens, temperature: 0.2 },
-    });
+  const controller = new AbortController();
+
+  const run = generateContent({
+    prompt,
+    generationConfig: { maxOutputTokens, temperature: 0.2 },
+    signal: controller.signal,
+  }).then(data => {
     const text = extractText(data);
     if (!text) throw new Error('Empty Gemini response');
     return parseGeminiJson(text);
-  };
+  });
 
-  if (timeoutMs) return withPlanGenerationTimeout(run(), timeoutMs);
-  return run();
+  if (!timeoutMs) return run;
+
+  let timeoutId;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = window.setTimeout(() => {
+      controller.abort();
+      reject(new Error(`Gemini plan generation timed out after ${timeoutMs / 1000}s`));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([run, timeoutPromise]);
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 }
 
 /** Fetch training knowledge content for onboarding plan generation. */
@@ -838,12 +837,193 @@ const FALLBACK_WORKOUT_FEMALE = (coachId) => ({
   ],
 });
 
-/** Gender- and duration-aware fallback when Gemini plan generation fails. */
-export function getFallbackWorkoutPlan(coachId, gender = 'male', sessionDuration = 45) {
+const FALLBACK_WORKOUT_BODYWEIGHT_MALE = (coachId) => ({
+  coachId,
+  days: [
+    {
+      day: 'Saturday',
+      focus: 'Push',
+      type: 'training',
+      exercises: [
+        fallbackEx('Push Ups', '4', '12-15', '60s'),
+        fallbackEx('Pike Push Ups', '3', '10-12', '60s'),
+        fallbackEx('Diamond Push Ups', '3', '10-12', '60s'),
+        fallbackEx('Tricep Dips', '3', '12-15', '45s'),
+        fallbackEx('Shoulder Taps', '3', '20', '45s'),
+        fallbackEx('Plank to Push Up', '3', '10', '60s'),
+        fallbackEx('Incline Push Ups', '3', '15', '45s'),
+        fallbackEx('Arm Circles', '3', '30s', '30s'),
+      ],
+    },
+    {
+      day: 'Sunday',
+      focus: 'Pull',
+      type: 'training',
+      exercises: [
+        fallbackEx('Pull Ups', '4', '6-10', '90s'),
+        fallbackEx('Inverted Rows', '3', '10-12', '60s'),
+        fallbackEx('Superman Hold', '3', '30s', '45s'),
+        fallbackEx('Reverse Snow Angels', '3', '15', '45s'),
+        fallbackEx('Bicep Curl (Band)', '3', '12-15', '45s'),
+        fallbackEx('Dead Hang', '3', '30s', '60s'),
+        fallbackEx('Scapular Pull Ups', '3', '10', '60s'),
+        fallbackEx('Face Pull (Band)', '3', '15', '45s'),
+      ],
+    },
+    { day: 'Monday', focus: 'Active Rest', type: 'rest', exercises: [fallbackEx('30 min walk', '-', '-', '-')] },
+    {
+      day: 'Tuesday',
+      focus: 'Legs',
+      type: 'training',
+      exercises: [
+        fallbackEx('Bodyweight Squats', '4', '15-20', '60s'),
+        fallbackEx('Walking Lunges', '3', '12 each leg', '60s'),
+        fallbackEx('Glute Bridge', '3', '15-20', '45s'),
+        fallbackEx('Calf Raises', '3', '20', '45s'),
+        fallbackEx('Bulgarian Split Squat', '3', '10 each leg', '60s'),
+        fallbackEx('Wall Sit', '3', '45s', '60s'),
+        fallbackEx('Single Leg RDL', '3', '10 each leg', '60s'),
+        fallbackEx('Jump Squats', '3', '12', '60s'),
+      ],
+    },
+    {
+      day: 'Wednesday',
+      focus: 'Core + Cardio',
+      type: 'training',
+      exercises: [
+        fallbackEx('Plank', '3', '60s', '45s'),
+        fallbackEx('Mountain Climbers', '3', '30s', '30s'),
+        fallbackEx('Russian Twist', '3', '20', '45s'),
+        fallbackEx('Dead Bug', '3', '12', '45s'),
+        fallbackEx('Bicycle Crunch', '3', '20', '45s'),
+        fallbackEx('Burpees', '3', '10', '60s'),
+        fallbackEx('High Knees', '3', '30s', '30s'),
+        fallbackEx('Jumping Jacks', '3', '45s', '30s'),
+      ],
+    },
+    {
+      day: 'Thursday',
+      focus: 'Full Body',
+      type: 'training',
+      exercises: [
+        fallbackEx('Push Ups', '3', '12-15', '60s'),
+        fallbackEx('Pull Ups', '3', '6-10', '90s'),
+        fallbackEx('Squats', '3', '15-20', '60s'),
+        fallbackEx('Lunges', '3', '10 each leg', '60s'),
+        fallbackEx('Plank', '3', '45s', '45s'),
+        fallbackEx('Glute Bridge', '3', '15', '45s'),
+        fallbackEx('Tricep Dips', '3', '12', '45s'),
+        fallbackEx('Superman', '3', '15', '45s'),
+      ],
+    },
+    { day: 'Friday', focus: 'Full Rest', type: 'rest', exercises: [fallbackEx('Recovery', '-', '-', '-')] },
+  ],
+});
+
+const FALLBACK_WORKOUT_BODYWEIGHT_FEMALE = (coachId) => ({
+  coachId,
+  days: [
+    {
+      day: 'Saturday',
+      focus: 'Lower Body',
+      type: 'training',
+      exercises: [
+        fallbackEx('Bodyweight Squats', '4', '15-20', '60s'),
+        fallbackEx('Glute Bridge', '3', '15-20', '45s'),
+        fallbackEx('Walking Lunges', '3', '12 each leg', '60s'),
+        fallbackEx('Bulgarian Split Squat', '3', '10 each leg', '60s'),
+        fallbackEx('Calf Raises', '3', '20', '45s'),
+        fallbackEx('Wall Sit', '3', '45s', '60s'),
+        fallbackEx('Single Leg RDL', '3', '10 each leg', '60s'),
+        fallbackEx('Step Ups', '3', '12 each leg', '60s'),
+      ],
+    },
+    {
+      day: 'Sunday',
+      focus: 'Upper Body',
+      type: 'training',
+      exercises: [
+        fallbackEx('Push Ups', '3', '10-15', '60s'),
+        fallbackEx('Inverted Rows', '3', '10-12', '60s'),
+        fallbackEx('Pike Push Ups', '3', '10-12', '60s'),
+        fallbackEx('Tricep Dips', '3', '12-15', '45s'),
+        fallbackEx('Superman Hold', '3', '30s', '45s'),
+        fallbackEx('Plank Shoulder Taps', '3', '20', '45s'),
+        fallbackEx('Band Pull Apart', '3', '15', '45s'),
+        fallbackEx('Arm Circles', '3', '30s', '30s'),
+      ],
+    },
+    { day: 'Monday', focus: 'Active Rest / Yoga', type: 'rest', exercises: [fallbackEx('Active Rest / Yoga', '-', '-', '-')] },
+    {
+      day: 'Tuesday',
+      focus: 'Full Body',
+      type: 'training',
+      exercises: [
+        fallbackEx('Squats', '4', '15-20', '60s'),
+        fallbackEx('Push Ups', '3', '12-15', '60s'),
+        fallbackEx('Lunges', '3', '10 each leg', '60s'),
+        fallbackEx('Glute Bridge', '3', '15', '45s'),
+        fallbackEx('Plank', '3', '45-60s', '45s'),
+        fallbackEx('Mountain Climbers', '3', '30s', '30s'),
+        fallbackEx('Dead Bug', '3', '12', '45s'),
+        fallbackEx('Jump Squats', '3', '12', '60s'),
+      ],
+    },
+    {
+      day: 'Wednesday',
+      focus: 'Core + Cardio',
+      type: 'training',
+      exercises: [
+        fallbackEx('Plank', '3', '45s', '45s'),
+        fallbackEx('Bicycle Crunch', '3', '20', '45s'),
+        fallbackEx('Russian Twist', '3', '20', '45s'),
+        fallbackEx('Glute Bridge', '3', '15', '60s'),
+        fallbackEx('Side Plank', '3', '30s each side', '45s'),
+        fallbackEx('Burpees', '3', '10', '60s'),
+        fallbackEx('High Knees', '3', '30s', '30s'),
+        fallbackEx('Jumping Jacks', '3', '45s', '30s'),
+      ],
+    },
+    {
+      day: 'Thursday',
+      focus: 'Upper + Core',
+      type: 'training',
+      exercises: [
+        fallbackEx('Push Ups', '3', '12-15', '60s'),
+        fallbackEx('Pull Ups', '3', '6-10', '90s'),
+        fallbackEx('Inverted Rows', '3', '10-12', '60s'),
+        fallbackEx('Tricep Dips', '3', '12', '45s'),
+        fallbackEx('Plank', '3', '45s', '45s'),
+        fallbackEx('Superman', '3', '15', '45s'),
+        fallbackEx('Bird Dog', '3', '12 each side', '45s'),
+        fallbackEx('Hollow Hold', '3', '30s', '45s'),
+      ],
+    },
+    { day: 'Friday', focus: 'Full Rest', type: 'rest', exercises: [fallbackEx('Full Rest', '-', '-', '-')] },
+  ],
+});
+
+function usesBodyweightEquipment(equipment, location) {
+  const eq = String(equipment || '').toLowerCase();
+  const loc = String(location || '').toLowerCase();
+  return eq === 'bodyweight'
+    || eq === 'home_basic'
+    || eq === 'home_full'
+    || eq === 'home'
+    || loc === 'home';
+}
+
+/** Gender-, duration-, and equipment-aware fallback when Gemini plan generation fails. */
+export function getFallbackWorkoutPlan(coachId, gender = 'male', sessionDuration = 45, equipment = 'full_gym', location = 'gym') {
   const normalizedGender = String(gender || 'male').toLowerCase();
-  const basePlan = normalizedGender === 'female'
-    ? FALLBACK_WORKOUT_FEMALE(coachId)
-    : FALLBACK_WORKOUT_MALE(coachId);
+  const bodyweight = usesBodyweightEquipment(equipment, location);
+  const basePlan = bodyweight
+    ? (normalizedGender === 'female'
+      ? FALLBACK_WORKOUT_BODYWEIGHT_FEMALE(coachId)
+      : FALLBACK_WORKOUT_BODYWEIGHT_MALE(coachId))
+    : (normalizedGender === 'female'
+      ? FALLBACK_WORKOUT_FEMALE(coachId)
+      : FALLBACK_WORKOUT_MALE(coachId));
   return applySessionDurationToFallbackPlan(basePlan, sessionDuration);
 }
 
@@ -926,11 +1106,20 @@ export function getFallbackNutritionPlan(athlete = {}) {
   const fat = Math.round((goal === 'muscle_gain' ? 1 : 0.8) * weightKg);
   const carbs = Math.max(0, Math.round((dailyCalories - protein * 4 - fat * 9) / 4));
 
-  const mealDefs = [
-    { name: 'Breakfast', time: '8:00 AM', share: 0.28, foods: ['Eggs', 'Oats', 'Berries'] },
-    { name: 'Lunch', time: '1:00 PM', share: 0.35, foods: ['Chicken', 'Rice', 'Vegetables'] },
-    { name: 'Dinner', time: '7:00 PM', share: 0.37, foods: ['Fish', 'Potato', 'Salad'] },
-  ];
+  const diet = String(athlete.diet || 'none').toLowerCase();
+  const isVegetarian = diet === 'vegetarian';
+
+  const mealDefs = isVegetarian
+    ? [
+      { name: 'Breakfast', time: '8:00 AM', share: 0.28, foods: ['Tofu scramble', 'Oats', 'Berries'] },
+      { name: 'Lunch', time: '1:00 PM', share: 0.35, foods: ['Lentils', 'Rice', 'Vegetables'] },
+      { name: 'Dinner', time: '7:00 PM', share: 0.37, foods: ['Tempeh', 'Quinoa', 'Salad'] },
+    ]
+    : [
+      { name: 'Breakfast', time: '8:00 AM', share: 0.28, foods: ['Eggs', 'Oats', 'Berries'] },
+      { name: 'Lunch', time: '1:00 PM', share: 0.35, foods: ['Chicken', 'Rice', 'Vegetables'] },
+      { name: 'Dinner', time: '7:00 PM', share: 0.37, foods: ['Fish', 'Potato', 'Salad'] },
+    ];
 
   const meals = mealDefs.map(meal => ({
     name: meal.name,
@@ -1052,6 +1241,7 @@ ATHLETE PROFILE:
 - Goal: ${athlete.goal || 'general fitness'}
 - Activity level: ${athlete.activity_level || 'moderate'}
 - Training days: ${athlete.days_per_week ?? 4} per week
+- Diet restrictions: ${athlete.diet || 'none'}
 
 Calculate using:
 - Mifflin-St Jeor equation for BMR

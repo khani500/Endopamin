@@ -46,6 +46,16 @@ function calcBmi(heightCm, weightKg) {
   return Math.round((weightKg / (heightM * heightM)) * 10) / 10;
 }
 
+function mapGoalForSave(goal) {
+  const g = String(goal || '').trim().toLowerCase();
+  if (g === 'fat_loss' || g.includes('burn fat') || g.includes('lose weight')) return 'fat_loss';
+  if (g === 'muscle' || g === 'muscle_gain' || g.includes('build muscle') || g.includes('gain mass')) {
+    return 'muscle_gain';
+  }
+  if (g === 'endurance' || g.includes('athletic') || g.includes('endurance')) return 'endurance';
+  return g || 'fat_loss';
+}
+
 function buildAthleteFromProfile(profileRow = {}) {
   const heightCm = toCm(profileRow.height, profileRow.height_unit || 'cm');
   const weightKg = toKg(profileRow.weight, profileRow.weight_unit || 'kg');
@@ -70,8 +80,33 @@ function buildAthleteFromProfile(profileRow = {}) {
     days_per_week: profileRow.days_per_week || 4,
     session_duration: profileRow.session_duration || 45,
     injuries: profileRow.injuries || 'none',
+    diet: profileRow.diet || 'none',
     coach_persona: profileRow.coach_persona || 'aria',
   };
+}
+
+function buildAthleteFromForm(form, profileRow = {}) {
+  return buildAthleteFromProfile({
+    ...profileRow,
+    display_name: form.display_name || profileRow.display_name,
+    age: form.age ? Number(form.age) : profileRow.age,
+    gender: form.gender || profileRow.gender,
+    height: form.height ? Number(form.height) : profileRow.height,
+    height_unit: form.height_unit || profileRow.height_unit,
+    weight: form.weight ? Number(form.weight) : profileRow.weight,
+    weight_unit: form.weight_unit || profileRow.weight_unit,
+    target_weight: form.target_weight ? Number(form.target_weight) : profileRow.target_weight,
+    goal: form.goal || profileRow.goal,
+    experience: form.experience || profileRow.experience,
+    activity: form.activity || profileRow.activity,
+    location: form.location || profileRow.location,
+    equipment: form.equipment || profileRow.equipment,
+    session_duration: form.session_duration || profileRow.session_duration,
+    injuries: form.injuries ?? profileRow.injuries,
+    diet: form.diet || profileRow.diet,
+    coach_persona: profileRow.coach_persona || 'aria',
+    days_per_week: profileRow.days_per_week || 4,
+  });
 }
 
 // ── SVG Icons ──────────────────────────────────────────────────────────────
@@ -385,6 +420,7 @@ export default function ProfilePage() {
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [generatedPlans, setGeneratedPlans] = useState(null);
   const [showPlanPreview, setShowPlanPreview] = useState(false);
+  const [planError, setPlanError] = useState(null);
   const loadingTimerRef = useRef(null);
   const generationStartedRef = useRef(null);
   const pageMountedRef = useRef(true);
@@ -449,7 +485,7 @@ export default function ProfilePage() {
     weight: form.weight ? Number(form.weight) : null,
     weight_unit: form.weight_unit,
     target_weight: form.target_weight ? Number(form.target_weight) : null,
-    goal: form.goal,
+    goal: mapGoalForSave(form.goal),
     activity: form.activity,
     location: form.location,
     equipment: form.equipment,
@@ -458,6 +494,7 @@ export default function ProfilePage() {
     session_duration: form.session_duration,
     diet: form.diet,
     injuries: form.injuries,
+    coach_persona: profile?.coach_persona || 'aria',
   });
 
   const persistProfile = async () => {
@@ -499,6 +536,7 @@ export default function ProfilePage() {
       .eq('user_id', user.id);
     if (workoutDeleteError) {
       console.error('Failed to delete workout plans:', workoutDeleteError);
+      throw workoutDeleteError;
     }
 
     const { error: nutritionDeleteError } = await supabase
@@ -507,42 +545,13 @@ export default function ProfilePage() {
       .eq('user_id', user.id);
     if (nutritionDeleteError) {
       console.error('Failed to delete nutrition plans:', nutritionDeleteError);
+      throw nutritionDeleteError;
     }
   };
 
-  const fetchFreshProfile = async () => {
-    if (!user?.id || !supabase) return null;
+  const generatePlans = async (athlete) => {
+    if (!user?.id) return null;
 
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (error) {
-      console.error('Failed to fetch fresh profile:', error);
-      return null;
-    }
-
-    if (data) {
-      setProfile(data);
-      try {
-        localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(data));
-      } catch (cacheError) {
-        console.error('Failed to cache fresh profile locally:', cacheError);
-      }
-    }
-
-    return data;
-  };
-
-  const regeneratePlans = async () => {
-    if (!user?.id || !supabase) return null;
-
-    const freshProfile = await fetchFreshProfile();
-    if (!freshProfile) return null;
-
-    const athlete = buildAthleteFromProfile(freshProfile);
     const coachId = athlete.coach_persona;
 
     let knowledgeContent = '';
@@ -557,7 +566,13 @@ export default function ProfilePage() {
       workoutPlan = await generateOnboardingWorkoutPlan(athlete, knowledgeContent);
     } catch (err) {
       console.error('Workout plan generation failed, using fallback:', err);
-      workoutPlan = getFallbackWorkoutPlan(coachId, athlete.gender, athlete.session_duration);
+      workoutPlan = getFallbackWorkoutPlan(
+        coachId,
+        athlete.gender,
+        athlete.session_duration,
+        athlete.equipment,
+        athlete.location,
+      );
     }
 
     let nutritionPlan;
@@ -568,6 +583,14 @@ export default function ProfilePage() {
       nutritionPlan = getFallbackNutritionPlan(athlete);
     }
 
+    if (!workoutPlan || !nutritionPlan) return null;
+
+    return { workoutPlan, nutritionPlan, coachId, athlete };
+  };
+
+  const saveNewPlans = async ({ workoutPlan, nutritionPlan, coachId, athlete }) => {
+    if (!user?.id || !supabase) return false;
+
     const { error: workoutInsertError } = await supabase.from('workout_plans').insert({
       user_id: user.id,
       coach_id: coachId,
@@ -577,6 +600,7 @@ export default function ProfilePage() {
     });
     if (workoutInsertError) {
       console.error('Workout plan save failed:', workoutInsertError);
+      return false;
     }
 
     const { error: nutritionInsertError } = await supabase.from('nutrition_plans').insert({
@@ -585,33 +609,51 @@ export default function ProfilePage() {
       is_active: true,
     });
     if (nutritionInsertError) {
-      console.warn('Nutrition plan save failed:', nutritionInsertError.message);
+      console.error('Nutrition plan save failed:', nutritionInsertError);
+      return false;
     }
 
-    return { workoutPlan, nutritionPlan, coachId };
+    return true;
   };
 
   const buildPlan = async () => {
     if (isLoading) return;
 
+    setPlanError(null);
     setIsLoading(true);
     startLoadingTimer();
 
     try {
-      await persistProfile();
-      localStorage.setItem('onboarding_done', 'true');
-      await deleteUserPlans();
-      const result = await regeneratePlans();
+      const athlete = buildAthleteFromForm(form, profile);
+      const generated = await generatePlans(athlete);
       if (!pageMountedRef.current) return;
 
-      if (result) {
-        setGeneratedPlans(result);
-        setShowPlanPreview(true);
-      } else {
-        navigate('/workout-plan', { replace: true });
+      if (!generated) {
+        setPlanError('Could not generate your plans. Your existing plans were kept.');
+        return;
       }
+
+      await deleteUserPlans();
+      if (!pageMountedRef.current) return;
+
+      const saved = await saveNewPlans(generated);
+      if (!pageMountedRef.current) return;
+
+      if (!saved) {
+        setPlanError('Plans were generated but could not be saved. Please try again.');
+        return;
+      }
+
+      await persistProfile();
+      localStorage.setItem('onboarding_done', 'true');
+
+      setGeneratedPlans(generated);
+      setShowPlanPreview(true);
     } catch (err) {
       console.error('Profile save or plan generation failed:', err);
+      if (pageMountedRef.current) {
+        setPlanError('Something went wrong. Your existing plans were kept.');
+      }
     } finally {
       stopLoadingTimer();
       setIsLoading(false);
@@ -1012,6 +1054,19 @@ export default function ProfilePage() {
           {!isLoading && <IconArrow />}
         </motion.button>
       </div>
+
+      {planError && (
+        <p style={{
+          marginTop: 16,
+          fontSize: 13,
+          color: '#FF6B6B',
+          textAlign: 'center',
+          lineHeight: 1.5,
+        }}
+        >
+          {planError}
+        </p>
+      )}
 
       {createPortal(
         <AnimatePresence>
