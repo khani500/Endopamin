@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -389,75 +389,11 @@ function BMICalculatorCard({ info }) {
   );
 }
 
-const IconCamera = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M2 5.5h2L5.5 4h5l1.5 1.5H14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
-    <circle cx="8" cy="9" r="2.2" stroke="currentColor" strokeWidth="1.2"/>
-  </svg>
-);
-
-function ProfileAvatarUpload({ avatarUrl, avatarVersion, displayName, uploading, onPick }) {
-  const initial = (displayName || 'A').trim().charAt(0).toUpperCase() || 'A';
-
-  return (
-    <div style={{ position: 'relative', width: 60, height: 60, flexShrink: 0 }}>
-      <div style={{
-        width: 60,
-        height: 60,
-        borderRadius: '50%',
-        background: '#111',
-        border: '0.5px solid #2a2a2a',
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      >
-        {avatarUrl ? (
-          <img
-            src={avatarVersion ? `${avatarUrl}?v=${avatarVersion}` : avatarUrl}
-            alt="Profile"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          <span style={{ fontSize: 22, fontWeight: 800, color: '#CCFF00' }}>{initial}</span>
-        )}
-      </div>
-      <button
-        type="button"
-        onClick={onPick}
-        disabled={uploading}
-        aria-label="Upload profile photo"
-        style={{
-          position: 'absolute',
-          right: -2,
-          bottom: -2,
-          width: 22,
-          height: 22,
-          borderRadius: '50%',
-          border: '2px solid #0A0A0A',
-          background: '#CCFF00',
-          color: '#0A0A0A',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: uploading ? 'wait' : 'pointer',
-          padding: 0,
-          opacity: uploading ? 0.7 : 1,
-        }}
-      >
-        <IconCamera />
-      </button>
-    </div>
-  );
-}
-
 // ── Main Component ─────────────────────────────────────────────────────────
 const STEPS = ['Body Stats', 'Goal & Lifestyle', 'Diet & Health'];
 
 const DEFAULT = {
   display_name: '',
-  avatar_url: '',
   age: '',
   gender: 'male',
   height: '',
@@ -483,16 +419,12 @@ export default function ProfilePage() {
   const [form, setForm] = useState(DEFAULT);
   const [isLoading, setIsLoading] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
-  const [avatarUploading, setAvatarUploading] = useState(false);
-  const [avatarVersion, setAvatarVersion] = useState(0);
-  const avatarInputRef = useRef(null);
 
   useEffect(() => {
     if (!profile || profileLoaded) return;
     setForm(prev => ({
       ...prev,
       display_name: profile.display_name || '',
-      avatar_url: profile.avatar_url || '',
       age: profile.age ? String(profile.age) : '',
       gender: profile.gender || 'male',
       height: profile.height ? String(profile.height) : '',
@@ -513,54 +445,10 @@ export default function ProfilePage() {
 
   const set = (key, val) => setForm(p => ({ ...p, [key]: val }));
 
-  const handleAvatarPick = () => {
-    if (avatarUploading) return;
-    avatarInputRef.current?.click();
-  };
-
-  const handleAvatarUpload = async (event) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file || !user?.id || !supabase) return;
-
-    if (!file.type.startsWith('image/')) return;
-
-    setAvatarUploading(true);
-    try {
-      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-      const filePath = `${user.id}/avatar.${ext}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, { upsert: true, contentType: file.type });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .upsert({ id: user.id, avatar_url: publicUrl }, { onConflict: 'id' })
-        .select('*')
-        .single();
-
-      if (error) throw error;
-
-      set('avatar_url', publicUrl);
-      setAvatarVersion(Date.now());
-      if (data) setProfile(data);
-    } catch (err) {
-      console.error('Avatar upload failed:', err);
-    } finally {
-      setAvatarUploading(false);
-    }
-  };
-
   const buildPayload = () => ({
     id: user?.id,
     onboarding_completed: true,
     display_name: form.display_name || 'Athlete',
-    avatar_url: form.avatar_url || null,
     age: form.age ? Number(form.age) : null,
     gender: form.gender,
     height: form.height ? Number(form.height) : null,
@@ -661,34 +549,15 @@ export default function ProfilePage() {
   // ── Step 1: Body Stats ───────────────────────────────────────────────────
   const Step1 = (
     <motion.div key="s1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-      <input
-        ref={avatarInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleAvatarUpload}
-        style={{ display: 'none' }}
-      />
-
-      <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 4 }}>
-        <ProfileAvatarUpload
-          avatarUrl={form.avatar_url}
-          avatarVersion={avatarVersion}
-          displayName={form.display_name}
-          uploading={avatarUploading}
-          onPick={handleAvatarPick}
+      <SectionLabel style={{ marginTop: 0 }}>Your Name</SectionLabel>
+      <div style={{ background: '#111', border: '0.5px solid #2a2a2a', borderRadius: 10, overflow: 'hidden' }}>
+        <input
+          type="text"
+          value={form.display_name}
+          onChange={e => set('display_name', e.target.value)}
+          placeholder="Athlete name"
+          style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: 15, padding: '11px 12px', width: '100%', outline: 'none', fontFamily: 'inherit' }}
         />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <SectionLabel style={{ marginTop: 0 }}>Your Name</SectionLabel>
-          <div style={{ background: '#111', border: '0.5px solid #2a2a2a', borderRadius: 10, overflow: 'hidden' }}>
-            <input
-              type="text"
-              value={form.display_name}
-              onChange={e => set('display_name', e.target.value)}
-              placeholder="Athlete name"
-              style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: 15, padding: '11px 12px', width: '100%', outline: 'none', fontFamily: 'inherit' }}
-            />
-          </div>
-        </div>
       </div>
 
       {/* Height + Age */}
