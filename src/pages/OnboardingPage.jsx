@@ -183,6 +183,7 @@ export default function OnboardingPage() {
   const [initDone, setInitDone] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState(LOADING_PHASES[0].text);
   const [generatingPlans, setGeneratingPlans] = useState(false);
+  const [planSummary, setPlanSummary] = useState({ dailyCalories: null });
   const loadingTimerRef = useRef(null);
   const generationStartedRef = useRef(null);
   const [form, setForm] = useState({
@@ -206,7 +207,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (!initDone) return;
-    const timer = window.setTimeout(() => navigate('/home', { replace: true }), 1500);
+    const timer = window.setTimeout(() => navigate('/', { replace: true }), 3000);
     return () => window.clearTimeout(timer);
   }, [initDone, navigate]);
 
@@ -232,7 +233,7 @@ export default function OnboardingPage() {
   };
 
   const generateAndSavePlans = async (profileData) => {
-    if (!user?.id || !supabase) return;
+    if (!user?.id || !supabase) return null;
 
     const athlete = buildAthleteProfile(form, profileData);
     const coachId = athlete.coach_persona;
@@ -291,6 +292,8 @@ export default function OnboardingPage() {
     if (nutritionInsertError) {
       console.warn('Nutrition plan save failed (run nutrition_plans migration):', nutritionInsertError.message);
     }
+
+    return { nutritionPlan };
   };
 
   const save = async () => {
@@ -328,9 +331,15 @@ export default function OnboardingPage() {
     startLoadingTimer();
 
     try {
-      await generateAndSavePlans(profileData);
+      const result = await generateAndSavePlans(profileData);
+      if (result?.nutritionPlan?.daily_calories) {
+        setPlanSummary({ dailyCalories: result.nutritionPlan.daily_calories });
+      } else {
+        setPlanSummary({ dailyCalories: FALLBACK_NUTRITION.daily_calories });
+      }
     } catch (err) {
       console.error('Plan generation failed:', err);
+      setPlanSummary({ dailyCalories: FALLBACK_NUTRITION.daily_calories });
     } finally {
       stopLoadingTimer();
       setGeneratingPlans(false);
@@ -343,7 +352,14 @@ export default function OnboardingPage() {
     <CoachScreen form={form} set={set} onNext={next} onBack={back} key="coach" />,
     <GoalScreen form={form} set={set} onNext={next} onBack={back} key="goal" />,
     <StatsScreen form={form} set={set} onNext={save} onBack={back} saving={saving} key="stats" />,
-    <InitScreen form={form} done={initDone} loadingMessage={loadingMessage} generating={generatingPlans} key="init" />,
+    <InitScreen
+      form={form}
+      done={initDone}
+      loadingMessage={loadingMessage}
+      generating={generatingPlans}
+      dailyCalories={planSummary.dailyCalories}
+      key="init"
+    />,
   ];
 
   return (
@@ -680,12 +696,20 @@ function StatsScreen({ form, set, onNext, onBack, saving }) {
 }
 
 // ── Screen 5: Init ─────────────────────────────────────────────────────────
-function InitScreen({ form, done, loadingMessage, generating }) {
+function InitScreen({ form, done, loadingMessage, generating, dailyCalories }) {
   const coach = COACHES.find(c => c.id === form.coach_persona) || COACHES[0];
+  const caloriesLabel = dailyCalories ? `${dailyCalories} kcal daily target` : 'Personalized daily target';
+
   return (
     <div style={{
-      minHeight: '100vh', display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '40px 24px',
+      textAlign: 'center',
+      background: done ? '#0A0A0A' : '#060608',
     }}>
       {!done ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -742,44 +766,81 @@ function InitScreen({ form, done, loadingMessage, generating }) {
           </div>
         </motion.div>
       ) : (
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-          {/* Done */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          style={{ width: '100%', maxWidth: 340 }}
+        >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+            transition={{ type: 'spring', stiffness: 220, damping: 16 }}
             style={{
-              width: 80, height: 80, borderRadius: '50%',
-              border: '2px solid #CCFF00', margin: '0 auto 24px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 88,
+              height: 88,
+              borderRadius: '50%',
+              border: '2px solid #CCFF00',
+              margin: '0 auto 28px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#111',
             }}
           >
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-              <path d="M9 18l6 6 12-12" stroke="#CCFF00" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+              <path d="M12 22l7 7 13-14" stroke="#CCFF00" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <div style={{ fontSize: 11, color: '#CCFF00', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8 }}>
-              🔥 STREAK ACTIVATED — DAY 1
-            </div>
-            <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-0.04em', textTransform: 'uppercase', marginBottom: 6 }}>
-              LET'S ACHIEVE<br /><span style={{ color: '#CCFF00' }}>{form.goal?.replace('_', ' ').toUpperCase()}</span>
-            </div>
-            <p style={{ fontSize: 13, color: '#555', marginBottom: 32 }}>
-              {COACHES.find(c => c.id === form.coach_persona)?.name} is ready. You're 30 mins away from your first session.
-            </p>
+          <h2 style={{
+            margin: '0 0 24px',
+            fontSize: 26,
+            fontWeight: 900,
+            letterSpacing: '-0.03em',
+            color: '#fff',
+          }}
+          >
+            Your Plan is Ready!
+          </h2>
 
-            {/* XP badge */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
             <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              background: '#0d1a00', border: '0.5px solid #CCFF00',
-              borderRadius: 20, padding: '8px 16px', marginBottom: 24,
-            }}>
-              <span style={{ fontSize: 18 }}>⚡</span>
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#CCFF00' }}>+100 ENDO SCORE</span>
+              background: '#111',
+              border: '0.5px solid #2a2a2a',
+              borderRadius: 14,
+              padding: '14px 16px',
+              textAlign: 'left',
+            }}
+            >
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#CCFF00', marginBottom: 4 }}>
+                ✅ Workout Plan
+              </div>
+              <div style={{ fontSize: 13, color: '#888' }}>
+                7-day personalized program
+              </div>
             </div>
-          </motion.div>
+
+            <div style={{
+              background: '#111',
+              border: '0.5px solid #2a2a2a',
+              borderRadius: 14,
+              padding: '14px 16px',
+              textAlign: 'left',
+            }}
+            >
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#CCFF00', marginBottom: 4 }}>
+                ✅ Nutrition Plan
+              </div>
+              <div style={{ fontSize: 13, color: '#888' }}>
+                {caloriesLabel}
+              </div>
+            </div>
+          </div>
+
+          <p style={{ margin: 0, fontSize: 14, color: '#555' }}>
+            Your coach is waiting for you
+          </p>
         </motion.div>
       )}
     </div>
