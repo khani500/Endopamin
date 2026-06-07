@@ -171,42 +171,20 @@ function getCurrentMonthMeta() {
   };
 }
 
-function getWorkoutLogTimestamp(log) {
-  return log.created_at || log.logged_at || null;
-}
-
 async function fetchWeeklyWorkoutLogs(userId, weekStart, weekEnd) {
-  const weekStartIso = weekStart.toISOString();
-  const weekEndIso = weekEnd.toISOString();
-
-  const createdResult = await supabase
+  const { data, error } = await supabase
     .from('workout_logs')
-    .select('created_at, logged_at')
+    .select('logged_at')
     .eq('user_id', userId)
-    .gte('created_at', weekStartIso)
-    .lte('created_at', weekEndIso);
+    .gte('logged_at', weekStart.toISOString())
+    .lte('logged_at', weekEnd.toISOString());
 
-  console.log('raw workout_logs (created_at filter):', createdResult.data, createdResult.error);
-
-  if (!createdResult.error && createdResult.data?.length) {
-    return createdResult.data;
-  }
-
-  const loggedResult = await supabase
-    .from('workout_logs')
-    .select('created_at, logged_at')
-    .eq('user_id', userId)
-    .gte('logged_at', weekStartIso)
-    .lte('logged_at', weekEndIso);
-
-  console.log('raw workout_logs (logged_at filter):', loggedResult.data, loggedResult.error);
-
-  if (loggedResult.error) {
-    console.error('Failed to load weekly workout logs:', loggedResult.error);
+  if (error) {
+    console.error('Failed to load weekly workout logs:', error);
     return [];
   }
 
-  return loggedResult.data ?? [];
+  return data ?? [];
 }
 
 function buildActiveDays(logs) {
@@ -251,9 +229,8 @@ function buildWeeklyChart(logs) {
 
   const workoutDays = new Set();
   for (const log of logs) {
-    const timestamp = getWorkoutLogTimestamp(log);
-    if (!timestamp) continue;
-    const date = new Date(timestamp);
+    if (!log.logged_at) continue;
+    const date = new Date(log.logged_at);
     date.setHours(0, 0, 0, 0);
     workoutDays.add(date.getTime());
   }
@@ -296,7 +273,7 @@ function countDistinctLogDays(logs, getTimestamp = log => log.logged_at) {
 }
 
 function calculateActivityRings(workoutLogs, nutritionLogs, goalDays) {
-  const workoutDayCount = countDistinctLogDays(workoutLogs, getWorkoutLogTimestamp);
+  const workoutDayCount = countDistinctLogDays(workoutLogs);
   const nutritionDayCount = countDistinctLogDays(nutritionLogs);
   const safeGoalDays = goalDays > 0 ? goalDays : 4;
 
