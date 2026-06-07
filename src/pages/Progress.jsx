@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 const RANGES = ['1W', '1M', '3M', '6M', '1Y', 'All'];
 
@@ -99,21 +100,111 @@ function RingSvg({ rings }) {
   );
 }
 
-const PR_DATA = [
-  { name: 'Barbell Squat', date: 'May 18, 2026', kg: 120, badge: '↑ NEW PR', badgeColor: '#FFA53C', iconColor: '#CCFF00', iconBg: 'rgba(204,255,0,0.1)' },
-  { name: 'Bench Press', date: 'May 15, 2026', kg: 90, badge: '↑ +5 kg', badgeColor: '#5088FF', iconColor: '#5088FF', iconBg: 'rgba(80,136,255,0.1)' },
-  { name: 'Deadlift', date: 'May 10, 2026', kg: 140, badge: '↑ +10 kg', badgeColor: '#FF6B6B', iconColor: '#FF6B6B', iconBg: 'rgba(255,107,107,0.1)' },
+const PR_ICON_PALETTE = [
+  { iconColor: '#CCFF00', iconBg: 'rgba(204,255,0,0.1)' },
+  { iconColor: '#5088FF', iconBg: 'rgba(80,136,255,0.1)' },
+  { iconColor: '#FF6B6B', iconBg: 'rgba(255,107,107,0.1)' },
 ];
 
+function formatPrDate(dateStr) {
+  return new Date(`${dateStr}T12:00:00`).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+function formatWeightDiff(current, previous) {
+  const diff = Number(current) - Number(previous);
+  if (!Number.isFinite(diff) || diff <= 0) return null;
+  const label = Number.isInteger(diff) ? diff : diff.toFixed(1);
+  return `↑ +${label} kg`;
+}
+
+function buildPrRows(records) {
+  const byExercise = new Map();
+
+  for (const record of records) {
+    const key = record.exercise_name?.trim().toLowerCase();
+    if (!key) continue;
+    if (!byExercise.has(key)) byExercise.set(key, []);
+    byExercise.get(key).push(record);
+  }
+
+  const rows = [];
+
+  for (const exerciseRecords of byExercise.values()) {
+    const current = exerciseRecords[0];
+    const previous = exerciseRecords[1];
+    const increasedBadge = previous ? formatWeightDiff(current.weight_kg, previous.weight_kg) : null;
+
+    rows.push({
+      name: current.exercise_name,
+      date: formatPrDate(current.recorded_at),
+      recordedAt: current.recorded_at,
+      kg: Number(current.weight_kg),
+      badge: increasedBadge ?? (previous ? null : '↑ NEW PR'),
+      badgeColor: increasedBadge ? '#5088FF' : '#FFA53C',
+    });
+  }
+
+  return rows.sort(
+    (a, b) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime(),
+  );
+}
+
 export default function Progress() {
-  const { profile } = useAuth() || {};
+  const { profile, user } = useAuth() || {};
   const [rangeIdx, setRangeIdx] = useState(0);
+  const [prRecords, setPrRecords] = useState([]);
+  const [prLoading, setPrLoading] = useState(true);
   const d = DATA[rangeIdx];
   const pct = Math.round((rangeIdx / 5) * 100);
 
   const streak = profile?.streak_count ?? d.streak;
   const xp = profile?.dopa_xp ?? d.xp;
   const lv = profile?.dopa_level ?? d.lv;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchPersonalRecords() {
+      if (!user?.id || !supabase) {
+        if (!cancelled) {
+          setPrRecords([]);
+          setPrLoading(false);
+        }
+        return;
+      }
+
+      setPrLoading(true);
+
+      const { data, error } = await supabase
+        .from('personal_records')
+        .select('exercise_name, weight_kg, reps, recorded_at')
+        .eq('user_id', user.id)
+        .order('recorded_at', { ascending: false });
+
+      if (cancelled) return;
+
+      if (error) {
+        console.error('Failed to load personal records:', error);
+        setPrRecords([]);
+      } else {
+        setPrRecords(data ?? []);
+      }
+
+      setPrLoading(false);
+    }
+
+    void fetchPersonalRecords();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
+  const prRows = useMemo(() => buildPrRows(prRecords), [prRecords]);
 
   return (
     <main className="min-h-screen bg-[#080808] text-white pb-28 overflow-x-hidden">
@@ -298,26 +389,39 @@ export default function Progress() {
           </div>
           <span className="text-[10px] text-[#CCFF00] font-bold cursor-pointer">+ Add</span>
         </div>
-        {PR_DATA.map((pr, i) => (
-          <div key={i} className="flex items-center justify-between py-2.5 border-b border-white/[0.05] last:border-0">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-[11px] flex items-center justify-center flex-shrink-0 border"
-                style={{ background: pr.iconBg, borderColor: pr.iconBg }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke={pr.iconColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                  <path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/>
-                </svg>
-              </div>
-              <div>
-                <p className="text-[12px] font-bold text-white">{pr.name}</p>
-                <p className="text-[9px] text-white/30 mt-0.5">{pr.date}</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-[14px] font-bold text-[#CCFF00]">{pr.kg} kg</p>
-              <p className="text-[9px] font-bold" style={{ color: pr.badgeColor }}>{pr.badge}</p>
-            </div>
+        {prLoading ? (
+          <div className="flex justify-center py-6">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#CCFF00]/30 border-t-[#CCFF00]" />
           </div>
-        ))}
+        ) : prRows.length === 0 ? (
+          <p className="py-4 text-center text-sm text-white/30">No records yet</p>
+        ) : (
+          prRows.map((pr, i) => {
+            const palette = PR_ICON_PALETTE[i % PR_ICON_PALETTE.length];
+            return (
+              <div key={`${pr.name}-${pr.date}`} className="flex items-center justify-between border-b border-white/[0.05] py-2.5 last:border-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[11px] border"
+                    style={{ background: palette.iconBg, borderColor: palette.iconBg }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke={palette.iconColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                      <path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[12px] font-bold text-white">{pr.name}</p>
+                    <p className="mt-0.5 text-[9px] text-white/30">{pr.date}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-[14px] font-bold text-[#CCFF00]">{pr.kg} kg</p>
+                  {pr.badge ? (
+                    <p className="text-[9px] font-bold" style={{ color: pr.badgeColor }}>{pr.badge}</p>
+                  ) : null}
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
     </main>
