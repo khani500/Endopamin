@@ -284,7 +284,7 @@ export default function WorkoutPlanPage() {
       logPlanSource("Generated via Gemini", planData);
     } catch (e) {
       console.error("Gemini failed, using fallback:", e);
-      planData = getFallbackWorkoutPlan(activeCoach, profileGender);
+      planData = getFallbackWorkoutPlan(activeCoach, profileGender, activeProfile?.session_duration);
       planSource = "fallback";
       logPlanSource("Using gender-aware FALLBACK template", planData);
     }

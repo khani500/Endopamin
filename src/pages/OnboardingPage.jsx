@@ -61,6 +61,7 @@ function buildAthleteProfile(form, savedProfile = {}) {
     location: savedProfile.location || 'gym',
     equipment: savedProfile.equipment || 'full_gym',
     days_per_week: savedProfile.days_per_week || 4,
+    session_duration: form.session_duration || savedProfile.session_duration || 45,
     injuries: form.injuries || savedProfile.injuries || 'none',
     coach_persona: form.coach_persona || savedProfile.coach_persona || 'aria',
   };
@@ -359,7 +360,7 @@ export default function OnboardingPage() {
       workoutPlan = await generateOnboardingWorkoutPlan(athlete, knowledgeContent);
     } catch (err) {
       console.error('Workout plan generation failed, using fallback:', err);
-      workoutPlan = getFallbackWorkoutPlan(coachId, athlete.gender);
+      workoutPlan = getFallbackWorkoutPlan(coachId, athlete.gender, athlete.session_duration);
     }
 
     let nutritionPlan;
@@ -446,7 +447,7 @@ export default function OnboardingPage() {
         setGeneratedPlans(result);
       } else {
         setGeneratedPlans({
-          workoutPlan: getFallbackWorkoutPlan(form.coach_persona, form.gender),
+          workoutPlan: getFallbackWorkoutPlan(form.coach_persona, form.gender, 45),
           nutritionPlan: FALLBACK_NUTRITION,
           coachId: form.coach_persona || 'aria',
         });
@@ -455,7 +456,7 @@ export default function OnboardingPage() {
       console.error('Plan generation failed:', err);
       if (!pageMountedRef.current) return;
       setGeneratedPlans({
-        workoutPlan: getFallbackWorkoutPlan(form.coach_persona, form.gender),
+        workoutPlan: getFallbackWorkoutPlan(form.coach_persona, form.gender, 45),
         nutritionPlan: FALLBACK_NUTRITION,
         coachId: form.coach_persona || 'aria',
       });

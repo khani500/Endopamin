@@ -585,15 +585,139 @@ export async function fetchTrainingKnowledgeForOnboarding(limit = 20) {
 
 const fallbackEx = (name, sets = '3', reps = '10-12', rest = '60s') => ({ name, sets, reps, rest });
 
+function normalizeSessionDuration(sessionDuration) {
+  const duration = Number(sessionDuration) || 45;
+  if (duration >= 60 || duration === 90) return 60;
+  if (duration <= 15) return 15;
+  if (duration <= 30) return 30;
+  if (duration <= 45) return 45;
+  return 60;
+}
+
+function getExerciseCountForDuration(sessionDuration) {
+  const duration = normalizeSessionDuration(sessionDuration);
+  if (duration === 15) return 3;
+  if (duration === 30) return 5;
+  if (duration === 45) return 7;
+  return 8;
+}
+
+const ACTIVE_RECOVERY_EXERCISES = [
+  fallbackEx('Brisk Walk', '1', '10 min', '-'),
+  fallbackEx('Mobility Circuit', '2', '5 min', '30s'),
+  fallbackEx('Light Stretching', '1', '5 min', '-'),
+  fallbackEx('Foam Rolling', '1', '8 min', '-'),
+];
+
+function applySessionDurationToFallbackPlan(plan, sessionDuration = 45) {
+  const duration = normalizeSessionDuration(sessionDuration);
+  const exerciseCount = getExerciseCountForDuration(sessionDuration);
+  const useActiveRecovery = duration === 15;
+
+  return {
+    ...plan,
+    days: plan.days.map(day => {
+      const isRestDay = day.type === 'rest';
+      const isActiveRest = /active/i.test(day.focus || '');
+
+      if (useActiveRecovery && isRestDay && !isActiveRest) {
+        return {
+          ...day,
+          type: 'training',
+          focus: 'Active Recovery',
+          exercises: ACTIVE_RECOVERY_EXERCISES.slice(0, exerciseCount),
+        };
+      }
+
+      if (isRestDay) return day;
+
+      return {
+        ...day,
+        exercises: (day.exercises || []).slice(0, exerciseCount),
+      };
+    }),
+  };
+}
+
 const FALLBACK_WORKOUT_MALE = (coachId) => ({
   coachId,
   days: [
-    { day: 'Saturday', focus: 'Push', type: 'training', exercises: [fallbackEx('Bench Press', '4', '8-10', '90s'), fallbackEx('OHP', '3', '8-10', '90s'), fallbackEx('Tricep Pushdown', '3', '12', '45s')] },
-    { day: 'Sunday', focus: 'Pull', type: 'training', exercises: [fallbackEx('Deadlift', '4', '5', '120s'), fallbackEx('Barbell Row', '3', '8-10', '90s'), fallbackEx('Lat Pulldown', '3', '10-12', '60s')] },
+    {
+      day: 'Saturday',
+      focus: 'Push',
+      type: 'training',
+      exercises: [
+        fallbackEx('Bench Press', '4', '8-10', '90s'),
+        fallbackEx('Overhead Press', '3', '8-10', '90s'),
+        fallbackEx('Incline Dumbbell Press', '3', '10-12', '60s'),
+        fallbackEx('Lateral Raise', '3', '12-15', '45s'),
+        fallbackEx('Tricep Pushdown', '3', '12', '45s'),
+        fallbackEx('Dips', '3', '8-12', '60s'),
+        fallbackEx('Cable Fly', '3', '12-15', '45s'),
+        fallbackEx('Face Pull', '3', '15', '45s'),
+      ],
+    },
+    {
+      day: 'Sunday',
+      focus: 'Pull',
+      type: 'training',
+      exercises: [
+        fallbackEx('Deadlift', '4', '5', '120s'),
+        fallbackEx('Barbell Row', '3', '8-10', '90s'),
+        fallbackEx('Lat Pulldown', '3', '10-12', '60s'),
+        fallbackEx('Pull-Up', '3', '6-10', '90s'),
+        fallbackEx('Seated Cable Row', '3', '10-12', '60s'),
+        fallbackEx('Face Pull', '3', '15', '45s'),
+        fallbackEx('Barbell Curl', '3', '10-12', '45s'),
+        fallbackEx('Hammer Curl', '3', '12', '45s'),
+      ],
+    },
     { day: 'Monday', focus: 'Active Rest', type: 'rest', exercises: [fallbackEx('30 min walk', '-', '-', '-')] },
-    { day: 'Tuesday', focus: 'Legs', type: 'training', exercises: [fallbackEx('Squat', '4', '8', '120s'), fallbackEx('Leg Press', '3', '12', '90s'), fallbackEx('Romanian Deadlift', '3', '10', '90s')] },
-    { day: 'Wednesday', focus: 'Core + Cardio', type: 'training', exercises: [fallbackEx('Plank', '3', '60s', '45s'), fallbackEx('Mountain Climber', '3', '30s', '30s')] },
-    { day: 'Thursday', focus: 'Upper Mix', type: 'training', exercises: [fallbackEx('Incline Press', '3', '10', '60s'), fallbackEx('Cable Row', '3', '10-12', '60s')] },
+    {
+      day: 'Tuesday',
+      focus: 'Legs',
+      type: 'training',
+      exercises: [
+        fallbackEx('Squat', '4', '8', '120s'),
+        fallbackEx('Leg Press', '3', '12', '90s'),
+        fallbackEx('Romanian Deadlift', '3', '10', '90s'),
+        fallbackEx('Walking Lunge', '3', '10 each leg', '60s'),
+        fallbackEx('Leg Curl', '3', '12-15', '60s'),
+        fallbackEx('Calf Raise', '3', '15-20', '45s'),
+        fallbackEx('Leg Extension', '3', '12-15', '60s'),
+        fallbackEx('Hip Thrust', '3', '10-12', '90s'),
+      ],
+    },
+    {
+      day: 'Wednesday',
+      focus: 'Core + Cardio',
+      type: 'training',
+      exercises: [
+        fallbackEx('Plank', '3', '60s', '45s'),
+        fallbackEx('Mountain Climber', '3', '30s', '30s'),
+        fallbackEx('Russian Twist', '3', '20', '45s'),
+        fallbackEx('Dead Bug', '3', '12', '45s'),
+        fallbackEx('Bicycle Crunch', '3', '20', '45s'),
+        fallbackEx('Farmer Carry', '3', '40m', '60s'),
+        fallbackEx('Jump Rope', '3', '60s', '30s'),
+        fallbackEx('Burpee', '3', '10', '60s'),
+      ],
+    },
+    {
+      day: 'Thursday',
+      focus: 'Upper Mix',
+      type: 'training',
+      exercises: [
+        fallbackEx('Incline Press', '3', '10', '60s'),
+        fallbackEx('Cable Row', '3', '10-12', '60s'),
+        fallbackEx('Arnold Press', '3', '10-12', '60s'),
+        fallbackEx('Chest Supported Row', '3', '10-12', '60s'),
+        fallbackEx('Push-Up', '3', '12-15', '45s'),
+        fallbackEx('Rear Delt Fly', '3', '15', '45s'),
+        fallbackEx('Skull Crusher', '3', '10-12', '45s'),
+        fallbackEx('Preacher Curl', '3', '10-12', '45s'),
+      ],
+    },
     { day: 'Friday', focus: 'Full Rest', type: 'rest', exercises: [fallbackEx('Recovery', '-', '-', '-')] },
   ],
 });
@@ -613,6 +737,7 @@ const FALLBACK_WORKOUT_FEMALE = (coachId) => ({
         fallbackEx('Glute Bridge', '3', '15', '45s'),
         fallbackEx('Calf Raise', '3', '15-20', '45s'),
         fallbackEx('Step Up', '3', '10 each leg', '60s'),
+        fallbackEx('Bulgarian Split Squat', '3', '10 each leg', '60s'),
       ],
     },
     {
@@ -627,6 +752,7 @@ const FALLBACK_WORKOUT_FEMALE = (coachId) => ({
         fallbackEx('Tricep Extension', '3', '12-15', '45s'),
         fallbackEx('Bicep Curl', '3', '12-15', '45s'),
         fallbackEx('Face Pull', '3', '15', '45s'),
+        fallbackEx('Chest Fly', '3', '12-15', '45s'),
       ],
     },
     {
@@ -647,6 +773,7 @@ const FALLBACK_WORKOUT_FEMALE = (coachId) => ({
         fallbackEx('Mountain Climber', '3', '30s', '30s'),
         fallbackEx('Russian Twist', '3', '20', '45s'),
         fallbackEx('Bird Dog', '3', '12 each side', '45s'),
+        fallbackEx('Kettlebell Swing', '3', '15', '60s'),
       ],
     },
     {
@@ -661,6 +788,7 @@ const FALLBACK_WORKOUT_FEMALE = (coachId) => ({
         fallbackEx('Lateral Band Walk', '3', '15 each side', '45s'),
         fallbackEx('Glute Kickback', '3', '15 each leg', '45s'),
         fallbackEx('Side Plank', '3', '30s each side', '45s'),
+        fallbackEx('Box Step-Up', '3', '12 each leg', '45s'),
       ],
     },
     {
@@ -675,6 +803,7 @@ const FALLBACK_WORKOUT_FEMALE = (coachId) => ({
         fallbackEx('Ab Rollout', '3', '10-12', '45s'),
         fallbackEx('Hollow Hold', '3', '30s', '45s'),
         fallbackEx('Superman', '3', '15', '45s'),
+        fallbackEx('Pallof Press', '3', '12 each side', '45s'),
       ],
     },
     {
@@ -686,13 +815,13 @@ const FALLBACK_WORKOUT_FEMALE = (coachId) => ({
   ],
 });
 
-/** Gender-aware fallback when Gemini plan generation fails. */
-export function getFallbackWorkoutPlan(coachId, gender = 'male') {
+/** Gender- and duration-aware fallback when Gemini plan generation fails. */
+export function getFallbackWorkoutPlan(coachId, gender = 'male', sessionDuration = 45) {
   const normalizedGender = String(gender || 'male').toLowerCase();
-  if (normalizedGender === 'female') {
-    return FALLBACK_WORKOUT_FEMALE(coachId);
-  }
-  return FALLBACK_WORKOUT_MALE(coachId);
+  const basePlan = normalizedGender === 'female'
+    ? FALLBACK_WORKOUT_FEMALE(coachId)
+    : FALLBACK_WORKOUT_MALE(coachId);
+  return applySessionDurationToFallbackPlan(basePlan, sessionDuration);
 }
 
 function normalizeOnboardingWorkoutPlan(raw, coachId) {
@@ -717,6 +846,7 @@ function normalizeOnboardingWorkoutPlan(raw, coachId) {
 
 export async function generateOnboardingWorkoutPlan(athlete, knowledgeContent) {
   const coachId = String(athlete.coach_persona || 'aria').toLowerCase();
+  const sessionDuration = athlete.session_duration || 45;
   const prompt = `You are an elite fitness coach with expertise from NASM, NSCA, ACSM, ACE, ISSN, and WHO guidelines.
 
 SCIENTIFIC KNOWLEDGE BASE:
@@ -732,10 +862,18 @@ ATHLETE PROFILE:
 - Training location: ${athlete.location || 'gym'}
 - Available equipment: ${athlete.equipment || 'full_gym'}
 - Training days per week: ${athlete.days_per_week ?? 4}
+- Session duration: ${sessionDuration} minutes
 - Injuries or limitations: ${athlete.injuries || 'none'}
 - Coach persona: ${coachId}
 
 Based on the scientific knowledge base and athlete profile above, create a highly personalized, evidence-based 7-day workout plan.
+
+SESSION DURATION RULES (must fit within ${sessionDuration} minutes per session including warm-up):
+- Session duration: ${sessionDuration} minutes
+- If 15 min: 3-4 exercises per training day, compound movements only, no full rest days — replace with active recovery
+- If 30 min: 4-5 exercises per training day
+- If 45 min: 6-7 exercises per training day
+- If 60+ min: 7-8 exercises per training day
 
 Apply these principles:
 - Progressive overload based on experience level

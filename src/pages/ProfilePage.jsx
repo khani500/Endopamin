@@ -66,6 +66,7 @@ function buildAthleteProfileForPlan(form, savedProfile = {}) {
     location: form.location || savedProfile.location || 'gym',
     equipment: form.equipment || savedProfile.equipment || 'full_gym',
     days_per_week: savedProfile.days_per_week || 4,
+    session_duration: form.session_duration || savedProfile.session_duration || 45,
     injuries: form.injuries || savedProfile.injuries || 'none',
     coach_persona: savedProfile.coach_persona || 'aria',
   };
@@ -539,7 +540,7 @@ export default function ProfilePage() {
       workoutPlan = await generateOnboardingWorkoutPlan(athlete, knowledgeContent);
     } catch (err) {
       console.error('Workout plan generation failed, using fallback:', err);
-      workoutPlan = getFallbackWorkoutPlan(coachId, athlete.gender);
+      workoutPlan = getFallbackWorkoutPlan(coachId, athlete.gender, athlete.session_duration);
     }
 
     let nutritionPlan;
