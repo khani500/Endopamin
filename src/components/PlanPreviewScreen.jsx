@@ -1,17 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { getCoach } from '../config/coaches';
 
-const PLAN_PREVIEW_SEEN_KEY = 'plan_preview_seen';
-
-export function hasSeenPlanPreview() {
-  return typeof window !== 'undefined'
-    && localStorage.getItem(PLAN_PREVIEW_SEEN_KEY) === 'true';
-}
-
-export function markPlanPreviewSeen() {
-  localStorage.setItem(PLAN_PREVIEW_SEEN_KEY, 'true');
-}
-
 function formatDayLine(day) {
   const name = day?.day || day?.name || 'Day';
   const focus = day?.focus || (day?.type === 'rest' ? 'Rest' : 'Training');
@@ -34,19 +23,16 @@ export default function PlanPreviewScreen({
   const fat = nutritionPlan?.fat_g ?? null;
 
   const handleLetsGo = () => {
-    markPlanPreviewSeen();
     if (onComplete) onComplete();
     navigate('/workout-plan', { replace: true });
   };
 
   const handleViewWorkout = () => {
-    markPlanPreviewSeen();
     if (onComplete) onComplete();
     navigate('/workout-plan', { replace: true });
   };
 
   const handleViewNutrition = () => {
-    markPlanPreviewSeen();
     if (onComplete) onComplete();
     navigate('/log/plan', { replace: true });
   };

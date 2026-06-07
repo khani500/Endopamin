@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import {
@@ -8,7 +7,7 @@ import {
   generateOnboardingWorkoutPlan,
   getFallbackWorkoutPlan,
 } from '../lib/gemini';
-import PlanPreviewScreen, { hasSeenPlanPreview } from '../components/PlanPreviewScreen';
+import PlanPreviewScreen from '../components/PlanPreviewScreen';
 
 const LOADING_PHASES = [
   { until: 3, text: 'Analyzing your profile...' },
@@ -267,8 +266,8 @@ const ONBOARDING_CSS = `
 
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function OnboardingPage() {
-  const navigate = useNavigate();
   const { user, setProfile } = useAuth();
+  const pageMountedRef = useRef(true);
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
   const [saving, setSaving] = useState(false);
@@ -312,25 +311,16 @@ export default function OnboardingPage() {
     }
   };
 
-  const skipToWorkoutPlan = async () => {
-    await finalizeOnboarding();
-    navigate('/workout-plan', { replace: true });
-  };
-
   useEffect(() => {
     if (step === 4) console.log('InitScreen shown, step === 4');
   }, [step]);
 
   useEffect(() => {
-    if (!initDone || !generatedPlans) return;
-    console.log('SUCCESS SCREEN');
-
-    if (hasSeenPlanPreview()) {
-      void skipToWorkoutPlan();
-    }
+    if (initDone && generatedPlans) console.log('SUCCESS SCREEN');
   }, [initDone, generatedPlans]);
 
   useEffect(() => () => {
+    pageMountedRef.current = false;
     if (loadingTimerRef.current) window.clearInterval(loadingTimerRef.current);
   }, []);
 
@@ -451,6 +441,7 @@ export default function OnboardingPage() {
 
     try {
       const result = await generateAndSavePlans(profileData);
+      if (!pageMountedRef.current) return;
       if (result) {
         setGeneratedPlans(result);
       } else {
@@ -462,6 +453,7 @@ export default function OnboardingPage() {
       }
     } catch (err) {
       console.error('Plan generation failed:', err);
+      if (!pageMountedRef.current) return;
       setGeneratedPlans({
         workoutPlan: getFallbackWorkoutPlan(form.coach_persona, form.gender),
         nutritionPlan: FALLBACK_NUTRITION,
@@ -469,6 +461,7 @@ export default function OnboardingPage() {
       });
     } finally {
       stopLoadingTimer();
+      if (!pageMountedRef.current) return;
       setGeneratingPlans(false);
       setInitDone(true);
     }
@@ -821,7 +814,7 @@ function StatsScreen({ form, set, onNext, onBack, saving }) {
 
 // ── Screen 5: Init ─────────────────────────────────────────────────────────
 function InitScreen({ done, loadingMessage, generating, generatedPlans, onPreviewComplete }) {
-  if (done && generatedPlans && !hasSeenPlanPreview()) {
+  if (done && generatedPlans) {
     return (
       <PlanPreviewScreen
         coachId={generatedPlans.coachId}

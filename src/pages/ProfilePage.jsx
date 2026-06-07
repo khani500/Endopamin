@@ -10,7 +10,7 @@ import {
   generateOnboardingWorkoutPlan,
   getFallbackWorkoutPlan,
 } from '../lib/gemini';
-import PlanPreviewScreen, { hasSeenPlanPreview } from '../components/PlanPreviewScreen';
+import PlanPreviewScreen from '../components/PlanPreviewScreen';
 
 const PROFILE_STORAGE_KEY = 'endopamin_profile';
 
@@ -398,6 +398,7 @@ export default function ProfilePage() {
   const [showPlanPreview, setShowPlanPreview] = useState(false);
   const loadingTimerRef = useRef(null);
   const generationStartedRef = useRef(null);
+  const pageMountedRef = useRef(true);
 
   useEffect(() => {
     if (!profile || profileLoaded) return;
@@ -425,6 +426,7 @@ export default function ProfilePage() {
   }, [profile, profileLoaded]);
 
   useEffect(() => () => {
+    pageMountedRef.current = false;
     if (loadingTimerRef.current) window.clearInterval(loadingTimerRef.current);
   }, []);
 
@@ -582,10 +584,9 @@ export default function ProfilePage() {
       localStorage.setItem('onboarding_done', 'true');
       await deleteUserPlans();
       const result = await regeneratePlans(profileData);
+      if (!pageMountedRef.current) return;
 
-      if (hasSeenPlanPreview()) {
-        navigate('/workout-plan', { replace: true });
-      } else if (result) {
+      if (result) {
         setGeneratedPlans(result);
         setShowPlanPreview(true);
       } else {
