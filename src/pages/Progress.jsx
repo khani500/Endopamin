@@ -180,6 +180,55 @@ function buildActiveDays(logs) {
   return days;
 }
 
+function getCurrentWeekRange() {
+  const now = new Date();
+  const day = now.getDay();
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+
+  const weekStart = new Date(now);
+  weekStart.setHours(0, 0, 0, 0);
+  weekStart.setDate(now.getDate() + mondayOffset);
+
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  weekEnd.setHours(23, 59, 59, 999);
+
+  return { weekStart, weekEnd };
+}
+
+function countDistinctLogDays(logs) {
+  const days = new Set();
+  for (const log of logs) {
+    if (!log.logged_at) continue;
+    const date = new Date(log.logged_at);
+    days.add(`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`);
+  }
+  return days.size;
+}
+
+function calculateActivityRings(workoutLogs, nutritionLogs, goalDays) {
+  const workoutDayCount = countDistinctLogDays(workoutLogs);
+  const nutritionDayCount = countDistinctLogDays(nutritionLogs);
+  const safeGoalDays = goalDays > 0 ? goalDays : 4;
+
+  const workoutRing = workoutDayCount > 0
+    ? Math.min(100, Math.round((workoutDayCount / safeGoalDays) * 100))
+    : 0;
+
+  const nutritionRing = nutritionDayCount > 0
+    ? Math.min(100, Math.round((nutritionDayCount / 7) * 100))
+    : 0;
+
+  let recoveryRing = 0;
+  if (workoutDayCount > 0) {
+    recoveryRing = workoutDayCount <= safeGoalDays
+      ? 100
+      : Math.min(100, Math.round((safeGoalDays / workoutDayCount) * 100));
+  }
+
+  return [workoutRing, nutritionRing, recoveryRing];
+}
+
 function getStreakDayClass(day, today, activeDays) {
   if (day === today) return 'today';
   if (day > today) return 'empty';
@@ -234,6 +283,7 @@ export default function Progress() {
   const [workoutStats, setWorkoutStats] = useState({ workouts: 0, time: '0h' });
   const [workoutStatsLoading, setWorkoutStatsLoading] = useState(true);
   const [activeDays, setActiveDays] = useState(() => new Set());
+  const [activityRings, setActivityRings] = useState([0, 0, 0]);
   const d = DATA[rangeIdx];
   const pct = Math.round((rangeIdx / 5) * 100);
   const monthMeta = useMemo(() => getCurrentMonthMeta(), []);
@@ -365,6 +415,58 @@ export default function Progress() {
       cancelled = true;
     };
   }, [user?.id, monthMeta.monthStart]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchActivityRings() {
+      if (!user?.id || !supabase) {
+        if (!cancelled) setActivityRings([0, 0, 0]);
+        return;
+      }
+
+      const { weekStart, weekEnd } = getCurrentWeekRange();
+      const goalDays = profile?.days_per_week || 4;
+
+      const [workoutResult, nutritionResult] = await Promise.all([
+        supabase
+          .from('workout_logs')
+          .select('logged_at')
+          .eq('user_id', user.id)
+          .gte('logged_at', weekStart.toISOString())
+          .lte('logged_at', weekEnd.toISOString()),
+        supabase
+          .from('nutrition_logs')
+          .select('logged_at')
+          .eq('user_id', user.id)
+          .gte('logged_at', weekStart.toISOString())
+          .lte('logged_at', weekEnd.toISOString()),
+      ]);
+
+      if (cancelled) return;
+
+      if (workoutResult.error) {
+        console.error('Failed to load workout ring data:', workoutResult.error);
+      }
+      if (nutritionResult.error) {
+        console.error('Failed to load nutrition ring data:', nutritionResult.error);
+      }
+
+      setActivityRings(
+        calculateActivityRings(
+          workoutResult.error ? [] : workoutResult.data ?? [],
+          nutritionResult.error ? [] : nutritionResult.data ?? [],
+          goalDays,
+        ),
+      );
+    }
+
+    void fetchActivityRings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id, profile?.days_per_week]);
 
   const prRows = useMemo(() => buildPrRows(prRecords), [prRecords]);
 
@@ -510,7 +612,7 @@ export default function Progress() {
       <div className="mx-5 mb-4 rounded-[22px] border border-white/[0.07] p-4 flex items-center gap-4"
         style={{ background: 'rgba(255,255,255,0.025)' }}>
         <div className="relative flex-shrink-0 w-[90px] h-[90px]">
-          <RingSvg rings={d.rings} />
+          <RingSvg rings={activityRings} />
           <div className="absolute inset-0 flex items-center justify-center">
             <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
               <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
@@ -527,7 +629,7 @@ export default function Progress() {
               <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: ring.color, boxShadow: `0 0 5px ${ring.color}` }} />
               <span className="text-[10px] text-white/40 flex-1">{ring.label}</span>
               <span className="text-[12px] font-bold transition-all duration-500" style={{ color: ring.color }}>
-                {d.rings[ring.idx]}%
+                {activityRings[ring.idx]}%
               </span>
             </div>
           ))}
