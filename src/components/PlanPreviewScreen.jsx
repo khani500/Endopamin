@@ -34,7 +34,12 @@ export default function PlanPreviewScreen({
 
   const handleViewNutrition = () => {
     if (onComplete) onComplete();
-    navigate('/log/plan', { replace: true });
+    navigate('/plan/nutrition', { replace: true });
+  };
+
+  const handleDismiss = () => {
+    if (onComplete) onComplete();
+    navigate('/', { replace: true });
   };
 
   return (
@@ -48,6 +53,32 @@ export default function PlanPreviewScreen({
       padding: '48px 24px 32px',
     }}
     >
+      <button
+        type="button"
+        onClick={handleDismiss}
+        aria-label="Dismiss preview"
+        style={{
+          position: 'fixed',
+          top: 16,
+          right: 16,
+          zIndex: 10000,
+          width: 40,
+          height: 40,
+          borderRadius: '50%',
+          border: '1px solid #333',
+          background: '#111',
+          color: '#888',
+          fontSize: 18,
+          lineHeight: 1,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: 'inherit',
+        }}
+      >
+        ×
+      </button>
       <div style={{ maxWidth: 400, margin: '0 auto' }}>
         <div style={{
           width: 72,
