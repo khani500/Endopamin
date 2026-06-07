@@ -4,18 +4,124 @@ import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { generateWorkoutPlan } from "../lib/gemini";
 
+const ex = (name, sets, reps, rest) => ({ name, sets, reps, rest });
+
 const FALLBACK_PLAN = (coachId) => ({
   coachId,
   days: [
-    { day: "Saturday",  focus: "Push — Chest / Shoulder / Tricep", type: "training", exercises: [{ name: "Bench Press", sets: "3", reps: "12-15", rest: "60s" }, { name: "OHP", sets: "3", reps: "10", rest: "60s" }, { name: "Lateral Raise", sets: "3", reps: "15", rest: "45s" }] },
-    { day: "Sunday",    focus: "Pull — Back / Bicep",              type: "training", exercises: [{ name: "Deadlift", sets: "4", reps: "5", rest: "120s" }, { name: "Pull-up", sets: "3", reps: "8", rest: "90s" }, { name: "Hammer Curl", sets: "3", reps: "12", rest: "60s" }] },
-    { day: "Monday",    focus: "Active Rest",                      type: "rest",     exercises: [{ name: "30 min walk", sets: "-", reps: "-", rest: "-" }, { name: "Stretching", sets: "-", reps: "10 min", rest: "-" }] },
-    { day: "Tuesday",   focus: "Legs",                             type: "training", exercises: [{ name: "Squat", sets: "4", reps: "8", rest: "120s" }, { name: "Romanian Deadlift", sets: "3", reps: "10", rest: "90s" }, { name: "Calf Raise", sets: "4", reps: "15", rest: "45s" }] },
-    { day: "Wednesday", focus: "Core + Cardio",                    type: "training", exercises: [{ name: "Plank", sets: "3", reps: "60s", rest: "45s" }, { name: "Mountain Climber", sets: "3", reps: "20", rest: "45s" }] },
-    { day: "Thursday",  focus: "Upper Body Mix",                   type: "training", exercises: [{ name: "Incline Press", sets: "3", reps: "10", rest: "60s" }, { name: "Face Pull", sets: "3", reps: "15", rest: "45s" }, { name: "Bicep Curl", sets: "3", reps: "12", rest: "60s" }] },
-    { day: "Friday",    focus: "Full Rest",                        type: "rest",     exercises: [{ name: "Recovery", sets: "-", reps: "-", rest: "-" }] },
+    {
+      day: "Saturday",
+      focus: "Push",
+      type: "training",
+      exercises: [
+        ex("Bench Press", "4", "8-10", "90s"),
+        ex("OHP", "3", "8-10", "90s"),
+        ex("Incline DB Press", "3", "10-12", "60s"),
+        ex("Lateral Raise", "3", "15", "45s"),
+        ex("Tricep Pushdown", "3", "12-15", "45s"),
+        ex("Cable Fly", "3", "12-15", "45s"),
+        ex("Dips", "3", "10-12", "60s"),
+      ],
+    },
+    {
+      day: "Sunday",
+      focus: "Pull",
+      type: "training",
+      exercises: [
+        ex("Deadlift", "4", "5", "120s"),
+        ex("Barbell Row", "3", "8-10", "90s"),
+        ex("Lat Pulldown", "3", "10-12", "60s"),
+        ex("Face Pull", "3", "15", "45s"),
+        ex("Bicep Curl", "3", "10-12", "60s"),
+        ex("Hammer Curl", "3", "12", "45s"),
+        ex("Rear Delt Fly", "3", "15", "45s"),
+      ],
+    },
+    {
+      day: "Monday",
+      focus: "Active Rest",
+      type: "rest",
+      exercises: [
+        ex("30 min walk", "-", "-", "-"),
+        ex("Light stretching", "-", "10 min", "-"),
+      ],
+    },
+    {
+      day: "Tuesday",
+      focus: "Legs",
+      type: "training",
+      exercises: [
+        ex("Squat", "4", "8", "120s"),
+        ex("Leg Press", "3", "12", "90s"),
+        ex("Romanian Deadlift", "3", "10", "90s"),
+        ex("Leg Curl", "3", "12", "60s"),
+        ex("Leg Extension", "3", "12", "60s"),
+        ex("Calf Raise", "4", "15", "45s"),
+        ex("Hip Thrust", "3", "12", "60s"),
+      ],
+    },
+    {
+      day: "Wednesday",
+      focus: "Core + Cardio",
+      type: "training",
+      exercises: [
+        ex("Plank", "3", "60s", "45s"),
+        ex("Crunches", "3", "20", "45s"),
+        ex("Russian Twist", "3", "20", "45s"),
+        ex("Mountain Climber", "3", "30s", "30s"),
+        ex("Bicycle Crunch", "3", "20", "45s"),
+        ex("Dead Bug", "3", "12", "45s"),
+        ex("Hollow Hold", "3", "30s", "45s"),
+      ],
+    },
+    {
+      day: "Thursday",
+      focus: "Upper Body Mix",
+      type: "training",
+      exercises: [
+        ex("Pull Up", "3", "8", "90s"),
+        ex("Dip", "3", "10-12", "60s"),
+        ex("DB Shoulder Press", "3", "10", "60s"),
+        ex("Cable Row", "3", "10-12", "60s"),
+        ex("Chest Fly", "3", "12-15", "45s"),
+        ex("Tricep Extension", "3", "12", "45s"),
+        ex("Shrug", "3", "12-15", "45s"),
+      ],
+    },
+    {
+      day: "Friday",
+      focus: "Full Rest",
+      type: "rest",
+      exercises: [
+        ex("Recovery", "-", "-", "-"),
+      ],
+    },
   ],
 });
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function is503Error(err) {
+  const msg = err?.message || String(err);
+  return msg.includes("503") || err?.status === 503;
+}
+
+async function generateWorkoutPlanWithRetry(coach, user, userProfile) {
+  const maxRetries = 2;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await generateWorkoutPlan(coach, user, userProfile);
+    } catch (err) {
+      if (is503Error(err) && attempt < maxRetries) {
+        console.warn(`Gemini 503, retrying in 3s (attempt ${attempt + 1}/${maxRetries + 1})...`);
+        await sleep(3000);
+        continue;
+      }
+      throw err;
+    }
+  }
+}
 
 const COACH_COLORS = {
   aria:  { accent: "#00FFFF", label: "Aria" },
@@ -51,9 +157,12 @@ export default function WorkoutPlanPage() {
 
   async function init() {
     setLoading(true);
-    await fetchProfile();
-    await loadPlan();
+    const profileData = await fetchProfile();
+    const hasPlan = await loadPlan();
     setLoading(false);
+    if (!hasPlan) {
+      generatePlan(profileData);
+    }
   }
 
   async function fetchProfile() {
@@ -63,8 +172,12 @@ export default function WorkoutPlanPage() {
         .select("id, experience, goal, equipment, health_conditions, injuries, age, weight_kg, activity, coach_persona, selected_coach, current_coach, coach_id")
         .eq("id", user.id)
         .single();
-      if (data) setProfile(data);
+      if (data) {
+        setProfile(data);
+        return data;
+      }
     } catch (_) {}
+    return null;
   }
 
   async function loadPlan() {
@@ -77,8 +190,12 @@ export default function WorkoutPlanPage() {
         .order("generated_at", { ascending: false })
         .limit(1)
         .single();
-      if (data) setPlan(data.plan_data);
+      if (data) {
+        setPlan(data.plan_data);
+        return true;
+      }
     } catch (_) {}
+    return false;
   }
 
   function handleNewPlanClick() {
@@ -89,27 +206,30 @@ export default function WorkoutPlanPage() {
     }
   }
 
-  async function generatePlan() {
+  async function generatePlan(profileOverride) {
     setShowConfirm(false);
     setGenerating(true);
 
+    const activeProfile = profileOverride || profile;
+    const activeCoach = activeProfile?.coach_persona || activeProfile?.selected_coach || activeProfile?.current_coach || activeProfile?.coach_id || coach;
+
     const userProfile = {
-      fitnessLevel: profile?.experience || "beginner",
-      availableEquipment: profile?.equipment || "full_gym",
-      goal: profile?.goal || "general fitness",
-      injuries: profile?.injuries || profile?.health_conditions || "none",
-      age: profile?.age || null,
-      weight: profile?.weight_kg || null,
+      fitnessLevel: activeProfile?.experience || "beginner",
+      availableEquipment: activeProfile?.equipment || "full_gym",
+      goal: activeProfile?.goal || "general fitness",
+      injuries: activeProfile?.injuries || activeProfile?.health_conditions || "none",
+      age: activeProfile?.age || null,
+      weight: activeProfile?.weight_kg || null,
       isReturning: false,
       setting: "gym",
     };
 
     let planData;
     try {
-      planData = await generateWorkoutPlan(coach, user, userProfile);
+      planData = await generateWorkoutPlanWithRetry(activeCoach, user, userProfile);
     } catch (e) {
       console.error("Gemini failed, using fallback:", e);
-      planData = FALLBACK_PLAN(coach);
+      planData = FALLBACK_PLAN(activeCoach);
     }
 
     await supabase
@@ -119,7 +239,7 @@ export default function WorkoutPlanPage() {
 
     await supabase.from("workout_plans").insert({
       user_id: user.id,
-      coach_id: coach,
+      coach_id: activeCoach,
       plan_data: planData,
       week_start: new Date().toISOString().split("T")[0],
     });
@@ -180,22 +300,17 @@ export default function WorkoutPlanPage() {
       </div>
 
       <div style={{ padding: "20px 16px" }}>
-        {loading ? (
-          <div style={{ textAlign: "center", padding: 60, color: "#555" }}>Loading...</div>
+        {loading || generating ? (
+          <div style={{ textAlign: "center", padding: 60, color: "#555" }}>
+            {generating ? "Building your plan..." : "Loading..."}
+          </div>
         ) : !plan ? (
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
             <div style={{ fontSize: 64, marginBottom: 16 }}>🏋️</div>
             <h2 style={{ margin: "0 0 8px", fontSize: 18 }}>No plan yet</h2>
-            <p style={{ color: "#666", marginBottom: 32, fontSize: 14 }}>
-              Coach {label} will build a personalized weekly plan based on your profile
+            <p style={{ color: "#666", fontSize: 14 }}>
+              Coach {label} is preparing your weekly plan
             </p>
-            <button
-              onClick={handleNewPlanClick}
-              disabled={generating}
-              style={{ background: accent, color: "#000", border: "none", borderRadius: 12, padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer" }}
-            >
-              {generating ? "Building your plan..." : `Build with ${label} ⚡`}
-            </button>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
