@@ -376,14 +376,84 @@ function InlineBMIBadge({ height, heightUnit, weight, weightUnit }) {
   return (
     <p style={{
       margin: '8px 0 0',
-      fontSize: 12,
-      fontWeight: 600,
-      color: info.color,
+      fontSize: 11,
+      color: '#888',
       letterSpacing: '0.01em',
     }}
     >
-      BMI: {info.bmi} · {info.category}
+      BMI: {info.bmi} ·{' '}
+      <span style={{ color: info.color, fontWeight: 600 }}>{info.category}</span>
     </p>
+  );
+}
+
+function IconCamera({ size = 11, color = '#CCFF00' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M9 4h6l1.5 3H19a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2.5L9 4Z"
+        stroke={color}
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="13" r="3.5" stroke={color} strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+function ProfileAvatar({ name }) {
+  const fileInputRef = useRef(null);
+  const letter = (String(name || 'A').trim().charAt(0) || 'A').toUpperCase();
+
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+      <button
+        type="button"
+        aria-label="Change profile photo"
+        onClick={() => fileInputRef.current?.click()}
+        style={{
+          position: 'relative',
+          width: 72,
+          height: 72,
+          borderRadius: '50%',
+          background: '#CCFF00',
+          border: 'none',
+          cursor: 'pointer',
+          padding: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: 'inherit',
+        }}
+      >
+        <span style={{ fontSize: 28, fontWeight: 900, color: '#000', lineHeight: 1 }}>
+          {letter}
+        </span>
+        <span style={{
+          position: 'absolute',
+          bottom: -1,
+          right: -1,
+          width: 24,
+          height: 24,
+          borderRadius: '50%',
+          background: '#111',
+          border: '2px solid #CCFF00',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        >
+          <IconCamera />
+        </span>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={() => {}}
+        />
+      </button>
+    </div>
   );
 }
 
@@ -684,6 +754,8 @@ export default function ProfilePage() {
   // ── Step 1: Body Stats ───────────────────────────────────────────────────
   const Step1 = (
     <motion.div key="s1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+      <ProfileAvatar name={form.display_name} />
+
       <SectionLabel style={{ marginTop: 0 }}>Your Name</SectionLabel>
       <div style={{ background: '#111', border: '0.5px solid #2a2a2a', borderRadius: 10, overflow: 'hidden' }}>
         <input
