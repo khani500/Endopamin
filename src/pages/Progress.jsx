@@ -121,6 +121,41 @@ function formatWeightDiff(current, previous) {
   return `↑ +${label} kg`;
 }
 
+function getRangeStartDate(rangeIdx) {
+  if (rangeIdx === 5) return null;
+
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  switch (rangeIdx) {
+    case 0:
+      start.setDate(start.getDate() - 7);
+      break;
+    case 1:
+      start.setMonth(start.getMonth() - 1);
+      break;
+    case 2:
+      start.setMonth(start.getMonth() - 3);
+      break;
+    case 3:
+      start.setMonth(start.getMonth() - 6);
+      break;
+    case 4:
+      start.setFullYear(start.getFullYear() - 1);
+      break;
+    default:
+      return null;
+  }
+
+  return start;
+}
+
+function formatTotalTime(totalMinutes) {
+  const minutes = Math.max(0, Math.round(Number(totalMinutes) || 0));
+  if (minutes < 60) return `${minutes}m`;
+  return `${Math.round(minutes / 60)}h`;
+}
+
 function buildPrRows(records) {
   const byExercise = new Map();
 
@@ -158,6 +193,8 @@ export default function Progress() {
   const [rangeIdx, setRangeIdx] = useState(0);
   const [prRecords, setPrRecords] = useState([]);
   const [prLoading, setPrLoading] = useState(true);
+  const [workoutStats, setWorkoutStats] = useState({ workouts: 0, time: '0h' });
+  const [workoutStatsLoading, setWorkoutStatsLoading] = useState(true);
   const d = DATA[rangeIdx];
   const pct = Math.round((rangeIdx / 5) * 100);
 
@@ -203,6 +240,59 @@ export default function Progress() {
       cancelled = true;
     };
   }, [user?.id]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchWorkoutStats() {
+      if (!user?.id || !supabase) {
+        if (!cancelled) {
+          setWorkoutStats({ workouts: 0, time: '0h' });
+          setWorkoutStatsLoading(false);
+        }
+        return;
+      }
+
+      setWorkoutStatsLoading(true);
+
+      const startDate = getRangeStartDate(rangeIdx);
+      let query = supabase
+        .from('workout_logs')
+        .select('duration_minutes, logged_at')
+        .eq('user_id', user.id);
+
+      if (startDate) {
+        query = query.gte('logged_at', startDate.toISOString());
+      }
+
+      const { data, error } = await query;
+
+      if (cancelled) return;
+
+      if (error) {
+        console.error('Failed to load workout stats:', error);
+        setWorkoutStats({ workouts: 0, time: '0h' });
+      } else {
+        const logs = data ?? [];
+        const totalMinutes = logs.reduce(
+          (sum, log) => sum + (Number(log.duration_minutes) || 0),
+          0,
+        );
+        setWorkoutStats({
+          workouts: logs.length,
+          time: formatTotalTime(totalMinutes),
+        });
+      }
+
+      setWorkoutStatsLoading(false);
+    }
+
+    void fetchWorkoutStats();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id, rangeIdx]);
 
   const prRows = useMemo(() => buildPrRows(prRecords), [prRecords]);
 
@@ -283,8 +373,8 @@ export default function Progress() {
       <div className="px-5 grid grid-cols-3 gap-2.5 mb-4">
         {[
           { icon: <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>, val: streak, lbl: 'Day Streak', color: '#CCFF00' },
-          { icon: <><path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/></>, val: d.workouts, lbl: 'Workouts', color: '#5088FF' },
-          { icon: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>, val: d.time, lbl: 'Total Time', color: '#FFA53C' },
+          { icon: <><path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/></>, val: workoutStatsLoading ? '...' : workoutStats.workouts, lbl: 'Workouts', color: '#5088FF' },
+          { icon: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>, val: workoutStatsLoading ? '...' : workoutStats.time, lbl: 'Total Time', color: '#FFA53C' },
         ].map((s, i) => (
           <div key={i} className="rounded-[18px] border border-white/[0.06] p-3 bg-white/[0.025] text-center"
             style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}>
