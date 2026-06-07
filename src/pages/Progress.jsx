@@ -514,7 +514,7 @@ export default function Progress() {
         .eq('user_id', user.id)
         .limit(1);
 
-      console.log('workout_logs first row:', allLogs);
+      console.log('workout_logs first row:', JSON.stringify(allLogs));
 
       if (cancelled) return;
 
