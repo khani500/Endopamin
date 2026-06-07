@@ -382,7 +382,7 @@ export default function OnboardingPage() {
     const { error: workoutInsertError } = await supabase.from('workout_plans').insert({
       user_id: user.id,
       coach_id: coachId,
-      plan_data: workoutPlan,
+      plan_data: { ...workoutPlan, gender: athlete.gender },
       week_start: new Date().toISOString().split('T')[0],
       is_active: true,
     });

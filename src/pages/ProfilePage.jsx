@@ -597,11 +597,8 @@ export default function ProfilePage() {
     return profileData;
   };
 
-  const regeneratePlans = async (profileData) => {
+  const deleteUserPlans = async () => {
     if (!user?.id || !supabase) return;
-
-    const athlete = buildAthleteProfileForPlan(form, { ...profile, ...profileData });
-    const coachId = athlete.coach_persona;
 
     const { error: workoutDeleteError } = await supabase
       .from('workout_plans')
@@ -618,6 +615,13 @@ export default function ProfilePage() {
     if (nutritionDeleteError) {
       console.error('Failed to delete nutrition plans:', nutritionDeleteError);
     }
+  };
+
+  const regeneratePlans = async (profileData) => {
+    if (!user?.id || !supabase) return;
+
+    const athlete = buildAthleteProfileForPlan(form, { ...profile, ...profileData });
+    const coachId = athlete.coach_persona;
 
     let knowledgeContent = '';
     try {
@@ -645,7 +649,7 @@ export default function ProfilePage() {
     const { error: workoutInsertError } = await supabase.from('workout_plans').insert({
       user_id: user.id,
       coach_id: coachId,
-      plan_data: workoutPlan,
+      plan_data: { ...workoutPlan, gender: athlete.gender },
       week_start: new Date().toISOString().split('T')[0],
       is_active: true,
     });
@@ -672,13 +676,14 @@ export default function ProfilePage() {
     try {
       const profileData = await persistProfile();
       localStorage.setItem('onboarding_done', 'true');
+      await deleteUserPlans();
       await regeneratePlans(profileData);
+      navigate('/', { replace: true });
     } catch (err) {
       console.error('Profile save or plan generation failed:', err);
     } finally {
       stopLoadingTimer();
       setIsLoading(false);
-      navigate('/', { replace: true });
     }
   };
 

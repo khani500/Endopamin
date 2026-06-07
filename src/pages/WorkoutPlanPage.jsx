@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
-import { generateWorkoutPlan } from "../lib/gemini";
+import { generateWorkoutPlan, getFallbackWorkoutPlan } from "../lib/gemini";
 
 const ex = (name, sets, reps, rest) => ({ name, sets, reps, rest });
 
@@ -170,21 +170,18 @@ export default function WorkoutPlanPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [activeDay, setActiveDay] = useState(null);
-  const [showConfirm, setShowConfirm] = useState(false);
 
   const coach = profile?.coach_persona || profile?.selected_coach || profile?.current_coach || profile?.coach_id || "aria";
   const { accent, label } = COACH_COLORS[coach] || COACH_COLORS.aria;
-
-  const isMonday = false;
 
   useEffect(() => { init(); }, []);
 
   async function init() {
     setLoading(true);
     const profileData = await fetchProfile();
-    const hasPlan = await loadPlan();
+    const hasPlan = profileData ? await loadPlan(profileData.gender) : false;
     setLoading(false);
-    if (!hasPlan) {
+    if (!hasPlan && profileData) {
       generatePlan(profileData);
     }
   }
@@ -193,7 +190,7 @@ export default function WorkoutPlanPage() {
     try {
       const { data } = await supabase
         .from("profiles")
-        .select("id, experience, goal, equipment, health_conditions, injuries, age, weight_kg, activity, coach_persona, selected_coach, current_coach, coach_id")
+        .select("id, gender, experience, goal, equipment, health_conditions, injuries, age, weight_kg, activity, coach_persona, selected_coach, current_coach, coach_id")
         .eq("id", user.id)
         .single();
       if (data) {
@@ -204,7 +201,24 @@ export default function WorkoutPlanPage() {
     return null;
   }
 
-  async function loadPlan() {
+  async function deleteUserWorkoutPlans() {
+    if (!user?.id) return;
+    const { error } = await supabase
+      .from("workout_plans")
+      .delete()
+      .eq("user_id", user.id);
+    if (error) {
+      console.error("[WorkoutPlan] Failed to delete workout plans:", error);
+    }
+  }
+
+  function normalizeGender(gender) {
+    return String(gender || "male").toLowerCase();
+  }
+
+  async function loadPlan(profileGender) {
+    const expectedGender = normalizeGender(profileGender);
+
     try {
       const { data } = await supabase
         .from("workout_plans")
@@ -214,9 +228,21 @@ export default function WorkoutPlanPage() {
         .order("generated_at", { ascending: false })
         .limit(1)
         .single();
-      if (data) {
+
+      if (data?.plan_data) {
+        const cachedGender = normalizeGender(data.plan_data.gender);
+
+        if (!data.plan_data.gender || cachedGender !== expectedGender) {
+          console.log("[WorkoutPlan] Cached plan gender mismatch, deleting and regenerating", {
+            cachedGender: data.plan_data.gender || null,
+            expectedGender,
+          });
+          await deleteUserWorkoutPlans();
+          return false;
+        }
+
         logPlanSource(
-          `Loaded from Supabase (cached plan, id=${data.id}, generated_at=${data.generated_at})`,
+          `Loaded from Supabase (cached plan, id=${data.id}, generated_at=${data.generated_at}, gender=${cachedGender})`,
           data.plan_data,
         );
         setPlan(data.plan_data);
@@ -226,20 +252,19 @@ export default function WorkoutPlanPage() {
     return false;
   }
 
-  function handleNewPlanClick() {
-    if (!plan || isMonday) {
-      generatePlan();
-    } else {
-      setShowConfirm(true);
-    }
+  async function refreshPlan() {
+    if (generating) return;
+    await deleteUserWorkoutPlans();
+    setPlan(null);
+    await generatePlan();
   }
 
   async function generatePlan(profileOverride) {
-    setShowConfirm(false);
     setGenerating(true);
 
     const activeProfile = profileOverride || profile;
     const activeCoach = activeProfile?.coach_persona || activeProfile?.selected_coach || activeProfile?.current_coach || activeProfile?.coach_id || coach;
+    const profileGender = normalizeGender(activeProfile?.gender);
 
     const userProfile = {
       fitnessLevel: activeProfile?.experience || "beginner",
@@ -259,22 +284,21 @@ export default function WorkoutPlanPage() {
       logPlanSource("Generated via Gemini", planData);
     } catch (e) {
       console.error("Gemini failed, using fallback:", e);
-      planData = FALLBACK_PLAN(activeCoach);
+      planData = getFallbackWorkoutPlan(activeCoach, profileGender);
       planSource = "fallback";
-      logFallbackTemplateVerification(activeCoach);
-      logPlanSource("Using in-code FALLBACK template", planData);
+      logPlanSource("Using gender-aware FALLBACK template", planData);
     }
 
-    await supabase
-      .from("workout_plans")
-      .update({ is_active: false })
-      .eq("user_id", user.id);
+    planData = { ...planData, gender: profileGender };
+
+    await deleteUserWorkoutPlans();
 
     await supabase.from("workout_plans").insert({
       user_id: user.id,
       coach_id: activeCoach,
       plan_data: planData,
       week_start: new Date().toISOString().split("T")[0],
+      is_active: true,
     });
 
     console.log(`[WorkoutPlan] Saved new plan (source=${planSource})`);
@@ -287,32 +311,6 @@ export default function WorkoutPlanPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "sans-serif", paddingBottom: "100px" }}>
 
-      {/* Confirm Modal */}
-      {showConfirm && (
-        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50, padding: "0 24px" }}>
-          <div style={{ background: "#111", border: "1px solid #333", borderRadius: 20, padding: "28px 24px", maxWidth: 340, width: "100%" }}>
-            <h3 style={{ margin: "0 0 8px", fontSize: 17, fontWeight: 700 }}>Reset your plan?</h3>
-            <p style={{ margin: "0 0 24px", fontSize: 13, color: "#888", lineHeight: 1.6 }}>
-              Building a new plan will replace your current week. Your progress history is saved.
-            </p>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button
-                onClick={() => setShowConfirm(false)}
-                style={{ flex: 1, background: "#1a1a1a", border: "1px solid #333", color: "#fff", borderRadius: 12, padding: "12px", fontSize: 14, cursor: "pointer" }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={generatePlan}
-                style={{ flex: 1, background: accent, border: "none", color: "#000", borderRadius: 12, padding: "12px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}
-              >
-                Reset & Rebuild
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Header */}
       <div style={{ padding: "20px 16px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -324,11 +322,11 @@ export default function WorkoutPlanPage() {
         </div>
         {plan && (
           <button
-            onClick={handleNewPlanClick}
+            onClick={refreshPlan}
             disabled={generating}
-            style={{ background: "transparent", border: `1px solid ${accent}`, color: accent, borderRadius: 8, padding: "8px 14px", fontSize: 12, cursor: "pointer" }}
+            style={{ background: "transparent", border: `1px solid ${accent}`, color: accent, borderRadius: 8, padding: "8px 14px", fontSize: 12, cursor: generating ? "wait" : "pointer", opacity: generating ? 0.6 : 1 }}
           >
-            {generating ? "..." : "🔄 New Plan"}
+            {generating ? "..." : "Refresh Plan"}
           </button>
         )}
       </div>
