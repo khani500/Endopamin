@@ -16,6 +16,19 @@ import PlanPreviewScreen from '../components/PlanPreviewScreen';
 
 const PROFILE_STORAGE_KEY = 'endopamin_profile';
 
+function avatarUrlStorageKey(userId) {
+  return `endopamin_avatar_url_${userId}`;
+}
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 const PLAN_LOADING_PHASES = [
   { until: 3, text: 'Analyzing your profile...' },
   { until: 6, text: 'Applying NASM & NSCA protocols...' },
@@ -338,21 +351,7 @@ function SectionLabel({ children, style = {} }) {
   );
 }
 
-function getInlineBmi(height, heightUnit, weight, weightUnit) {
-  const heightStr = String(height ?? '').trim();
-  const weightStr = String(weight ?? '').trim();
-  if (!heightStr || !weightStr) return null;
-
-  const h = Number(heightStr);
-  const w = Number(weightStr);
-  if (!Number.isFinite(h) || !Number.isFinite(w) || h <= 0 || w <= 0) return null;
-
-  const heightM = heightUnit === 'cm' ? h / 100 : h * 0.0254;
-  const weightKg = weightUnit === 'kg' ? w : w * 0.453592;
-  if (heightM <= 0) return null;
-
-  const bmi = weightKg / (heightM * heightM);
-
+function getBmiCategory(bmi) {
   if (bmi < 18.5) {
     return { bmi: Math.round(bmi * 10) / 10, category: 'Underweight', color: '#4DA6FF' };
   }
@@ -365,26 +364,16 @@ function getInlineBmi(height, heightUnit, weight, weightUnit) {
   return { bmi: Math.round(bmi * 10) / 10, category: 'Obese', color: '#FF4444' };
 }
 
-function InlineBMIBadge({ height, heightUnit, weight, weightUnit }) {
-  const info = useMemo(
-    () => getInlineBmi(height, heightUnit, weight, weightUnit),
-    [height, heightUnit, weight, weightUnit],
-  );
+function getBmiFromForm(form) {
+  const height = Number(form.height);
+  const weight = Number(form.weight);
+  if (!height || !weight || height <= 0 || weight <= 0) return null;
 
-  if (!info) return null;
+  const heightCm = form.height_unit === 'cm' ? height : height * 2.54;
+  const weightKg = form.weight_unit === 'kg' ? weight : weight * 0.453592;
+  const bmi = weightKg / ((heightCm / 100) * (heightCm / 100));
 
-  return (
-    <p style={{
-      margin: '8px 0 0',
-      fontSize: 11,
-      color: '#888',
-      letterSpacing: '0.01em',
-    }}
-    >
-      BMI: {info.bmi} ·{' '}
-      <span style={{ color: info.color, fontWeight: 600 }}>{info.category}</span>
-    </p>
-  );
+  return getBmiCategory(bmi);
 }
 
 function IconCamera({ size = 11, color = '#CCFF00' }) {
@@ -401,58 +390,105 @@ function IconCamera({ size = 11, color = '#CCFF00' }) {
   );
 }
 
-function ProfileAvatar({ name }) {
+function ProfileAvatar({ name, user, avatarUrl, onAvatarUrlChange }) {
   const fileInputRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
   const letter = (String(name || 'A').trim().charAt(0) || 'A').toUpperCase();
+
+  const openFilePicker = () => {
+    if (!uploading) fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file || !user?.id || !supabase) return;
+
+    setUploading(true);
+    try {
+      await readFileAsBase64(file);
+
+      const path = `${user.id}/avatar.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(path, file, {
+          upsert: true,
+          contentType: file.type || 'image/jpeg',
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(path);
+      const publicUrl = `${data.publicUrl}?t=${Date.now()}`;
+
+      localStorage.setItem(avatarUrlStorageKey(user.id), publicUrl);
+      onAvatarUrlChange(publicUrl);
+    } catch (err) {
+      console.error('Avatar upload failed:', err);
+    } finally {
+      setUploading(false);
+      event.target.value = '';
+    }
+  };
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-      <button
-        type="button"
-        aria-label="Change profile photo"
-        onClick={() => fileInputRef.current?.click()}
+      <div
         style={{
           position: 'relative',
           width: 72,
           height: 72,
           borderRadius: '50%',
           background: '#CCFF00',
-          border: 'none',
-          cursor: 'pointer',
-          padding: 0,
+          overflow: 'hidden',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontFamily: 'inherit',
         }}
       >
-        <span style={{ fontSize: 28, fontWeight: 900, color: '#000', lineHeight: 1 }}>
-          {letter}
-        </span>
-        <span style={{
-          position: 'absolute',
-          bottom: -1,
-          right: -1,
-          width: 24,
-          height: 24,
-          borderRadius: '50%',
-          background: '#111',
-          border: '2px solid #CCFF00',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt="Profile"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        ) : (
+          <span style={{ fontSize: 28, fontWeight: 900, color: '#000', lineHeight: 1 }}>
+            {letter}
+          </span>
+        )}
+        <button
+          type="button"
+          aria-label="Upload profile photo"
+          disabled={uploading}
+          onClick={openFilePicker}
+          style={{
+            position: 'absolute',
+            bottom: -1,
+            right: -1,
+            width: 24,
+            height: 24,
+            borderRadius: '50%',
+            background: '#111',
+            border: '2px solid #CCFF00',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: uploading ? 'wait' : 'pointer',
+            padding: 0,
+            fontFamily: 'inherit',
+            opacity: uploading ? 0.6 : 1,
+          }}
         >
           <IconCamera />
-        </span>
+        </button>
         <input
           ref={fileInputRef}
           type="file"
           accept="image/*"
           style={{ display: 'none' }}
-          onChange={() => {}}
+          onChange={handleFileChange}
         />
-      </button>
+      </div>
     </div>
   );
 }
@@ -491,6 +527,7 @@ export default function ProfilePage() {
   const [generatedPlans, setGeneratedPlans] = useState(null);
   const [showPlanPreview, setShowPlanPreview] = useState(false);
   const [planError, setPlanError] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState('');
   const loadingTimerRef = useRef(null);
   const generationStartedRef = useRef(null);
   const pageMountedRef = useRef(true);
@@ -524,6 +561,21 @@ export default function ProfilePage() {
     pageMountedRef.current = false;
     if (loadingTimerRef.current) window.clearInterval(loadingTimerRef.current);
   }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    try {
+      const cached = localStorage.getItem(avatarUrlStorageKey(user.id));
+      if (cached) setAvatarUrl(cached);
+    } catch (err) {
+      console.error('Failed to load cached avatar URL:', err);
+    }
+  }, [user?.id]);
+
+  const bmiInfo = useMemo(
+    () => getBmiFromForm(form),
+    [form.height, form.weight, form.height_unit, form.weight_unit],
+  );
 
   const startLoadingTimer = () => {
     generationStartedRef.current = Date.now();
@@ -754,7 +806,12 @@ export default function ProfilePage() {
   // ── Step 1: Body Stats ───────────────────────────────────────────────────
   const Step1 = (
     <motion.div key="s1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-      <ProfileAvatar name={form.display_name} />
+      <ProfileAvatar
+        name={form.display_name}
+        user={user}
+        avatarUrl={avatarUrl}
+        onAvatarUrlChange={setAvatarUrl}
+      />
 
       <SectionLabel style={{ marginTop: 0 }}>Your Name</SectionLabel>
       <div style={{ background: '#111', border: '0.5px solid #2a2a2a', borderRadius: 10, overflow: 'hidden' }}>
@@ -809,12 +866,18 @@ export default function ProfilePage() {
         />
       </div>
 
-      <InlineBMIBadge
-        height={form.height}
-        heightUnit={form.height_unit}
-        weight={form.weight}
-        weightUnit={form.weight_unit}
-      />
+      {bmiInfo && (
+        <p style={{
+          margin: '8px 0 0',
+          fontSize: 11,
+          color: '#888',
+          letterSpacing: '0.01em',
+        }}
+        >
+          BMI: {bmiInfo.bmi} ·{' '}
+          <span style={{ color: bmiInfo.color, fontWeight: 600 }}>{bmiInfo.category}</span>
+        </p>
+      )}
 
       {/* Gender */}
       <SectionLabel>Gender</SectionLabel>
