@@ -99,6 +99,30 @@ const FALLBACK_PLAN = (coachId) => ({
   ],
 });
 
+function logFallbackTemplateVerification(coachId = "aria") {
+  const template = FALLBACK_PLAN(coachId);
+  const summary = template.days.map((d) => ({
+    day: d.day,
+    focus: d.focus,
+    type: d.type,
+    exerciseCount: d.exercises?.length ?? 0,
+    exercises: d.exercises?.map((e) => e.name),
+  }));
+  console.log("[WorkoutPlan] Fallback template exercise counts:", summary);
+  console.log("[WorkoutPlan] Fallback template full:", template);
+  return template;
+}
+
+function logPlanSource(label, planData) {
+  const summary = planData?.days?.map((d) => ({
+    day: d.day,
+    exerciseCount: d.exercises?.length ?? 0,
+  }));
+  console.log(`[WorkoutPlan] ${label}`, summary);
+}
+
+logFallbackTemplateVerification();
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function is503Error(err) {
@@ -191,6 +215,10 @@ export default function WorkoutPlanPage() {
         .limit(1)
         .single();
       if (data) {
+        logPlanSource(
+          `Loaded from Supabase (cached plan, id=${data.id}, generated_at=${data.generated_at})`,
+          data.plan_data,
+        );
         setPlan(data.plan_data);
         return true;
       }
@@ -224,12 +252,17 @@ export default function WorkoutPlanPage() {
       setting: "gym",
     };
 
+    let planSource = "gemini";
     let planData;
     try {
       planData = await generateWorkoutPlanWithRetry(activeCoach, user, userProfile);
+      logPlanSource("Generated via Gemini", planData);
     } catch (e) {
       console.error("Gemini failed, using fallback:", e);
       planData = FALLBACK_PLAN(activeCoach);
+      planSource = "fallback";
+      logFallbackTemplateVerification(activeCoach);
+      logPlanSource("Using in-code FALLBACK template", planData);
     }
 
     await supabase
@@ -244,6 +277,7 @@ export default function WorkoutPlanPage() {
       week_start: new Date().toISOString().split("T")[0],
     });
 
+    console.log(`[WorkoutPlan] Saved new plan (source=${planSource})`);
     setPlan(planData);
     setGenerating(false);
   }

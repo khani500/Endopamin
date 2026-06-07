@@ -118,6 +118,44 @@ const IconHome = ({ color = '#888' }) => (
   </svg>
 );
 
+const IconBarbell = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <rect x="3" y="8.5" width="14" height="3" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
+    <rect x="1" y="7" width="2.5" height="6" rx="1.25" stroke="currentColor" strokeWidth="1.2"/>
+    <rect x="16.5" y="7" width="2.5" height="6" rx="1.25" stroke="currentColor" strokeWidth="1.2"/>
+  </svg>
+);
+
+const IconDumbbell = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <rect x="2" y="8" width="3" height="4" rx="0.8" stroke="currentColor" strokeWidth="1.2"/>
+    <rect x="15" y="8" width="3" height="4" rx="0.8" stroke="currentColor" strokeWidth="1.2"/>
+    <path d="M5 10h10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+    <rect x="4" y="9" width="1.5" height="2" rx="0.4" stroke="currentColor" strokeWidth="1"/>
+    <rect x="14.5" y="9" width="1.5" height="2" rx="0.4" stroke="currentColor" strokeWidth="1"/>
+  </svg>
+);
+
+const IconPushup = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <circle cx="14.5" cy="6" r="1.8" stroke="currentColor" strokeWidth="1.2"/>
+    <path d="M12.8 7.2L7 10.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+    <path d="M7 10.5L4.5 12.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+    <path d="M9 9.8L6 12.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+    <path d="M3 13.5h14" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+  </svg>
+);
+
+const IconHomeWeights = () => (
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path d="M3 10.5L10 6l7 4.5V16H3v-5.5Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+    <path d="M8 16v-3.5h4V16" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+    <rect x="6.5" y="11.5" width="1.2" height="2" rx="0.3" stroke="currentColor" strokeWidth="0.9"/>
+    <rect x="12.3" y="11.5" width="1.2" height="2" rx="0.3" stroke="currentColor" strokeWidth="0.9"/>
+    <path d="M7.7 12.5h4.6" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
+  </svg>
+);
+
 const IconArrow = ({ color = '#0a0a0a' }) => (
   <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
     <path d="M4 9h10M10 5l4 4-4 4" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -194,6 +232,147 @@ function SectionLabel({ children }) {
   return (
     <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8, marginTop: 16 }}>
       {children}
+    </div>
+  );
+}
+
+function getBmiInfo(height, heightUnit, weight, weightUnit) {
+  const h = parseFloat(height);
+  const w = parseFloat(weight);
+  if (!h || !w || h <= 0 || w <= 0) return null;
+
+  const heightM = heightUnit === 'cm' ? h / 100 : h * 0.0254;
+  const weightKg = weightUnit === 'kg' ? w : w * 0.453592;
+  if (heightM <= 0) return null;
+
+  const bmi = weightKg / (heightM * heightM);
+
+  let category;
+  let color;
+  if (bmi < 18.5) {
+    category = 'Underweight';
+    color = '#4DA6FF';
+  } else if (bmi < 25) {
+    category = 'Normal';
+    color = '#CCFF00';
+  } else if (bmi < 30) {
+    category = 'Overweight';
+    color = '#FFA53C';
+  } else {
+    category = 'Obese';
+    color = '#FF4444';
+  }
+
+  const minIdealKg = 18.5 * heightM * heightM;
+  const maxIdealKg = 24.9 * heightM * heightM;
+  const toDisplayWeight = kg => (weightUnit === 'kg'
+    ? Math.round(kg)
+    : Math.round(kg / 0.453592));
+
+  return {
+    bmi: Math.round(bmi * 10) / 10,
+    category,
+    color,
+    idealMin: toDisplayWeight(minIdealKg),
+    idealMax: toDisplayWeight(maxIdealKg),
+    weightUnit,
+  };
+}
+
+const BMI_BAR_MIN = 15;
+const BMI_BAR_MAX = 40;
+
+function bmiSegmentWidth(start, end) {
+  return `${((end - start) / (BMI_BAR_MAX - BMI_BAR_MIN)) * 100}%`;
+}
+
+function BMICalculatorCard({ height, heightUnit, weight, weightUnit }) {
+  const info = getBmiInfo(height, heightUnit, weight, weightUnit);
+
+  return (
+    <div style={{
+      marginTop: 12,
+      background: '#111',
+      border: '0.5px solid #2a2a2a',
+      borderRadius: 12,
+      padding: '16px 14px',
+    }}>
+      <div style={{
+        fontSize: 10,
+        color: '#555',
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase',
+        marginBottom: 12,
+      }}
+      >
+        BMI Calculator
+      </div>
+
+      {!info ? (
+        <p style={{ margin: 0, fontSize: 12, color: '#444', lineHeight: 1.5 }}>
+          Enter your height and current weight to calculate BMI
+        </p>
+      ) : (
+        <>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
+            <div>
+              <div style={{ fontSize: 36, fontWeight: 900, color: info.color, lineHeight: 1, letterSpacing: '-0.03em' }}>
+                {info.bmi}
+              </div>
+              <div style={{ fontSize: 11, color: '#444', marginTop: 4 }}>Body Mass Index</div>
+            </div>
+            <div style={{
+              fontSize: 12,
+              fontWeight: 700,
+              color: info.color,
+              background: `${info.color}18`,
+              border: `0.5px solid ${info.color}44`,
+              borderRadius: 20,
+              padding: '5px 12px',
+            }}
+            >
+              {info.category}
+            </div>
+          </div>
+
+          <div style={{ position: 'relative', marginBottom: 6 }}>
+            <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{ width: bmiSegmentWidth(BMI_BAR_MIN, 18.5), background: '#4DA6FF' }} />
+              <div style={{ width: bmiSegmentWidth(18.5, 25), background: '#CCFF00' }} />
+              <div style={{ width: bmiSegmentWidth(25, 30), background: '#FFA53C' }} />
+              <div style={{ width: bmiSegmentWidth(30, BMI_BAR_MAX), background: '#FF4444' }} />
+            </div>
+            <div style={{
+              position: 'absolute',
+              top: -3,
+              left: `${Math.min(100, Math.max(0, ((info.bmi - BMI_BAR_MIN) / (BMI_BAR_MAX - BMI_BAR_MIN)) * 100))}%`,
+              transform: 'translateX(-50%)',
+              width: 14,
+              height: 14,
+              borderRadius: '50%',
+              background: '#fff',
+              border: `2px solid ${info.color}`,
+              boxShadow: `0 0 8px ${info.color}66`,
+            }} />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#333', marginBottom: 10 }}>
+            <span>15</span>
+            <span>18.5</span>
+            <span>25</span>
+            <span>30</span>
+            <span>40</span>
+          </div>
+
+          <p style={{ margin: 0, fontSize: 11, color: '#555' }}>
+            Ideal weight for your height:
+            {' '}
+            <span style={{ color: '#CCFF00', fontWeight: 600 }}>
+              {info.idealMin}–{info.idealMax} {info.weightUnit}
+            </span>
+          </p>
+        </>
+      )}
     </div>
   );
 }
@@ -407,6 +586,13 @@ export default function ProfilePage() {
         />
       </div>
 
+      <BMICalculatorCard
+        height={form.height}
+        heightUnit={form.height_unit}
+        weight={form.weight}
+        weightUnit={form.weight_unit}
+      />
+
       {/* Gender */}
       <SectionLabel>Gender</SectionLabel>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -461,12 +647,13 @@ export default function ProfilePage() {
       <SectionLabel>Available Equipment</SectionLabel>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
         {[
-          { id: 'full_gym', label: 'Full Gym', icon: '🏋️' },
-          { id: 'home_basic', label: 'Home Setup', icon: '🏠' },
-          { id: 'bodyweight', label: 'Bodyweight', icon: '💪' },
-          { id: 'home_full', label: 'Home + Weights', icon: '🔧' },
+          { id: 'full_gym', label: 'Full Gym', Icon: IconBarbell },
+          { id: 'home_basic', label: 'Home Setup', Icon: IconDumbbell },
+          { id: 'bodyweight', label: 'Bodyweight', Icon: IconPushup },
+          { id: 'home_full', label: 'Home + Weights', Icon: IconHomeWeights },
         ].map(e => {
           const sel = form.equipment === e.id;
+          const { Icon } = e;
           return (
             <motion.div
               key={e.id}
@@ -479,7 +666,9 @@ export default function ProfilePage() {
                 display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
               }}
             >
-              <span style={{ fontSize: 18 }}>{e.icon}</span>
+              <span style={{ color: sel ? '#CCFF00' : '#888', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                <Icon />
+              </span>
               <span style={{ fontSize: 13, fontWeight: 600, color: sel ? '#CCFF00' : '#888' }}>{e.label}</span>
             </motion.div>
           );
