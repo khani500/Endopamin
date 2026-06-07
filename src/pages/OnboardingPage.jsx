@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import {
@@ -166,12 +165,95 @@ const EXPERIENCE = [
   { id: 'athlete', label: 'Athlete', sub: 'Competitive level', color: '#CCFF00' },
 ];
 
-// ── Animation variants ─────────────────────────────────────────────────────
-const slideVariants = {
-  enter: (dir) => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
-  center: { x: 0, opacity: 1, transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] } },
-  exit: (dir) => ({ x: dir > 0 ? '-100%' : '100%', opacity: 0, transition: { duration: 0.28 } }),
-};
+const ONBOARDING_CSS = `
+  @keyframes onboarding-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes onboarding-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes onboarding-fade-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes onboarding-fade-down {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes onboarding-msg-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes onboarding-pulse-dot {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+  @keyframes onboarding-progress {
+    0% { width: 0%; }
+    50% { width: 85%; }
+    100% { width: 92%; }
+  }
+  @keyframes onboarding-success-in {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes onboarding-check-pop {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+  }
+  @keyframes onboarding-slide-forward {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes onboarding-slide-back {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes onboarding-tagline-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .onboarding-step-forward {
+    animation: onboarding-slide-forward 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+  .onboarding-step-back {
+    animation: onboarding-slide-back 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+  .onboarding-fade-in { animation: onboarding-fade-in 0.4s ease both; }
+  .onboarding-fade-up { animation: onboarding-fade-up 0.4s ease 0.2s both; }
+  .onboarding-fade-down { animation: onboarding-fade-down 0.4s ease 0.3s both; }
+  .onboarding-tap:active { transform: scale(0.97); }
+  .onboarding-tap-sm:active { transform: scale(0.96); }
+  .onboarding-spinner {
+    animation: onboarding-spin 2s linear infinite;
+  }
+  .onboarding-msg {
+    animation: onboarding-msg-in 0.3s ease both;
+  }
+  .onboarding-dot {
+    animation: onboarding-pulse-dot 0.8s ease infinite;
+  }
+  .onboarding-progress-fill {
+    height: 100%;
+    background: #CCFF00;
+    border-radius: 1px;
+    transition: width 0.4s ease;
+  }
+  .onboarding-progress-fill--active {
+    animation: onboarding-progress 12s ease-in-out infinite alternate;
+  }
+  .onboarding-success {
+    animation: onboarding-success-in 0.4s ease-out both;
+  }
+  .onboarding-check {
+    animation: onboarding-check-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .onboarding-tagline {
+    animation: onboarding-tagline-in 0.25s ease both;
+  }
+`;
 
 // ── Main Component ─────────────────────────────────────────────────────────
 export default function OnboardingPage() {
@@ -367,19 +449,14 @@ export default function OnboardingPage() {
       minHeight: '100vh', background: '#060608', color: '#fff',
       overflow: 'hidden', position: 'relative',
     }}>
-      <AnimatePresence custom={dir} mode="wait">
-        <motion.div
-          key={step}
-          custom={dir}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          style={{ minHeight: '100vh' }}
-        >
-          {STEPS[step]}
-        </motion.div>
-      </AnimatePresence>
+      <style>{ONBOARDING_CSS}</style>
+      <div
+        key={step}
+        className={dir > 0 ? 'onboarding-step-forward' : 'onboarding-step-back'}
+        style={{ minHeight: '100vh' }}
+      >
+        {STEPS[step]}
+      </div>
     </div>
   );
 }
@@ -403,24 +480,20 @@ function SplashScreen({ onStart }) {
         }} />
         {/* Logo */}
         <div style={{ position: 'absolute', top: 56, left: 0, right: 0, textAlign: 'center' }}>
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
+          <div className="onboarding-fade-down">
             <div style={{ fontSize: 11, color: '#CCFF00', letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 6 }}>
               ∃NDOPAMIN
             </div>
             <div style={{ fontSize: 10, color: '#444', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
               Endorphin · Dopamine
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
       {/* Bottom content */}
       <div style={{ padding: '0 24px 48px', background: '#060608' }}>
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+        <div className="onboarding-fade-up">
           <h1 style={{
             fontSize: 36, fontWeight: 900, letterSpacing: '-0.05em',
             textTransform: 'uppercase', lineHeight: 1.0, marginBottom: 8,
@@ -441,19 +514,19 @@ function SplashScreen({ onStart }) {
             ))}
           </div>
 
-          <motion.button
-            whileTap={{ scale: 0.97 }}
+          <button
+            className="onboarding-tap"
             onClick={onStart}
             style={{
               width: '100%', background: '#CCFF00', color: '#060608',
               fontSize: 14, fontWeight: 900, padding: '15px', borderRadius: 14,
               border: 'none', cursor: 'pointer', letterSpacing: '0.05em',
-              fontFamily: 'inherit',
+              fontFamily: 'inherit', transition: 'transform 0.1s',
             }}
           >
             I'M READY →
-          </motion.button>
-        </motion.div>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -470,9 +543,9 @@ function CoachScreen({ form, set, onNext, onBack }) {
         {COACHES.map(coach => {
           const sel = form.coach_persona === coach.id;
           return (
-            <motion.div
+            <div
               key={coach.id}
-              whileTap={{ scale: 0.98 }}
+              className="onboarding-tap"
               onClick={() => set('coach_persona', coach.id)}
               style={{
                 background: sel ? coach.bg : '#0e0e0e',
@@ -483,7 +556,7 @@ function CoachScreen({ form, set, onNext, onBack }) {
                 alignItems: 'center',
                 gap: 12,
                 cursor: 'pointer',
-                transition: 'all 0.15s',
+                transition: 'all 0.15s, transform 0.1s',
               }}
             >
               {/* Avatar */}
@@ -516,10 +589,10 @@ function CoachScreen({ form, set, onNext, onBack }) {
                 </div>
                 <div style={{ fontSize: 10, color: sel ? coach.color : '#555', opacity: 0.8, marginBottom: 2 }}>{coach.role}</div>
                 {sel && (
-                  <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+                  <div className="onboarding-tagline"
                     style={{ fontSize: 10, color: '#888' }}>
                     "{coach.tagline}"
-                  </motion.div>
+                  </div>
                 )}
               </div>
               {/* Check */}
@@ -529,7 +602,7 @@ function CoachScreen({ form, set, onNext, onBack }) {
                   <path d="M5.5 9l2.5 2.5 4.5-4.5" stroke={coach.color} strokeWidth="1.4" strokeLinecap="round"/>
                 </svg>
               )}
-            </motion.div>
+            </div>
           );
         })}
       </div>
@@ -549,15 +622,16 @@ function GoalScreen({ form, set, onNext, onBack }) {
         {GOALS.map(g => {
           const sel = form.goal === g.id;
           return (
-            <motion.div
+            <div
               key={g.id}
-              whileTap={{ scale: 0.98 }}
+              className="onboarding-tap"
               onClick={() => set('goal', g.id)}
               style={{
                 background: sel ? '#111900' : '#0e0e0e',
                 border: `0.5px solid ${sel ? '#CCFF00' : '#1e1e1e'}`,
                 borderRadius: 14, padding: '14px 16px',
                 display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer',
+                transition: 'transform 0.1s',
               }}
             >
               <div style={{ fontSize: 22 }}>{g.icon}</div>
@@ -568,7 +642,7 @@ function GoalScreen({ form, set, onNext, onBack }) {
                   <path d="M5 8l2 2 4-4" stroke="#CCFF00" strokeWidth="1.3" strokeLinecap="round"/>
                 </svg>
               )}
-            </motion.div>
+            </div>
           );
         })}
 
@@ -581,20 +655,21 @@ function GoalScreen({ form, set, onNext, onBack }) {
             {EXPERIENCE.map(e => {
               const sel = form.experience === e.id;
               return (
-                <motion.div
+                <div
                   key={e.id}
-                  whileTap={{ scale: 0.97 }}
+                  className="onboarding-tap-sm"
                   onClick={() => set('experience', e.id)}
                   style={{
                     background: sel ? '#111900' : '#0e0e0e',
                     border: `0.5px solid ${sel ? e.color : '#1e1e1e'}`,
                     borderRadius: 12, padding: '10px 10px', cursor: 'pointer',
+                    transition: 'transform 0.1s',
                   }}
                 >
                   <div style={{ width: 7, height: 7, borderRadius: '50%', background: sel ? e.color : '#333', marginBottom: 5 }} />
                   <div style={{ fontSize: 12, fontWeight: 600, color: sel ? e.color : '#888' }}>{e.label}</div>
                   <div style={{ fontSize: 9, color: '#444', marginTop: 2 }}>{e.sub}</div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -643,14 +718,15 @@ function StatsScreen({ form, set, onNext, onBack, saving }) {
             <div style={{ fontSize: 10, color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Gender</div>
             <div style={{ display: 'flex', gap: 6 }}>
               {[['male', 'M'], ['female', 'F']].map(([v, l]) => (
-                <motion.button key={v} whileTap={{ scale: 0.96 }} onClick={() => set('gender', v)}
+                <button key={v} className="onboarding-tap-sm" onClick={() => set('gender', v)}
                   style={{
                     flex: 1, padding: '11px 4px', borderRadius: 10, border: '0.5px solid',
                     borderColor: form.gender === v ? '#CCFF00' : '#1e1e1e',
                     background: form.gender === v ? '#111900' : '#0e0e0e',
                     color: form.gender === v ? '#CCFF00' : '#666',
                     fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
-                  }}>{l}</motion.button>
+                    transition: 'transform 0.1s',
+                  }}>{l}</button>
               ))}
             </div>
           </div>
@@ -712,11 +788,10 @@ function InitScreen({ form, done, loadingMessage, generating, dailyCalories }) {
       background: done ? '#0A0A0A' : '#060608',
     }}>
       {!done ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <div className="onboarding-fade-in">
           <div style={{ position: 'relative', width: 100, height: 100, margin: '0 auto 28px' }}>
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+            <div
+              className="onboarding-spinner"
               style={{
                 position: 'absolute', inset: 0, borderRadius: '50%',
                 border: '2px solid transparent',
@@ -743,39 +818,32 @@ function InitScreen({ form, done, loadingMessage, generating, dailyCalories }) {
             AI IS CUSTOMIZING<br />YOUR PLAN...
           </div>
 
-          <motion.div
+          <div
             key={loadingMessage}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
+            className="onboarding-msg"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 24 }}
           >
-            <motion.div
-              animate={{ scale: [1, 1.3, 1] }}
-              transition={{ duration: 0.8, repeat: Infinity }}
+            <div
+              className="onboarding-dot"
               style={{ width: 6, height: 6, borderRadius: '50%', background: '#CCFF00', flexShrink: 0 }}
             />
             <span style={{ fontSize: 13, color: '#888' }}>{loadingMessage}</span>
-          </motion.div>
+          </div>
 
           <div style={{ width: '100%', maxWidth: 280, height: 2, background: '#111', borderRadius: 1, margin: '0 auto', overflow: 'hidden' }}>
-            <motion.div
-              animate={{ width: generating ? ['0%', '85%', '92%'] : '100%' }}
-              transition={{ duration: 12, ease: 'easeInOut', repeat: generating ? Infinity : 0, repeatType: 'reverse' }}
-              style={{ height: '100%', background: '#CCFF00', borderRadius: 1 }}
+            <div
+              className={`onboarding-progress-fill${generating ? ' onboarding-progress-fill--active' : ''}`}
+              style={generating ? undefined : { width: '100%' }}
             />
           </div>
-        </motion.div>
+        </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
+        <div
+          className="onboarding-success"
           style={{ width: '100%', maxWidth: 340 }}
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 220, damping: 16 }}
+          <div
+            className="onboarding-check"
             style={{
               width: 88,
               height: 88,
@@ -791,7 +859,7 @@ function InitScreen({ form, done, loadingMessage, generating, dailyCalories }) {
             <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
               <path d="M12 22l7 7 13-14" stroke="#CCFF00" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </motion.div>
+          </div>
 
           <h2 style={{
             margin: '0 0 24px',
@@ -841,7 +909,7 @@ function InitScreen({ form, done, loadingMessage, generating, dailyCalories }) {
           <p style={{ margin: 0, fontSize: 14, color: '#555' }}>
             Your coach is waiting for you
           </p>
-        </motion.div>
+        </div>
       )}
     </div>
   );
@@ -902,20 +970,20 @@ function Buttons({ onNext, onBack, showBack = true, label = 'CONTINUE →', disa
   return (
     <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
       {showBack && (
-        <motion.button whileTap={{ scale: 0.97 }} onClick={onBack}
+        <button className="onboarding-tap" onClick={onBack}
           style={{
             flex: 1, padding: '14px', borderRadius: 14, border: '0.5px solid #1e1e1e',
             background: '#0e0e0e', color: '#666', fontSize: 13, fontWeight: 700,
-            cursor: 'pointer', fontFamily: 'inherit',
-          }}>Back</motion.button>
+            cursor: 'pointer', fontFamily: 'inherit', transition: 'transform 0.1s',
+          }}>Back</button>
       )}
-      <motion.button whileTap={{ scale: 0.97 }} onClick={onNext} disabled={disabled}
+      <button className="onboarding-tap" onClick={onNext} disabled={disabled}
         style={{
           flex: 2, padding: '14px', borderRadius: 14, border: 'none',
           background: '#CCFF00', color: '#060608', fontSize: 13, fontWeight: 900,
           cursor: 'pointer', fontFamily: 'inherit', opacity: disabled ? 0.6 : 1,
-          letterSpacing: '0.03em',
-        }}>{label}</motion.button>
+          letterSpacing: '0.03em', transition: 'transform 0.1s',
+        }}>{label}</button>
     </div>
   );
 }
