@@ -47,6 +47,8 @@ function RootRedirect() {
 
 function OnboardingRoute() {
   const { profile, loading } = useAuth();
+  const initActive = typeof window !== 'undefined'
+    && sessionStorage.getItem('onboarding_init_active') === 'true';
 
   if (loading) {
     return (
@@ -56,7 +58,7 @@ function OnboardingRoute() {
     );
   }
 
-  if (isProfileComplete(profile)) {
+  if (isProfileComplete(profile) && !initActive) {
     return <Navigate to="/" replace />;
   }
 

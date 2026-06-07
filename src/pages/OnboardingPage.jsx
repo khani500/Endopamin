@@ -226,8 +226,29 @@ const ONBOARDING_CSS = `
   .onboarding-fade-down { animation: onboarding-fade-down 0.4s ease 0.3s both; }
   .onboarding-tap:active { transform: scale(0.97); }
   .onboarding-tap-sm:active { transform: scale(0.96); }
-  .onboarding-spinner {
-    animation: onboarding-spin 2s linear infinite;
+  .onboarding-init-spinner {
+    animation: onboarding-spin 1s linear infinite;
+  }
+  .onboarding-init-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0A0A0A;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .onboarding-init-progress-fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 1px;
+    transition: width 0.4s ease;
+  }
+  .onboarding-init-progress-fill--active {
+    animation: onboarding-progress 12s ease-in-out infinite alternate;
   }
   .onboarding-msg {
     animation: onboarding-msg-in 0.3s ease both;
@@ -288,10 +309,32 @@ export default function OnboardingPage() {
   const back = () => { setDir(-1); setStep(s => s - 1); };
 
   useEffect(() => {
+    if (step === 4) console.log('InitScreen shown, step === 4');
+  }, [step]);
+
+  useEffect(() => {
     if (!initDone) return;
-    const timer = window.setTimeout(() => navigate('/', { replace: true }), 3000);
+    console.log('SUCCESS SCREEN');
+
+    const timer = window.setTimeout(async () => {
+      sessionStorage.removeItem('onboarding_init_active');
+      localStorage.setItem('onboarding_done', 'true');
+
+      if (user?.id && supabase) {
+        const { data } = await supabase
+          .from('profiles')
+          .update({ onboarding_completed: true })
+          .eq('id', user.id)
+          .select('*')
+          .single();
+        if (data) setProfile(data);
+      }
+
+      navigate('/', { replace: true });
+    }, 3000);
+
     return () => window.clearTimeout(timer);
-  }, [initDone, navigate]);
+  }, [initDone, navigate, user?.id, setProfile]);
 
   useEffect(() => () => {
     if (loadingTimerRef.current) window.clearInterval(loadingTimerRef.current);
@@ -380,10 +423,11 @@ export default function OnboardingPage() {
 
   const save = async () => {
     if (!user || !supabase) { next(); return; }
+    sessionStorage.setItem('onboarding_init_active', 'true');
     setSaving(true);
     const payload = {
       id: user.id,
-      onboarding_completed: true,
+      onboarding_completed: false,
       display_name: form.display_name || 'Athlete',
       age: form.age ? Number(form.age) : null,
       gender: form.gender,
@@ -405,8 +449,7 @@ export default function OnboardingPage() {
     }
 
     const profileData = data || { ...payload };
-    setProfile(profileData);
-    localStorage.setItem('onboarding_done', 'true');
+    // Defer setProfile until success screen completes so OnboardingRoute stays mounted.
 
     next();
     setGeneratingPlans(true);
@@ -434,14 +477,6 @@ export default function OnboardingPage() {
     <CoachScreen form={form} set={set} onNext={next} onBack={back} key="coach" />,
     <GoalScreen form={form} set={set} onNext={next} onBack={back} key="goal" />,
     <StatsScreen form={form} set={set} onNext={save} onBack={back} saving={saving} key="stats" />,
-    <InitScreen
-      form={form}
-      done={initDone}
-      loadingMessage={loadingMessage}
-      generating={generatingPlans}
-      dailyCalories={planSummary.dailyCalories}
-      key="init"
-    />,
   ];
 
   return (
@@ -450,13 +485,23 @@ export default function OnboardingPage() {
       overflow: 'hidden', position: 'relative',
     }}>
       <style>{ONBOARDING_CSS}</style>
-      <div
-        key={step}
-        className={dir > 0 ? 'onboarding-step-forward' : 'onboarding-step-back'}
-        style={{ minHeight: '100vh' }}
-      >
-        {STEPS[step]}
-      </div>
+      {step < 4 && (
+        <div
+          key={step}
+          className={dir > 0 ? 'onboarding-step-forward' : 'onboarding-step-back'}
+          style={{ minHeight: '100vh' }}
+        >
+          {STEPS[step]}
+        </div>
+      )}
+      {step === 4 && (
+        <InitScreen
+          done={initDone}
+          loadingMessage={loadingMessage}
+          generating={generatingPlans}
+          dailyCalories={planSummary.dailyCalories}
+        />
+      )}
     </div>
   );
 }
@@ -772,83 +817,69 @@ function StatsScreen({ form, set, onNext, onBack, saving }) {
 }
 
 // ── Screen 5: Init ─────────────────────────────────────────────────────────
-function InitScreen({ form, done, loadingMessage, generating, dailyCalories }) {
-  const coach = COACHES.find(c => c.id === form.coach_persona) || COACHES[0];
+function InitScreen({ done, loadingMessage, generating, dailyCalories }) {
   const caloriesLabel = dailyCalories ? `${dailyCalories} kcal daily target` : 'Personalized daily target';
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '40px 24px',
-      textAlign: 'center',
-      background: done ? '#0A0A0A' : '#060608',
-    }}>
+    <div className="onboarding-init-overlay">
       {!done ? (
-        <div className="onboarding-fade-in">
-          <div style={{ position: 'relative', width: 100, height: 100, margin: '0 auto 28px' }}>
-            <div
-              className="onboarding-spinner"
-              style={{
-                position: 'absolute', inset: 0, borderRadius: '50%',
-                border: '2px solid transparent',
-                borderTopColor: '#CCFF00',
-                borderRightColor: '#CCFF00',
-              }}
-            />
-            <div style={{
-              position: 'absolute', inset: 8, borderRadius: '50%',
-              border: '1px solid #1a1a1a',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <img src={coach.img} alt={coach.name}
-                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
-                onError={e => { e.target.style.display = 'none'; }}
-              />
-            </div>
-          </div>
-
-          <div style={{ fontSize: 11, color: '#CCFF00', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8 }}>
-            {coach.name} is building your plan
-          </div>
-          <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.03em', textTransform: 'uppercase', marginBottom: 24 }}>
-            AI IS CUSTOMIZING<br />YOUR PLAN...
-          </div>
-
+        <div className="onboarding-fade-in" style={{ width: '100%', maxWidth: 320 }}>
           <div
+            className="onboarding-init-spinner"
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: '50%',
+              border: '3px solid rgba(255,255,255,0.2)',
+              borderTopColor: '#fff',
+              margin: '0 auto 32px',
+            }}
+          />
+
+          <p style={{
+            color: '#fff',
+            fontSize: 20,
+            fontWeight: 700,
+            margin: '0 0 12px',
+            letterSpacing: '-0.02em',
+          }}
+          >
+            Building your plan...
+          </p>
+
+          <p
             key={loadingMessage}
             className="onboarding-msg"
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 24 }}
+            style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, margin: '0 0 32px' }}
+          >
+            {loadingMessage}
+          </p>
+
+          <div style={{
+            width: '100%',
+            maxWidth: 280,
+            height: 2,
+            background: 'rgba(255,255,255,0.15)',
+            borderRadius: 1,
+            margin: '0 auto',
+            overflow: 'hidden',
+          }}
           >
             <div
-              className="onboarding-dot"
-              style={{ width: 6, height: 6, borderRadius: '50%', background: '#CCFF00', flexShrink: 0 }}
-            />
-            <span style={{ fontSize: 13, color: '#888' }}>{loadingMessage}</span>
-          </div>
-
-          <div style={{ width: '100%', maxWidth: 280, height: 2, background: '#111', borderRadius: 1, margin: '0 auto', overflow: 'hidden' }}>
-            <div
-              className={`onboarding-progress-fill${generating ? ' onboarding-progress-fill--active' : ''}`}
+              className={`onboarding-init-progress-fill${generating ? ' onboarding-init-progress-fill--active' : ''}`}
               style={generating ? undefined : { width: '100%' }}
             />
           </div>
         </div>
       ) : (
-        <div
-          className="onboarding-success"
-          style={{ width: '100%', maxWidth: 340 }}
-        >
+        <div className="onboarding-success" style={{ width: '100%', maxWidth: 340 }}>
           <div
             className="onboarding-check"
             style={{
               width: 88,
               height: 88,
               borderRadius: '50%',
-              border: '2px solid #CCFF00',
+              border: '2px solid #fff',
               margin: '0 auto 28px',
               display: 'flex',
               alignItems: 'center',
@@ -857,7 +888,7 @@ function InitScreen({ form, done, loadingMessage, generating, dailyCalories }) {
             }}
           >
             <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-              <path d="M12 22l7 7 13-14" stroke="#CCFF00" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M12 22l7 7 13-14" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
 
@@ -882,7 +913,7 @@ function InitScreen({ form, done, loadingMessage, generating, dailyCalories }) {
             }}
             >
               <div style={{ fontSize: 14, fontWeight: 700, color: '#CCFF00', marginBottom: 4 }}>
-                ✅ Workout Plan
+                Workout Plan
               </div>
               <div style={{ fontSize: 13, color: '#888' }}>
                 7-day personalized program
@@ -898,7 +929,7 @@ function InitScreen({ form, done, loadingMessage, generating, dailyCalories }) {
             }}
             >
               <div style={{ fontSize: 14, fontWeight: 700, color: '#CCFF00', marginBottom: 4 }}>
-                ✅ Nutrition Plan
+                Nutrition Plan
               </div>
               <div style={{ fontSize: 13, color: '#888' }}>
                 {caloriesLabel}
@@ -907,7 +938,7 @@ function InitScreen({ form, done, loadingMessage, generating, dailyCalories }) {
           </div>
 
           <p style={{ margin: 0, fontSize: 14, color: '#555' }}>
-            Your coach is waiting for you
+            Taking you home...
           </p>
         </div>
       )}

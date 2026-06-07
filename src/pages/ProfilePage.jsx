@@ -1,12 +1,100 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+import {
+  fetchTrainingKnowledgeForOnboarding,
+  generateOnboardingNutritionPlan,
+  generateOnboardingWorkoutPlan,
+} from '../lib/gemini';
 
 const PROFILE_STORAGE_KEY = 'endopamin_profile';
-const LOADING_DELAY_MS = 2500;
+
+const PLAN_LOADING_PHASES = [
+  { until: 3, text: 'Analyzing your profile...' },
+  { until: 6, text: 'Applying NASM & NSCA protocols...' },
+  { until: 9, text: 'Building your workout plan...' },
+  { until: 12, text: 'Calculating your nutrition...' },
+  { until: Infinity, text: 'Almost ready...' },
+];
+
+function getPlanLoadingMessage(elapsedSec) {
+  return PLAN_LOADING_PHASES.find(phase => elapsedSec < phase.until)?.text || 'Almost ready...';
+}
+
+function toKg(weight, unit) {
+  const w = Number(weight);
+  if (!w || w <= 0) return null;
+  return unit === 'kg' ? w : w * 0.453592;
+}
+
+function toCm(height, unit) {
+  const h = Number(height);
+  if (!h || h <= 0) return null;
+  return unit === 'cm' ? h : h * 2.54;
+}
+
+function calcBmi(heightCm, weightKg) {
+  if (!heightCm || !weightKg) return null;
+  const heightM = heightCm / 100;
+  return Math.round((weightKg / (heightM * heightM)) * 10) / 10;
+}
+
+function buildAthleteProfileForPlan(form, savedProfile = {}) {
+  const heightCm = toCm(form.height || savedProfile.height, form.height_unit || savedProfile.height_unit || 'cm');
+  const weightKg = toKg(form.weight || savedProfile.weight, form.weight_unit || savedProfile.weight_unit || 'kg');
+  const targetWeightKg = toKg(
+    form.target_weight || savedProfile.target_weight || form.weight || savedProfile.weight,
+    form.weight_unit || savedProfile.weight_unit || 'kg',
+  );
+
+  return {
+    display_name: form.display_name || savedProfile.display_name || 'Athlete',
+    age: form.age ? Number(form.age) : savedProfile.age,
+    gender: form.gender || savedProfile.gender || 'male',
+    height_cm: heightCm,
+    weight_kg: weightKg ? Math.round(weightKg * 10) / 10 : null,
+    target_weight_kg: targetWeightKg ? Math.round(targetWeightKg * 10) / 10 : null,
+    bmi: calcBmi(heightCm, weightKg),
+    goal: form.goal || savedProfile.goal || 'fat_loss',
+    experience_level: form.experience || savedProfile.experience || 'intermediate',
+    activity_level: form.activity || savedProfile.activity || 'moderate',
+    location: form.location || savedProfile.location || 'gym',
+    equipment: form.equipment || savedProfile.equipment || 'full_gym',
+    days_per_week: savedProfile.days_per_week || 4,
+    injuries: form.injuries || savedProfile.injuries || 'none',
+    coach_persona: savedProfile.coach_persona || 'aria',
+  };
+}
+
+const FALLBACK_WORKOUT = (coachId) => ({
+  coachId,
+  days: [
+    { day: 'Saturday', focus: 'Push', type: 'training', exercises: [{ name: 'Bench Press', sets: '4', reps: '8-10', rest: '90s' }, { name: 'OHP', sets: '3', reps: '8-10', rest: '90s' }, { name: 'Tricep Pushdown', sets: '3', reps: '12', rest: '45s' }] },
+    { day: 'Sunday', focus: 'Pull', type: 'training', exercises: [{ name: 'Deadlift', sets: '4', reps: '5', rest: '120s' }, { name: 'Barbell Row', sets: '3', reps: '8-10', rest: '90s' }, { name: 'Lat Pulldown', sets: '3', reps: '10-12', rest: '60s' }] },
+    { day: 'Monday', focus: 'Active Rest', type: 'rest', exercises: [{ name: '30 min walk', sets: '-', reps: '-', rest: '-' }] },
+    { day: 'Tuesday', focus: 'Legs', type: 'training', exercises: [{ name: 'Squat', sets: '4', reps: '8', rest: '120s' }, { name: 'Leg Press', sets: '3', reps: '12', rest: '90s' }, { name: 'Romanian Deadlift', sets: '3', reps: '10', rest: '90s' }] },
+    { day: 'Wednesday', focus: 'Core + Cardio', type: 'training', exercises: [{ name: 'Plank', sets: '3', reps: '60s', rest: '45s' }, { name: 'Mountain Climber', sets: '3', reps: '30s', rest: '30s' }] },
+    { day: 'Thursday', focus: 'Upper Mix', type: 'training', exercises: [{ name: 'Incline Press', sets: '3', reps: '10', rest: '60s' }, { name: 'Cable Row', sets: '3', reps: '10-12', rest: '60s' }] },
+    { day: 'Friday', focus: 'Full Rest', type: 'rest', exercises: [{ name: 'Recovery', sets: '-', reps: '-', rest: '-' }] },
+  ],
+});
+
+const FALLBACK_NUTRITION = {
+  daily_calories: 2200,
+  protein_g: 150,
+  carbs_g: 220,
+  fat_g: 65,
+  meals: [
+    { name: 'Breakfast', time: '8:00 AM', calories: 500, foods: ['Eggs', 'Oats', 'Berries'], protein_g: 30, carbs_g: 55, fat_g: 15 },
+    { name: 'Lunch', time: '1:00 PM', calories: 650, foods: ['Chicken', 'Rice', 'Vegetables'], protein_g: 45, carbs_g: 70, fat_g: 18 },
+    { name: 'Dinner', time: '7:00 PM', calories: 600, foods: ['Fish', 'Potato', 'Salad'], protein_g: 40, carbs_g: 55, fat_g: 20 },
+  ],
+  water_glasses: 8,
+  notes: 'Balanced plan based on your profile. Adjust portions as you track progress.',
+};
 
 // ── SVG Icons ──────────────────────────────────────────────────────────────
 const IconMale = ({ color = '#888' }) => (
@@ -418,7 +506,10 @@ export default function ProfilePage() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(DEFAULT);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState(PLAN_LOADING_PHASES[0].text);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const loadingTimerRef = useRef(null);
+  const generationStartedRef = useRef(null);
 
   useEffect(() => {
     if (!profile || profileLoaded) return;
@@ -442,6 +533,27 @@ export default function ProfilePage() {
     }));
     setProfileLoaded(true);
   }, [profile, profileLoaded]);
+
+  useEffect(() => () => {
+    if (loadingTimerRef.current) window.clearInterval(loadingTimerRef.current);
+  }, []);
+
+  const startLoadingTimer = () => {
+    generationStartedRef.current = Date.now();
+    setLoadingMessage(PLAN_LOADING_PHASES[0].text);
+    if (loadingTimerRef.current) window.clearInterval(loadingTimerRef.current);
+    loadingTimerRef.current = window.setInterval(() => {
+      const elapsed = (Date.now() - generationStartedRef.current) / 1000;
+      setLoadingMessage(getPlanLoadingMessage(elapsed));
+    }, 400);
+  };
+
+  const stopLoadingTimer = () => {
+    if (loadingTimerRef.current) {
+      window.clearInterval(loadingTimerRef.current);
+      loadingTimerRef.current = null;
+    }
+  };
 
   const set = (key, val) => setForm(p => ({ ...p, [key]: val }));
 
@@ -482,14 +594,6 @@ export default function ProfilePage() {
         console.error('Profile save failed:', error);
       } else {
         savedProfile = data;
-
-        // If equipment changed, deactivate old plans so coach gets fresh plan
-        if (profile?.equipment !== payload.equipment) {
-          await supabase
-            .from('workout_plans')
-            .update({ is_active: false })
-            .eq('user_id', user?.id);
-        }
       }
     }
 
@@ -505,19 +609,89 @@ export default function ProfilePage() {
     return profileData;
   };
 
+  const regeneratePlans = async (profileData) => {
+    if (!user?.id || !supabase) return;
+
+    const athlete = buildAthleteProfileForPlan(form, { ...profile, ...profileData });
+    const coachId = athlete.coach_persona;
+
+    const { error: workoutDeleteError } = await supabase
+      .from('workout_plans')
+      .delete()
+      .eq('user_id', user.id);
+    if (workoutDeleteError) {
+      console.error('Failed to delete workout plans:', workoutDeleteError);
+    }
+
+    const { error: nutritionDeleteError } = await supabase
+      .from('nutrition_plans')
+      .delete()
+      .eq('user_id', user.id);
+    if (nutritionDeleteError) {
+      console.error('Failed to delete nutrition plans:', nutritionDeleteError);
+    }
+
+    let knowledgeContent = '';
+    try {
+      knowledgeContent = await fetchTrainingKnowledgeForOnboarding(20);
+    } catch (err) {
+      console.warn('Training knowledge fetch failed:', err);
+    }
+
+    let workoutPlan;
+    try {
+      workoutPlan = await generateOnboardingWorkoutPlan(athlete, knowledgeContent);
+    } catch (err) {
+      console.error('Workout plan generation failed, using fallback:', err);
+      workoutPlan = FALLBACK_WORKOUT(coachId);
+    }
+
+    let nutritionPlan;
+    try {
+      nutritionPlan = await generateOnboardingNutritionPlan(athlete);
+    } catch (err) {
+      console.error('Nutrition plan generation failed, using fallback:', err);
+      nutritionPlan = FALLBACK_NUTRITION;
+    }
+
+    const { error: workoutInsertError } = await supabase.from('workout_plans').insert({
+      user_id: user.id,
+      coach_id: coachId,
+      plan_data: workoutPlan,
+      week_start: new Date().toISOString().split('T')[0],
+      is_active: true,
+    });
+    if (workoutInsertError) {
+      console.error('Workout plan save failed:', workoutInsertError);
+    }
+
+    const { error: nutritionInsertError } = await supabase.from('nutrition_plans').insert({
+      user_id: user.id,
+      plan_data: nutritionPlan,
+      is_active: true,
+    });
+    if (nutritionInsertError) {
+      console.warn('Nutrition plan save failed:', nutritionInsertError.message);
+    }
+  };
+
   const buildPlan = async () => {
     if (isLoading) return;
 
     setIsLoading(true);
+    startLoadingTimer();
 
     try {
-      await persistProfile();
+      const profileData = await persistProfile();
       localStorage.setItem('onboarding_done', 'true');
+      await regeneratePlans(profileData);
     } catch (err) {
-      console.error('Profile save failed:', err);
+      console.error('Profile save or plan generation failed:', err);
+    } finally {
+      stopLoadingTimer();
+      setIsLoading(false);
+      navigate('/', { replace: true });
     }
-
-    navigate('/', { replace: true });
   };
 
   const next = async () => {
@@ -977,7 +1151,7 @@ export default function ProfilePage() {
                   AI is customizing your plan...
                 </motion.p>
                 <p style={{ fontSize: 12, color: '#666', lineHeight: 1.6 }}>
-                  Syncing your stats with your coaches
+                  {loadingMessage}
                 </p>
               </motion.div>
             </motion.div>
