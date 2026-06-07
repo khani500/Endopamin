@@ -8,6 +8,7 @@ import {
   generateOnboardingWorkoutPlan,
   getFallbackWorkoutPlan,
 } from '../lib/gemini';
+import PlanPreviewScreen, { hasSeenPlanPreview } from '../components/PlanPreviewScreen';
 
 const LOADING_PHASES = [
   { until: 3, text: 'Analyzing your profile...' },
@@ -274,7 +275,7 @@ export default function OnboardingPage() {
   const [initDone, setInitDone] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState(LOADING_PHASES[0].text);
   const [generatingPlans, setGeneratingPlans] = useState(false);
-  const [planSummary, setPlanSummary] = useState({ dailyCalories: null });
+  const [generatedPlans, setGeneratedPlans] = useState(null);
   const loadingTimerRef = useRef(null);
   const generationStartedRef = useRef(null);
   const [form, setForm] = useState({
@@ -296,33 +297,38 @@ export default function OnboardingPage() {
   const next = () => { setDir(1); setStep(s => s + 1); };
   const back = () => { setDir(-1); setStep(s => s - 1); };
 
+  const finalizeOnboarding = async () => {
+    sessionStorage.removeItem('onboarding_init_active');
+    localStorage.setItem('onboarding_done', 'true');
+
+    if (user?.id && supabase) {
+      const { data } = await supabase
+        .from('profiles')
+        .update({ onboarding_completed: true })
+        .eq('id', user.id)
+        .select('*')
+        .single();
+      if (data) setProfile(data);
+    }
+  };
+
+  const skipToWorkoutPlan = async () => {
+    await finalizeOnboarding();
+    navigate('/workout-plan', { replace: true });
+  };
+
   useEffect(() => {
     if (step === 4) console.log('InitScreen shown, step === 4');
   }, [step]);
 
   useEffect(() => {
-    if (!initDone) return;
+    if (!initDone || !generatedPlans) return;
     console.log('SUCCESS SCREEN');
 
-    const timer = window.setTimeout(async () => {
-      sessionStorage.removeItem('onboarding_init_active');
-      localStorage.setItem('onboarding_done', 'true');
-
-      if (user?.id && supabase) {
-        const { data } = await supabase
-          .from('profiles')
-          .update({ onboarding_completed: true })
-          .eq('id', user.id)
-          .select('*')
-          .single();
-        if (data) setProfile(data);
-      }
-
-      navigate('/', { replace: true });
-    }, 3000);
-
-    return () => window.clearTimeout(timer);
-  }, [initDone, navigate, user?.id, setProfile]);
+    if (hasSeenPlanPreview()) {
+      void skipToWorkoutPlan();
+    }
+  }, [initDone, generatedPlans]);
 
   useEffect(() => () => {
     if (loadingTimerRef.current) window.clearInterval(loadingTimerRef.current);
@@ -406,7 +412,7 @@ export default function OnboardingPage() {
       console.warn('Nutrition plan save failed (run nutrition_plans migration):', nutritionInsertError.message);
     }
 
-    return { nutritionPlan };
+    return { workoutPlan, nutritionPlan, coachId };
   };
 
   const save = async () => {
@@ -445,14 +451,22 @@ export default function OnboardingPage() {
 
     try {
       const result = await generateAndSavePlans(profileData);
-      if (result?.nutritionPlan?.daily_calories) {
-        setPlanSummary({ dailyCalories: result.nutritionPlan.daily_calories });
+      if (result) {
+        setGeneratedPlans(result);
       } else {
-        setPlanSummary({ dailyCalories: FALLBACK_NUTRITION.daily_calories });
+        setGeneratedPlans({
+          workoutPlan: getFallbackWorkoutPlan(form.coach_persona, form.gender),
+          nutritionPlan: FALLBACK_NUTRITION,
+          coachId: form.coach_persona || 'aria',
+        });
       }
     } catch (err) {
       console.error('Plan generation failed:', err);
-      setPlanSummary({ dailyCalories: FALLBACK_NUTRITION.daily_calories });
+      setGeneratedPlans({
+        workoutPlan: getFallbackWorkoutPlan(form.coach_persona, form.gender),
+        nutritionPlan: FALLBACK_NUTRITION,
+        coachId: form.coach_persona || 'aria',
+      });
     } finally {
       stopLoadingTimer();
       setGeneratingPlans(false);
@@ -487,7 +501,8 @@ export default function OnboardingPage() {
           done={initDone}
           loadingMessage={loadingMessage}
           generating={generatingPlans}
-          dailyCalories={planSummary.dailyCalories}
+          generatedPlans={generatedPlans}
+          onPreviewComplete={finalizeOnboarding}
         />
       )}
     </div>
@@ -805,13 +820,23 @@ function StatsScreen({ form, set, onNext, onBack, saving }) {
 }
 
 // ── Screen 5: Init ─────────────────────────────────────────────────────────
-function InitScreen({ done, loadingMessage, generating, dailyCalories }) {
-  const caloriesLabel = dailyCalories ? `${dailyCalories} kcal daily target` : 'Personalized daily target';
+function InitScreen({ done, loadingMessage, generating, generatedPlans, onPreviewComplete }) {
+  if (done && generatedPlans && !hasSeenPlanPreview()) {
+    return (
+      <PlanPreviewScreen
+        coachId={generatedPlans.coachId}
+        workoutPlan={generatedPlans.workoutPlan}
+        nutritionPlan={generatedPlans.nutritionPlan}
+        onComplete={onPreviewComplete}
+      />
+    );
+  }
+
+  if (done) return null;
 
   return (
     <div className="onboarding-init-overlay">
-      {!done ? (
-        <div className="onboarding-fade-in" style={{ width: '100%', maxWidth: 320 }}>
+      <div className="onboarding-fade-in" style={{ width: '100%', maxWidth: 320 }}>
           <div
             className="onboarding-init-spinner"
             style={{
@@ -859,77 +884,6 @@ function InitScreen({ done, loadingMessage, generating, dailyCalories }) {
             />
           </div>
         </div>
-      ) : (
-        <div className="onboarding-success" style={{ width: '100%', maxWidth: 340 }}>
-          <div
-            className="onboarding-check"
-            style={{
-              width: 88,
-              height: 88,
-              borderRadius: '50%',
-              border: '2px solid #fff',
-              margin: '0 auto 28px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: '#111',
-            }}
-          >
-            <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-              <path d="M12 22l7 7 13-14" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-
-          <h2 style={{
-            margin: '0 0 24px',
-            fontSize: 26,
-            fontWeight: 900,
-            letterSpacing: '-0.03em',
-            color: '#fff',
-          }}
-          >
-            Your Plan is Ready!
-          </h2>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
-            <div style={{
-              background: '#111',
-              border: '0.5px solid #2a2a2a',
-              borderRadius: 14,
-              padding: '14px 16px',
-              textAlign: 'left',
-            }}
-            >
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#CCFF00', marginBottom: 4 }}>
-                Workout Plan
-              </div>
-              <div style={{ fontSize: 13, color: '#888' }}>
-                7-day personalized program
-              </div>
-            </div>
-
-            <div style={{
-              background: '#111',
-              border: '0.5px solid #2a2a2a',
-              borderRadius: 14,
-              padding: '14px 16px',
-              textAlign: 'left',
-            }}
-            >
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#CCFF00', marginBottom: 4 }}>
-                Nutrition Plan
-              </div>
-              <div style={{ fontSize: 13, color: '#888' }}>
-                {caloriesLabel}
-              </div>
-            </div>
-          </div>
-
-          <p style={{ margin: 0, fontSize: 14, color: '#555' }}>
-            Taking you home...
-          </p>
-        </div>
-      )}
     </div>
   );
 }

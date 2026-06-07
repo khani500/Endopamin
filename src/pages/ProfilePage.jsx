@@ -10,6 +10,7 @@ import {
   generateOnboardingWorkoutPlan,
   getFallbackWorkoutPlan,
 } from '../lib/gemini';
+import PlanPreviewScreen, { hasSeenPlanPreview } from '../components/PlanPreviewScreen';
 
 const PROFILE_STORAGE_KEY = 'endopamin_profile';
 
@@ -496,6 +497,8 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState(PLAN_LOADING_PHASES[0].text);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [generatedPlans, setGeneratedPlans] = useState(null);
+  const [showPlanPreview, setShowPlanPreview] = useState(false);
   const loadingTimerRef = useRef(null);
   const generationStartedRef = useRef(null);
 
@@ -618,7 +621,7 @@ export default function ProfilePage() {
   };
 
   const regeneratePlans = async (profileData) => {
-    if (!user?.id || !supabase) return;
+    if (!user?.id || !supabase) return null;
 
     const athlete = buildAthleteProfileForPlan(form, { ...profile, ...profileData });
     const coachId = athlete.coach_persona;
@@ -665,6 +668,8 @@ export default function ProfilePage() {
     if (nutritionInsertError) {
       console.warn('Nutrition plan save failed:', nutritionInsertError.message);
     }
+
+    return { workoutPlan, nutritionPlan, coachId };
   };
 
   const buildPlan = async () => {
@@ -677,8 +682,16 @@ export default function ProfilePage() {
       const profileData = await persistProfile();
       localStorage.setItem('onboarding_done', 'true');
       await deleteUserPlans();
-      await regeneratePlans(profileData);
-      navigate('/', { replace: true });
+      const result = await regeneratePlans(profileData);
+
+      if (hasSeenPlanPreview()) {
+        navigate('/workout-plan', { replace: true });
+      } else if (result) {
+        setGeneratedPlans(result);
+        setShowPlanPreview(true);
+      } else {
+        navigate('/workout-plan', { replace: true });
+      }
     } catch (err) {
       console.error('Profile save or plan generation failed:', err);
     } finally {
@@ -1150,6 +1163,16 @@ export default function ProfilePage() {
             </motion.div>
           )}
         </AnimatePresence>,
+        document.body,
+      )}
+
+      {showPlanPreview && generatedPlans && createPortal(
+        <PlanPreviewScreen
+          coachId={generatedPlans.coachId}
+          workoutPlan={generatedPlans.workoutPlan}
+          nutritionPlan={generatedPlans.nutritionPlan}
+          onComplete={() => setShowPlanPreview(false)}
+        />,
         document.body,
       )}
     </main>
