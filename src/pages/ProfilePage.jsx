@@ -357,7 +357,7 @@ function getInlineBmi(height, heightUnit, weight, weightUnit) {
     return { bmi: Math.round(bmi * 10) / 10, category: 'Underweight', color: '#4DA6FF' };
   }
   if (bmi < 25) {
-    return { bmi: Math.round(bmi * 10) / 10, category: 'Normal', color: '#4ADE80' };
+    return { bmi: Math.round(bmi * 10) / 10, category: 'Normal', color: '#CCFF00' };
   }
   if (bmi < 30) {
     return { bmi: Math.round(bmi * 10) / 10, category: 'Overweight', color: '#FFA53C' };

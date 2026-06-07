@@ -174,7 +174,7 @@ export default function WorkoutPlanPage() {
   const [activeDay, setActiveDay] = useState(null);
 
   const coach = profile?.coach_persona || profile?.selected_coach || profile?.current_coach || profile?.coach_id || "aria";
-  const { accent, label } = COACH_COLORS[coach] || COACH_COLORS.aria;
+  const { label } = COACH_COLORS[coach] || COACH_COLORS.aria;
 
   useEffect(() => { init(); }, []);
 
@@ -319,7 +319,7 @@ export default function WorkoutPlanPage() {
           <button onClick={() => navigate('/')} style={{ background: "none", border: "none", color: "#fff", fontSize: 22, cursor: "pointer" }}>←</button>
           <div>
             <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>Weekly Plan</h1>
-            <p style={{ margin: 0, fontSize: 12, color: accent }}>Coach {label}</p>
+            <p style={{ margin: 0, fontSize: 12, color: ACTIVE_DAY_COLOR }}>Coach {label}</p>
           </div>
         </div>
         {plan && (
@@ -375,7 +375,7 @@ export default function WorkoutPlanPage() {
                     {d.exercises.map((ex, j) => (
                       <div key={j} style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: "4px 12px", padding: "7px 0", borderBottom: j < d.exercises.length - 1 ? "1px solid #1a1a1a" : "none", alignItems: "center" }}>
                         <span style={{ fontSize: 13, color: "#ddd" }}>{ex.name}</span>
-                        <span style={{ fontSize: 12, color: accent, fontWeight: 600 }}>{ex.sets}</span>
+                        <span style={{ fontSize: 12, color: ACTIVE_DAY_COLOR, fontWeight: 600 }}>{ex.sets}</span>
                         <span style={{ fontSize: 12, color: "#aaa" }}>{ex.reps}</span>
                         <span style={{ fontSize: 11, color: "#555" }}>{ex.rest}</span>
                       </div>
