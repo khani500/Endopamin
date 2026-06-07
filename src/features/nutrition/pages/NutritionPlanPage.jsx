@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { supabase } from '../../../lib/supabase';
+import { getNutritionPlanSubtitle } from '../lib/nutritionPlanSubtitle';
 import '../nutritionShell.css';
 
 const MEAL_COLORS = ['#FFB800', '#22C55E', '#818CF8', '#FF6B00', '#CCFF00', '#5088FF'];
@@ -12,7 +13,7 @@ function formatFoods(foods) {
 }
 
 export default function NutritionPlanPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [planData, setPlanData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -67,7 +68,7 @@ export default function NutritionPlanPage() {
   const fat = planData?.fat_g ?? null;
   const meals = Array.isArray(planData?.meals) ? planData.meals : [];
   const waterGlasses = planData?.water_glasses ?? null;
-  const notes = planData?.notes ?? '';
+  const planSubtitle = getNutritionPlanSubtitle(profile?.goal, meals.length);
 
   return (
     <main className="np-main" style={{ minHeight: '100vh', background: '#080808', color: '#fff', paddingTop: 56 }}>
@@ -131,8 +132,11 @@ export default function NutritionPlanPage() {
             <p style={{ margin: '0 0 8px', fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
               Daily Macros
             </p>
-            <p style={{ margin: '0 0 14px', fontSize: 28, fontWeight: 900, color: '#CCFF00' }}>
+            <p style={{ margin: '0 0 6px', fontSize: 28, fontWeight: 900, color: '#CCFF00' }}>
               {calories ? `${calories} kcal` : '—'}
+            </p>
+            <p style={{ margin: '0 0 14px', fontSize: 12, color: '#888' }}>
+              {planSubtitle}
             </p>
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
               {protein != null && (
@@ -214,15 +218,6 @@ export default function NutritionPlanPage() {
               </div>
             )}
           </div>
-
-          {notes && (
-            <div className="np-card">
-              <p style={{ margin: '0 0 6px', fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
-                Coach Notes
-              </p>
-              <p style={{ margin: 0, fontSize: 13, color: '#ccc', lineHeight: 1.6 }}>{notes}</p>
-            </div>
-          )}
 
           <Link to="/log" className="np-btn-primary" style={{ textDecoration: 'none', textAlign: 'center' }}>
             Track Daily Nutrition
