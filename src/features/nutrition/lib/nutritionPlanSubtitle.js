@@ -1,9 +1,9 @@
+import { normalizeAthleteGoal } from '../../../lib/gemini';
+
 export function normalizeNutritionGoal(goal) {
-  const g = String(goal || '').toLowerCase();
-  if (g.includes('fat') || g.includes('loss') || g === 'cut') return 'fat_loss';
-  if (g.includes('muscle') || g.includes('bulk') || g.includes('gain')) return 'muscle_gain';
-  if (g.includes('maintain')) return 'maintain';
-  return 'default';
+  const normalized = normalizeAthleteGoal(goal);
+  if (normalized === 'maintain' && !goal) return 'default';
+  return normalized;
 }
 
 export function getNutritionPlanSubtitle(goal, mealCount = 0) {

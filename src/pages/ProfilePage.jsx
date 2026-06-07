@@ -8,7 +8,9 @@ import {
   fetchTrainingKnowledgeForOnboarding,
   generateOnboardingNutritionPlan,
   generateOnboardingWorkoutPlan,
+  getFallbackNutritionPlan,
   getFallbackWorkoutPlan,
+  normalizeAthleteGoal,
 } from '../lib/gemini';
 import PlanPreviewScreen from '../components/PlanPreviewScreen';
 
@@ -44,47 +46,33 @@ function calcBmi(heightCm, weightKg) {
   return Math.round((weightKg / (heightM * heightM)) * 10) / 10;
 }
 
-function buildAthleteProfileForPlan(form, savedProfile = {}) {
-  const heightCm = toCm(form.height || savedProfile.height, form.height_unit || savedProfile.height_unit || 'cm');
-  const weightKg = toKg(form.weight || savedProfile.weight, form.weight_unit || savedProfile.weight_unit || 'kg');
+function buildAthleteFromProfile(profileRow = {}) {
+  const heightCm = toCm(profileRow.height, profileRow.height_unit || 'cm');
+  const weightKg = toKg(profileRow.weight, profileRow.weight_unit || 'kg');
   const targetWeightKg = toKg(
-    form.target_weight || savedProfile.target_weight || form.weight || savedProfile.weight,
-    form.weight_unit || savedProfile.weight_unit || 'kg',
+    profileRow.target_weight || profileRow.weight,
+    profileRow.weight_unit || 'kg',
   );
 
   return {
-    display_name: form.display_name || savedProfile.display_name || 'Athlete',
-    age: form.age ? Number(form.age) : savedProfile.age,
-    gender: String(form.gender || savedProfile.gender || 'male').toLowerCase(),
+    display_name: profileRow.display_name || 'Athlete',
+    age: profileRow.age != null ? Number(profileRow.age) : null,
+    gender: String(profileRow.gender || 'male').toLowerCase(),
     height_cm: heightCm,
     weight_kg: weightKg ? Math.round(weightKg * 10) / 10 : null,
     target_weight_kg: targetWeightKg ? Math.round(targetWeightKg * 10) / 10 : null,
     bmi: calcBmi(heightCm, weightKg),
-    goal: form.goal || savedProfile.goal || 'fat_loss',
-    experience_level: form.experience || savedProfile.experience || 'intermediate',
-    activity_level: form.activity || savedProfile.activity || 'moderate',
-    location: form.location || savedProfile.location || 'gym',
-    equipment: form.equipment || savedProfile.equipment || 'full_gym',
-    days_per_week: savedProfile.days_per_week || 4,
-    session_duration: form.session_duration || savedProfile.session_duration || 45,
-    injuries: form.injuries || savedProfile.injuries || 'none',
-    coach_persona: savedProfile.coach_persona || 'aria',
+    goal: normalizeAthleteGoal(profileRow.goal || 'fat_loss'),
+    experience_level: profileRow.experience || 'intermediate',
+    activity_level: profileRow.activity || profileRow.activity_level || 'moderate',
+    location: profileRow.location || 'gym',
+    equipment: profileRow.equipment || 'full_gym',
+    days_per_week: profileRow.days_per_week || 4,
+    session_duration: profileRow.session_duration || 45,
+    injuries: profileRow.injuries || 'none',
+    coach_persona: profileRow.coach_persona || 'aria',
   };
 }
-
-const FALLBACK_NUTRITION = {
-  daily_calories: 2200,
-  protein_g: 150,
-  carbs_g: 220,
-  fat_g: 65,
-  meals: [
-    { name: 'Breakfast', time: '8:00 AM', calories: 500, foods: ['Eggs', 'Oats', 'Berries'], protein_g: 30, carbs_g: 55, fat_g: 15 },
-    { name: 'Lunch', time: '1:00 PM', calories: 650, foods: ['Chicken', 'Rice', 'Vegetables'], protein_g: 45, carbs_g: 70, fat_g: 18 },
-    { name: 'Dinner', time: '7:00 PM', calories: 600, foods: ['Fish', 'Potato', 'Salad'], protein_g: 40, carbs_g: 55, fat_g: 20 },
-  ],
-  water_glasses: 8,
-  notes: 'Balanced plan based on your profile. Adjust portions as you track progress.',
-};
 
 // ── SVG Icons ──────────────────────────────────────────────────────────────
 const IconMale = ({ color = '#888' }) => (
@@ -522,10 +510,39 @@ export default function ProfilePage() {
     }
   };
 
-  const regeneratePlans = async (profileData) => {
+  const fetchFreshProfile = async () => {
     if (!user?.id || !supabase) return null;
 
-    const athlete = buildAthleteProfileForPlan(form, { ...profile, ...profileData });
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (error) {
+      console.error('Failed to fetch fresh profile:', error);
+      return null;
+    }
+
+    if (data) {
+      setProfile(data);
+      try {
+        localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(data));
+      } catch (cacheError) {
+        console.error('Failed to cache fresh profile locally:', cacheError);
+      }
+    }
+
+    return data;
+  };
+
+  const regeneratePlans = async () => {
+    if (!user?.id || !supabase) return null;
+
+    const freshProfile = await fetchFreshProfile();
+    if (!freshProfile) return null;
+
+    const athlete = buildAthleteFromProfile(freshProfile);
     const coachId = athlete.coach_persona;
 
     let knowledgeContent = '';
@@ -548,7 +565,7 @@ export default function ProfilePage() {
       nutritionPlan = await generateOnboardingNutritionPlan(athlete);
     } catch (err) {
       console.error('Nutrition plan generation failed, using fallback:', err);
-      nutritionPlan = FALLBACK_NUTRITION;
+      nutritionPlan = getFallbackNutritionPlan(athlete);
     }
 
     const { error: workoutInsertError } = await supabase.from('workout_plans').insert({
@@ -581,10 +598,10 @@ export default function ProfilePage() {
     startLoadingTimer();
 
     try {
-      const profileData = await persistProfile();
+      await persistProfile();
       localStorage.setItem('onboarding_done', 'true');
       await deleteUserPlans();
-      const result = await regeneratePlans(profileData);
+      const result = await regeneratePlans();
       if (!pageMountedRef.current) return;
 
       if (result) {

@@ -556,14 +556,37 @@ function parseGeminiJson(text) {
   return JSON.parse(clean);
 }
 
-async function generateJsonFromPrompt(prompt, maxOutputTokens = 4096) {
-  const data = await generateContent({
-    prompt,
-    generationConfig: { maxOutputTokens, temperature: 0.2 },
+const PLAN_GENERATION_TIMEOUT_MS = 8000;
+
+function createTimeoutPromise(ms, message) {
+  return new Promise((_, reject) => {
+    window.setTimeout(() => reject(new Error(message)), ms);
   });
-  const text = extractText(data);
-  if (!text) throw new Error('Empty Gemini response');
-  return parseGeminiJson(text);
+}
+
+function withPlanGenerationTimeout(promise, timeoutMs = PLAN_GENERATION_TIMEOUT_MS) {
+  return Promise.race([
+    promise,
+    createTimeoutPromise(
+      timeoutMs,
+      `Gemini plan generation timed out after ${timeoutMs / 1000}s`,
+    ),
+  ]);
+}
+
+async function generateJsonFromPrompt(prompt, maxOutputTokens = 4096, { timeoutMs } = {}) {
+  const run = async () => {
+    const data = await generateContent({
+      prompt,
+      generationConfig: { maxOutputTokens, temperature: 0.2 },
+    });
+    const text = extractText(data);
+    if (!text) throw new Error('Empty Gemini response');
+    return parseGeminiJson(text);
+  };
+
+  if (timeoutMs) return withPlanGenerationTimeout(run(), timeoutMs);
+  return run();
 }
 
 /** Fetch training knowledge content for onboarding plan generation. */
@@ -824,6 +847,118 @@ export function getFallbackWorkoutPlan(coachId, gender = 'male', sessionDuration
   return applySessionDurationToFallbackPlan(basePlan, sessionDuration);
 }
 
+const NUTRITION_ACTIVITY_MULTIPLIERS = {
+  sedentary: 1.2,
+  light: 1.375,
+  moderate: 1.55,
+  active: 1.725,
+};
+
+/** Map profile/UI goal strings to fat_loss | muscle_gain | maintain. */
+export function normalizeAthleteGoal(goal) {
+  const g = String(goal || '').toLowerCase().trim();
+  if (
+    g === 'fat_loss'
+    || g === 'lose_weight'
+    || g === 'cut'
+    || g.includes('burn fat')
+    || g.includes('lose weight')
+    || (g.includes('fat') && g.includes('loss'))
+  ) {
+    return 'fat_loss';
+  }
+  if (
+    g === 'muscle_gain'
+    || g === 'muscle'
+    || g === 'bulk'
+    || g.includes('build muscle')
+    || g.includes('gain mass')
+    || (g.includes('muscle') && g.includes('gain'))
+  ) {
+    return 'muscle_gain';
+  }
+  if (
+    g === 'maintain'
+    || g === 'endurance'
+    || g === 'health'
+    || g.includes('athletic')
+    || g.includes('endurance')
+  ) {
+    return 'maintain';
+  }
+  return 'maintain';
+}
+
+function normalizeNutritionGoal(goal) {
+  return normalizeAthleteGoal(goal);
+}
+
+function getNutritionActivityMultiplier(activityLevel) {
+  const level = String(activityLevel || 'moderate').toLowerCase();
+  if (level.includes('sedent') || level === 'low') return NUTRITION_ACTIVITY_MULTIPLIERS.sedentary;
+  if (level.includes('light')) return NUTRITION_ACTIVITY_MULTIPLIERS.light;
+  if (level.includes('very') || (level.includes('active') && !level.includes('moderate'))) {
+    return NUTRITION_ACTIVITY_MULTIPLIERS.active;
+  }
+  if (level.includes('moderate')) return NUTRITION_ACTIVITY_MULTIPLIERS.moderate;
+  return NUTRITION_ACTIVITY_MULTIPLIERS[level] ?? NUTRITION_ACTIVITY_MULTIPLIERS.moderate;
+}
+
+/** Profile-aware fallback when Gemini nutrition plan generation fails. */
+export function getFallbackNutritionPlan(athlete = {}) {
+  const weightKg = Number(athlete.weight_kg) || 70;
+  const heightCm = Number(athlete.height_cm) || 175;
+  const age = Math.max(15, Number(athlete.age) || 30);
+  const gender = String(athlete.gender || 'male').toLowerCase();
+  const isFemale = gender === 'female' || gender === 'f';
+
+  const bmr = 10 * weightKg + 6.25 * heightCm - 5 * age + (isFemale ? -161 : 5);
+  const activityMultiplier = getNutritionActivityMultiplier(athlete.activity_level);
+  let tdee = bmr * activityMultiplier;
+
+  const goal = normalizeNutritionGoal(athlete.goal);
+  if (goal === 'fat_loss') tdee -= 500;
+  else if (goal === 'muscle_gain') tdee += 300;
+
+  const dailyCalories = Math.round(Math.max(1200, tdee));
+  const proteinPerKg = goal === 'muscle_gain' ? 2 : 1.8;
+  const protein = Math.round(proteinPerKg * weightKg);
+  const fat = Math.round((goal === 'muscle_gain' ? 1 : 0.8) * weightKg);
+  const carbs = Math.max(0, Math.round((dailyCalories - protein * 4 - fat * 9) / 4));
+
+  const mealDefs = [
+    { name: 'Breakfast', time: '8:00 AM', share: 0.28, foods: ['Eggs', 'Oats', 'Berries'] },
+    { name: 'Lunch', time: '1:00 PM', share: 0.35, foods: ['Chicken', 'Rice', 'Vegetables'] },
+    { name: 'Dinner', time: '7:00 PM', share: 0.37, foods: ['Fish', 'Potato', 'Salad'] },
+  ];
+
+  const meals = mealDefs.map(meal => ({
+    name: meal.name,
+    time: meal.time,
+    calories: Math.round(dailyCalories * meal.share),
+    foods: meal.foods,
+    protein_g: Math.round(protein * meal.share),
+    carbs_g: Math.round(carbs * meal.share),
+    fat_g: Math.round(fat * meal.share),
+  }));
+
+  const notes = goal === 'fat_loss'
+    ? 'High-protein deficit plan. Prioritize lean protein and whole foods.'
+    : goal === 'muscle_gain'
+      ? 'Lean bulk plan. Hit protein targets and fuel training days.'
+      : 'Balanced maintenance plan. Adjust portions as you track progress.';
+
+  return {
+    daily_calories: dailyCalories,
+    protein_g: protein,
+    carbs_g: carbs,
+    fat_g: fat,
+    meals,
+    water_glasses: 8,
+    notes,
+  };
+}
+
 function normalizeOnboardingWorkoutPlan(raw, coachId) {
   const days = (raw?.days || []).map(day => ({
     day: day.day || day.name,
@@ -904,7 +1039,7 @@ Return ONLY valid JSON:
   ]
 }`;
 
-  const raw = await generateJsonFromPrompt(prompt, 8192);
+  const raw = await generateJsonFromPrompt(prompt, 8192, { timeoutMs: PLAN_GENERATION_TIMEOUT_MS });
   return normalizeOnboardingWorkoutPlan(raw, coachId);
 }
 
@@ -945,5 +1080,5 @@ Return ONLY valid JSON:
   "notes": "personalized advice"
 }`;
 
-  return generateJsonFromPrompt(prompt, 4096);
+  return generateJsonFromPrompt(prompt, 4096, { timeoutMs: PLAN_GENERATION_TIMEOUT_MS });
 }

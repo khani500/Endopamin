@@ -5,6 +5,7 @@ import {
   fetchTrainingKnowledgeForOnboarding,
   generateOnboardingNutritionPlan,
   generateOnboardingWorkoutPlan,
+  getFallbackNutritionPlan,
   getFallbackWorkoutPlan,
 } from '../lib/gemini';
 import PlanPreviewScreen from '../components/PlanPreviewScreen';
@@ -66,20 +67,6 @@ function buildAthleteProfile(form, savedProfile = {}) {
     coach_persona: form.coach_persona || savedProfile.coach_persona || 'aria',
   };
 }
-
-const FALLBACK_NUTRITION = {
-  daily_calories: 2200,
-  protein_g: 150,
-  carbs_g: 220,
-  fat_g: 65,
-  meals: [
-    { name: 'Breakfast', time: '8:00 AM', calories: 500, foods: ['Eggs', 'Oats', 'Berries'], protein_g: 30, carbs_g: 55, fat_g: 15 },
-    { name: 'Lunch', time: '1:00 PM', calories: 650, foods: ['Chicken', 'Rice', 'Vegetables'], protein_g: 45, carbs_g: 70, fat_g: 18 },
-    { name: 'Dinner', time: '7:00 PM', calories: 600, foods: ['Fish', 'Potato', 'Salad'], protein_g: 40, carbs_g: 55, fat_g: 20 },
-  ],
-  water_glasses: 8,
-  notes: 'Balanced plan based on your profile. Adjust portions as you track progress.',
-};
 
 // ── Coaches ────────────────────────────────────────────────────────────────
 const COACHES = [
@@ -368,7 +355,7 @@ export default function OnboardingPage() {
       nutritionPlan = await generateOnboardingNutritionPlan(athlete);
     } catch (err) {
       console.error('Nutrition plan generation failed, using fallback:', err);
-      nutritionPlan = FALLBACK_NUTRITION;
+      nutritionPlan = getFallbackNutritionPlan(athlete);
     }
 
     await supabase
@@ -448,7 +435,7 @@ export default function OnboardingPage() {
       } else {
         setGeneratedPlans({
           workoutPlan: getFallbackWorkoutPlan(form.coach_persona, form.gender, 45),
-          nutritionPlan: FALLBACK_NUTRITION,
+          nutritionPlan: getFallbackNutritionPlan(buildAthleteProfile(form, profileData)),
           coachId: form.coach_persona || 'aria',
         });
       }
@@ -457,7 +444,7 @@ export default function OnboardingPage() {
       if (!pageMountedRef.current) return;
       setGeneratedPlans({
         workoutPlan: getFallbackWorkoutPlan(form.coach_persona, form.gender, 45),
-        nutritionPlan: FALLBACK_NUTRITION,
+        nutritionPlan: getFallbackNutritionPlan(buildAthleteProfile(form, profileData)),
         coachId: form.coach_persona || 'aria',
       });
     } finally {
