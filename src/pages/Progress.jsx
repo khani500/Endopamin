@@ -196,6 +196,55 @@ function getCurrentWeekRange() {
   return { weekStart, weekEnd };
 }
 
+const WEEKDAY_LABELS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+function emptyWeeklyChart() {
+  return {
+    chartTitle: 'Weekly Activity',
+    chartVal: '0 / 7 days',
+    bars: WEEKDAY_LABELS.map(d => ({ h: 10, t: 'rest', d, act: false })),
+  };
+}
+
+function buildWeeklyChart(logs) {
+  const { weekStart } = getCurrentWeekRange();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const workoutDays = new Set();
+  for (const log of logs) {
+    if (!log.logged_at) continue;
+    const date = new Date(log.logged_at);
+    date.setHours(0, 0, 0, 0);
+    workoutDays.add(date.getTime());
+  }
+
+  let activeDayCount = 0;
+  const bars = WEEKDAY_LABELS.map((label, index) => {
+    const dayDate = new Date(weekStart);
+    dayDate.setDate(weekStart.getDate() + index);
+    dayDate.setHours(0, 0, 0, 0);
+
+    const hasWorkout = workoutDays.has(dayDate.getTime());
+    const isToday = dayDate.getTime() === today.getTime();
+
+    if (hasWorkout) activeDayCount += 1;
+
+    return {
+      h: hasWorkout ? 90 : 10,
+      t: hasWorkout ? (isToday ? 'today' : 'done') : 'rest',
+      d: label,
+      act: isToday,
+    };
+  });
+
+  return {
+    chartTitle: 'Weekly Activity',
+    chartVal: `${activeDayCount} / 7 days`,
+    bars,
+  };
+}
+
 function countDistinctLogDays(logs) {
   const days = new Set();
   for (const log of logs) {
@@ -284,6 +333,7 @@ export default function Progress() {
   const [workoutStatsLoading, setWorkoutStatsLoading] = useState(true);
   const [activeDays, setActiveDays] = useState(() => new Set());
   const [activityRings, setActivityRings] = useState([0, 0, 0]);
+  const [weeklyChart, setWeeklyChart] = useState(emptyWeeklyChart);
   const d = DATA[rangeIdx];
   const pct = Math.round((rangeIdx / 5) * 100);
   const monthMeta = useMemo(() => getCurrentMonthMeta(), []);
@@ -421,7 +471,10 @@ export default function Progress() {
 
     async function fetchActivityRings() {
       if (!user?.id || !supabase) {
-        if (!cancelled) setActivityRings([0, 0, 0]);
+        if (!cancelled) {
+          setActivityRings([0, 0, 0]);
+          setWeeklyChart(emptyWeeklyChart());
+        }
         return;
       }
 
@@ -452,13 +505,16 @@ export default function Progress() {
         console.error('Failed to load nutrition ring data:', nutritionResult.error);
       }
 
+      const workoutLogs = workoutResult.error ? [] : workoutResult.data ?? [];
+
       setActivityRings(
         calculateActivityRings(
-          workoutResult.error ? [] : workoutResult.data ?? [],
+          workoutLogs,
           nutritionResult.error ? [] : nutritionResult.data ?? [],
           goalDays,
         ),
       );
+      setWeeklyChart(buildWeeklyChart(workoutLogs));
     }
 
     void fetchActivityRings();
@@ -469,6 +525,9 @@ export default function Progress() {
   }, [user?.id, profile?.days_per_week]);
 
   const prRows = useMemo(() => buildPrRows(prRecords), [prRecords]);
+  const chartData = rangeIdx === 0
+    ? weeklyChart
+    : { chartTitle: d.chartTitle, chartVal: d.chartVal, bars: d.bars };
 
   return (
     <main className="min-h-screen bg-[#080808] text-white pb-28 overflow-x-hidden">
@@ -567,11 +626,11 @@ export default function Progress() {
       <div className="mx-5 mb-4 rounded-[22px] border border-white/[0.07] p-4"
         style={{ background: 'rgba(255,255,255,0.025)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
         <div className="flex justify-between items-center mb-3">
-          <span className="text-[9px] tracking-[2px] uppercase text-white/40 font-bold">{d.chartTitle}</span>
-          <span className="text-[10px] text-[#CCFF00] font-bold">{d.chartVal}</span>
+          <span className="text-[9px] tracking-[2px] uppercase text-white/40 font-bold">{chartData.chartTitle}</span>
+          <span className="text-[10px] text-[#CCFF00] font-bold">{chartData.chartVal}</span>
         </div>
         <div className="flex items-end gap-1.5 h-[70px]">
-          {d.bars.filter(b => b.d || b.h > 0).map((b, i) => (
+          {chartData.bars.filter(b => b.d || b.h > 0).map((b, i) => (
             <div key={i} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
               <div className={`w-full rounded-t-[4px] transition-all duration-500 ${BAR_COLORS[b.t]}`}
                 style={{ height: `${b.h}%`, boxShadow: (b.t === 'done' || b.t === 'today') ? '0 0 8px rgba(204,255,0,0.3)' : 'none' }} />
