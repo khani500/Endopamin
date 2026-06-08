@@ -38,10 +38,11 @@ export function useTokenGuard() {
       };
     }
 
+    const currentMonth = new Date().toISOString().slice(0, 7);
     const { error: upsertError } = await supabase
       .from('token_usage')
       .upsert(
-        { user_id: user.id, count: nextCount, updated_at: new Date().toISOString() },
+        { user_id: user.id, count: nextCount, month: currentMonth, updated_at: new Date().toISOString() },
         { onConflict: 'user_id' },
       );
 
