@@ -17,13 +17,13 @@ module.exports = async function handler(req, res) {
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(
-      rawBody,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET || ''
-    );
+    if (process.env.STRIPE_WEBHOOK_SECRET) {
+      event = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    } else {
+      event = JSON.parse(rawBody.toString());
+    }
   } catch (err) {
-    console.error('Webhook signature error:', err.message);
+    console.error('Webhook parse error:', err.message);
     return res.status(400).json({ error: `Webhook Error: ${err.message}` });
   }
 
