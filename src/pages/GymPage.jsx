@@ -61,21 +61,64 @@ function getCategoryStyle(exercise) {
   const cat = exercise.category?.toLowerCase() || '';
   const subcat = exercise.subcategory?.toLowerCase() || '';
 
-  if (cat === 'squat' || cat === 'lunge') return { bg: 'linear-gradient(135deg, #0d2e0d, #1a5c1a)', emoji: '🦵' };
-  if (cat === 'horizontal_push' || cat === 'vertical_push') return { bg: 'linear-gradient(135deg, #0d0d2e, #1a1a5c)', emoji: '💪' };
-  if (cat === 'horizontal_pull' || cat === 'vertical_pull') return { bg: 'linear-gradient(135deg, #1a0d2e, #3d1a5c)', emoji: '🏋️' };
-  if (cat === 'core') return { bg: 'linear-gradient(135deg, #2e1a0d, #5c3d1a)', emoji: '🔥' };
-  if (cat === 'hinge') return { bg: 'linear-gradient(135deg, #2e2e0d, #5c5c1a)', emoji: '⬇️' };
-  if (cat === 'mobility') return { bg: 'linear-gradient(135deg, #0d2e2e, #1a5c5c)', emoji: '🧘' };
-  if (cat === 'cardio') return { bg: 'linear-gradient(135deg, #2e0d0d, #5c1a1a)', emoji: '🏃' };
-  if (cat === 'arms') return { bg: 'linear-gradient(135deg, #1a0d2e, #3d1a5c)', emoji: '💪' };
+  if (cat === 'squat' || cat === 'lunge') return {
+    bg: 'rgba(80,136,255,0.12)', border: 'rgba(80,136,255,0.25)', color: '#5088FF',
+    svg: '<path d="M12 3v10M8 8l4-5 4 5M8 21l4-8 4 8M10 21h4"/>'
+  };
+  if (cat === 'horizontal_push' || cat === 'vertical_push') return {
+    bg: 'rgba(204,255,0,0.12)', border: 'rgba(204,255,0,0.25)', color: '#CCFF00',
+    svg: '<path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/>'
+  };
+  if (cat === 'horizontal_pull' || cat === 'vertical_pull') return {
+    bg: 'rgba(160,100,255,0.12)', border: 'rgba(160,100,255,0.25)', color: '#A064FF',
+    svg: '<path d="M4 12h16M14 6l6 6-6 6"/><path d="M4 6v12"/>'
+  };
+  if (cat === 'core') return {
+    bg: 'rgba(255,107,53,0.12)', border: 'rgba(255,107,53,0.25)', color: '#FF6B35',
+    svg: '<path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z"/>'
+  };
+  if (cat === 'hinge') return {
+    bg: 'rgba(255,165,60,0.12)', border: 'rgba(255,165,60,0.25)', color: '#FFA53C',
+    svg: '<path d="M12 5v14M5 12l7-7 7 7"/>'
+  };
+  if (cat === 'mobility') return {
+    bg: 'rgba(136,204,255,0.12)', border: 'rgba(136,204,255,0.25)', color: '#88CCFF',
+    svg: '<circle cx="12" cy="4" r="1.5" fill="currentColor"/><path d="M12 6v6M9 9l3-3 3 3M9 18l3 3 3-3M12 12v6"/><path d="M7 13c0 0 2-2 5-2s5 2 5 2"/>'
+  };
+  if (cat === 'cardio') return {
+    bg: 'rgba(204,255,0,0.12)', border: 'rgba(204,255,0,0.25)', color: '#CCFF00',
+    svg: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>'
+  };
+  if (cat === 'arms') return {
+    bg: 'rgba(204,255,0,0.12)', border: 'rgba(204,255,0,0.25)', color: '#CCFF00',
+    svg: '<path d="M6 12c0-3.3 2.7-6 6-6V4l4 3-4 3V8c-2.2 0-4 1.8-4 4"/><path d="M18 12c0 3.3-2.7 6-6 6v2l-4-3 4-3v2c2.2 0 4-1.8 4-4"/>'
+  };
+  if (cat === 'stretching') return {
+    bg: 'rgba(136,204,255,0.12)', border: 'rgba(136,204,255,0.25)', color: '#88CCFF',
+    svg: '<circle cx="12" cy="4" r="1.5" fill="currentColor"/><path d="M12 6v6M9 9l3-3 3 3M9 18l3 3 3-3M12 12v6"/><path d="M7 13c0 0 2-2 5-2s5 2 5 2"/>'
+  };
   if (cat === 'desk_break') {
-    if (subcat === 'cardio') return { bg: 'linear-gradient(135deg, #2e0d0d, #5c1a1a)', emoji: '🏃' };
-    if (subcat === 'strength') return { bg: 'linear-gradient(135deg, #0d0d2e, #1a1a5c)', emoji: '💪' };
-    if (subcat === 'mobility' || subcat === 'recovery') return { bg: 'linear-gradient(135deg, #0d2e2e, #1a5c5c)', emoji: '🧘' };
-    return { bg: 'linear-gradient(135deg, #1a0d2e, #3d1a5c)', emoji: '💻' };
+    if (subcat === 'cardio') return {
+      bg: 'rgba(204,255,0,0.12)', border: 'rgba(204,255,0,0.25)', color: '#CCFF00',
+      svg: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>'
+    };
+    if (subcat === 'strength') return {
+      bg: 'rgba(80,136,255,0.12)', border: 'rgba(80,136,255,0.25)', color: '#5088FF',
+      svg: '<path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/>'
+    };
+    if (subcat === 'mobility' || subcat === 'recovery') return {
+      bg: 'rgba(136,204,255,0.12)', border: 'rgba(136,204,255,0.25)', color: '#88CCFF',
+      svg: '<circle cx="12" cy="4" r="1.5" fill="currentColor"/><path d="M12 6v6M9 9l3-3 3 3M9 18l3 3 3-3M12 12v6"/><path d="M7 13c0 0 2-2 5-2s5 2 5 2"/>'
+    };
+    return {
+      bg: 'rgba(160,100,255,0.12)', border: 'rgba(160,100,255,0.25)', color: '#A064FF',
+      svg: '<path d="M2 6a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM8 20h8M12 18v2"/>'
+    };
   }
-  return { bg: 'linear-gradient(135deg, #1a1a1a, #333)', emoji: '⚡' };
+  return {
+    bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)',
+    svg: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>'
+  };
 }
 
 function formatMusclesLabel(muscles, max = 2) {
@@ -111,18 +154,18 @@ function ExerciseCard({ exercise, onClick, subtitle, showLevel = true }) {
     >
       <div
         style={{
-          width: '72px',
-          height: '72px',
-          borderRadius: '10px',
+          width: '56px',
+          height: '56px',
+          borderRadius: '12px',
           background: categoryStyle.bg,
+          border: `1px solid ${categoryStyle.border}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '28px',
           flexShrink: 0,
         }}
       >
-        {categoryStyle.emoji}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={categoryStyle.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: categoryStyle.svg }} />
       </div>
       <div style={{ flex: 1, overflow: 'hidden' }}>
         <div

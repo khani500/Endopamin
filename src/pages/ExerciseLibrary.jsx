@@ -6,16 +6,16 @@ import { fetchAllExercises } from '../services/exerciseDBService';
 const IMAGE_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 
 const CATEGORIES = [
-  { label: 'Chest', emoji: '🏋️', muscles: ['chest'] },
-  { label: 'Back', emoji: '🔙', muscles: ['lats', 'middle back', 'lower back', 'traps'] },
-  { label: 'Shoulders', emoji: '💪', muscles: ['shoulders', 'neck'] },
-  { label: 'Arms', emoji: '💪', muscles: ['biceps', 'triceps', 'forearms'] },
-  { label: 'Legs', emoji: '🦵', filterType: 'legs' },
-  { label: 'Core', emoji: '🔥', muscles: ['abdominals', 'obliques'] },
-  { label: 'Cardio', emoji: '🏃', muscles: null, filterByCategory: 'cardio' },
-  { label: 'Warm-Up', emoji: '🔥', filterType: 'warm-up' },
-  { label: 'Cool-Down', emoji: '❄️', filterType: 'cool-down' },
-  { label: 'All', emoji: '⚡', muscles: null },
+  { label: 'Chest', color: '#CCFF00', svg: '<path d="M4 12c0-4.4 3.6-8 8-8s8 3.6 8 8M4 12c0 2 .8 3.8 2 5.1M20 12c0 2-.8 3.8-2 5.1M8 17.5C9.2 18.4 10.5 19 12 19s2.8-.6 4-1.5"/><circle cx="12" cy="12" r="3"/>', muscles: ['chest'] },
+  { label: 'Back', color: '#5088FF', svg: '<path d="M12 2v20M4 6l4 2M20 6l-4 2M4 18l4-2M20 18l-4-2M4 12h4M20 12h-4"/>', muscles: ['lats', 'middle back', 'lower back', 'traps'] },
+  { label: 'Shoulders', color: '#FF6B35', svg: '<path d="M12 5a3 3 0 100 6 3 3 0 000-6z"/><path d="M4 19c0-4 3.6-7 8-7s8 3 8 7"/><path d="M2 12c2-3 5-5 10-5s8 2 10 5"/>', muscles: ['shoulders', 'neck'] },
+  { label: 'Arms', color: '#CCFF00', svg: '<path d="M6 12c0-3.3 2.7-6 6-6V4l4 3-4 3V8c-2.2 0-4 1.8-4 4"/><path d="M18 12c0 3.3-2.7 6-6 6v2l-4-3 4-3v2c2.2 0 4-1.8 4-4"/>', muscles: ['biceps', 'triceps', 'forearms'] },
+  { label: 'Legs', color: '#5088FF', svg: '<path d="M12 3v10M8 8l4-5 4 5M8 21l4-8 4 8M10 21h4"/>', filterType: 'legs' },
+  { label: 'Core', color: '#FF6B35', svg: '<path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z"/>', muscles: ['abdominals', 'obliques'] },
+  { label: 'Cardio', color: '#CCFF00', svg: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>', muscles: null, filterByCategory: 'cardio' },
+  { label: 'Warm-Up', color: '#FFA53C', svg: '<path d="M12 2a5 5 0 015 5c0 5-5 11-5 11S7 12 7 7a5 5 0 015-5z"/><circle cx="12" cy="7" r="2"/>', filterType: 'warm-up' },
+  { label: 'Cool-Down', color: '#88CCFF', svg: '<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>', filterType: 'cool-down' },
+  { label: 'All', color: '#CCFF00', svg: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>', muscles: null },
 ];
 
 function isWarmUpExercise(exercise) {
@@ -184,7 +184,9 @@ export default function ExerciseLibrary() {
   return (
     <main className="mx-auto min-h-screen w-full max-w-[430px] bg-[#0A0A0A] px-4 pb-24 pt-8 text-white">
       <header className="mb-5">
-        <button type="button" onClick={() => navigate(-1)} className="mb-3 flex h-8 w-8 items-center justify-center text-gray-400">←</button>
+        <button type="button" onClick={() => navigate(-1)} className="mb-3" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
         <p className="text-xs font-black uppercase tracking-[0.22em] text-[#CCFF00]">Training</p>
         <h1 className="mt-2 text-3xl font-black tracking-[-0.04em]">Exercise Library</h1>
         <input
@@ -212,7 +214,9 @@ export default function ExerciseLibrary() {
                 onClick={() => openCategory(category.label === 'All' ? null : category)}
                 className="rounded-3xl border border-white/10 bg-[#141416] p-4 text-left transition-all duration-200 active:scale-[0.98] hover:border-[#CCFF00]/40"
               >
-                <div className="text-3xl">{category.emoji}</div>
+                <div style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: `${category.color}18`, border: `1px solid ${category.color}33` }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={category.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: category.svg }} />
+                </div>
                 <p className="mt-3 text-lg font-black">{category.label}</p>
                 <p className="text-xs text-white/50">{count} exercises</p>
               </button>
@@ -224,7 +228,9 @@ export default function ExerciseLibrary() {
       {!loading && !error && showingList && (
         <>
           <div className="mb-4 flex items-center justify-between">
-            <button type="button" onClick={clearCategory} className="text-sm font-black text-[#CCFF00]">← Back</button>
+            <button type="button" onClick={clearCategory} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
             <p className="text-xs text-white/50 capitalize">
               {(activeCategory?.label || 'all exercises')} · {filteredExercises.length} exercises
             </p>
