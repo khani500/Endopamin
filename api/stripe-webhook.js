@@ -1,5 +1,5 @@
-import Stripe from 'stripe';
-import { createClient } from '@supabase/supabase-js';
+const Stripe = require('stripe');
+const { createClient } = require('@supabase/supabase-js');
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const supabase = createClient(
@@ -7,24 +7,13 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY
 );
 
-export const config = { api: { bodyParser: false } };
-
-async function getRawBody(req) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    req.on('data', chunk => chunks.push(chunk));
-    req.on('end', () => resolve(Buffer.concat(chunks)));
-    req.on('error', reject);
-  });
-}
-
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const sig = req.headers['stripe-signature'];
-  const rawBody = await getRawBody(req);
+  const rawBody = req.body;
 
   let event;
   try {
@@ -41,7 +30,6 @@ export default async function handler(req, res) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const userId = session.metadata?.userId;
-
     if (userId) {
       await supabase
         .from('profiles')
@@ -56,19 +44,11 @@ export default async function handler(req, res) {
 
   if (event.type === 'customer.subscription.deleted') {
     const subscription = event.data.object;
-    const { data: profiles } = await supabase
+    await supabase
       .from('profiles')
-      .select('id')
+      .update({ is_pro: false })
       .eq('stripe_subscription_id', subscription.id);
-
-    if (profiles?.length > 0) {
-      await supabase
-        .from('profiles')
-        .update({ is_pro: false })
-        .eq('stripe_subscription_id', subscription.id);
-    }
   }
 
   return res.status(200).json({ received: true });
-}
-
+};
