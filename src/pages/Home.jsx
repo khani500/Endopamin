@@ -10,17 +10,6 @@ const TRAINING_ENV_ICONS = [
   { label: 'Desk', path: 'M2 6a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM8 20h8M12 18v2', nav: '/gym?tab=desk' },
 ];
 
-const QUICK_START = [
-  { id: 'cardio', label: 'Cardio', path: '/workout/cardio', color: '#CCFF00',
-    svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M13 4v7h7l-9 9v-7H4l9-9z"/><path d="M3 20l3-3M18 5l3-3M3 4l3 3"/></svg> },
-  { id: 'strength', label: 'Strength', path: '/workout/strength', color: '#5088FF',
-    svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/></svg> },
-  { id: 'mobility', label: 'Mobility', path: '/workout/mobility', color: '#CCFF00',
-    svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="4" r="1.5" fill="currentColor"/><path d="M12 6v6M9 9l3-3 3 3M9 18l3 3 3-3M12 12v6"/><path d="M7 13c0 0 2-2 5-2s5 2 5 2"/></svg> },
-  { id: 'hiit', label: 'HIIT', path: '/workout/hiit', color: '#FF6B35',
-    svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
-];
-
 const PLANS = [
   { id: 'workout', title: 'Workout Plan', sub: 'Your weekly program', path: '/workout-plan',
     svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>,
@@ -261,31 +250,6 @@ export default function Home() {
               <p className="text-[9px] text-white/40 mt-0.5">{plan.sub}</p>
             </div>
           </Link>
-        ))}
-      </div>
-
-      {/* Quick Start */}
-      <div className="px-[18px] flex justify-between items-center mb-3">
-        <p className="text-[10px] tracking-[2.5px] uppercase text-white/40 font-bold">Quick Start</p>
-        <span className="text-[10px] text-[#CCFF00] font-bold">See all →</span>
-      </div>
-      <div className="px-[18px] grid grid-cols-4 gap-[9px]">
-        {QUICK_START.map((item, i) => (
-          <button key={item.id} type="button" onClick={() => navigate(item.path)}
-            className={`rounded-[20px] aspect-square relative overflow-hidden border flex flex-col items-center justify-end pb-[10px] transition-transform duration-200 active:scale-95 ${
-              i === 1 ? 'border-[#CCFF00]/40' : 'border-white/[0.07]'
-            }`}
-            style={{
-              background: i === 1 ? 'linear-gradient(145deg,rgba(204,255,0,0.1),rgba(204,255,0,0.025))' : '#131313',
-              boxShadow: i === 1 ? '0 6px 18px rgba(0,0,0,.4),0 0 16px rgba(204,255,0,0.12)' : '0 6px 18px rgba(0,0,0,0.45)',
-            }}>
-            <div className="absolute inset-0 flex items-center justify-center"
-              style={{ background: `radial-gradient(circle at 50% 40%, ${item.color}22, transparent 70%)` }}>
-              <div className="w-7 h-7" style={{ color: item.color }}>{item.svg}</div>
-            </div>
-            {i === 1 && <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-[2px] bg-[#CCFF00] rounded-full" style={{ boxShadow: '0 0 6px rgba(204,255,0,0.6)' }} />}
-            <span className="text-[9px] text-white/70 font-bold uppercase tracking-[0.5px] relative z-10 mt-auto">{item.label}</span>
-          </button>
         ))}
       </div>
 
