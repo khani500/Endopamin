@@ -20,7 +20,7 @@ export const PRO_FEATURES = {
   prTracker: true,
 };
 
-export const FREE_COACH_MESSAGE_LIMIT = 10;
+export const FREE_COACH_MESSAGE_LIMIT = 5;
 
 export function isProUser(profile) {
   return profile?.is_pro === true;
