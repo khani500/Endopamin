@@ -160,6 +160,24 @@ export default function Home() {
         </div>
       </div>
 
+      {/* My Plans */}
+      <p className="px-[18px] text-[10px] tracking-[2.5px] uppercase text-white/40 font-bold mb-3">My Plans</p>
+      <div className="px-[18px] flex flex-col gap-[10px] mb-5">
+        {PLANS.map(plan => (
+          <Link key={plan.id} to={plan.path} className="no-underline rounded-[20px] p-4 flex items-center gap-3 border transition-transform duration-200 active:scale-95 w-full"
+            style={{ background: `linear-gradient(135deg,${plan.bgColor},rgba(0,0,0,0))`, borderColor: plan.borderColor, boxShadow: '0 8px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)' }}>
+            <div className="w-7 h-7 flex-shrink-0" style={{ color: plan.iconColor }}>{plan.svg}</div>
+            <div>
+              <p className="text-[11px] font-bold text-white">{plan.title}</p>
+              <p className="text-[9px] text-white/40 mt-0.5">{plan.sub}</p>
+            </div>
+            <svg className="ml-auto" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </Link>
+        ))}
+      </div>
+
+      <div className="mx-[18px] mb-4 h-px bg-white/[0.05]" />
+
       {/* Choose Training — Start Training glass card */}
       <div className="px-[18px]" style={{ marginBottom: '16px' }}>
         <p style={{ fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)', marginBottom: '12px' }}>
@@ -236,21 +254,6 @@ export default function Home() {
             </svg>
           </div>
         </div>
-      </div>
-
-      {/* My Plans */}
-      <p className="px-[18px] text-[10px] tracking-[2.5px] uppercase text-white/40 font-bold mb-3">My Plans</p>
-      <div className="px-[18px] grid grid-cols-2 gap-[10px] mb-5">
-        {PLANS.map(plan => (
-          <Link key={plan.id} to={plan.path} className="no-underline rounded-[20px] p-4 flex items-center gap-3 border transition-transform duration-200 active:scale-95"
-            style={{ background: `linear-gradient(135deg,${plan.bgColor},rgba(0,0,0,0))`, borderColor: plan.borderColor, boxShadow: '0 8px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)' }}>
-            <div className="w-7 h-7 flex-shrink-0" style={{ color: plan.iconColor }}>{plan.svg}</div>
-            <div>
-              <p className="text-[11px] font-bold text-white">{plan.title}</p>
-              <p className="text-[9px] text-white/40 mt-0.5">{plan.sub}</p>
-            </div>
-          </Link>
-        ))}
       </div>
 
     </main>
