@@ -867,16 +867,15 @@ export default function ProfilePage() {
       </div>
 
       {bmiInfo && (
-        <p style={{
-          margin: '8px 0 0',
-          fontSize: 11,
-          color: '#888',
-          letterSpacing: '0.01em',
-        }}
-        >
-          BMI: {bmiInfo.bmi} ·{' '}
-          <span style={{ color: bmiInfo.color, fontWeight: 600 }}>{bmiInfo.category}</span>
-        </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '10px 0 0', background: '#111', border: '0.5px solid #2a2a2a', borderRadius: 10, padding: '10px 12px' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={bmiInfo.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/>
+            <path d="M12 8v4M12 16h.01"/>
+          </svg>
+          <span style={{ fontSize: 12, color: '#666' }}>BMI</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: bmiInfo.color }}>{bmiInfo.bmi}</span>
+          <span style={{ fontSize: 11, color: bmiInfo.color, background: `${bmiInfo.color}18`, border: `1px solid ${bmiInfo.color}33`, borderRadius: 6, padding: '2px 8px', fontWeight: 600 }}>{bmiInfo.category}</span>
+        </div>
       )}
 
       {/* Gender */}
