@@ -4,33 +4,33 @@ import { getExerciseById, getExercisesBySetting } from '../data/coachExerciseLib
 import { clearExerciseCache, fetchAllExercises } from '../services/exerciseDBService';
 
 const GYM_CATEGORIES = [
-  { label: 'Chest', emoji: '🏋️', muscles: ['chest'] },
-  { label: 'Back', emoji: '🔙', muscles: ['lats', 'middle back', 'lower back', 'traps'] },
-  { label: 'Shoulders', emoji: '💪', muscles: ['shoulders', 'neck'] },
-  { label: 'Arms', emoji: '💪', muscles: ['biceps', 'triceps', 'forearms'] },
-  { label: 'Legs', emoji: '🦵', filterType: 'legs' },
-  { label: 'Core', emoji: '🔥', muscles: ['abdominals', 'obliques'] },
-  { label: 'Cardio', emoji: '🏃', muscles: null, filterByCategory: 'cardio' },
-  { label: 'Warm-Up', emoji: '🔥', filterType: 'warm-up' },
-  { label: 'Cool-Down', emoji: '❄️', filterType: 'cool-down' },
-  { label: 'All', emoji: '⚡', muscles: null },
+  { label: 'Chest', svg: '<path d="M4 12c0-4.4 3.6-8 8-8s8 3.6 8 8M4 12c0 2 .8 3.8 2 5.1M20 12c0 2-.8 3.8-2 5.1M8 17.5C9.2 18.4 10.5 19 12 19s2.8-.6 4-1.5"/><circle cx="12" cy="12" r="3"/>', color: '#CCFF00', muscles: ['chest'] },
+  { label: 'Back', svg: '<path d="M12 2v20M4 6l4 2M20 6l-4 2M4 18l4-2M20 18l-4-2M4 12h4M20 12h-4"/>', color: '#5088FF', muscles: ['lats', 'middle back', 'lower back', 'traps'] },
+  { label: 'Shoulders', svg: '<path d="M12 5a3 3 0 100 6 3 3 0 000-6z"/><path d="M4 19c0-4 3.6-7 8-7s8 3 8 7"/><path d="M2 12c2-3 5-5 10-5s8 2 10 5"/>', color: '#FF6B35', muscles: ['shoulders', 'neck'] },
+  { label: 'Arms', svg: '<path d="M6 12c0-3.3 2.7-6 6-6V4l4 3-4 3V8c-2.2 0-4 1.8-4 4"/><path d="M18 12c0 3.3-2.7 6-6 6v2l-4-3 4-3v2c2.2 0 4-1.8 4-4"/>', color: '#CCFF00', muscles: ['biceps', 'triceps', 'forearms'] },
+  { label: 'Legs', svg: '<path d="M12 3v10M8 8l4-5 4 5M8 21l4-8 4 8M10 21h4"/>', color: '#5088FF', filterType: 'legs' },
+  { label: 'Core', svg: '<path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z"/>', color: '#FF6B35', muscles: ['abdominals', 'obliques'] },
+  { label: 'Cardio', svg: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>', color: '#CCFF00', muscles: null, filterByCategory: 'cardio' },
+  { label: 'Warm-Up', svg: '<path d="M12 2a5 5 0 015 5c0 5-5 11-5 11S7 12 7 7a5 5 0 015-5z"/><circle cx="12" cy="7" r="2"/>', color: '#FFA53C', filterType: 'warm-up' },
+  { label: 'Cool-Down', svg: '<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>', color: '#88CCFF', filterType: 'cool-down' },
+  { label: 'All', svg: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>', color: '#CCFF00', muscles: null },
 ];
 
 const HOME_CATEGORIES = [
-  { label: 'Upper Body', emoji: '💪', categories: ['horizontal_push', 'vertical_push', 'horizontal_pull', 'vertical_pull', 'arms'] },
-  { label: 'Lower Body', emoji: '🦵', categories: ['squat', 'lunge', 'hinge'] },
-  { label: 'Core', emoji: '🔥', categories: ['core'] },
-  { label: 'Mobility', emoji: '🧘', categories: ['mobility'] },
-  { label: 'Cardio', emoji: '🏃', categories: ['cardio'] },
-  { label: 'All Home', emoji: '⚡', categories: null },
+  { label: 'Upper Body', svg: '<path d="M12 5a3 3 0 100 6 3 3 0 000-6z"/><path d="M4 19c0-4 3.6-7 8-7s8 3 8 7"/>', color: '#CCFF00', categories: ['horizontal_push', 'vertical_push', 'horizontal_pull', 'vertical_pull', 'arms'] },
+  { label: 'Lower Body', svg: '<path d="M12 3v10M8 8l4-5 4 5M8 21l4-8 4 8M10 21h4"/>', color: '#5088FF', categories: ['squat', 'lunge', 'hinge'] },
+  { label: 'Core', svg: '<path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z"/>', color: '#FF6B35', categories: ['core'] },
+  { label: 'Mobility', svg: '<circle cx="12" cy="4" r="1.5" fill="currentColor"/><path d="M12 6v6M9 9l3-3 3 3M9 18l3 3 3-3M12 12v6"/><path d="M7 13c0 0 2-2 5-2s5 2 5 2"/>', color: '#CCFF00', categories: ['mobility'] },
+  { label: 'Cardio', svg: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>', color: '#FFA53C', categories: ['cardio'] },
+  { label: 'All Home', svg: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>', color: '#CCFF00', categories: null },
 ];
 
 const DESK_CATEGORIES = [
-  { label: 'Mobility', emoji: '🧘', subcategory: 'mobility' },
-  { label: 'Strength', emoji: '💪', subcategory: 'strength' },
-  { label: 'Cardio', emoji: '🏃', subcategory: 'cardio' },
-  { label: 'Recovery', emoji: '🫁', subcategory: 'recovery' },
-  { label: 'All Desk', emoji: '⚡', subcategory: null },
+  { label: 'Mobility', svg: '<circle cx="12" cy="4" r="1.5" fill="currentColor"/><path d="M12 6v6M9 9l3-3 3 3M9 18l3 3 3-3M12 12v6"/><path d="M7 13c0 0 2-2 5-2s5 2 5 2"/>', color: '#CCFF00', subcategory: 'mobility' },
+  { label: 'Strength', svg: '<path d="M6 4h2v16H6zM16 4h2v16h-2z"/><path d="M2 9h4M18 9h4M2 15h4M18 15h4"/><path d="M8 12h8"/>', color: '#5088FF', subcategory: 'strength' },
+  { label: 'Cardio', svg: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>', color: '#FFA53C', subcategory: 'cardio' },
+  { label: 'Recovery', svg: '<path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/>', color: '#88CCFF', subcategory: 'recovery' },
+  { label: 'All Desk', svg: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>', color: '#CCFF00', subcategory: null },
 ];
 
 const LEVEL_COLORS = {
@@ -220,7 +220,9 @@ function CategoryGrid({ categories, counts, allLabel, onSelect, animatedItems })
               transition: `opacity 0.3s ease ${i * 0.05}s, transform 0.3s ease ${i * 0.05}s`,
             }}
           >
-            <div className="text-3xl">{category.emoji}</div>
+            <div style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: `${category.color}18`, border: `1px solid ${category.color}33` }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={category.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: category.svg }} />
+            </div>
             <p className="mt-3 text-lg font-black">{category.label}</p>
             <p className="text-xs text-white/50">{count} exercises</p>
           </button>
@@ -363,8 +365,13 @@ export default function GymPage() {
       <div className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-72 h-48 rounded-full bg-[#CCFF00] opacity-[0.03] blur-3xl" />
 
       <div className="px-5 pt-14 pb-4">
-        <div className="font-['Orbitron',monospace] font-black text-[15px] tracking-[3px] mb-1">
-          <span className="text-[#CCFF00]">∃</span>NDO <span className="text-white/30 text-[11px]">/ Gym</span>
+        <div className="flex items-center gap-3 mb-1">
+          <button type="button" onClick={() => navigate(-1)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div className="font-['Orbitron',monospace] font-black text-[15px] tracking-[3px]">
+            <span className="text-[#CCFF00]">∃</span>NDO <span className="text-white/30 text-[11px]">/ Gym</span>
+          </div>
         </div>
         <div>
           <h1 className="text-[26px] font-bold tracking-tight">Exercise Library</h1>
@@ -443,9 +450,9 @@ export default function GymPage() {
                   setSelectedHomeCategory(null);
                   setSelectedHomeExercise(null);
                 }}
-                className="text-sm font-black text-[#CCFF00]"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
               >
-                ← Back
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
               </button>
               <p className="text-xs text-white/50">
                 {selectedHomeCategory.label} · {filteredHomeExercises.length} exercises
@@ -487,17 +494,9 @@ export default function GymPage() {
                   setSelectedDeskCategory(null);
                   setSelectedDeskExercise(null);
                 }}
-                style={{
-                  border: 'none',
-                  background: 'transparent',
-                  color: '#CCFF00',
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  padding: 0,
-                }}
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
               >
-                ← Back
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
               </button>
               <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
                 {selectedDeskCategory.label} · {filteredDeskExercises.length} exercises
