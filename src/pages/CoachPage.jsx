@@ -1106,92 +1106,24 @@ export default function CoachPage() {
 
       {/* ══ GROUP ══ */}
       {view === 'group' && (
-        <div className="px-5 flex-1 overflow-y-auto">
+        <div className="px-5 flex-1 overflow-y-auto flex flex-col items-center justify-center text-center gap-6" style={{ paddingTop: 40 }}>
           <BackBtn />
-          {!groupCode ? (
-            <div className="space-y-3">
-              <div className="rounded-[22px] border border-white/[0.07] p-5"
-                style={{ background: 'rgba(255,255,255,0.025)' }}>
-                <div className="w-12 h-12 rounded-[16px] flex items-center justify-center mb-3"
-                  style={{ background: `${coach.color}15`, border: `1px solid ${coach.color}25`, color: coach.color }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-                    <path d="M12 5v14M5 12h14"/>
-                  </svg>
-                </div>
-                <h3 className="text-[16px] font-bold mb-1">Create Session</h3>
-                <p className="text-[12px] text-white/40 mb-4">Start a group workout and invite up to 4 friends</p>
-                <button type="button" onClick={createGroup}
-                  className="w-full py-3.5 rounded-[14px] font-black text-[13px] text-black transition-all active:scale-95"
-                  style={{ background: coach.color, boxShadow: `0 6px 20px ${coach.color}40` }}>
-                  Create Group Session
-                </button>
-              </div>
-              <div className="rounded-[22px] border border-white/[0.07] p-5"
-                style={{ background: 'rgba(255,255,255,0.025)' }}>
-                <h3 className="text-[16px] font-bold mb-1">Join Session</h3>
-                <p className="text-[12px] text-white/40 mb-3">Enter a code from your training partner</p>
-                <div className="flex gap-2">
-                  <input type="text" placeholder="ENTER CODE" value={groupInput}
-                    onChange={e => setGroupInput(e.target.value.toUpperCase())} maxLength={6}
-                    className="flex-1 px-4 py-3 rounded-[12px] bg-white/[0.06] border border-white/[0.1] text-white placeholder-white/20 outline-none text-[15px] font-black tracking-[4px] text-center" />
-                  <button type="button" onClick={joinGroup}
-                    className="px-4 py-3 rounded-[12px] font-black text-[12px] transition-all active:scale-95"
-                    style={{ background: `${coach.color}20`, color: coach.color, border: `1px solid ${coach.color}30` }}>
-                    Join
-                  </button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="rounded-[22px] border p-5"
-                style={{ background: `${coach.color}08`, borderColor: `${coach.color}25` }}>
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <p className="text-[10px] text-white/35 uppercase tracking-wider mb-1">Session Code</p>
-                    <p className="text-[36px] font-black tracking-[8px]" style={{ color: coach.color }}>{groupCode}</p>
-                  </div>
-                  <button type="button" onClick={() => navigator.clipboard?.writeText(groupCode)}
-                    className="px-3 py-2 rounded-[10px] text-[11px] font-bold border active:scale-95"
-                    style={{ borderColor: `${coach.color}30`, color: coach.color, background: `${coach.color}10` }}>
-                    Copy
-                  </button>
-                </div>
-                <div className="space-y-2 mb-4">
-                  {groupMembers.map((m, i) => (
-                    <div key={i} className="flex items-center gap-3 rounded-[12px] p-3"
-                      style={{ background: 'rgba(255,255,255,0.04)' }}>
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-[11px]"
-                        style={{ background: `${coach.color}20`, color: coach.color }}>
-                        {m.name.slice(0,2).toUpperCase()}
-                      </div>
-                      <p className="text-[13px] font-bold flex-1">{m.name}</p>
-                      {m.isHost && <span className="text-[9px] px-2 py-0.5 rounded-full font-bold"
-                        style={{ background: `${coach.color}20`, color: coach.color }}>HOST</span>}
-                      <div className="w-2 h-2 rounded-full" style={{ background: m.ready ? '#CCFF00' : '#666', boxShadow: m.ready ? '0 0 6px #CCFF00' : 'none' }} />
-                    </div>
-                  ))}
-                  {groupMembers.length < 5 && (
-                    <div className="flex items-center gap-3 rounded-[12px] p-3 border border-dashed" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-                      <div className="w-8 h-8 rounded-full bg-white/[0.05] flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 5v14M5 12h14"/></svg>
-                      </div>
-                      <p className="text-[12px] text-white/20">Waiting for members...</p>
-                    </div>
-                  )}
-                </div>
-                <button type="button" onClick={() => { setView('workout'); }}
-                  className="w-full py-4 rounded-[16px] font-black text-[14px] text-black transition-all active:scale-95"
-                  style={{ background: coach.color, boxShadow: `0 8px 24px ${coach.color}50` }}>
-                  🚀 Start Group Workout
-                </button>
-              </div>
-              <button type="button" onClick={() => { setGroupCode(null); setGroupMembers([]); }}
-                className="w-full py-3 rounded-[14px] text-[13px] text-white/40 border border-white/[0.08] font-bold">
-                Leave Session
-              </button>
-            </div>
-          )}
+          <div style={{ width: 72, height: 72, borderRadius: 20, background: `${coach.color}12`, border: `1px solid ${coach.color}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={coach.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-[20px] font-black text-white mb-2">Train Together</h3>
+            <p className="text-[13px] text-white/40 leading-relaxed">Group sessions are coming soon.<br/>Work out in sync with your crew.</p>
+          </div>
+          <div style={{ background: `${coach.color}08`, border: `1px solid ${coach.color}20`, borderRadius: 16, padding: '14px 24px' }}>
+            <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: coach.color }}>Coming Soon</p>
+            <p className="text-[11px] text-white/30">Shared timers · Group chat · Live sync</p>
+          </div>
         </div>
       )}
 
