@@ -30,6 +30,7 @@
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.15.0",
     "recharts": "^3.8.1",
+    "stripe": "^22.2.0",
     "three": "^0.184.0",
     "zustand": "^5.0.13"
   },
