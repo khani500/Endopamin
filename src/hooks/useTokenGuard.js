@@ -43,7 +43,7 @@ export function useTokenGuard() {
       .from('token_usage')
       .upsert(
         { user_id: user.id, count: nextCount, month: currentMonth, updated_at: new Date().toISOString() },
-        { onConflict: 'user_id' },
+        { onConflict: 'user_id,month' },
       );
 
     if (upsertError) {
