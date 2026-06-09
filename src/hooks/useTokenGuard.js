@@ -15,13 +15,11 @@ export function useTokenGuard() {
       return { allowed: true };
     }
 
-    console.log('[TokenGuard] Checking token for user:', user.id);
     const { data, error } = await supabase
       .from('token_usage')
       .select('count')
       .eq('user_id', user.id)
       .maybeSingle();
-    console.log('[TokenGuard] Token data:', data, 'Error:', error);
 
     if (error) {
       import.meta.env.DEV && console.error('Token check error:', error);
@@ -47,7 +45,6 @@ export function useTokenGuard() {
         { user_id: user.id, count: nextCount, month: currentMonth, updated_at: new Date().toISOString() },
         { onConflict: 'user_id,month', ignoreDuplicates: false },
       );
-    console.log('[TokenGuard] Upsert error:', upsertError, 'Next count:', nextCount);
 
     if (upsertError) {
       import.meta.env.DEV && console.error('Token upsert error:', upsertError);
