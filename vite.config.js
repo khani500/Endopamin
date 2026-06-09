@@ -7,13 +7,27 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     build: {
-      rollupOptions: {
+      rolldownOptions: {
         output: {
-          manualChunks: {
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'motion': ['framer-motion'],
-            'supabase': ['@supabase/supabase-js'],
-            'firebase': ['firebase/app', 'firebase/messaging'],
+          codeSplitting: {
+            groups: [
+              {
+                test: /node_modules\/(react|react-dom|react-router-dom)\//,
+                name: 'react-vendor',
+              },
+              {
+                test: /node_modules\/framer-motion\//,
+                name: 'motion',
+              },
+              {
+                test: /node_modules\/@supabase\/supabase-js\//,
+                name: 'supabase',
+              },
+              {
+                test: /node_modules\/firebase\//,
+                name: 'firebase',
+              },
+            ],
           },
         },
       },
