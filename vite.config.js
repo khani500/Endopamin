@@ -6,6 +6,19 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'motion': ['framer-motion'],
+            'supabase': ['@supabase/supabase-js'],
+            'firebase': ['firebase/app', 'firebase/messaging'],
+          },
+        },
+      },
+      chunkSizeWarningLimit: 600,
+    },
     server: {
       host: '0.0.0.0',
       port: 5173,
