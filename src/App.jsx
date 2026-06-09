@@ -1,31 +1,31 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import BottomNav from './components/BottomNav';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import Home from './pages/Home';
-import Progress from './pages/Progress';
-import GymPage from './pages/GymPage';
-import CoachPage from './pages/CoachPage';
-import ProfilePage from './pages/ProfilePage';
-import AuthPage from './pages/AuthPage';
-import OnboardingPage from './pages/OnboardingPage';
-import ExerciseLibrary from './pages/ExerciseLibrary';
-import WorkoutSession from './pages/WorkoutSession';
-import WorkoutPlanPage from './pages/WorkoutPlanPage';
-import GroupSession from './pages/GroupSession';
-import DeskBreakSession from './pages/DeskBreakSession';
+const Home = lazy(() => import('./pages/Home'));
+const Progress = lazy(() => import('./pages/Progress'));
+const GymPage = lazy(() => import('./pages/GymPage'));
+const CoachPage = lazy(() => import('./pages/CoachPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const OnboardingPage = lazy(() => import('./pages/OnboardingPage'));
+const ExerciseLibrary = lazy(() => import('./pages/ExerciseLibrary'));
+const WorkoutSession = lazy(() => import('./pages/WorkoutSession'));
+const WorkoutPlanPage = lazy(() => import('./pages/WorkoutPlanPage'));
+const GroupSession = lazy(() => import('./pages/GroupSession'));
+const DeskBreakSession = lazy(() => import('./pages/DeskBreakSession'));
 import { useAuth, isProfileComplete } from './context/AuthContext';
 import { WorkoutProvider } from './context/WorkoutContext';
 import { checkUserAbsence, updateLastActive } from './services/absenceDetector';
 import { onForegroundMessage } from './lib/firebase';
 import { getNotificationSettings, sendNotification, registerForNotifications } from './services/notificationService';
-import NutritionLayout from './features/nutrition/NutritionLayout';
-import NutritionHub from './features/nutrition/pages/NutritionHub';
-import NutritionOverviewPage from './features/nutrition/pages/NutritionOverviewPage';
-import NutritionScanPage from './features/nutrition/pages/NutritionScanPage';
-import NutritionPlanPage from './features/nutrition/pages/NutritionPlanPage';
-import NutritionCoachPage from './features/nutrition/pages/NutritionCoachPage';
+const NutritionLayout = lazy(() => import('./features/nutrition/NutritionLayout'));
+const NutritionHub = lazy(() => import('./features/nutrition/pages/NutritionHub'));
+const NutritionOverviewPage = lazy(() => import('./features/nutrition/pages/NutritionOverviewPage'));
+const NutritionScanPage = lazy(() => import('./features/nutrition/pages/NutritionScanPage'));
+const NutritionPlanPage = lazy(() => import('./features/nutrition/pages/NutritionPlanPage'));
+const NutritionCoachPage = lazy(() => import('./features/nutrition/pages/NutritionCoachPage'));
 
 function RootRedirect() {
   const { profile, loading } = useAuth();
@@ -147,7 +147,8 @@ function App() {
     <WorkoutProvider>
     <Router>
       <div className="mx-auto flex min-h-screen w-full max-w-[430px] flex-col bg-[#0A0A0A] pb-16">
-        <Routes>
+        <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#0A0A0A]"><div className="h-8 w-8 animate-spin rounded-full border-2 border-[#CCFF00]/30 border-t-[#CCFF00]" /></div>}>
+          <Routes>
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/" element={<ProtectedRoute><RootRedirect /></ProtectedRoute>} />
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
@@ -174,7 +175,8 @@ function App() {
           <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/onboarding" element={<ProtectedRoute requireProfile={false}><OnboardingRoute /></ProtectedRoute>} />
-        </Routes>
+          </Routes>
+        </Suspense>
 
         {toast && (
           <div className="fixed left-1/2 top-4 z-[60] w-[min(360px,calc(100vw-32px))] -translate-x-1/2 rounded-2xl border border-[#CCFF00]/30 bg-[#111] p-4 shadow-2xl">
