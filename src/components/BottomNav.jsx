@@ -65,37 +65,61 @@ export default function BottomNav() {
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50"
-      style={{ background: 'rgba(8,8,8,0.97)', backdropFilter: 'blur(24px)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-      <div className="flex justify-around items-end px-1 pt-2 pb-6">
-        {NAV_ITEMS.map(item => {
-          const isActive = item.path === '/'
-            ? location.pathname === '/'
-            : location.pathname.startsWith(item.path);
+    <nav
+      aria-label="Main navigation"
+      className="fixed left-1/2 z-50 -translate-x-1/2"
+      style={{
+        bottom: 'max(20px, env(safe-area-inset-bottom, 0px))',
+        width: 'min(calc(100vw - 40px), 390px)',
+      }}
+    >
+      <div className="relative">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 rounded-[35px] bg-black/35"
+          style={{
+            boxShadow: '0 10px 18px rgba(0,0,0,0.45), 0 4px 24px rgba(0,0,0,0.35)',
+          }}
+        />
+        <div
+          className="relative flex items-center justify-between rounded-[35px] border border-white/[0.08] px-2.5 py-2"
+          style={{
+            background: 'rgba(18,18,18,0.72)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+          }}
+        >
+          {NAV_ITEMS.map((item) => {
+            const isActive = item.path === '/'
+              ? location.pathname === '/'
+              : location.pathname.startsWith(item.path);
 
-          return (
-            <Link key={item.id} to={item.path}
-              className="flex flex-col items-center gap-1 px-3 py-1 no-underline group">
-              <div className="w-6 h-6"
-                style={{
-                  color: isActive ? '#CCFF00' : 'rgba(255,255,255,0.3)',
-                  filter: isActive ? 'drop-shadow(0 0 4px rgba(204,255,0,0.6))' : 'none',
-                  stroke: 'currentColor',
-                  transition: 'all 0.2s',
-                }}>
-                {item.svg}
-              </div>
-              <span className="text-[9.5px] font-medium transition-all duration-200"
-                style={{ color: isActive ? '#CCFF00' : 'rgba(255,255,255,0.35)' }}>
-                {item.label}
-              </span>
-              {isActive && (
-                <div className="absolute bottom-4 w-1 h-1 rounded-full bg-[#CCFF00]"
-                  style={{ boxShadow: '0 0 6px rgba(204,255,0,0.8)' }} />
-              )}
-            </Link>
-          );
-        })}
+            return (
+              <Link
+                key={item.id}
+                to={item.path}
+                aria-label={item.label}
+                aria-current={isActive ? 'page' : undefined}
+                className="relative flex flex-1 items-center justify-center no-underline"
+              >
+                <span
+                  className={`flex h-11 w-11 items-center justify-center rounded-full transition-all duration-200 ${
+                    isActive ? 'bg-white shadow-[0_2px_6px_rgba(255,255,255,0.25)]' : ''
+                  }`}
+                >
+                  <span
+                    className="flex h-6 w-6 items-center justify-center transition-colors duration-200 [&_svg]:h-full [&_svg]:w-full [&_svg]:stroke-current"
+                    style={{
+                      color: isActive ? '#000000' : 'rgba(255,255,255,0.45)',
+                    }}
+                  >
+                    {item.svg}
+                  </span>
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );

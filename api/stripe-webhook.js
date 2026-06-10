@@ -31,14 +31,32 @@ module.exports = async function handler(req, res) {
     const session = event.data.object;
     const userId = session.metadata?.userId;
     if (userId) {
-      await supabase
+      const plan = session.metadata?.plan;
+      const daysToAdd = plan === 'yearly' ? 365 : 30;
+      const proExpiresAt = new Date(Date.now() + daysToAdd * 24 * 60 * 60 * 1000).toISOString();
+
+      const updatePayload = {
+        is_pro: true,
+        stripe_customer_id: session.customer,
+        stripe_subscription_id: session.subscription,
+        pro_expires_at: proExpiresAt,
+      };
+
+      const { error } = await supabase
         .from('profiles')
-        .update({
-          is_pro: true,
-          stripe_customer_id: session.customer,
-          stripe_subscription_id: session.subscription,
-        })
+        .update(updatePayload)
         .eq('id', userId);
+
+      if (error?.message?.includes('pro_expires_at')) {
+        await supabase
+          .from('profiles')
+          .update({
+            is_pro: true,
+            stripe_customer_id: session.customer,
+            stripe_subscription_id: session.subscription,
+          })
+          .eq('id', userId);
+      }
     }
   }
 
