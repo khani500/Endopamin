@@ -57,8 +57,25 @@ export default async function handler(req, res) {
     console.log('Invoice:', JSON.stringify(subscription.latest_invoice, null, 2));
 
     const invoice = subscription.latest_invoice;
-    const paymentIntent = invoice?.payment_intent;
-    const clientSecret = paymentIntent?.client_secret;
+
+    // Try all possible locations for client_secret
+    let clientSecret = null;
+
+    if (typeof invoice === 'object' && invoice !== null) {
+      // New Stripe API: confirmation_secret
+      if (invoice.confirmation_secret) {
+        clientSecret = invoice.confirmation_secret;
+      }
+      // Old format: payment_intent.client_secret
+      else if (typeof invoice.payment_intent === 'object' && invoice.payment_intent?.client_secret) {
+        clientSecret = invoice.payment_intent.client_secret;
+      }
+      // payment_intent is a string ID - need to fetch it
+      else if (typeof invoice.payment_intent === 'string') {
+        const pi = await stripe.paymentIntents.retrieve(invoice.payment_intent);
+        clientSecret = pi.client_secret;
+      }
+    }
 
     console.log('clientSecret exists:', !!clientSecret);
 
