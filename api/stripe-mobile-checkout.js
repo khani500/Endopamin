@@ -25,16 +25,9 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const plan = priceId === YEARLY_PRICE_ID ? 'yearly' : 'monthly';
-
   try {
-    let customer;
-    if (email) {
-      const existing = await stripe.customers.list({ email, limit: 1 });
-      if (existing.data.length > 0) {
-        customer = existing.data[0];
-      }
-    }
+    const customers = await stripe.customers.list({ email, limit: 1 });
+    let customer = customers.data.length > 0 ? customers.data[0] : null;
 
     if (!customer) {
       customer = await stripe.customers.create({
@@ -54,7 +47,7 @@ export default async function handler(req, res) {
       payment_behavior: 'default_incomplete',
       payment_settings: { save_default_payment_method: 'on_subscription' },
       expand: ['latest_invoice.payment_intent'],
-      metadata: { userId, plan, source: 'mobile' },
+      metadata: { userId, plan: priceId, source: 'mobile' },
     });
 
     const invoice = subscription.latest_invoice;
