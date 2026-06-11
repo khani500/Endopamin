@@ -1,29 +1,16 @@
-import Stripe from 'stripe';
-
+const Stripe = require('stripe');
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-const MONTHLY_PRICE_ID = process.env.VITE_STRIPE_PRICE_MONTHLY
-  || process.env.VITE_STRIPE_MONTHLY_PRICE_ID;
-const YEARLY_PRICE_ID = process.env.VITE_STRIPE_PRICE_YEARLY
-  || process.env.VITE_STRIPE_YEARLY_PRICE_ID;
-
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { priceId, userId, email } = req.body || {};
-  if (!priceId || !userId) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
+  if (!priceId || !userId) return res.status(400).json({ error: 'Missing required fields' });
 
   try {
     const customers = await stripe.customers.list({ email, limit: 1 });
@@ -38,7 +25,7 @@ export default async function handler(req, res) {
 
     const ephemeralKey = await stripe.ephemeralKeys.create(
       { customer: customer.id },
-      { apiVersion: '2023-10-16' },
+      { apiVersion: '2023-10-16' }
     );
 
     const subscription = await stripe.subscriptions.create({
@@ -53,31 +40,21 @@ export default async function handler(req, res) {
       metadata: { userId, plan: priceId, source: 'mobile' },
     });
 
-    console.log('Subscription status:', subscription.status);
-    console.log('Invoice:', JSON.stringify(subscription.latest_invoice, null, 2));
-
     const invoice = subscription.latest_invoice;
-
-    // Try all possible locations for client_secret
     let clientSecret = null;
 
     if (typeof invoice === 'object' && invoice !== null) {
-      // New Stripe API: confirmation_secret
       if (invoice.confirmation_secret) {
-        clientSecret = invoice.confirmation_secret;
-      }
-      // Old format: payment_intent.client_secret
-      else if (typeof invoice.payment_intent === 'object' && invoice.payment_intent?.client_secret) {
+        clientSecret = typeof invoice.confirmation_secret === 'object'
+          ? invoice.confirmation_secret.client_secret
+          : invoice.confirmation_secret;
+      } else if (typeof invoice.payment_intent === 'object' && invoice.payment_intent?.client_secret) {
         clientSecret = invoice.payment_intent.client_secret;
-      }
-      // payment_intent is a string ID - need to fetch it
-      else if (typeof invoice.payment_intent === 'string') {
+      } else if (typeof invoice.payment_intent === 'string') {
         const pi = await stripe.paymentIntents.retrieve(invoice.payment_intent);
         clientSecret = pi.client_secret;
       }
     }
-
-    console.log('clientSecret exists:', !!clientSecret);
 
     if (!clientSecret) {
       return res.status(500).json({
@@ -97,4 +74,4 @@ export default async function handler(req, res) {
     console.error('Stripe mobile checkout error:', err);
     return res.status(500).json({ error: err.message });
   }
-}
+};
