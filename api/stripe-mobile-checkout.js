@@ -45,17 +45,29 @@ export default async function handler(req, res) {
       customer: customer.id,
       items: [{ price: priceId }],
       payment_behavior: 'default_incomplete',
-      payment_settings: { save_default_payment_method: 'on_subscription' },
+      payment_settings: {
+        save_default_payment_method: 'on_subscription',
+        payment_method_types: ['card'],
+      },
       expand: ['latest_invoice.payment_intent'],
       metadata: { userId, plan: priceId, source: 'mobile' },
     });
 
+    console.log('Subscription status:', subscription.status);
+    console.log('Invoice:', JSON.stringify(subscription.latest_invoice, null, 2));
+
     const invoice = subscription.latest_invoice;
-    const paymentIntent = typeof invoice === 'object' ? invoice.payment_intent : null;
-    const clientSecret = typeof paymentIntent === 'object' ? paymentIntent.client_secret : null;
+    const paymentIntent = invoice?.payment_intent;
+    const clientSecret = paymentIntent?.client_secret;
+
+    console.log('clientSecret exists:', !!clientSecret);
 
     if (!clientSecret) {
-      return res.status(500).json({ error: 'Could not create payment intent' });
+      return res.status(500).json({
+        error: 'Could not create payment intent',
+        subscriptionStatus: subscription.status,
+        invoiceStatus: invoice?.status,
+      });
     }
 
     return res.status(200).json({
