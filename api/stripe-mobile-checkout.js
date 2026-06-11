@@ -8,6 +8,14 @@ const YEARLY_PRICE_ID = process.env.VITE_STRIPE_PRICE_YEARLY
   || process.env.VITE_STRIPE_YEARLY_PRICE_ID;
 
 export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -20,20 +28,49 @@ export default async function handler(req, res) {
   const plan = priceId === YEARLY_PRICE_ID ? 'yearly' : 'monthly';
 
   try {
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'subscription',
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `https://endopamin.vercel.app/pro-success?userId=${encodeURIComponent(userId)}`,
-      cancel_url: 'https://endopamin.vercel.app/pro-cancel',
-      customer_email: email || undefined,
+    let customer;
+    if (email) {
+      const existing = await stripe.customers.list({ email, limit: 1 });
+      if (existing.data.length > 0) {
+        customer = existing.data[0];
+      }
+    }
+
+    if (!customer) {
+      customer = await stripe.customers.create({
+        email: email || undefined,
+        metadata: { userId },
+      });
+    }
+
+    const ephemeralKey = await stripe.ephemeralKeys.create(
+      { customer: customer.id },
+      { apiVersion: '2023-10-16' },
+    );
+
+    const subscription = await stripe.subscriptions.create({
+      customer: customer.id,
+      items: [{ price: priceId }],
+      payment_behavior: 'default_incomplete',
+      payment_settings: { save_default_payment_method: 'on_subscription' },
+      expand: ['latest_invoice.payment_intent'],
       metadata: { userId, plan, source: 'mobile' },
-      subscription_data: {
-        metadata: { userId, plan, source: 'mobile' },
-      },
     });
 
-    return res.status(200).json({ url: session.url });
+    const invoice = subscription.latest_invoice;
+    const paymentIntent = typeof invoice === 'object' ? invoice.payment_intent : null;
+    const clientSecret = typeof paymentIntent === 'object' ? paymentIntent.client_secret : null;
+
+    if (!clientSecret) {
+      return res.status(500).json({ error: 'Could not create payment intent' });
+    }
+
+    return res.status(200).json({
+      paymentIntent: clientSecret,
+      ephemeralKey: ephemeralKey.secret,
+      customer: customer.id,
+      subscriptionId: subscription.id,
+    });
   } catch (err) {
     console.error('Stripe mobile checkout error:', err);
     return res.status(500).json({ error: err.message });

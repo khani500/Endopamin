@@ -27,36 +27,52 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: `Webhook Error: ${err.message}` });
   }
 
+  async function activateProFromSubscription(subscription, customerId) {
+    const userId = subscription.metadata?.userId;
+    if (!userId) return;
+
+    const plan = subscription.metadata?.plan;
+    const daysToAdd = plan === 'yearly' ? 365 : 30;
+    const proExpiresAt = new Date(Date.now() + daysToAdd * 24 * 60 * 60 * 1000).toISOString();
+
+    const updatePayload = {
+      is_pro: true,
+      stripe_customer_id: customerId || subscription.customer,
+      stripe_subscription_id: subscription.id,
+      pro_expires_at: proExpiresAt,
+    };
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(updatePayload)
+      .eq('id', userId);
+
+    if (error?.message?.includes('pro_expires_at')) {
+      await supabase
+        .from('profiles')
+        .update({
+          is_pro: true,
+          stripe_customer_id: customerId || subscription.customer,
+          stripe_subscription_id: subscription.id,
+        })
+        .eq('id', userId);
+    }
+  }
+
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const userId = session.metadata?.userId;
-    if (userId) {
-      const plan = session.metadata?.plan;
-      const daysToAdd = plan === 'yearly' ? 365 : 30;
-      const proExpiresAt = new Date(Date.now() + daysToAdd * 24 * 60 * 60 * 1000).toISOString();
+    if (userId && session.subscription) {
+      const subscription = await stripe.subscriptions.retrieve(session.subscription);
+      await activateProFromSubscription(subscription, session.customer);
+    }
+  }
 
-      const updatePayload = {
-        is_pro: true,
-        stripe_customer_id: session.customer,
-        stripe_subscription_id: session.subscription,
-        pro_expires_at: proExpiresAt,
-      };
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updatePayload)
-        .eq('id', userId);
-
-      if (error?.message?.includes('pro_expires_at')) {
-        await supabase
-          .from('profiles')
-          .update({
-            is_pro: true,
-            stripe_customer_id: session.customer,
-            stripe_subscription_id: session.subscription,
-          })
-          .eq('id', userId);
-      }
+  if (event.type === 'invoice.payment_succeeded') {
+    const invoice = event.data.object;
+    if (invoice.subscription) {
+      const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+      await activateProFromSubscription(subscription, invoice.customer);
     }
   }
 
