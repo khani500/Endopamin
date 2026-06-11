@@ -1,5 +1,7 @@
 import Stripe from 'stripe';
 
+const STRIPE_API_VERSION = '2025-06-30.basil';
+
 let stripeClient = null;
 
 function getStripe() {
@@ -34,6 +36,54 @@ function extractClientSecret(invoice, subscription) {
   return null;
 }
 
+async function resolveClientSecret(stripe, subscription) {
+  let invoice = subscription.latest_invoice;
+  let clientSecret = extractClientSecret(invoice, subscription);
+
+  const invoiceId = typeof invoice === 'string' ? invoice : invoice?.id;
+  if (!clientSecret && invoiceId) {
+    invoice = await stripe.invoices.retrieve(
+      invoiceId,
+      { expand: ['confirmation_secret', 'payment_intent'] },
+      { apiVersion: STRIPE_API_VERSION },
+    );
+    clientSecret = extractClientSecret(invoice, subscription);
+  }
+
+  if (!clientSecret && typeof invoice?.payment_intent === 'string') {
+    const pi = await stripe.paymentIntents.retrieve(invoice.payment_intent);
+    clientSecret = pi.client_secret;
+  }
+
+  if (!clientSecret && typeof subscription.pending_setup_intent === 'string') {
+    const setupIntent = await stripe.setupIntents.retrieve(subscription.pending_setup_intent);
+    clientSecret = setupIntent.client_secret;
+  }
+
+  if (!clientSecret && invoiceId) {
+    const payments = await stripe.invoicePayments.list({
+      invoice: invoiceId,
+      expand: ['data.payment.payment_intent'],
+    });
+    for (const entry of payments.data) {
+      const paymentIntent = entry.payment?.payment_intent;
+      if (typeof paymentIntent === 'object' && paymentIntent?.client_secret) {
+        clientSecret = paymentIntent.client_secret;
+        break;
+      }
+      if (typeof paymentIntent === 'string') {
+        const pi = await stripe.paymentIntents.retrieve(paymentIntent);
+        if (pi.client_secret) {
+          clientSecret = pi.client_secret;
+          break;
+        }
+      }
+    }
+  }
+
+  return { clientSecret, invoice };
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -66,42 +116,27 @@ export default async function handler(req, res) {
       { apiVersion: '2023-10-16' },
     );
 
-    const subscription = await stripe.subscriptions.create({
-      customer: customer.id,
-      items: [{ price: priceId }],
-      payment_behavior: 'default_incomplete',
-      payment_settings: {
-        save_default_payment_method: 'on_subscription',
-        payment_method_types: ['card'],
+    const subscription = await stripe.subscriptions.create(
+      {
+        customer: customer.id,
+        items: [{ price: priceId }],
+        payment_behavior: 'default_incomplete',
+        billing_mode: { type: 'flexible' },
+        payment_settings: {
+          save_default_payment_method: 'on_subscription',
+          payment_method_types: ['card'],
+        },
+        expand: [
+          'latest_invoice.confirmation_secret',
+          'latest_invoice.payment_intent',
+          'pending_setup_intent',
+        ],
+        metadata: { userId, plan: priceId, source: 'mobile' },
       },
-      expand: [
-        'latest_invoice.confirmation_secret',
-        'latest_invoice.payment_intent',
-        'pending_setup_intent',
-      ],
-      metadata: { userId, plan: priceId, source: 'mobile' },
-    });
+      { apiVersion: STRIPE_API_VERSION },
+    );
 
-    let invoice = subscription.latest_invoice;
-    let clientSecret = extractClientSecret(invoice, subscription);
-
-    const invoiceId = typeof invoice === 'string' ? invoice : invoice?.id;
-    if (!clientSecret && invoiceId) {
-      invoice = await stripe.invoices.retrieve(invoiceId, {
-        expand: ['confirmation_secret', 'payment_intent'],
-      });
-      clientSecret = extractClientSecret(invoice, subscription);
-    }
-
-    if (!clientSecret && typeof invoice?.payment_intent === 'string') {
-      const pi = await stripe.paymentIntents.retrieve(invoice.payment_intent);
-      clientSecret = pi.client_secret;
-    }
-
-    if (!clientSecret && typeof subscription.pending_setup_intent === 'string') {
-      const setupIntent = await stripe.setupIntents.retrieve(subscription.pending_setup_intent);
-      clientSecret = setupIntent.client_secret;
-    }
+    const { clientSecret, invoice } = await resolveClientSecret(stripe, subscription);
 
     if (!clientSecret) {
       return res.status(500).json({
