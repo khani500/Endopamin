@@ -101,6 +101,25 @@ Return ONLY raw JSON: {"title": "...", "body": "..."}`;
   }
 }
 
+async function sendExpoPush(token, title, body) {
+  const res = await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({ to: token, title, body }),
+  });
+  if (!res.ok) return false;
+  try {
+    const { data } = await res.json();
+    const ticket = Array.isArray(data) ? data[0] : data;
+    return ticket?.status === 'ok';
+  } catch {
+    return false;
+  }
+}
+
 async function sendFCM(token, title, body, accessToken, projectId) {
   const res = await fetch(
     `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`,
@@ -163,7 +182,10 @@ export default async function handler(req, res) {
       if (!shouldSend) continue;
 
       const { title, body } = await generateContent(profile);
-      const sent = await sendFCM(profile.fcm_token, title, body, accessToken, projectId);
+      const token = profile.fcm_token;
+      const sent = token.startsWith('ExponentPushToken[')
+        ? await sendExpoPush(token, title, body)
+        : await sendFCM(token, title, body, accessToken, projectId);
 
       if (sent) {
         await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${profile.id}`, {
