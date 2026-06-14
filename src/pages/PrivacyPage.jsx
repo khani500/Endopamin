@@ -71,7 +71,7 @@ const SECTIONS = [
     title: 'Contact Us',
     body: [
       'If you have questions about this Privacy Policy or how your data is handled, contact us at:',
-      'taherz5257@gmail.com',
+      'info@endopamin.com',
     ],
   },
 ];
@@ -106,8 +106,8 @@ export default function PrivacyPage() {
             <div className="mt-3 space-y-3">
               {section.body.map(paragraph => (
                 <p key={paragraph} className="m-0 text-sm leading-7 text-white/70">
-                  {paragraph === 'taherz5257@gmail.com' ? (
-                    <a href="mailto:taherz5257@gmail.com" className="font-semibold text-[#CCFF00] no-underline">
+                  {paragraph === 'info@endopamin.com' ? (
+                    <a href="mailto:info@endopamin.com" className="font-semibold text-[#CCFF00] no-underline">
                       {paragraph}
                     </a>
                   ) : (
