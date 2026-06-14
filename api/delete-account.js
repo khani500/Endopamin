@@ -1,5 +1,5 @@
 // api/delete-account.js
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -15,7 +15,7 @@ const USER_ID_TABLES = [
   'coach_memory',
 ];
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -58,4 +58,4 @@ module.exports = async (req, res) => {
     console.error('delete-account error:', err);
     return res.status(500).json({ error: (err && err.message) || 'Deletion failed' });
   }
-};
+}
