@@ -28,6 +28,7 @@ const NutritionPlanPage = lazy(() => import('./features/nutrition/pages/Nutritio
 const NutritionCoachPage = lazy(() => import('./features/nutrition/pages/NutritionCoachPage'));
 const ProSuccessPage = lazy(() => import('./pages/ProSuccessPage'));
 const ProCancelPage = lazy(() => import('./pages/ProCancelPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 
 function RootRedirect() {
   const { profile, loading } = useAuth();
@@ -152,6 +153,7 @@ function App() {
         <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#0A0A0A]"><div className="h-8 w-8 animate-spin rounded-full border-2 border-[#CCFF00]/30 border-t-[#CCFF00]" /></div>}>
           <Routes>
           <Route path="/auth" element={<AuthPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/pro-success" element={<ProSuccessPage />} />
           <Route path="/pro-cancel" element={<ProCancelPage />} />
           <Route path="/" element={<ProtectedRoute><RootRedirect /></ProtectedRoute>} />
