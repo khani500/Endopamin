@@ -4,19 +4,14 @@ import { FREE_LIMITS, isProUser } from '../../config/tiers';
 import { ProPaywall } from '../paywall/ProPaywall';
 
 const STORAGE_KEY = 'endopamin_prs';
-const DEFAULT_PRS = [
-  { exercise: 'Bench', weight: 85, previous: 80, date: '2026-05-12', unit: 'kg' },
-  { exercise: 'Squat', weight: 100, previous: 100, date: '2026-05-08', unit: 'kg' },
-  { exercise: 'Deadlift', weight: 120, previous: 110, date: '2026-05-15', unit: 'kg' },
-];
 
 function loadPrs() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : DEFAULT_PRS;
-    return Array.isArray(parsed) ? parsed : DEFAULT_PRS;
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return DEFAULT_PRS;
+    return [];
   }
 }
 
@@ -43,7 +38,7 @@ export function PRTracker() {
     }
   }, [prs]);
 
-  const safePrs = Array.isArray(prs) ? prs : DEFAULT_PRS;
+  const safePrs = Array.isArray(prs) ? prs : [];
   const topPrs = useMemo(() => safePrs.slice(0, 3), [safePrs]);
 
   const save = () => {
@@ -64,6 +59,9 @@ export function PRTracker() {
   return (
     <section className="rounded-[22px] border border-white/10 bg-[#141416] p-4 text-white">
       <p className="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-white/40">Personal Records</p>
+      {topPrs.length === 0 ? (
+        <p className="py-4 text-center text-sm text-white/30">No records yet</p>
+      ) : (
       <div className="grid grid-cols-3 overflow-hidden rounded-2xl border border-white/[0.08]">
         {topPrs.map(pr => {
           const t = trend(pr);
@@ -77,6 +75,7 @@ export function PRTracker() {
           );
         })}
       </div>
+      )}
 
       <button
         type="button"

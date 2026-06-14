@@ -14,7 +14,7 @@ const PLANS = [
   { id: 'workout', title: 'Workout Plan', sub: 'Your weekly program', path: '/workout-plan',
     svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>,
     bgColor: 'rgba(204,255,0,0.1)', borderColor: 'rgba(204,255,0,0.18)', iconColor: '#CCFF00' },
-  { id: 'nutrition', title: 'Nutrition Plan', sub: '1,840 kcal today', path: '/plan/nutrition',
+  { id: 'nutrition', title: 'Nutrition Plan', sub: 'Meals & macros', path: '/plan/nutrition',
     svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>,
     bgColor: 'rgba(255,165,60,0.1)', borderColor: 'rgba(255,165,60,0.18)', iconColor: '#FFA53C' },
 ];
@@ -233,10 +233,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <p style={{ fontSize: '20px', fontWeight: '600', color: 'white', margin: '0 0 4px' }}>Start Training</p>
-          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', margin: '0 0 16px' }}>
-            873 exercises · 3 environments
-          </p>
+          <p style={{ fontSize: '20px', fontWeight: '600', color: 'white', margin: '0 0 16px' }}>Start Training</p>
           <div
             style={{
               display: 'flex',

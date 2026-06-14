@@ -101,8 +101,6 @@ const COACHES = [
     bg: '#1f0808',
     img: '/coaches/blaze.png',
     tagline: 'Hyped up. High energy. Never boring.',
-    badge: 'LV 5',
-    badgeBg: '#1f0808',
   },
   {
     id: 'nova',
@@ -112,8 +110,6 @@ const COACHES = [
     bg: '#120a1f',
     img: '/coaches/nova.jpg',
     tagline: 'Mind-body balance. Sustainable growth.',
-    badge: '7-DAY STK',
-    badgeBg: '#120a1f',
   },
   {
     id: 'zara',
@@ -123,8 +119,6 @@ const COACHES = [
     bg: '#1f0015',
     img: '/coaches/zara.png',
     tagline: 'Fierce outside. Warm inside. Gets results.',
-    badge: '10 WRK',
-    badgeBg: '#1f0015',
   },
 ];
 
@@ -556,16 +550,6 @@ function SplashScreen({ onStart }) {
             Your dopamine. Your discipline. Your evolution.
           </p>
 
-          {/* Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 24 }}>
-            {[['47k', 'Athletes'], ['4.9★', 'Rating'], ['92%', 'Streak']].map(([n, l]) => (
-              <div key={l} style={{ background: '#0e0e0e', borderRadius: 10, padding: '10px 6px', textAlign: 'center' }}>
-                <div style={{ fontSize: 16, fontWeight: 900, color: '#CCFF00' }}>{n}</div>
-                <div style={{ fontSize: 9, color: '#444', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 2 }}>{l}</div>
-              </div>
-            ))}
-          </div>
-
           <button
             className="onboarding-tap"
             onClick={onStart}
@@ -634,10 +618,12 @@ function CoachScreen({ form, set, onNext, onBack }) {
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
                   <span style={{ fontSize: 13, fontWeight: 700, color: sel ? coach.color : '#fff' }}>{coach.name}</span>
-                  <span style={{
-                    fontSize: 8, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
-                    background: sel ? coach.color : '#1e1e1e', color: sel ? '#060608' : '#555',
-                  }}>{coach.badge}</span>
+                  {coach.badge ? (
+                    <span style={{
+                      fontSize: 8, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
+                      background: sel ? coach.color : '#1e1e1e', color: sel ? '#060608' : '#555',
+                    }}>{coach.badge}</span>
+                  ) : null}
                 </div>
                 <div style={{ fontSize: 10, color: sel ? coach.color : '#555', opacity: 0.8, marginBottom: 2 }}>{coach.role}</div>
                 {sel && (

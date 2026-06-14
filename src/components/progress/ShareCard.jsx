@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { FREE_LIMITS, isProUser } from '../../config/tiers';
 import { ProPaywall } from '../paywall/ProPaywall';
 
-export function ShareCard({ streak = 12, level = 4, weeklyWorkouts = 5, highlight = '14% strength gain' }) {
+export function ShareCard({ streak = 0, level = 1, weeklyWorkouts = 0, highlight = '' }) {
   const { profile } = useAuth();
   const [open, setOpen] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -144,9 +144,11 @@ function StoryCardContent({ streak, level, weeklyWorkouts, highlight }) {
           <div style={{ fontSize: 72, fontWeight: 900 }}>{weeklyWorkouts} WKT</div>
         </div>
       </div>
+      {highlight ? (
       <div style={{ marginTop: 220, borderLeft: '10px solid #CCFF00', paddingLeft: 28, fontSize: 52, fontWeight: 800 }}>
         &quot;{highlight}&quot;
       </div>
+      ) : null}
       <div style={{ position: 'absolute', right: 92, bottom: 92, fontSize: 44, color: 'rgba(255,255,255,0.5)' }}>@endopamin</div>
     </>
   );

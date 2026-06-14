@@ -4,69 +4,13 @@ import { supabase } from '../lib/supabase';
 
 const RANGES = ['1W', '1M', '3M', '6M', '1Y', 'All'];
 
-const DATA = [
-  {
-    streak: 14, workouts: 5, time: '8h',
-    chartTitle: 'Weekly Activity', chartVal: '5 / 7 days',
-    segs: 14, xp: 340, lv: 4, rings: [75, 70, 80], chainCount: '14 days strong',
-    bars: [
-      { h: 65, t: 'done', d: 'Mo' }, { h: 80, t: 'done', d: 'Tu' },
-      { h: 15, t: 'rest', d: 'We' }, { h: 70, t: 'done', d: 'Th' },
-      { h: 90, t: 'done', d: 'Fr' }, { h: 55, t: 'today', d: 'Sa', act: true },
-      { h: 10, t: 'rest', d: 'Su' },
-    ],
-  },
-  {
-    streak: 21, workouts: 18, time: '24h',
-    chartTitle: 'This Month', chartVal: '18 / 30 days',
-    segs: 16, xp: 380, lv: 4, rings: [68, 72, 75], chainCount: '21 days best',
-    bars: [
-      { h: 60, t: 'done', d: 'W1' }, { h: 75, t: 'done', d: 'W2' },
-      { h: 40, t: 'miss', d: 'W3' }, { h: 85, t: 'today', d: 'W4', act: true },
-      { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' },
-    ],
-  },
-  {
-    streak: 21, workouts: 52, time: '68h',
-    chartTitle: 'Last 3 Months', chartVal: '52 workouts',
-    segs: 17, xp: 420, lv: 4, rings: [72, 65, 78], chainCount: '21 days best',
-    bars: [
-      { h: 50, t: 'done', d: 'Feb' }, { h: 70, t: 'done', d: 'Mar' },
-      { h: 85, t: 'today', d: 'Apr', act: true }, { h: 55, t: 'done', d: 'May' },
-      { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' },
-    ],
-  },
-  {
-    streak: 21, workouts: 98, time: '124h',
-    chartTitle: 'Last 6 Months', chartVal: '98 workouts',
-    segs: 18, xp: 450, lv: 4, rings: [80, 68, 82], chainCount: '21 days best',
-    bars: [
-      { h: 30, t: 'done', d: 'Nov' }, { h: 45, t: 'done', d: 'Dec' },
-      { h: 60, t: 'done', d: 'Jan' }, { h: 50, t: 'done', d: 'Feb' },
-      { h: 70, t: 'done', d: 'Mar' }, { h: 85, t: 'done', d: 'Apr' },
-      { h: 90, t: 'today', d: 'May', act: true },
-    ],
-  },
-  {
-    streak: 21, workouts: 180, time: '230h',
-    chartTitle: 'This Year', chartVal: '180 workouts',
-    segs: 19, xp: 480, lv: 4, rings: [85, 72, 88], chainCount: '21 days best',
-    bars: [
-      { h: 20, t: 'done', d: 'Q1' }, { h: 45, t: 'done', d: 'Q2' },
-      { h: 60, t: 'done', d: 'Q3' }, { h: 90, t: 'today', d: 'Q4', act: true },
-      { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' },
-    ],
-  },
-  {
-    streak: 21, workouts: 340, time: '440h',
-    chartTitle: 'All Time', chartVal: '340 workouts',
-    segs: 20, xp: 500, lv: 5, rings: [90, 80, 92], chainCount: '21 days best',
-    bars: [
-      { h: 15, t: 'done', d: 'Y1' }, { h: 40, t: 'done', d: 'Y2' },
-      { h: 75, t: 'today', d: 'Y3', act: true }, { h: 0, t: 'rest', d: '' },
-      { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' }, { h: 0, t: 'rest', d: '' },
-    ],
-  },
+const RANGE_CHART_TITLES = [
+  'Weekly Activity',
+  'This Month',
+  'Last 3 Months',
+  'Last 6 Months',
+  'This Year',
+  'All Time',
 ];
 
 const BAR_COLORS = {
@@ -351,13 +295,14 @@ export default function Progress() {
   const [activeDays, setActiveDays] = useState(() => new Set());
   const [activityRings, setActivityRings] = useState([0, 0, 0]);
   const [weeklyChart, setWeeklyChart] = useState(emptyWeeklyChart);
-  const d = DATA[rangeIdx];
   const pct = Math.round((rangeIdx / 5) * 100);
   const monthMeta = useMemo(() => getCurrentMonthMeta(), []);
 
-  const streak = profile?.streak_count ?? d.streak;
-  const xp = profile?.dopa_xp ?? d.xp;
-  const lv = profile?.dopa_level ?? d.lv;
+  const streak = profile?.streak_count ?? 0;
+  const xp = profile?.dopa_xp ?? 0;
+  const lv = profile?.dopa_level ?? 1;
+  const xpPercent = Math.min(100, Math.round((xp / 500) * 100));
+  const segs = Math.round((xpPercent / 100) * 20);
 
   useEffect(() => {
     let cancelled = false;
@@ -534,7 +479,11 @@ export default function Progress() {
   const prRows = useMemo(() => buildPrRows(prRecords), [prRecords]);
   const chartData = rangeIdx === 0
     ? weeklyChart
-    : { chartTitle: d.chartTitle, chartVal: d.chartVal, bars: d.bars };
+    : {
+        chartTitle: RANGE_CHART_TITLES[rangeIdx],
+        chartVal: workoutStatsLoading ? '...' : `${workoutStats.workouts} workouts`,
+        bars: emptyWeeklyChart().bars,
+      };
 
   return (
     <main className="min-h-screen bg-[#080808] text-white pb-28 overflow-x-hidden">
@@ -594,13 +543,13 @@ export default function Progress() {
             Endopamin Charge
           </div>
           <span className="text-[9px] text-[#CCFF00] font-bold bg-[#CCFF00]/12 border border-[#CCFF00]/25 px-2 py-0.5 rounded-full">
-            Level {lv} · {Math.round(d.segs / 20 * 100)}%
+            Level {lv} · {xpPercent}%
           </span>
         </div>
         <div className="flex gap-[3px] mb-2">
           {Array.from({ length: 20 }).map((_, i) => (
             <div key={i} className="flex-1 h-[8px] rounded-[3px] transition-all duration-500"
-              style={{ background: i < d.segs ? '#CCFF00' : 'rgba(255,255,255,0.06)', boxShadow: i < d.segs ? '0 0 6px rgba(204,255,0,0.4)' : 'none' }} />
+              style={{ background: i < segs ? '#CCFF00' : 'rgba(255,255,255,0.06)', boxShadow: i < segs ? '0 0 6px rgba(204,255,0,0.4)' : 'none' }} />
           ))}
         </div>
         <div className="flex justify-between text-[10px]">

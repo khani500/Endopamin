@@ -131,7 +131,7 @@ function App() {
         if (hour >= 9 && hour <= 18) {
           sendNotification(
             '🪑 Time for a desk break!',
-            'A 5-minute stretch will boost your focus by 20%.',
+            'A 5-minute stretch can help you reset.',
             { type: 'desk_break' },
           );
         }
