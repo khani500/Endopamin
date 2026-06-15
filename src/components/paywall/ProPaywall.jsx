@@ -70,7 +70,7 @@ export function ProPaywall({ featureName = 'This feature', isVisible, onClose })
             }}
           >
             <p className="text-[11px] font-black uppercase tracking-wider" style={{ color: selectedPlan === 'monthly' ? '#CCFF00' : 'rgba(255,255,255,0.4)' }}>Monthly</p>
-            <p className="mt-1 text-lg font-black text-white">$14.99</p>
+            <p className="mt-1 text-lg font-black text-white">$17.99</p>
             <p className="text-[10px] text-white/40">per month</p>
           </button>
 
@@ -85,7 +85,7 @@ export function ProPaywall({ featureName = 'This feature', isVisible, onClose })
           >
             <span className="absolute right-2 top-2 rounded-full bg-yellow-400 px-1.5 py-0.5 text-[9px] font-black text-black">SAVE 33%</span>
             <p className="text-[11px] font-black uppercase tracking-wider" style={{ color: selectedPlan === 'yearly' ? '#FFC107' : 'rgba(255,255,255,0.4)' }}>Yearly</p>
-            <p className="mt-1 text-lg font-black text-white">$119.99</p>
+            <p className="mt-1 text-lg font-black text-white">$143.99</p>
             <p className="text-[10px] text-white/40">per year</p>
           </button>
         </div>
@@ -96,7 +96,7 @@ export function ProPaywall({ featureName = 'This feature', isVisible, onClose })
           disabled={loading}
           className="mt-4 w-full rounded-2xl bg-[#CCFF00] py-4 text-[15px] font-black text-black disabled:opacity-60"
         >
-          {loading ? 'Redirecting...' : `Unlock Pro — ${selectedPlan === 'yearly' ? '$119.99/year' : '$14.99/month'}`}
+          {loading ? 'Redirecting...' : `Unlock Pro — ${selectedPlan === 'yearly' ? '$143.99/year' : '$17.99/month'}`}
         </button>
         <button type="button" onClick={onClose} className="mt-3 w-full border-0 bg-transparent py-2 text-sm font-bold text-white/45">
           Maybe later
