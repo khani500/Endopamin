@@ -112,9 +112,8 @@ export default async function handler(req, res) {
     }
     if (!response) throw lastErr || new Error('Gemini unreachable');
 
-    const text = await response.text();
-
     if (!response.ok) {
+      const text = await response.text();
       let errorMessage = text;
       try {
         const parsed = JSON.parse(text);
@@ -130,9 +129,19 @@ export default async function handler(req, res) {
     if (alt === 'sse') {
       res.status(response.status);
       res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
-      return res.send(text);
+      res.setHeader('Cache-Control', 'no-cache, no-transform');
+      res.setHeader('Connection', 'keep-alive');
+      const { Readable } = await import('node:stream');
+      const nodeStream = Readable.fromWeb(response.body);
+      nodeStream.pipe(res);
+      nodeStream.on('error', (err) => {
+        console.error('Stream error:', err);
+        res.end();
+      });
+      return;
     }
 
+    const text = await response.text();
     res.setHeader('Content-Type', 'application/json');
     return res.status(response.status).send(text);
   } catch (err) {
