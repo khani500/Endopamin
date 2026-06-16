@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { generateWorkoutPlan, getFallbackWorkoutPlan } from "../lib/gemini";
+import { ProPaywall } from "../components/paywall/ProPaywall";
 
 const ex = (name, sets, reps, rest) => ({ name, sets, reps, rest });
 
@@ -165,13 +166,14 @@ const EQUIPMENT_MAP = {
 
 export default function WorkoutPlanPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile: authProfile } = useAuth();
 
   const [plan, setPlan] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [activeDay, setActiveDay] = useState(null);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const coach = profile?.coach_persona || profile?.selected_coach || profile?.current_coach || profile?.coach_id || "aria";
   const { label } = COACH_COLORS[coach] || COACH_COLORS.aria;
@@ -309,6 +311,11 @@ export default function WorkoutPlanPage() {
   }
 
   const days = plan?.days || [];
+  const isPro = authProfile?.is_pro === true;
+  const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  const todayIndex = days.findIndex(d => d.day === todayName);
+  const firstTrainingIndex = days.findIndex(d => d.type !== 'rest');
+  const unlockedIndex = (todayIndex !== -1 && days[todayIndex]?.type !== 'rest') ? todayIndex : firstTrainingIndex;
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "sans-serif", paddingBottom: "100px" }}>
@@ -348,45 +355,61 @@ export default function WorkoutPlanPage() {
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {days.map((d, i) => (
-              <div
-                key={i}
-                onClick={() => setActiveDay(activeDay === i ? null : i)}
-                style={{ background: "#111", border: `1px solid ${activeDay === i ? ACTIVE_DAY_COLOR : d.type === "rest" ? "#1a1a1a" : "#222"}`, borderRadius: 14, padding: "14px 16px", cursor: "pointer", opacity: d.type === "rest" ? 0.6 : 1 }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: d.type === "rest" ? "#1a1a1a" : `${ACTIVE_DAY_COLOR}22`, color: d.type === "rest" ? "#444" : ACTIVE_DAY_COLOR, fontWeight: 600 }}>
-                      {d.type === "rest" ? "REST" : "TRAIN"}
-                    </span>
-                    <div>
-                      <span style={{ fontWeight: 700, fontSize: 14 }}>{d.day}</span>
-                      <span style={{ color: "#555", fontSize: 12, marginLeft: 8 }}>— {d.focus}</span>
-                    </div>
-                  </div>
-                  <span style={{ color: ACTIVE_DAY_COLOR, fontSize: 14 }}>{activeDay === i ? "▲" : "▼"}</span>
-                </div>
-
-                {activeDay === i && d.exercises?.length > 0 && (
-                  <div style={{ marginTop: 12, borderTop: "1px solid #1a1a1a", paddingTop: 12 }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: "4px 12px", fontSize: 11, color: "#555", marginBottom: 8, paddingBottom: 6, borderBottom: "1px solid #1a1a1a" }}>
-                      <span>Exercise</span><span>Sets</span><span>Reps</span><span>Rest</span>
-                    </div>
-                    {d.exercises.map((ex, j) => (
-                      <div key={j} style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: "4px 12px", padding: "7px 0", borderBottom: j < d.exercises.length - 1 ? "1px solid #1a1a1a" : "none", alignItems: "center" }}>
-                        <span style={{ fontSize: 13, color: "#ddd" }}>{ex.name}</span>
-                        <span style={{ fontSize: 12, color: ACTIVE_DAY_COLOR, fontWeight: 600 }}>{ex.sets}</span>
-                        <span style={{ fontSize: 12, color: "#aaa" }}>{ex.reps}</span>
-                        <span style={{ fontSize: 11, color: "#555" }}>{ex.rest}</span>
+            {days.map((d, i) => {
+              const locked = !isPro && i !== unlockedIndex && d.type !== 'rest';
+              return (
+                <div
+                  key={i}
+                  onClick={() => (locked ? setShowPaywall(true) : setActiveDay(activeDay === i ? null : i))}
+                  style={{ background: "#111", border: `1px solid ${activeDay === i ? ACTIVE_DAY_COLOR : d.type === "rest" ? "#1a1a1a" : "#222"}`, borderRadius: 14, padding: "14px 16px", cursor: "pointer", opacity: d.type === "rest" ? 0.6 : 1 }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: d.type === "rest" ? "#1a1a1a" : `${ACTIVE_DAY_COLOR}22`, color: d.type === "rest" ? "#444" : ACTIVE_DAY_COLOR, fontWeight: 600 }}>
+                        {d.type === "rest" ? "REST" : "TRAIN"}
+                      </span>
+                      <div>
+                        <span style={{ fontWeight: 700, fontSize: 14 }}>{d.day}</span>
+                        <span style={{ color: "#555", fontSize: 12, marginLeft: 8 }}>— {d.focus}</span>
                       </div>
-                    ))}
+                    </div>
+                    <span style={{ color: ACTIVE_DAY_COLOR, fontSize: 14 }}>{locked ? "🔒" : activeDay === i ? "▲" : "▼"}</span>
                   </div>
-                )}
+
+                  {!locked && activeDay === i && d.exercises?.length > 0 && (
+                    <div style={{ marginTop: 12, borderTop: "1px solid #1a1a1a", paddingTop: 12 }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: "4px 12px", fontSize: 11, color: "#555", marginBottom: 8, paddingBottom: 6, borderBottom: "1px solid #1a1a1a" }}>
+                        <span>Exercise</span><span>Sets</span><span>Reps</span><span>Rest</span>
+                      </div>
+                      {d.exercises.map((ex, j) => (
+                        <div key={j} style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: "4px 12px", padding: "7px 0", borderBottom: j < d.exercises.length - 1 ? "1px solid #1a1a1a" : "none", alignItems: "center" }}>
+                          <span style={{ fontSize: 13, color: "#ddd" }}>{ex.name}</span>
+                          <span style={{ fontSize: 12, color: ACTIVE_DAY_COLOR, fontWeight: 600 }}>{ex.sets}</span>
+                          <span style={{ fontSize: 12, color: "#aaa" }}>{ex.reps}</span>
+                          <span style={{ fontSize: 11, color: "#555" }}>{ex.rest}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            {!isPro && (
+              <div
+                onClick={() => setShowPaywall(true)}
+                style={{ background: "#CCFF00", color: "#050505", borderRadius: 14, padding: "15px 16px", textAlign: "center", fontSize: 13, fontWeight: 900, cursor: "pointer" }}
+              >
+                Upgrade to Pro to unlock your full week
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
+      <ProPaywall
+        featureName="Full Weekly Plan"
+        isVisible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+      />
     </div>
   );
 }

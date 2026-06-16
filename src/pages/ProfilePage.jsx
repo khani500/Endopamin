@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+import { deleteUserAccount } from '../lib/accountDeletion';
 import {
   fetchTrainingKnowledgeForOnboarding,
   generateOnboardingNutritionPlan,
@@ -528,6 +529,7 @@ export default function ProfilePage() {
   const [showPlanPreview, setShowPlanPreview] = useState(false);
   const [planError, setPlanError] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const loadingTimerRef = useRef(null);
   const generationStartedRef = useRef(null);
   const pageMountedRef = useRef(true);
@@ -668,6 +670,22 @@ export default function ProfilePage() {
     if (nutritionDeleteError) {
       console.error('Failed to delete nutrition plans:', nutritionDeleteError);
       throw nutritionDeleteError;
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deletingAccount) return;
+    const confirmed = window.confirm('Are you sure? This will permanently delete your account and all data. This cannot be undone.');
+    if (!confirmed) return;
+
+    setDeletingAccount(true);
+    try {
+      await deleteUserAccount();
+      navigate('/auth', { replace: true });
+    } catch (err) {
+      window.alert(err?.message || 'Could not delete your account. Please try again.');
+    } finally {
+      setDeletingAccount(false);
     }
   };
 
@@ -1121,18 +1139,34 @@ export default function ProfilePage() {
             Your coach reads this data — no more repeated questions.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={async () => { await signOut(); navigate('/auth', { replace: true }); }}
-          style={{
-            background: 'transparent', border: '0.5px solid #2a2a2a', borderRadius: 10,
-            color: '#555', fontSize: 11, padding: '8px 12px', cursor: 'pointer',
-            fontFamily: 'inherit', fontWeight: 600, letterSpacing: '0.05em',
-            textTransform: 'uppercase', marginTop: 4,
-          }}
-        >
-          Log out
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
+          <button
+            type="button"
+            onClick={async () => { await signOut(); navigate('/auth', { replace: true }); }}
+            style={{
+              background: 'transparent', border: '0.5px solid #2a2a2a', borderRadius: 10,
+              color: '#555', fontSize: 11, padding: '8px 12px', cursor: 'pointer',
+              fontFamily: 'inherit', fontWeight: 600, letterSpacing: '0.05em',
+              textTransform: 'uppercase', marginTop: 4,
+            }}
+          >
+            Log out
+          </button>
+          <button
+            type="button"
+            onClick={handleDeleteAccount}
+            disabled={deletingAccount}
+            style={{
+              background: 'transparent', border: '0.5px solid rgba(255,68,68,0.45)', borderRadius: 10,
+              color: 'rgba(255,68,68,0.8)', fontSize: 11, padding: '8px 12px',
+              cursor: deletingAccount ? 'wait' : 'pointer', opacity: deletingAccount ? 0.6 : 1,
+              fontFamily: 'inherit', fontWeight: 700, letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {deletingAccount ? 'Deleting...' : 'Delete Account'}
+          </button>
+        </div>
       </div>
 
       {/* Progress Bar */}
