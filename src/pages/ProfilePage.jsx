@@ -1236,6 +1236,28 @@ export default function ProfilePage() {
         </p>
       )}
 
+      <div style={{ marginTop: 28, textAlign: 'center' }}>
+        <button
+          type="button"
+          onClick={() => navigate('/privacy')}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            fontSize: 12,
+            color: 'rgba(255,255,255,0.35)',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            textDecoration: 'underline',
+            textUnderlineOffset: 3,
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#CCFF00'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.35)'; }}
+        >
+          Privacy Policy
+        </button>
+      </div>
+
       {createPortal(
         <AnimatePresence>
           {isLoading && (
