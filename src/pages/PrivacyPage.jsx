@@ -10,6 +10,7 @@ const SECTIONS = [
       'Workout logs: exercises performed, sets, reps, duration, and timestamps.',
       'Nutrition logs: meals, calories, macros, and related food entries.',
       'Coach conversations: text and voice interactions with your AI coach, including session context used to personalize responses.',
+      'Health and fitness data: with your permission, we read data from Apple HealthKit such as heart rate, steps, active energy burned, resting heart rate, and sleep. This data is used to personalize coaching and is read only while you use the app.',
       'Usage data: app interactions, notification preferences, and subscription status where applicable.',
     ],
   },
@@ -20,6 +21,7 @@ const SECTIONS = [
       'Delivering personalized AI coaching based on your profile, goals, and activity history.',
       'Generating workout and nutrition plans tailored to your preferences and progress.',
       'Powering coach chat and voice responses with relevant context from your logs and profile.',
+      'Using Apple HealthKit data to give your AI coach real-time context (such as current heart rate and daily activity) for more personalized recommendations.',
       'Tracking streaks, progress, personal records, and in-app achievements.',
       'Sending optional notifications such as workout reminders, streak alerts, and desk-break prompts.',
       'Processing Pro subscriptions and managing account access.',
@@ -35,6 +37,13 @@ const SECTIONS = [
       'Stripe — secure payment processing for Endopamin Pro subscriptions. Stripe handles payment card data; we do not store full card numbers on our servers.',
       'Firebase — push notification delivery for workout reminders and app alerts when you opt in.',
       'These providers process data according to their own privacy policies and only as needed to provide their services to Endopamin.',
+    ],
+  },
+  {
+    title: 'Apple HealthKit Data',
+    body: [
+      'We access Apple HealthKit data only with your explicit permission, which you grant through the iOS Health permission prompt. You can revoke this access at any time in the iOS Settings app under Privacy & Security > Health.',
+      'HealthKit data is used solely to provide and personalize the in-app coaching experience. We do NOT use HealthKit data for advertising or marketing, and we do NOT sell or share HealthKit data with third parties. HealthKit data is not used for any purpose other than your health and fitness coaching within Endopamin.',
     ],
   },
   {
