@@ -541,13 +541,24 @@ FORMAT:
   ]
 }`;
 
-  const { GoogleGenerativeAI } = await import("@google/generative-ai");
-  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-  const result = await model.generateContent(prompt);
-  const text = result.response.text().trim();
-  const clean = text.replace(/```json|```/g, "").trim();
+  const response = await fetch('/api/gemini', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'gemini-2.5-flash',
+      action: 'generateContent',
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 8192,
+        thinkingConfig: { thinkingBudget: 0 },
+        responseMimeType: 'application/json',
+      },
+    }),
+  });
+  const data = await response.json();
+  const text = (data?.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
+  const clean = text.replace(/```json|```/g, '').trim();
   return JSON.parse(clean);
 }
 
