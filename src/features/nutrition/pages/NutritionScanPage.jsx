@@ -1,5 +1,6 @@
 import { useNutritionStore } from '../store/nutritionStore';
 import { FoodScanner } from '../components/FoodScanner';
+import { ProGate } from '../../../components/paywall/ProGate';
 
 const MACROS = [
   { key: 'protein', label: 'Protein', grams: 160, percent: 40, color: '#FFCC00' },
@@ -90,17 +91,19 @@ export default function NutritionScanPage() {
 
   return (
     <main className="np-main">
-      <FoodScanner
-        onAnalyzed={r =>
-          addFoodEntry({
-            name: r?.name || r?.food_name || r?.label || 'Scanned meal',
-            kcal: Number(r?.kcal ?? r?.calories) || 0,
-            protein: Number(r?.protein ?? r?.protein_g) || 0,
-            carbs: Number(r?.carbs ?? r?.carbs_g) || 0,
-            fat: Number(r?.fat ?? r?.fat_g) || 0,
-          })
-        }
-      />
+      <ProGate feature="foodScanner" featureName="AI Food Scanner">
+        <FoodScanner
+          onAnalyzed={r =>
+            addFoodEntry({
+              name: r?.name || r?.food_name || r?.label || 'Scanned meal',
+              kcal: Number(r?.kcal ?? r?.calories) || 0,
+              protein: Number(r?.protein ?? r?.protein_g) || 0,
+              carbs: Number(r?.carbs ?? r?.carbs_g) || 0,
+              fat: Number(r?.fat ?? r?.fat_g) || 0,
+            })
+          }
+        />
+      </ProGate>
       <SmartMacroPieChart />
       <MacroMatrixGrid />
     </main>

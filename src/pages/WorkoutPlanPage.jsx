@@ -329,15 +329,6 @@ export default function WorkoutPlanPage() {
             <p style={{ margin: 0, fontSize: 12, color: ACTIVE_DAY_COLOR }}>Coach {label}</p>
           </div>
         </div>
-        {plan && (
-          <button
-            onClick={refreshPlan}
-            disabled={generating}
-            style={{ background: "transparent", border: `1px solid ${ACTIVE_DAY_COLOR}`, color: ACTIVE_DAY_COLOR, borderRadius: 8, padding: "8px 14px", fontSize: 12, cursor: generating ? "wait" : "pointer", opacity: generating ? 0.6 : 1 }}
-          >
-            {generating ? "..." : "Refresh Plan"}
-          </button>
-        )}
       </div>
 
       <div style={{ padding: "20px 16px" }}>

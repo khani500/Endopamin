@@ -567,14 +567,14 @@ function parseGeminiJson(text) {
   return JSON.parse(clean);
 }
 
-const PLAN_GENERATION_TIMEOUT_MS = 8000;
+const PLAN_GENERATION_TIMEOUT_MS = 25000;
 
 async function generateJsonFromPrompt(prompt, maxOutputTokens = 4096, { timeoutMs } = {}) {
   const controller = new AbortController();
 
   const run = generateContent({
     prompt,
-    generationConfig: { maxOutputTokens, temperature: 0.2 },
+    generationConfig: { maxOutputTokens, temperature: 0.2, thinkingConfig: { thinkingBudget: 0 } },
     signal: controller.signal,
   }).then(data => {
     const text = extractText(data);

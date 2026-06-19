@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { scanFoodHub } from '../../../services/foodScanner';
 import { BarcodeScanner } from '../components/BarcodeScanner';
+import { ProGate } from '../../../components/paywall/ProGate';
 
 const ACTIVITY_MULTIPLIERS = {
   sedentary: 1.2,
@@ -697,19 +698,21 @@ export default function NutritionHub() {
               </button>
             </div>
             <div className="px-4 pb-4">
-              <button type="button" onClick={() => setShowBarcodeScanner(true)}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] font-bold text-[12px] border transition-all active:scale-95"
-                style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.12)', color: '#fff' }}>
-                <span
-                  className="inline-flex items-center justify-center flex-shrink-0"
-                  style={{ border: '2px solid #CCFF00', borderRadius: '50%', padding: '6px' }}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 24, height: 24 }}>
-                    <path d="M3 5h2v14H3zM8 5h1v14H8zM11 5h2v14h-2zM15 5h1v14h-1zM18 5h3v14h-3z"/>
-                  </svg>
-                </span>
-                Scan Barcode
-              </button>
+              <ProGate feature="barcodeScanner" featureName="Barcode Scanner">
+                <button type="button" onClick={() => setShowBarcodeScanner(true)}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] font-bold text-[12px] border transition-all active:scale-95"
+                  style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.12)', color: '#fff' }}>
+                  <span
+                    className="inline-flex items-center justify-center flex-shrink-0"
+                    style={{ border: '2px solid #CCFF00', borderRadius: '50%', padding: '6px' }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#CCFF00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 24, height: 24 }}>
+                      <path d="M3 5h2v14H3zM8 5h1v14H8zM11 5h2v14h-2zM15 5h1v14h-1zM18 5h3v14h-3z"/>
+                    </svg>
+                  </span>
+                  Scan Barcode
+                </button>
+              </ProGate>
             </div>
           </div>
 
