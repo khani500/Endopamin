@@ -755,7 +755,7 @@ export default function NutritionHub() {
                     style={{ filter: 'drop-shadow(0 0 4px rgba(255,165,60,0.5))' }}/>
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-[18px] font-black text-white">{loggedMacros.protein + loggedMacros.carbs + loggedMacros.fat}g</span>
+                  <span className="text-[18px] font-black text-white">{Math.round(loggedMacros.protein + loggedMacros.carbs + loggedMacros.fat)}g</span>
                   <span className="text-[8px] text-white/40 uppercase tracking-wider">total</span>
                 </div>
               </div>
