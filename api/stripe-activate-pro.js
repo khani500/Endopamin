@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       expand: ['latest_invoice'],
     });
 
-    if (subscription.metadata?.userId && subscription.metadata.userId !== userId) {
+    if (!subscription.metadata?.userId || subscription.metadata.userId !== userId) {
       return res.status(403).json({ error: 'Subscription does not belong to this user' });
     }
 
