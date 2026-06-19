@@ -1,3 +1,5 @@
+import { checkRateLimit } from './_rateLimit.js';
+
 export const config = {
   api: {
     bodyParser: {
@@ -32,6 +34,8 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+  const allowed = await checkRateLimit(req, res, { name: 'gemini', max: 20, windowSec: 60 });
+  if (!allowed) return;
 
   const contentLength = Number(req.headers['content-length'] || 0);
   if (contentLength > MAX_BODY_BYTES) {

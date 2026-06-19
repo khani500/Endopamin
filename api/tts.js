@@ -1,7 +1,11 @@
+import { checkRateLimit } from './_rateLimit.js';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+  const allowed = await checkRateLimit(req, res, { name: 'tts', max: 30, windowSec: 60 });
+  if (!allowed) return;
 
   const TTS_API_KEY = process.env.VITE_GOOGLE_TTS_API_KEY
     || process.env.GOOGLE_TTS_API_KEY
