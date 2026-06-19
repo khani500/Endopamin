@@ -672,6 +672,7 @@ export default function NutritionHub() {
               )}
             </div>
 
+            <ProGate feature="foodScanner" featureName="AI Food Scanner">
             {/* Buttons */}
             <div className="flex gap-3 p-4">
               <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden"
@@ -697,6 +698,7 @@ export default function NutritionHub() {
                 Gallery
               </button>
             </div>
+            </ProGate>
             <div className="px-4 pb-4">
               <ProGate feature="barcodeScanner" featureName="Barcode Scanner">
                 <button type="button" onClick={() => setShowBarcodeScanner(true)}
