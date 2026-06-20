@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { scanFoodHub } from '../../../services/foodScanner';
 import { BarcodeScanner } from '../components/BarcodeScanner';
-import { ProGate } from '../../../components/paywall/ProGate';
+import { ProPaywall } from '../../../components/paywall/ProPaywall';
+import { useScanLimit } from '../../../hooks/useScanLimit';
 
 const ACTIVITY_MULTIPLIERS = {
   sedentary: 1.2,
@@ -197,6 +198,9 @@ function SvgIcon({ d, viewBox = "0 0 24 24", fill = "none", className = "w-5 h-5
 
 export default function NutritionHub() {
   const { profile } = useAuth() || {};
+  const { canScan, incrementScan } = useScanLimit();
+  const [showScanPaywall, setShowScanPaywall] = useState(false);
+  const [scanPaywallFeature, setScanPaywallFeature] = useState('AI Food Scanner');
   const macroGoals = useMemo(() => calculateNutritionTargets(profile), [profile]);
   const mealTargets = macroGoals.mealTargets;
   const [activeTab, setActiveTab] = useState('log');
@@ -342,6 +346,12 @@ export default function NutritionHub() {
 
   const processImage = async (file) => {
     if (!file) return;
+    if (!canScan) {
+      setScanPaywallFeature('AI Food Scanner');
+      setShowScanPaywall(true);
+      return;
+    }
+    incrementScan();
     setScanning(true);
     setScanResult(null);
     const url = URL.createObjectURL(file);
@@ -356,6 +366,33 @@ export default function NutritionHub() {
     } finally {
       setScanning(false);
     }
+  };
+
+  const openBarcodeScanner = () => {
+    if (!canScan) {
+      setScanPaywallFeature('Barcode Scanner');
+      setShowScanPaywall(true);
+      return;
+    }
+    setShowBarcodeScanner(true);
+  };
+
+  const openCameraPicker = () => {
+    if (!canScan) {
+      setScanPaywallFeature('AI Food Scanner');
+      setShowScanPaywall(true);
+      return;
+    }
+    cameraInputRef.current?.click();
+  };
+
+  const openGalleryPicker = () => {
+    if (!canScan) {
+      setScanPaywallFeature('AI Food Scanner');
+      setShowScanPaywall(true);
+      return;
+    }
+    fileInputRef.current?.click();
   };
 
   const handleBarcodeResult = (data) => {
@@ -672,14 +709,13 @@ export default function NutritionHub() {
               )}
             </div>
 
-            <ProGate feature="foodScanner" featureName="AI Food Scanner">
             {/* Buttons */}
             <div className="flex gap-3 p-4">
               <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden"
                 onChange={e => processImage(e.target.files?.[0])} />
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
                 onChange={e => processImage(e.target.files?.[0])} />
-              <button type="button" onClick={() => cameraInputRef.current?.click()}
+              <button type="button" onClick={openCameraPicker}
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-[14px] font-bold text-[12px] transition-all active:scale-95"
                 style={{ background: '#CCFF00', color: '#000' }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
@@ -688,7 +724,7 @@ export default function NutritionHub() {
                 </svg>
                 Camera
               </button>
-              <button type="button" onClick={() => fileInputRef.current?.click()}
+              <button type="button" onClick={openGalleryPicker}
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-[14px] font-bold text-[12px] border transition-all active:scale-95"
                 style={{ background: 'rgba(204,255,0,0.08)', borderColor: 'rgba(204,255,0,0.2)', color: '#CCFF00' }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
@@ -698,10 +734,8 @@ export default function NutritionHub() {
                 Gallery
               </button>
             </div>
-            </ProGate>
             <div className="px-4 pb-4">
-              <ProGate feature="barcodeScanner" featureName="Barcode Scanner">
-                <button type="button" onClick={() => setShowBarcodeScanner(true)}
+                <button type="button" onClick={openBarcodeScanner}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-[14px] font-bold text-[12px] border transition-all active:scale-95"
                   style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.12)', color: '#fff' }}>
                   <span
@@ -714,7 +748,6 @@ export default function NutritionHub() {
                   </span>
                   Scan Barcode
                 </button>
-              </ProGate>
             </div>
           </div>
 
@@ -724,6 +757,12 @@ export default function NutritionHub() {
               onClose={() => setShowBarcodeScanner(false)}
             />
           )}
+
+          <ProPaywall
+            featureName={scanPaywallFeature}
+            isVisible={showScanPaywall}
+            onClose={() => setShowScanPaywall(false)}
+          />
 
           {/* Always visible macro chart */}
           <div className="rounded-[24px] border border-white/[0.07] p-5"

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
+import { ProPaywall } from '../../../components/paywall/ProPaywall';
+import { useScanLimit } from '../../../hooks/useScanLimit';
 import {
   lookupBarcodeProduct,
   normalizeBarcode,
@@ -8,6 +10,8 @@ import {
 } from '../../../services/barcodeScanner';
 
 export function BarcodeScanner({ onResult, onClose }) {
+  const { canScan, incrementScan } = useScanLimit();
+  const [showPaywall, setShowPaywall] = useState(false);
   const videoRef = useRef(null);
   const readerRef = useRef(null);
   const lookupLockRef = useRef(false);
@@ -23,6 +27,12 @@ export function BarcodeScanner({ onResult, onClose }) {
     const normalized = normalizeBarcode(code);
     if (!normalized || lookupLockRef.current) return;
 
+    if (!canScan) {
+      setShowPaywall(true);
+      return;
+    }
+
+    incrementScan();
     lookupLockRef.current = true;
     setLoading(true);
     setError('');
@@ -44,7 +54,7 @@ export function BarcodeScanner({ onResult, onClose }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [canScan, incrementScan]);
 
   useEffect(() => {
     const reader = new BrowserMultiFormatReader();
@@ -236,6 +246,12 @@ export function BarcodeScanner({ onResult, onClose }) {
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+      <ProPaywall
+        featureName="Barcode Scanner"
+        isVisible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+      />
     </div>
   );
 }

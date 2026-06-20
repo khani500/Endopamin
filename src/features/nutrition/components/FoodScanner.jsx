@@ -2,11 +2,15 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Camera, ImagePlus, Loader2, Scan, X } from 'lucide-react';
 import { GlassCard } from './GlassCard';
 import { useAuth } from '../../../context/AuthContext';
+import { ProPaywall } from '../../../components/paywall/ProPaywall';
+import { useScanLimit } from '../../../hooks/useScanLimit';
 import { supabase } from '../../../lib/supabase';
 import { imageToGeminiPayload, scanFood } from '../../../services/foodScanner';
 
 export function FoodScanner({ onAnalyzed }) {
   const { user } = useAuth();
+  const { canScan, incrementScan } = useScanLimit();
+  const [showPaywall, setShowPaywall] = useState(false);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -94,6 +98,11 @@ export function FoodScanner({ onAnalyzed }) {
 
   const runAnalysis = async blob => {
     if (!blob) return;
+    if (!canScan) {
+      setShowPaywall(true);
+      return;
+    }
+    incrementScan();
     abortRef.current?.abort();
     abortRef.current = new AbortController();
     const { signal } = abortRef.current;
@@ -288,6 +297,11 @@ export function FoodScanner({ onAnalyzed }) {
         />
       </div>
 
+      <ProPaywall
+        featureName="AI Food Scanner"
+        isVisible={showPaywall}
+        onClose={() => setShowPaywall(false)}
+      />
     </GlassCard>
   );
 }

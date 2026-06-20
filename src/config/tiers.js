@@ -21,6 +21,7 @@ export const PRO_FEATURES = {
 };
 
 export const FREE_COACH_MESSAGE_LIMIT = 5;
+export const FREE_SCAN_LIMIT = 2;
 
 export function isProUser(profile) {
   return profile?.is_pro === true;

@@ -61,8 +61,6 @@ function isLockedFeature(feature, historyDays) {
   if (feature === 'coachChat') return true;
   if (feature === 'coachVoice') return true;
   if (feature === 'nutritionTracking') return true;
-  if (feature === 'foodScanner') return true;
-  if (feature === 'barcodeScanner') return true;
   if (feature === 'progressHistory') return Number(historyDays) > 7;
   return false;
 }
