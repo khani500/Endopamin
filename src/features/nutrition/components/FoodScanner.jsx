@@ -8,7 +8,7 @@ import { supabase } from '../../../lib/supabase';
 import { imageToGeminiPayload, scanFood } from '../../../services/foodScanner';
 
 export function FoodScanner({ onAnalyzed }) {
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const { canScan, incrementScan } = useScanLimit();
   const [showPaywall, setShowPaywall] = useState(false);
   const videoRef = useRef(null);
@@ -300,7 +300,10 @@ export function FoodScanner({ onAnalyzed }) {
       <ProPaywall
         featureName="AI Food Scanner"
         isVisible={showPaywall}
-        onClose={() => setShowPaywall(false)}
+        onClose={() => {
+          setShowPaywall(false);
+          void refreshProfile?.();
+        }}
       />
     </GlassCard>
   );

@@ -22,6 +22,7 @@ export function useScanLimit() {
   const resetScanCount = useCallback(() => {
     writeScanCount(0);
     setScanCount(0);
+    window.dispatchEvent(new Event('endopamin:scan-count-reset'));
   }, []);
 
   const canScan = useMemo(() => {
@@ -34,19 +35,14 @@ export function useScanLimit() {
   }, [isPro, resetScanCount]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('upgraded') !== 'true') return;
+    const syncCount = () => setScanCount(readScanCount());
+    window.addEventListener('endopamin:scan-count-reset', syncCount);
+    return () => window.removeEventListener('endopamin:scan-count-reset', syncCount);
+  }, []);
 
-    resetScanCount();
-    params.delete('upgraded');
-    const query = params.toString();
-    window.history.replaceState(
-      {},
-      '',
-      query ? `${window.location.pathname}?${query}` : window.location.pathname,
-    );
-  }, [resetScanCount]);
+  useEffect(() => {
+    setScanCount(readScanCount());
+  }, [profile?.is_pro]);
 
   const incrementScan = useCallback(() => {
     if (isProUser(profile)) return;

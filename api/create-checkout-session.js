@@ -15,7 +15,7 @@ export default async function handler(req, res) {
       payment_method_types: ['card'],
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: 'https://endopamin.vercel.app/coach?upgraded=true',
+      success_url: 'https://endopamin.vercel.app/coach?upgraded=true&session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://endopamin.vercel.app/coach',
       customer_email: email || undefined,
       metadata: { userId },

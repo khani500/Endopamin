@@ -197,7 +197,7 @@ function SvgIcon({ d, viewBox = "0 0 24 24", fill = "none", className = "w-5 h-5
 }
 
 export default function NutritionHub() {
-  const { profile } = useAuth() || {};
+  const { profile, refreshProfile } = useAuth() || {};
   const { canScan, incrementScan } = useScanLimit();
   const [showScanPaywall, setShowScanPaywall] = useState(false);
   const [scanPaywallFeature, setScanPaywallFeature] = useState('AI Food Scanner');
@@ -761,7 +761,10 @@ export default function NutritionHub() {
           <ProPaywall
             featureName={scanPaywallFeature}
             isVisible={showScanPaywall}
-            onClose={() => setShowScanPaywall(false)}
+            onClose={() => {
+              setShowScanPaywall(false);
+              void refreshProfile?.();
+            }}
           />
 
           {/* Always visible macro chart */}

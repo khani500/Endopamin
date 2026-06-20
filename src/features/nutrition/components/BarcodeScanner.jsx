@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
+import { useAuth } from '../../../context/AuthContext';
 import { ProPaywall } from '../../../components/paywall/ProPaywall';
 import { useScanLimit } from '../../../hooks/useScanLimit';
 import {
@@ -10,6 +11,7 @@ import {
 } from '../../../services/barcodeScanner';
 
 export function BarcodeScanner({ onResult, onClose }) {
+  const { refreshProfile } = useAuth();
   const { canScan, incrementScan } = useScanLimit();
   const [showPaywall, setShowPaywall] = useState(false);
   const videoRef = useRef(null);
@@ -250,7 +252,10 @@ export function BarcodeScanner({ onResult, onClose }) {
       <ProPaywall
         featureName="Barcode Scanner"
         isVisible={showPaywall}
-        onClose={() => setShowPaywall(false)}
+        onClose={() => {
+          setShowPaywall(false);
+          void refreshProfile?.();
+        }}
       />
     </div>
   );

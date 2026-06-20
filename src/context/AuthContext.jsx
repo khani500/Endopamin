@@ -147,6 +147,55 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   useEffect(() => {
+    if (!user?.id || typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('upgraded') !== 'true') return;
+
+    let cancelled = false;
+
+    const clearUpgradeQuery = () => {
+      params.delete('upgraded');
+      params.delete('session_id');
+      const query = params.toString();
+      window.history.replaceState(
+        {},
+        '',
+        query ? `${window.location.pathname}?${query}` : window.location.pathname,
+      );
+    };
+
+    const finishUpgrade = async () => {
+      localStorage.setItem('scan_count', '0');
+      window.dispatchEvent(new Event('endopamin:scan-count-reset'));
+
+      const sessionId = params.get('session_id');
+      if (sessionId) {
+        try {
+          await fetch('/api/activate-pro-from-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId, userId: user.id }),
+          });
+        } catch (err) {
+          console.error('Failed to activate Pro from checkout session:', err);
+        }
+      }
+
+      if (!cancelled) {
+        await loadProfile(user.id);
+        clearUpgradeQuery();
+      }
+    };
+
+    void finishUpgrade();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id, loadProfile]);
+
+  useEffect(() => {
     if (!supabase) {
       const timer = window.setTimeout(() => setLoading(false), 0);
       return () => window.clearTimeout(timer);
