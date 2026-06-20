@@ -12,7 +12,7 @@ import PlanPreviewScreen from '../components/PlanPreviewScreen';
 
 const LOADING_PHASES = [
   { until: 3, text: 'Analyzing your profile...' },
-  { until: 6, text: 'Applying NASM & NSCA protocols...' },
+  { until: 6, text: 'Building your personalized training plan...' },
   { until: 9, text: 'Building your workout plan...' },
   { until: 12, text: 'Calculating your nutrition...' },
   { until: Infinity, text: 'Almost ready...' },
