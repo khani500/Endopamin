@@ -19,6 +19,7 @@ export default async function handler(req, res) {
       cancel_url: 'https://endopamin.vercel.app/coach',
       customer_email: email || undefined,
       metadata: { userId },
+      subscription_data: { metadata: { userId } },
     });
     return res.status(200).json({ url: session.url });
   } catch (err) {

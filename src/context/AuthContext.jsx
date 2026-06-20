@@ -50,20 +50,41 @@ export const AuthProvider = ({ children }) => {
 
   const ensureProfile = useCallback(async sessionUser => {
     if (!supabase || !sessionUser?.id) return;
-    const existing = await loadProfile(sessionUser.id);
     const metadataName = sessionUser.user_metadata?.display_name;
 
-    if (existing) {
-      if (!existing.display_name && metadataName) {
-        const { data, error } = await supabase
+    const { data, error: selectError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', sessionUser.id)
+      .maybeSingle();
+
+    if (selectError) {
+      console.error('Failed to load profile:', selectError);
+      setProfile(null);
+      return;
+    }
+
+    if (data) {
+      if (!data.display_name && metadataName) {
+        const { data: updated, error: updateError } = await supabase
           .from('profiles')
           .update({ display_name: metadataName })
           .eq('id', sessionUser.id)
           .select('*')
           .single();
 
-        if (!error) setProfile(data);
+        if (!updateError) {
+          setProfile(updated);
+          return;
+        }
       }
+
+      const localDone = typeof window !== 'undefined'
+        && localStorage.getItem('onboarding_done') === 'true';
+      const merged = localDone && !data.onboarding_completed
+        ? { ...data, onboarding_completed: true }
+        : data;
+      setProfile(merged);
       return;
     }
 
@@ -78,31 +99,18 @@ export const AuthProvider = ({ children }) => {
       created_at: new Date().toISOString(),
     };
 
-    const { data, error } = await supabase
+    const { data: inserted, error: insertError } = await supabase
       .from('profiles')
-      .upsert(profileDefaults, { onConflict: 'id' })
+      .insert(profileDefaults)
       .select('*')
       .single();
 
-    if (error) {
-      console.error('Failed to create profile:', error);
-      const { data: fallbackData, error: fallbackError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: sessionUser.id,
-          display_name: profileDefaults.display_name,
-          created_at: profileDefaults.created_at,
-        }, { onConflict: 'id' })
-        .select('*')
-        .single();
-
-      if (!fallbackError) {
-        setProfile(fallbackData);
-      }
+    if (insertError) {
+      console.error('Failed to create profile:', insertError);
       return;
     }
-    setProfile(data);
-  }, [loadProfile]);
+    setProfile(inserted);
+  }, []);
 
   const signOut = useCallback(async () => {
     localStorage.removeItem('onboarding_done');
