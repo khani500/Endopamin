@@ -29,6 +29,7 @@ const NutritionCoachPage = lazy(() => import('./features/nutrition/pages/Nutriti
 const ProSuccessPage = lazy(() => import('./pages/ProSuccessPage'));
 const ProCancelPage = lazy(() => import('./pages/ProCancelPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
 
 function RootRedirect() {
   const { profile, loading } = useAuth();
@@ -154,6 +155,7 @@ function App() {
           <Routes>
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           <Route path="/pro-success" element={<ProSuccessPage />} />
           <Route path="/pro-cancel" element={<ProCancelPage />} />
           <Route path="/" element={<ProtectedRoute><RootRedirect /></ProtectedRoute>} />
