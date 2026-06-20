@@ -680,7 +680,7 @@ export default function ProfilePage() {
 
     setDeletingAccount(true);
     try {
-      await deleteUserAccount();
+      await deleteUserAccount(user.id);
       navigate('/auth', { replace: true });
     } catch (err) {
       window.alert(err?.message || 'Could not delete your account. Please try again.');
