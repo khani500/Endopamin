@@ -484,11 +484,11 @@ export async function generateWorkoutPlan(coachId, user, userProfile = {}) {
   const progressContext = buildProgressPrompt(progressSummary);
 
   const coachPersona = {
-    aria:  "You are Aria, a scientific NASM-certified coach. Be precise and evidence-based.",
-    kane:  "You are Kane, a hardcore strength coach. Be intense but smart about injury prevention.",
-    blaze: "You are Blaze, a high-energy athletic coach. Be explosive and performance-focused.",
-    nova:  "You are Nova, a mindset and movement coach. Be holistic and recovery-aware.",
-    zara:  "You are Zara, a strength and hypertrophy specialist. Be technical and progressive.",
+    aria: `You are Aria, a General Fitness coach. Your philosophy: fitness should be sustainable, enjoyable, and balanced. Build habits that last a lifetime. Every session should leave the athlete feeling energized. Draw from NASM OPT methodology and ACSM general health guidelines.`,
+    kane: `You are Kane, a Hypertrophy and Muscle Building coach. Your philosophy: muscle is built with volume, progressive overload, and consistency. Train each muscle group at least twice per week. Push sets close to failure. Draw from Schoenfeld hypertrophy research and NSCA volume principles.`,
+    blaze: `You are Blaze, a Fat Loss and Conditioning specialist. Your philosophy: maximum calorie burn, minimum wasted time. Keep heart rate high and rest periods short. Use HIIT protocols and metabolic circuits. Draw from Tabata protocol and NSCA metabolic resistance training.`,
+    nova: `You are Nova, a Strength and Athletic Performance coach. Your philosophy: strength is the foundation of everything. Heavy compound movements first, every session. Chase personal records every week. Draw from NSCA Essentials of Strength Training and linear periodization models.`,
+    zara: `You are Zara, a Functional Fitness coach. Your philosophy: move better, feel better, live better. Quality of movement trumps quantity of weight. Master the 7 fundamental movement patterns. Draw from Gray Cook's Functional Movement Systems and ACSM mobility guidelines.`,
   };
 
   const prompt = `${coachPersona[coachId] || coachPersona.aria}
@@ -559,12 +559,89 @@ FORMAT:
   const data = await response.json();
   const text = (data?.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
   const clean = text.replace(/```json|```/g, '').trim();
-  return JSON.parse(clean);
+  let parsed = JSON.parse(clean);
+  parsed = validateAndFixWorkoutPlan(parsed, { experience_level: fitnessLevel });
+  return parsed;
 }
 
 function parseGeminiJson(text) {
   const clean = String(text || '').replace(/```json|```/g, '').trim();
   return JSON.parse(clean);
+}
+
+function validateAndFixWorkoutPlan(parsed, athlete) {
+  if (!Array.isArray(parsed?.days) || !parsed.days.length) {
+    throw new Error('Empty workout plan');
+  }
+
+  const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const experience = athlete?.experience_level || athlete?.experience || 'intermediate';
+
+  const BEGINNER_FORBIDDEN = [
+    'barbell back squat', 'barbell squat', 'barbell deadlift', 'deadlift',
+    'barbell overhead press', 'overhead press', 'pull-up', 'pull up', 'pullup'
+  ];
+
+  // Fix 1: Ensure exactly 7 days
+  if (parsed.days.length !== 7) {
+    const dayMap = {};
+    parsed.days.forEach(d => { dayMap[d.day || d.name] = d; });
+    parsed.days = DAYS_OF_WEEK.map(dayName => dayMap[dayName] || {
+      day: dayName,
+      focus: 'Active Recovery',
+      type: 'rest',
+      exercises: [{ name: 'Light Walk', sets: '1', reps: '20 min', rest: '0s' }],
+    });
+  }
+
+  // Fix 2: No back-to-back rest days
+  for (let i = 0; i < parsed.days.length - 1; i++) {
+    const type1 = parsed.days[i].type;
+    const type2 = parsed.days[i + 1].type;
+    if ((type1 === 'rest' || type1 === 'recovery') && (type2 === 'rest' || type2 === 'recovery')) {
+      parsed.days[i + 1].type = 'training';
+      parsed.days[i + 1].focus = parsed.days[i + 1].focus || 'Full Body';
+      if (!parsed.days[i + 1].exercises?.length) {
+        parsed.days[i + 1].exercises = [
+          { name: 'Light Cardio Warm-up', sets: '1', reps: '5 min', rest: '0s' },
+          { name: 'Bodyweight Squat', sets: '3', reps: '15', rest: '60s' },
+          { name: 'Push-up', sets: '3', reps: '10', rest: '60s' },
+          { name: 'Plank', sets: '3', reps: '30s hold', rest: '45s' },
+        ];
+      }
+    }
+  }
+
+  // Fix 3: Warm-up on every training day
+  parsed.days.forEach(day => {
+    if ((day.type === 'training' || day.type === 'train') && Array.isArray(day.exercises) && day.exercises.length > 0) {
+      const firstName = (day.exercises[0].name || '').toLowerCase();
+      const hasWarmup = firstName.includes('warm') || firstName.includes('cardio') || firstName.includes('stretch');
+      if (!hasWarmup) {
+        day.exercises.unshift({ name: 'Light Cardio Warm-up', sets: '1', reps: '5 min', rest: '0s' });
+      }
+    }
+  });
+
+  // Fix 4: Beginner safety
+  if (experience === 'beginner') {
+    parsed.days.forEach(day => {
+      if ((day.type === 'training' || day.type === 'train') && Array.isArray(day.exercises)) {
+        day.exercises = day.exercises.filter(ex => {
+          const name = (ex.name || '').toLowerCase();
+          return !BEGINNER_FORBIDDEN.some(forbidden => name.includes(forbidden));
+        });
+        if (day.exercises.length < 3) {
+          day.exercises.push(
+            { name: 'Dumbbell Goblet Squat', sets: '3', reps: '12', rest: '60s' },
+            { name: 'Dumbbell Row', sets: '3', reps: '12', rest: '60s' },
+          );
+        }
+      }
+    });
+  }
+
+  return parsed;
 }
 
 const PLAN_GENERATION_TIMEOUT_MS = 25000;
@@ -1244,41 +1321,118 @@ Return ONLY valid JSON:
 }
 
 export async function generateOnboardingNutritionPlan(athlete) {
-  const prompt = `You are a sports nutritionist certified by ISSN and WHO.
+  const coachNutritionStyle = {
+    aria: `General Fitness Nutrition: Moderate caloric adjustment (±300 kcal from TDEE). Balanced macros: 30% protein, 40% carbs, 30% fat. Focus on whole foods, meal timing, and sustainable eating habits.`,
+    blaze: `Fat Loss Nutrition (ISSN-based): Aggressive caloric deficit (500-750 kcal below TDEE). Very high protein (2.3-3.1g/kg) to preserve muscle during deficit. Carb cycling: lower carbs on rest days, higher on training days.`,
+    kane: `Hypertrophy Nutrition (ISSN-based): Caloric surplus (300-500 kcal above TDEE). High protein (1.8-2.2g/kg bodyweight). Carb-focused pre and post workout for glycogen replenishment. Casein protein before sleep for overnight muscle protein synthesis.`,
+    nova: `Strength Nutrition (NSCA-based): Caloric surplus on training days (400-600 kcal above TDEE). High protein (1.8-2.0g/kg). Emphasize pre-workout carbs for maximal strength output and post-workout protein within 30 minutes.`,
+    zara: `Functional Fitness Nutrition: Maintenance calories with clean whole foods. Anti-inflammatory focus: omega-3 rich foods, colorful vegetables. High hydration (35ml per kg bodyweight). Emphasize micronutrients for joint health and recovery.`,
+  };
+
+  const persona = athlete.coach_persona || athlete.coachId || 'aria';
+  const nutritionStyle = coachNutritionStyle[persona] || coachNutritionStyle['aria'];
+
+  const prompt = `You are an expert sports nutritionist certified by ISSN and WHO. Create a precise, science-based daily nutrition plan.
 
 ATHLETE PROFILE:
-- Age: ${athlete.age ?? 'unknown'}, Gender: ${athlete.gender || 'unknown'}
-- Height: ${athlete.height_cm ?? 'unknown'}cm, Weight: ${athlete.weight_kg ?? 'unknown'}kg, Target: ${athlete.target_weight_kg ?? 'unknown'}kg
+- Age: ${athlete.age ?? 'unknown'} | Gender: ${athlete.gender || 'unknown'}
+- Height: ${athlete.height_cm ?? 'unknown'}cm | Current Weight: ${athlete.weight_kg ?? 'unknown'}kg | Target Weight: ${athlete.target_weight_kg ?? 'unknown'}kg
 - Goal: ${athlete.goal || 'general fitness'}
-- Activity level: ${athlete.activity_level || 'moderate'}
-- Training days: ${athlete.days_per_week ?? 4} per week
-- Diet restrictions: ${athlete.diet || 'none'}
+- Activity Level: ${athlete.activity_level || 'moderate'}
+- Training Days Per Week: ${athlete.days_per_week ?? 4}
+- Diet Restrictions: ${athlete.diet || 'none'}
+- Coach: ${persona}
 
-Calculate using:
-- Mifflin-St Jeor equation for BMR
-- Activity multiplier for TDEE
-- Adjust calories based on goal (deficit for fat loss, surplus for muscle gain)
-- ISSN protein recommendations (1.6-2.2g/kg for muscle, 1.2-1.6g/kg for fat loss)
+NUTRITION PHILOSOPHY FOR THIS COACH:
+${nutritionStyle}
+
+CALCULATION PROTOCOL (follow strictly):
+1. Calculate BMR using Mifflin-St Jeor equation:
+   - Male: BMR = (10 × weight_kg) + (6.25 × height_cm) - (5 × age) + 5
+   - Female: BMR = (10 × weight_kg) + (6.25 × height_cm) - (5 × age) - 161
+2. Calculate TDEE using activity multiplier:
+   - Sedentary: BMR × 1.2
+   - Lightly active (1-3 days/week): BMR × 1.375
+   - Moderately active (3-5 days/week): BMR × 1.55
+   - Very active (6-7 days/week): BMR × 1.725
+3. Adjust calories based on goal and coach philosophy
+4. Set protein per ISSN guidelines (1.6-3.1g/kg based on goal)
+5. Set fat at 25-35% of total calories
+6. Fill remaining calories with carbohydrates
+
+STRICT MEAL REQUIREMENTS:
+- Each food item must include gram amount (e.g. "Chicken breast 150g")
+- Include Pre-Workout meal (2 hours before training)
+- Include Post-Workout meal (within 30 minutes after training)
+- Breakfast must have minimum 30g protein
+- Dinner must be lighter than lunch
+- All foods must be real, common, and easy to prepare
+- No supplements — whole foods only
 
 Return ONLY valid JSON:
 {
-  "daily_calories": 2200,
-  "protein_g": 160,
-  "carbs_g": 220,
-  "fat_g": 65,
+  "daily_calories": 2400,
+  "protein_g": 180,
+  "carbs_g": 240,
+  "fat_g": 70,
+  "water_glasses": 10,
   "meals": [
     {
       "name": "Breakfast",
-      "time": "8:00 AM",
+      "time": "7:00 AM",
       "calories": 500,
-      "foods": ["food 1", "food 2"],
-      "protein_g": 30,
+      "protein_g": 40,
+      "carbs_g": 45,
+      "fat_g": 12,
+      "foods": ["Eggs 3 whole (150g)", "Oatmeal 80g dry", "Banana 1 medium (120g)"]
+    },
+    {
+      "name": "Pre-Workout",
+      "time": "11:00 AM",
+      "calories": 350,
+      "protein_g": 25,
+      "carbs_g": 45,
+      "fat_g": 6,
+      "foods": ["Greek yogurt 200g", "Rice cakes 3 pieces (30g)", "Honey 1 tbsp (20g)"]
+    },
+    {
+      "name": "Post-Workout",
+      "time": "1:30 PM",
+      "calories": 500,
+      "protein_g": 45,
+      "carbs_g": 55,
+      "fat_g": 8,
+      "foods": ["Chicken breast 200g grilled", "White rice 150g cooked", "Broccoli 100g steamed"]
+    },
+    {
+      "name": "Lunch",
+      "time": "3:30 PM",
+      "calories": 500,
+      "protein_g": 35,
       "carbs_g": 50,
-      "fat_g": 15
+      "fat_g": 15,
+      "foods": ["Salmon fillet 150g", "Sweet potato 200g baked", "Mixed salad 100g", "Olive oil 1 tbsp (14g)"]
+    },
+    {
+      "name": "Snack",
+      "time": "6:00 PM",
+      "calories": 250,
+      "protein_g": 20,
+      "carbs_g": 25,
+      "fat_g": 7,
+      "foods": ["Cottage cheese 150g", "Apple 1 medium (180g)", "Almonds 20g"]
+    },
+    {
+      "name": "Dinner",
+      "time": "8:00 PM",
+      "calories": 300,
+      "protein_g": 35,
+      "carbs_g": 20,
+      "fat_g": 10,
+      "foods": ["Turkey breast 180g", "Steamed vegetables 200g", "Olive oil 10g"]
     }
   ],
-  "water_glasses": 8,
-  "notes": "personalized advice"
+  "notes": "Personalized advice based on your goal and coach philosophy"
 }`;
 
   return generateJsonFromPrompt(prompt, 4096, { timeoutMs: PLAN_GENERATION_TIMEOUT_MS });
