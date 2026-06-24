@@ -13,10 +13,10 @@ const TRAINING_ENV_ICONS = [
 const PLANS = [
   { id: 'workout', title: 'Workout Plan', sub: 'Your weekly program', path: '/workout-plan',
     svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>,
-    bgColor: 'rgba(204,255,0,0.1)', borderColor: 'rgba(204,255,0,0.18)', iconColor: '#CCFF00' },
+    bgColor: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.35)', iconColor: '#CCFF00' },
   { id: 'nutrition', title: 'Nutrition Plan', sub: 'Meals & macros', path: '/plan/nutrition',
     svg: <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>,
-    bgColor: 'rgba(255,165,60,0.1)', borderColor: 'rgba(255,165,60,0.18)', iconColor: '#FFA53C' },
+    bgColor: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.35)', iconColor: '#FFA53C' },
 ];
 
 export default function Home() {
@@ -68,7 +68,7 @@ export default function Home() {
 
       {/* Daily Dopamine Shot */}
       <div className="mx-[18px] mb-4 rounded-[20px] border p-3.5 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-all"
-        style={{ background: 'rgba(255,255,255,0.025)', borderColor: 'rgba(255,255,255,0.07)', boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}
+        style={{ background: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.07)', boxShadow: '0 4px 16px rgba(0,0,0,0.3)' }}
         onClick={() => navigate('/desk-break/1')}>
         <div className="w-10 h-10 rounded-[12px] flex items-center justify-center flex-shrink-0"
           style={{ background: 'rgba(204,255,0,0.12)', border: '1px solid rgba(204,255,0,0.25)' }}>
@@ -88,8 +88,8 @@ export default function Home() {
       {/* Rings */}
       <div className="px-[18px] grid grid-cols-2 gap-3 mb-5">
         {/* Streak Ring */}
-        <div className="bg-[#131313] border border-white/[0.07] rounded-[28px] px-3 py-5 flex flex-col items-center gap-2 relative overflow-hidden"
-          style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)' }}>
+        <div className="rounded-[28px] px-3 py-5 flex flex-col items-center gap-2 relative overflow-hidden"
+          style={{ background: 'rgba(255,255,255,0.28)', border: '1px solid rgba(255,255,255,0.35)', boxShadow: '6px 6px 16px rgba(0,0,0,0.6)' }}>
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#CCFF00]/20 to-transparent" />
           <p className="text-[9px] tracking-[2.5px] text-white/40 uppercase font-bold">Day Streak</p>
           <div className="relative w-[100px] h-[100px]">
@@ -107,8 +107,8 @@ export default function Home() {
         </div>
 
         {/* Endo Score Ring */}
-        <div className="bg-[#131313] border border-white/[0.07] rounded-[28px] px-3 py-5 flex flex-col items-center gap-2 relative overflow-hidden"
-          style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)' }}>
+        <div className="rounded-[28px] px-3 py-5 flex flex-col items-center gap-2 relative overflow-hidden"
+          style={{ background: 'rgba(255,255,255,0.28)', border: '1px solid rgba(255,255,255,0.35)', boxShadow: '6px 6px 16px rgba(0,0,0,0.6)' }}>
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#CCFF00]/20 to-transparent" />
           <p className="text-[9px] tracking-[2.5px] text-white/40 uppercase font-bold">Endo Score</p>
           <div className="relative w-[100px] h-[100px]">
@@ -189,7 +189,7 @@ export default function Home() {
           onClick={() => navigate('/gym')}
           onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate('/gym'); }}
           style={{
-            background: 'rgba(255,255,255,0.04)',
+            background: 'rgba(255,255,255,0.12)',
             border: '0.5px solid rgba(255,255,255,0.12)',
             borderRadius: '20px',
             padding: '20px',
