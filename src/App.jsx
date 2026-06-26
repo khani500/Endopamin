@@ -28,6 +28,7 @@ const NutritionPlanPage = lazy(() => import('./features/nutrition/pages/Nutritio
 const NutritionCoachPage = lazy(() => import('./features/nutrition/pages/NutritionCoachPage'));
 const ProSuccessPage = lazy(() => import('./pages/ProSuccessPage'));
 const ProCancelPage = lazy(() => import('./pages/ProCancelPage'));
+const UpgradePage = lazy(() => import('./pages/UpgradePage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 
@@ -158,6 +159,7 @@ function App() {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/pro-success" element={<ProSuccessPage />} />
           <Route path="/pro-cancel" element={<ProCancelPage />} />
+          <Route path="/upgrade" element={<UpgradePage />} />
           <Route path="/" element={<ProtectedRoute><RootRedirect /></ProtectedRoute>} />
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
           <Route path="/coach" element={<ProtectedRoute><CoachPage /></ProtectedRoute>} />
