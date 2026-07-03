@@ -17,6 +17,10 @@ async function buffer(readable) {
   return Buffer.concat(chunks);
 }
 
+function isValidUuid(value) {
+  return typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
 async function findUserIdByEmail(supabase, email) {
   if (!email) return null;
 
@@ -125,6 +129,28 @@ export default async function handler(req, res) {
       return;
     }
 
+    const resolvedCustomerId = customerId || subscription.customer;
+    if (resolvedCustomerId) {
+      const { data: profile, error: profileFetchError } = await supabase
+        .from('profiles')
+        .select('stripe_customer_id')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (profileFetchError) {
+        console.error('Failed to fetch profile for stripe_customer_id check:', profileFetchError.message);
+      } else if (profile && !profile.stripe_customer_id) {
+        const { error: customerIdError } = await supabase
+          .from('profiles')
+          .update({ stripe_customer_id: resolvedCustomerId })
+          .eq('id', userId);
+
+        if (customerIdError) {
+          console.error('Failed to set stripe_customer_id on profile:', customerIdError.message);
+        }
+      }
+    }
+
     console.log(`Activating Pro for user ${userId}`);
 
     const plan = subscription.metadata?.plan;
@@ -169,7 +195,7 @@ export default async function handler(req, res) {
     if (session.subscription) {
       const subscription = await stripe.subscriptions.retrieve(session.subscription);
       await activateProFromSubscription(subscription, session.customer, {
-        userId: session.metadata?.userId,
+        userId: session.metadata?.userId || (isValidUuid(session.client_reference_id) ? session.client_reference_id : undefined),
         customerEmail: session.customer_details?.email || session.customer_email,
       });
     } else {
