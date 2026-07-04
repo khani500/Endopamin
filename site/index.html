@@ -15,6 +15,9 @@
 <meta name="twitter:title" content="Endopamin — AI Fitness Coach | Workouts, Nutrition &amp; Recovery" />
 <meta name="twitter:description" content="Endopamin is your AI fitness coach. Five elite coaches, personalized workouts and nutrition plans that adapt to you — at the gym, at home, or at your desk." />
 <meta name="twitter:image" content="https://endopamin.com/images/site.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root{
     --bg:#040404; --lime:#CCFF00; --cyan:#36E0C8; --violet:#A064FF; --orange:#FFA53C; --pink:#FF4DBA;
@@ -224,28 +227,25 @@
   #proof .proof-cap{text-align:center; font-size:14px; color:var(--muted); margin-top:24px}
 
   /* pricing */
+  #pricing{font-family:"DM Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   #pricing .inner{text-align:center}
-  .price-grid{display:flex; gap:24px; margin-top:48px; max-width:960px; width:100%; margin-left:auto; margin-right:auto; align-items:stretch}
-  @media(max-width:680px){.price-grid{flex-direction:column}}
+  #pricing h2{font-family:"Bebas Neue",Impact,sans-serif; font-size:clamp(42px,7vw,72px); letter-spacing:1px; font-weight:400}
+  .price-feats-shared{list-style:none; text-align:left; max-width:520px; width:100%; margin:32px auto 0; display:grid; gap:12px; padding:0}
+  .price-feats-shared li{font-size:15px; color:#e3e8d8; display:flex; gap:12px; align-items:flex-start; line-height:1.5}
+  .price-feats-shared li::before{content:"✓"; color:var(--lime); font-weight:800; flex:none; margin-top:1px}
+  .price-grid{display:flex; gap:24px; margin-top:40px; max-width:720px; width:100%; margin-left:auto; margin-right:auto; align-items:stretch}
+  @media(max-width:680px){.price-grid{flex-direction:column; max-width:360px}}
   .price-grid-cell{flex:1 1 0; min-width:0; display:flex}
-  #pricing .price-card{padding:34px 28px; text-align:center; display:flex; flex-direction:column; align-items:stretch; flex:1 1 auto; min-width:0; width:100%; box-sizing:border-box; border-radius:20px; border:2px solid rgba(204,255,0,0.45); background:rgba(8,10,6,.55); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); box-shadow:inset 0 0 24px rgba(204,255,0,.05)}
-  #pricing .price-card.featured{border-color:rgba(204,255,0,0.45); box-shadow:inset 0 0 24px rgba(204,255,0,.05)}
-  .price-card-head{display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:100%}
-  .price-card .badge-spacer{min-height:24px; margin-bottom:14px}
-  .price-card .plan{font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--lime); font-weight:800; margin-bottom:18px}
-  .price-card .amount{font-size:clamp(36px,6vw,48px); font-weight:800; letter-spacing:-1px; line-height:1}
-  .price-card .period{font-size:14px; color:var(--muted); margin-top:6px}
-  .price-card .equiv{font-size:13px; color:var(--muted); margin-top:10px; min-height:20px; line-height:1.4; width:100%}
-  .price-card .badge{font-size:10px; font-weight:800; letter-spacing:1px; color:var(--lime); background:transparent; border:1px solid rgba(204,255,0,0.55); border-radius:20px; padding:5px 12px; margin-bottom:14px}
-  .price-feats{list-style:none; text-align:left; width:100%; margin-top:24px; flex:1 1 auto; display:flex; flex-direction:column; gap:11px; padding:0; min-height:0; min-width:0}
-  .price-feats li{font-size:13px; color:#c4cab6; display:flex; gap:10px; align-items:flex-start; line-height:1.5; min-width:0; overflow-wrap:break-word}
-  .price-feats li::before{content:"✓"; color:var(--lime); font-weight:800; flex:none; margin-top:1px}
-  .price-feats li.highlight{color:#c4cab6; font-weight:700; margin-top:4px}
-  .price-feats li.feat-fill{flex:1 1 auto; min-height:28px; margin:0; padding:0}
-  .price-feats li.feat-fill::before{content:none}
-  .price-cta{display:block; margin-top:auto; flex-shrink:0; width:100%; background:var(--lime); color:#0a0a0a; text-decoration:none; font-weight:800; font-size:15px; border-radius:14px; padding:14px 24px; transition:transform .18s, box-shadow .2s; box-shadow:0 10px 36px -12px rgba(204,255,0,.55)}
+  #pricing .price-card{padding:34px 28px; text-align:center; display:flex; flex-direction:column; align-items:stretch; flex:1 1 auto; min-width:0; width:100%; min-height:280px; box-sizing:border-box; border-radius:20px; border:2px solid var(--lime); background:rgba(10,10,10,.85); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px)}
+  .price-card-head{display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:100%; flex:1 1 auto}
+  .price-card .badge-spacer{min-height:32px; margin-bottom:12px}
+  .price-card .plan{font-size:12px; letter-spacing:2.5px; text-transform:uppercase; color:var(--lime); font-weight:700; margin-bottom:16px}
+  .price-card .amount{font-size:clamp(40px,6vw,52px); font-weight:700; letter-spacing:-1px; line-height:1; color:var(--fg)}
+  .price-card .period{font-size:14px; color:var(--muted); margin-top:8px}
+  .price-card .badge{font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#0A0A0A; background:var(--lime); border:2px solid var(--lime); border-radius:20px; padding:6px 14px; margin-bottom:12px}
+  .price-cta{display:block; margin-top:28px; flex-shrink:0; width:100%; background:var(--lime); color:#0A0A0A; text-decoration:none; font-weight:700; font-size:15px; border-radius:14px; padding:14px 24px; border:2px solid var(--lime); transition:transform .18s, box-shadow .2s; box-shadow:0 10px 36px -12px rgba(204,255,0,.55)}
   .price-cta:hover{transform:translateY(-3px); box-shadow:0 14px 44px -10px rgba(204,255,0,.7)}
-  .price-note{font-size:12px; color:var(--muted); margin-top:28px; max-width:480px; margin-left:auto; margin-right:auto}
+  .price-note{font-size:14px; color:var(--muted); margin-top:28px}
 
   /* download */
   .download{text-align:center}
@@ -555,52 +555,43 @@
     <!-- PRICING -->
     <section id="pricing">
       <div class="inner">
-        <div class="eyebrow reveal" style="justify-content:center">Pro access</div>
-        <h2 class="reveal d1">GO PRO</h2>
-        <p class="lead glass reveal d2" style="margin-left:auto;margin-right:auto">Unlock all coaches, unlimited AI chats, and full nutrition plans.</p>
+        <h2 class="reveal d1">Endopamin Pro</h2>
+        <ul class="price-feats-shared reveal d2">
+          <li>All 5 AI Coaches</li>
+          <li>Unlimited coaching chat</li>
+          <li>Personalized workout plans (gym or home)</li>
+          <li>Weekly auto-updated plans</li>
+          <li>Custom nutrition &amp; macros</li>
+          <li>Food scanner &amp; calorie logging</li>
+          <li>Voice coach — step by step with you during your workout</li>
+          <li>Full progress tracking</li>
+          <li>Apple Health sync</li>
+        </ul>
         <div class="price-grid reveal d2">
           <div class="price-grid-cell">
-          <div class="price-card">
-            <div class="price-card-head">
-              <div class="badge-spacer" aria-hidden="true"></div>
-              <div class="plan">Monthly</div>
-              <div class="amount">$17.99</div>
-              <div class="period">per month</div>
-              <div class="equiv" aria-hidden="true">&nbsp;</div>
+            <div class="price-card">
+              <div class="price-card-head">
+                <div class="badge-spacer" aria-hidden="true"></div>
+                <div class="plan">Monthly</div>
+                <div class="amount">$17.99</div>
+                <div class="period">per month</div>
+              </div>
+              <a class="price-cta" href="https://buy.stripe.com/6oU7sL7Rh0VvafQ5Iof7i00" target="_blank" rel="noopener">Start Monthly</a>
             </div>
-            <ul class="price-feats">
-              <li>All 5 AI coaches unlocked</li>
-              <li>Unlimited coach conversations</li>
-              <li>Personalized weekly workout plans</li>
-              <li>Full nutrition plans and food scanner</li>
-              <li>Progress tracking and PRs</li>
-              <li class="feat-fill" aria-hidden="true"></li>
-            </ul>
-            <a class="price-cta" href="https://buy.stripe.com/6oU7sL7Rh0VvafQ5Iof7i00" target="_blank" rel="noopener">Start Monthly</a>
-          </div>
           </div>
           <div class="price-grid-cell">
-          <div class="price-card featured">
-            <div class="price-card-head">
-              <div class="badge">SAVE 33%</div>
-              <div class="plan">Yearly</div>
-              <div class="amount">$143.99</div>
-              <div class="period">per year</div>
-              <div class="equiv">$12.00/month, billed annually</div>
+            <div class="price-card">
+              <div class="price-card-head">
+                <div class="badge">Best Value</div>
+                <div class="plan">Yearly</div>
+                <div class="amount">$143.99</div>
+                <div class="period">per year</div>
+              </div>
+              <a class="price-cta" href="https://buy.stripe.com/00w8wP2wXaw55ZA6Msf7i01" target="_blank" rel="noopener">Start Yearly</a>
             </div>
-            <ul class="price-feats">
-              <li>All 5 AI coaches unlocked</li>
-              <li>Unlimited coach conversations</li>
-              <li>Personalized weekly workout plans</li>
-              <li>Full nutrition plans and food scanner</li>
-              <li>Progress tracking and PRs</li>
-              <li class="highlight">4 months free vs monthly</li>
-            </ul>
-            <a class="price-cta" href="https://buy.stripe.com/00w8wP2wXaw55ZA6Msf7i01" target="_blank" rel="noopener">Start Yearly</a>
-          </div>
           </div>
         </div>
-        <p class="price-note reveal d3">Cancel anytime. Payments processed securely via Stripe.</p>
+        <p class="price-note reveal d3">Cancel anytime</p>
       </div>
     </section>
 
