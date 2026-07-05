@@ -178,6 +178,7 @@ function App() {
           <Route path="/exercises" element={<ExerciseLibrary />} />
           <Route path="/exercises/:id" element={<ExerciseLibrary />} />
           <Route path="/workout/:type" element={<ProtectedRoute><WorkoutSession /></ProtectedRoute>} />
+          <Route path="/workout-session" element={<ProtectedRoute><WorkoutSession /></ProtectedRoute>} />
           <Route path="/plan/workout" element={<ProtectedRoute><WorkoutSession planMode /></ProtectedRoute>} />
           <Route path="/workout-plan" element={<ProtectedRoute><WorkoutPlanPage /></ProtectedRoute>} />
           <Route path="/plan/nutrition" element={<ProtectedRoute><ErrorBoundary label="Nutrition plan shortcut"><NutritionPlanPage /></ErrorBoundary></ProtectedRoute>} />

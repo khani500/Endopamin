@@ -312,10 +312,27 @@ export default function WorkoutPlanPage() {
 
   const days = plan?.days || [];
   const isPro = authProfile?.is_pro === true;
-  const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  const todayName = "Monday"; // TEMP TEST — revert after testing
   const todayIndex = days.findIndex(d => d.day === todayName);
+  const todayDay = todayIndex >= 0 ? days[todayIndex] : null;
+  const isTodayTraining = todayDay?.type !== 'rest';
   const firstTrainingIndex = days.findIndex(d => d.type !== 'rest');
   const unlockedIndex = (todayIndex !== -1 && days[todayIndex]?.type !== 'rest') ? todayIndex : firstTrainingIndex;
+
+  function isDayLocked(dayIndex, day) {
+    return !isPro && dayIndex !== unlockedIndex && day?.type !== 'rest';
+  }
+
+  function startWorkoutSession(day, dayIndex) {
+    if (isDayLocked(dayIndex, day) || day?.type === 'rest' || !day?.exercises?.length) return;
+    navigate('/workout-session', {
+      state: {
+        exercises: day.exercises,
+        dayName: day.day,
+        focus: day.focus,
+      },
+    });
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "sans-serif", paddingBottom: "100px" }}>
@@ -346,8 +363,28 @@ export default function WorkoutPlanPage() {
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {isTodayTraining && todayDay?.exercises?.length > 0 && (
+              <button
+                type="button"
+                onClick={() => startWorkoutSession(todayDay, todayIndex)}
+                style={{
+                  width: "100%",
+                  background: "#CCFF00",
+                  color: "#0A0A0A",
+                  border: "none",
+                  borderRadius: 14,
+                  padding: "16px",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  letterSpacing: "0.04em",
+                }}
+              >
+                START TODAY&apos;S WORKOUT
+              </button>
+            )}
             {days.map((d, i) => {
-              const locked = !isPro && i !== unlockedIndex && d.type !== 'rest';
+              const locked = isDayLocked(i, d);
               return (
                 <div
                   key={i}
@@ -364,7 +401,29 @@ export default function WorkoutPlanPage() {
                         <span style={{ color: "#555", fontSize: 12, marginLeft: 8 }}>— {d.focus}</span>
                       </div>
                     </div>
-                    <span style={{ color: ACTIVE_DAY_COLOR, fontSize: 14 }}>{locked ? "🔒" : activeDay === i ? "▲" : "▼"}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      {!locked && d.type !== "rest" && d.exercises?.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startWorkoutSession(d, i);
+                          }}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: ACTIVE_DAY_COLOR,
+                            fontSize: 13,
+                            fontWeight: 700,
+                            cursor: "pointer",
+                            padding: "4px 0",
+                          }}
+                        >
+                          Start →
+                        </button>
+                      )}
+                      <span style={{ color: ACTIVE_DAY_COLOR, fontSize: 14 }}>{locked ? "🔒" : activeDay === i ? "▲" : "▼"}</span>
+                    </div>
                   </div>
 
                   {!locked && activeDay === i && d.exercises?.length > 0 && (

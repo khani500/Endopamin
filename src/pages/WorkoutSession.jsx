@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -80,15 +80,48 @@ function calcWorkoutXp(setsCompleted, totalSets) {
   return setXp + bonus;
 }
 
+function normalizePlanExercise(ex) {
+  const setsRaw = ex.sets;
+  const sets = typeof setsRaw === 'number' ? setsRaw : (parseInt(String(setsRaw), 10) || 1);
+  const restRaw = ex.rest;
+  let rest = 0;
+  if (typeof restRaw === 'number') {
+    rest = restRaw;
+  } else if (restRaw) {
+    const parsed = parseInt(String(restRaw).replace(/\D/g, ''), 10);
+    rest = Number.isNaN(parsed) ? DEFAULT_REST_SECONDS : parsed;
+  }
+  return {
+    name: ex.name,
+    sets,
+    reps: String(ex.reps ?? ''),
+    rest,
+    muscle: ex.muscle || 'general',
+    emoji: ex.emoji || '🏋️',
+    tip: ex.tip || 'Focus on controlled form throughout the set.',
+  };
+}
+
 export default function WorkoutSession({ planMode = false }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { type } = useParams();
   const { user, profile, setProfile } = useAuth();
   const { coach, speak } = useCoach();
   const { updateStreak } = useStreak();
 
+  const planState = location.state;
+  const hasPlanExercises = Array.isArray(planState?.exercises) && planState.exercises.length > 0;
+
   const sessionType = planMode ? 'strength' : (type || 'strength').toLowerCase();
-  const session = WORKOUT_SESSIONS[sessionType] || WORKOUT_SESSIONS.strength;
+  const defaultSession = WORKOUT_SESSIONS[sessionType] || WORKOUT_SESSIONS.strength;
+  const session = hasPlanExercises
+    ? {
+        title: [planState.dayName, planState.focus].filter(Boolean).join(' · ') || defaultSession.title,
+        duration: defaultSession.duration,
+        exercises: planState.exercises.map(normalizePlanExercise),
+      }
+    : defaultSession;
 
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [setIndex, setSetIndex] = useState(0);
