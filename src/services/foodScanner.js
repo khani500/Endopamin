@@ -1,4 +1,5 @@
 import { searchFoodDatabase, macrosForGrams } from '../data/foodDatabase.js';
+import { getAuthHeaders } from '../lib/gemini.js';
 
 export async function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
@@ -728,7 +729,7 @@ async function callGeminiVision({
   let response = await fetch('/api/gemini', {
     method: 'POST',
     signal,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
     body: JSON.stringify(body),
   });
 
@@ -737,7 +738,7 @@ async function callGeminiVision({
     response = await fetch('/api/gemini', {
       method: 'POST',
       signal,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
       body: JSON.stringify(body),
     });
   }
