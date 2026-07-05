@@ -172,11 +172,18 @@ export const AuthProvider = ({ children }) => {
       const sessionId = params.get('session_id');
       if (sessionId) {
         try {
-          await fetch('/api/activate-pro-from-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId, userId: user.id }),
-          });
+          const { data: sessionData } = await supabase.auth.getSession();
+          const accessToken = sessionData?.session?.access_token;
+          if (accessToken) {
+            await fetch('/api/activate-pro-from-session', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+              },
+              body: JSON.stringify({ sessionId }),
+            });
+          }
         } catch (err) {
           console.error('Failed to activate Pro from checkout session:', err);
         }
