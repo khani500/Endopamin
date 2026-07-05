@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-const GEMINI_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const GEMINI_KEY = process.env.GEMINI_API_KEY;
 
 const COACH_PERSONALITIES = {
   kane: 'Harsh drill sergeant. Military tone. No sympathy. Very short commands.',
@@ -149,6 +149,12 @@ async function sendFCM(token, title, body, accessToken, projectId) {
 }
 
 export default async function handler(req, res) {
+  const cronSecret = process.env.CRON_SECRET;
+  const authHeader = req.headers.authorization || '';
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
     const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || '{}');
     const projectId = sa.project_id;
