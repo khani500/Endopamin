@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabase';
 
 const FEATURES = [
   'All 5 AI Coaches',
@@ -40,14 +41,21 @@ export function ProPaywall({ featureName: _featureName = 'This feature', isVisib
         ? import.meta.env.VITE_STRIPE_PRICE_YEARLY
         : import.meta.env.VITE_STRIPE_PRICE_MONTHLY;
 
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      if (!accessToken) {
+        console.error('No access token available for checkout');
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          priceId,
-          userId: user?.id,
-          email: user?.email,
-        }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ priceId }),
       });
 
       const data = await response.json();
