@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 
-const DELETE_ACCOUNT_API_URL = 'https://endopamin.vercel.app/api/delete-account';
+const DELETE_ACCOUNT_API_URL = 'https://app.endopamin.com/api/delete-account';
 
 export async function deleteUserAccount(userId) {
   const { data: { session } } = await supabase.auth.getSession();
