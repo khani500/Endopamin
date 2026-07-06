@@ -298,6 +298,15 @@ function getCoachVoiceName(coachId) {
   return COACH_NEURAL_VOICES[coachId] || DEFAULT_NEURAL_VOICE;
 }
 
+/** Installed PWA (Chrome/Android/iOS home screen) — not mobile WebView at app.endopamin.com. */
+function isStandalonePwa() {
+  if (typeof window === 'undefined') return false;
+  return Boolean(
+    window.matchMedia?.('(display-mode: standalone)')?.matches
+    || window.navigator.standalone,
+  );
+}
+
 async function getAuthHeaders() {
   try {
     const { data } = await supabase.auth.getSession();
@@ -308,33 +317,7 @@ async function getAuthHeaders() {
   }
 }
 
-function useTtsProxy() {
-  return typeof window !== 'undefined' && window.location.hostname !== 'localhost';
-}
-
-/** Production: authenticated /api/tts proxy. Local dev: direct Google TTS when key is set. */
-async function fetchCoachAudioContent(text, coachId, signal) {
-  const voiceName = getCoachVoiceName(coachId);
-
-  if (useTtsProxy()) {
-    const response = await fetch('/api/tts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-      body: JSON.stringify({ text, voiceName }),
-      signal,
-    });
-    const data = await response.json();
-    if (!response.ok || !data.audioContent) {
-      throw new Error(data.error?.message || 'TTS proxy did not return audio.');
-    }
-    return data.audioContent;
-  }
-
-  const apiKey = getTtsApiKey();
-  if (!apiKey) {
-    throw new Error('Google TTS API key missing');
-  }
-
+async function fetchDirectGoogleTts(text, voiceName, apiKey, signal) {
   const response = await fetch(`${TTS_ENDPOINT}?key=${apiKey}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -358,6 +341,100 @@ async function fetchCoachAudioContent(text, coachId, signal) {
     throw new Error(data.error?.message || 'Google TTS did not return audio.');
   }
   return data.audioContent;
+}
+
+async function fetchTtsProxy(text, voiceName, signal) {
+  const response = await fetch('/api/tts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
+    body: JSON.stringify({ text, voiceName }),
+    signal,
+  });
+  const data = await response.json();
+  if (!response.ok || !data.audioContent) {
+    throw new Error(data.error?.message || 'TTS proxy did not return audio.');
+  }
+  return data.audioContent;
+}
+
+/**
+ * Mobile path when VITE key is baked in; PWA without key uses /api/tts proxy.
+ * Non-PWA production (e.g. app.endopamin.com) keeps the mobile direct-TTS path.
+ */
+async function fetchCoachAudioContent(text, coachId, signal) {
+  const voiceName = getCoachVoiceName(coachId);
+  const apiKey = getTtsApiKey();
+
+  if (apiKey) {
+    return fetchDirectGoogleTts(text, voiceName, apiKey, signal);
+  }
+
+  const isLocal = typeof window === 'undefined' || window.location.hostname === 'localhost';
+  if (isLocal) {
+    throw new Error('Google TTS API key missing');
+  }
+
+  return fetchTtsProxy(text, voiceName, signal);
+}
+
+function playCoachAudioWithHtml5(audioContent, { signal, onEnd, playGeneration } = {}) {
+  return new Promise((resolve, reject) => {
+    const bytes = base64ToArrayBuffer(audioContent);
+    const blob = new Blob([bytes], { type: 'audio/mpeg' });
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    let settled = false;
+
+    const cleanup = () => {
+      URL.revokeObjectURL(url);
+      signal?.removeEventListener('abort', onAbort);
+    };
+
+    const finish = () => {
+      restoreBackgroundAudio();
+      if (settled) return;
+      settled = true;
+      cleanup();
+      if (playGeneration !== playbackGeneration) {
+        resolve();
+        return;
+      }
+      if (coachAudioRef.current === audio) coachAudioRef.current = null;
+      onEnd?.();
+      resolve();
+    };
+
+    const onAbort = () => {
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+      } catch {
+        // ignore
+      }
+      restoreBackgroundAudio();
+      if (coachAudioRef.current === audio) coachAudioRef.current = null;
+      cleanup();
+      reject(new DOMException('Aborted', 'AbortError'));
+    };
+
+    duckBackgroundAudio();
+    coachAudioRef.current = audio;
+    signal?.addEventListener('abort', onAbort, { once: true });
+    audio.onended = finish;
+    audio.onerror = () => {
+      restoreBackgroundAudio();
+      if (coachAudioRef.current === audio) coachAudioRef.current = null;
+      cleanup();
+      reject(new Error('HTML5 audio playback failed'));
+    };
+
+    void audio.play().catch(err => {
+      restoreBackgroundAudio();
+      if (coachAudioRef.current === audio) coachAudioRef.current = null;
+      cleanup();
+      reject(err);
+    });
+  });
 }
 
 /** Immediately stop any coach audio (HTML5 + browser TTS fallback). */
@@ -467,6 +544,16 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
 
   stopCoachAudio();
   const playGeneration = playbackGeneration;
+
+  if (isStandalonePwa()) {
+    try {
+      await playCoachAudioWithHtml5(audioContent, { signal, onEnd, playGeneration });
+      return;
+    } catch (err) {
+      if (err?.name === 'AbortError') throw err;
+      console.warn('PWA HTML5 audio failed, trying AudioContext:', err?.message || err);
+    }
+  }
 
   const context = await resumeAudioContextOnUserGesture();
   // If AudioContext is missing or not running (PWA background/foreground switch), fall back immediately
