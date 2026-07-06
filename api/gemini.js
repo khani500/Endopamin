@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js';
 import { checkRateLimit } from './_rateLimit.js';
 
 export const config = {
@@ -37,6 +38,21 @@ export default async function handler(req, res) {
   const allowed = await checkRateLimit(req, res, { name: 'gemini', max: 20, windowSec: 60 });
   if (!allowed) return;
 
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!token) {
+    return res.status(401).json({ error: 'Missing access token' });
+  }
+  const supabaseAdmin = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  );
+  const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(token);
+  if (userErr || !userData || !userData.user) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+
   const contentLength = Number(req.headers['content-length'] || 0);
   if (contentLength > MAX_BODY_BYTES) {
     return res.status(413).json({
@@ -74,6 +90,10 @@ export default async function handler(req, res) {
       maxBytes: MAX_BODY_BYTES,
       estimatedBytes,
     });
+  }
+
+  if (body.generationConfig && typeof body.generationConfig.maxOutputTokens === 'number' && body.generationConfig.maxOutputTokens > 8192) {
+    body.generationConfig.maxOutputTokens = 8192;
   }
 
   const {

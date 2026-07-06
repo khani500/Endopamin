@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js';
 import { checkRateLimit } from './_rateLimit.js';
 
 export default async function handler(req, res) {
@@ -6,6 +7,21 @@ export default async function handler(req, res) {
   }
   const allowed = await checkRateLimit(req, res, { name: 'tts', max: 30, windowSec: 60 });
   if (!allowed) return;
+
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!token) {
+    return res.status(401).json({ error: 'Missing access token' });
+  }
+  const supabaseAdmin = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  );
+  const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(token);
+  if (userErr || !userData || !userData.user) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
 
   const TTS_API_KEY = process.env.VITE_GOOGLE_TTS_API_KEY
     || process.env.GOOGLE_TTS_API_KEY
@@ -20,6 +36,10 @@ export default async function handler(req, res) {
   const trimmed = String(text || '').trim();
   if (!trimmed) {
     return res.status(400).json({ error: 'text is required' });
+  }
+
+  if (trimmed.length > 5000) {
+    return res.status(400).json({ error: 'text exceeds 5000 character limit' });
   }
 
   try {

@@ -3,6 +3,16 @@ import { TRAINING_KNOWLEDGE } from '../data/trainingKnowledge';
 import { supabase } from './supabase';
 import { getPlanProgressSummary, buildProgressPrompt } from './planMemory';
 
+export async function getAuthHeaders() {
+  try {
+    const { data } = await supabase.auth.getSession();
+    const token = data?.session?.access_token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}
+
 const BEGINNER_FORBIDDEN_RULES =
   'FORBIDDEN exercises for beginners: barbell squat, goblet squat, deadlift, barbell bench press, overhead press, pull-ups. Always use NASM progression alternatives.';
 
@@ -161,7 +171,7 @@ async function generateContent({ prompt, systemPrompt = '', generationConfig = {
 
   const response = await fetch(endpoint(), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
     body: JSON.stringify(buildRequestPayload(body)),
     signal,
   });
@@ -194,7 +204,7 @@ async function generateChatContent({ contents, systemPrompt = '', signal } = {})
     // fix: always use Vercel proxy in production (fixes Safari iOS CORS block)
     response = await fetch('/api/gemini', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
       body: JSON.stringify({
         model: GEMINI_MODEL,
         action: 'generateContent',
@@ -205,7 +215,7 @@ async function generateChatContent({ contents, systemPrompt = '', signal } = {})
   } else {
     response = await fetch(endpoint(), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
       body: JSON.stringify(buildRequestPayload(body)),
       signal,
     });
@@ -250,7 +260,7 @@ async function generateAudioContent({ audioBase64, mimeType, prompt }) {
 
   const response = await fetch(endpoint(), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
     body: JSON.stringify(buildRequestPayload(body)),
   });
   const data = await response.json();
@@ -346,7 +356,7 @@ export async function askGeminiChatStream({
 
   const response = await fetch(streamEndpoint(), {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
     body: JSON.stringify(buildRequestPayload(body, 'streamGenerateContent', { stream: true })),
     signal,
   });
@@ -427,14 +437,14 @@ export const askGeminiWithImage = async (base64Image, prompt) => {
     if (isProduction) {
       response = await fetch('/api/gemini', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
         body: JSON.stringify({ ...body, model: 'gemini-2.5-flash', action: 'generateContent' }),
       });
     } else {
       if (!GEMINI_API_KEY) return null;
       response = await fetch(endpoint(), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
         body: JSON.stringify(body),
       });
     }
@@ -543,7 +553,7 @@ FORMAT:
 
   const response = await fetch('/api/gemini', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
     body: JSON.stringify({
       model: 'gemini-2.5-flash',
       action: 'generateContent',

@@ -3,6 +3,8 @@
  * Output shape matches NutritionHub scan results: { items[], total, confidence }.
  */
 
+import { getAuthHeaders } from '../lib/gemini.js';
+
 const OFF_TIMEOUT_MS = 8000;
 const OFF_HEADERS = {
   Accept: 'application/json',
@@ -234,7 +236,7 @@ export async function fetchFromGeminiFallback(barcode, { signal } = {}) {
   const response = await fetch('/api/gemini', {
     method: 'POST',
     signal,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
     body: JSON.stringify(body),
   });
 
