@@ -1,3 +1,5 @@
+import { supabase } from './supabase';
+
 const TTS_ENDPOINT = 'https://texttospeech.googleapis.com/v1/text:synthesize';
 
 /** iOS Safari stops SpeechRecognition after the first session unless recreated. */
@@ -296,6 +298,68 @@ function getCoachVoiceName(coachId) {
   return COACH_NEURAL_VOICES[coachId] || DEFAULT_NEURAL_VOICE;
 }
 
+async function getAuthHeaders() {
+  try {
+    const { data } = await supabase.auth.getSession();
+    const token = data?.session?.access_token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}
+
+function useTtsProxy() {
+  return typeof window !== 'undefined' && window.location.hostname !== 'localhost';
+}
+
+/** Production: authenticated /api/tts proxy. Local dev: direct Google TTS when key is set. */
+async function fetchCoachAudioContent(text, coachId, signal) {
+  const voiceName = getCoachVoiceName(coachId);
+
+  if (useTtsProxy()) {
+    const response = await fetch('/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
+      body: JSON.stringify({ text, voiceName }),
+      signal,
+    });
+    const data = await response.json();
+    if (!response.ok || !data.audioContent) {
+      throw new Error(data.error?.message || 'TTS proxy did not return audio.');
+    }
+    return data.audioContent;
+  }
+
+  const apiKey = getTtsApiKey();
+  if (!apiKey) {
+    throw new Error('Google TTS API key missing');
+  }
+
+  const response = await fetch(`${TTS_ENDPOINT}?key=${apiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      input: { text },
+      voice: {
+        languageCode: 'en-US',
+        name: voiceName,
+      },
+      audioConfig: {
+        audioEncoding: 'MP3',
+        speakingRate: 1.0,
+        pitch: 0.0,
+      },
+    }),
+    signal,
+  });
+
+  const data = await response.json();
+  if (!response.ok || !data.audioContent) {
+    throw new Error(data.error?.message || 'Google TTS did not return audio.');
+  }
+  return data.audioContent;
+}
+
 /** Immediately stop any coach audio (HTML5 + browser TTS fallback). */
 export function stopCoachAudio() {
   playbackGeneration += 1;
@@ -384,38 +448,14 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
     throw new DOMException('Aborted', 'AbortError');
   }
 
-  const apiKey = getTtsApiKey();
-  if (!apiKey) {
-    console.warn('Google TTS API key missing — falling back to SpeechSynthesis');
-    await speakWithSpeechSynthesis(trimmed, signal);
-    onEnd?.();
-    return;
-  }
-
   const generation = playbackGeneration;
 
-  const response = await fetch(`${TTS_ENDPOINT}?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      input: { text: trimmed },
-      voice: {
-        languageCode: 'en-US',
-        name: getCoachVoiceName(coachId),
-      },
-      audioConfig: {
-        audioEncoding: 'MP3',
-        speakingRate: 1.0,
-        pitch: 0.0,
-      },
-    }),
-    signal,
-  });
-
-  const data = await response.json();
-  if (!response.ok || !data.audioContent) {
-    const errMsg = data.error?.message || 'Google TTS did not return audio.';
-    console.warn('Google TTS failed, falling back to SpeechSynthesis:', errMsg);
+  let audioContent;
+  try {
+    audioContent = await fetchCoachAudioContent(trimmed, coachId, signal);
+  } catch (err) {
+    if (err?.name === 'AbortError') throw err;
+    console.warn('Coach TTS failed, falling back to SpeechSynthesis:', err?.message || err);
     await speakWithSpeechSynthesis(trimmed, signal);
     onEnd?.();
     return;
@@ -463,7 +503,7 @@ export async function playCoachAudio(text, coachId = 'aria', { signal, onEnd } =
     Promise.resolve()
       .then(async () => {
         duckBackgroundAudio();
-        const audioBuffer = await context.decodeAudioData(base64ToArrayBuffer(data.audioContent));
+        const audioBuffer = await context.decodeAudioData(base64ToArrayBuffer(audioContent));
         if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
         const coachGain = context.createGain();
