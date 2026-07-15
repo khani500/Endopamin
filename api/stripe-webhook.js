@@ -228,6 +228,39 @@ export default async function handler(req, res) {
     }
   }
 
+  if (event.type === 'customer.subscription.updated') {
+    const subscription = event.data.object;
+    const status = subscription.status;
+    const ACTIVE_STATUSES = ['active', 'trialing'];
+    const INACTIVE_STATUSES = ['past_due', 'unpaid', 'canceled', 'incomplete_expired'];
+
+    if (ACTIVE_STATUSES.includes(status)) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_pro: true })
+        .eq('stripe_subscription_id', subscription.id);
+      if (error) {
+        console.error('Failed to keep Pro active on subscription.updated:', error.message);
+        activationError = error;
+      } else {
+        console.log(`Pro kept active for subscription ${subscription.id} (status: ${status})`);
+      }
+    } else if (INACTIVE_STATUSES.includes(status)) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_pro: false })
+        .eq('stripe_subscription_id', subscription.id);
+      if (error) {
+        console.error('Failed to revoke Pro on subscription.updated:', error.message);
+        activationError = error;
+      } else {
+        console.log(`Pro revoked for subscription ${subscription.id} (status: ${status})`);
+      }
+    } else {
+      console.log(`subscription.updated for ${subscription.id} with status ${status} — no is_pro change`);
+    }
+  }
+
   return res.status(activationError ? 500 : 200).json({
     received: true,
     activated: !activationError,
