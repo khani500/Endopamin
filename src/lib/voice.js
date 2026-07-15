@@ -289,9 +289,7 @@ const COACH_NEURAL_VOICES = {
 };
 
 function getTtsApiKey() {
-  return import.meta.env.VITE_GOOGLE_TTS_API_KEY?.trim()
-    || import.meta.env.VITE_GEMINI_API_KEY?.trim()
-    || '';
+  return import.meta.env.VITE_GOOGLE_TTS_API_KEY?.trim() || '';
 }
 
 function getCoachVoiceName(coachId) {
