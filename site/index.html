@@ -81,13 +81,13 @@
   @keyframes beat{0%,100%{opacity:.55}50%{opacity:1}}
   .hero h1{font-size:clamp(54px,12vw,140px); line-height:.9; font-weight:800; font-style:italic; transform:skewX(-7deg);
     text-transform:uppercase; letter-spacing:-2px;
-    color:#FFFFFF; filter:drop-shadow(0 0 30px rgba(204,255,0,.3));
+    color:var(--lime); filter:drop-shadow(0 0 14px rgba(204,255,0,.18));
     opacity:0; animation:popIn 1s cubic-bezier(.2,.9,.25,1) 1.4s forwards}
   .hero h1 b{color:var(--lime)}
   @keyframes popIn{0%{opacity:0; transform:skewX(-7deg) translateY(28px) scale(.96)}100%{opacity:1; transform:skewX(-7deg) translateY(0) scale(1)}}
-  .hero .tag{margin-top:28px; font-size:clamp(17px,3vw,26px); color:#FFFFFF; font-weight:700; text-transform:uppercase; letter-spacing:2px; opacity:0; animation:fadeUp .9s ease 1.8s forwards}
+  .hero .tag{margin-top:28px; font-size:clamp(17px,3vw,26px); color:#FFFFFF; font-weight:700; text-transform:uppercase; letter-spacing:2px; text-shadow: 0 2px 18px rgba(0,0,0,0.85), 0 0 4px rgba(0,0,0,0.9); opacity:0; animation:fadeUp .9s ease 1.8s forwards}
   .hero .sub{margin-top:26px; max-width:540px; color:#c8ceba; font-size:clamp(14px,2vw,16px); line-height:1.7;
-    padding:16px 24px; opacity:0; animation:fadeUp .9s ease 1.95s forwards}
+    padding:16px 24px; text-shadow: 0 2px 14px rgba(0,0,0,0.8); opacity:0; animation:fadeUp .9s ease 1.95s forwards}
   .discover{margin-top:34px; font-size:13px; letter-spacing:1px; color:var(--muted); text-decoration:none;
     border:1px solid var(--line); border-radius:30px; padding:12px 24px; transition:border-color .2s,color .2s;
     opacity:0; animation:fadeUp .9s ease 2.1s forwards}
@@ -306,6 +306,7 @@
     <!-- HERO -->
     <header class="hero">
       <canvas id="endo-hero-bg" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+      <div style="position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 50%, rgba(4,4,4,0.55), rgba(4,4,4,0.15) 70%, transparent);z-index:0;pointer-events:none;"></div>
       <div class="hero-content">
         <h1><b>ENDO</b>PAMIN</h1>
         <p class="tag">MIND. BODY. DRIVE.</p>
@@ -551,7 +552,6 @@
           <div class="drive-tag">MIND. BODY. DRIVE.</div>
         </div>
 
-        <p class="vnote reveal">Live demo of the chemistry chart · your 60-second app tour video drops in here</p>
       </div>
     </section>
 
@@ -635,7 +635,7 @@
 
     <footer>
       <div class="fbrand"><b>ENDO</b>PAMIN</div>
-      <p>Harmonized Body &amp; Mind.</p>
+      <p>MIND. BODY. DRIVE.</p>
       <div style="margin-top:18px">
         <a href="#coach">Coach</a><a href="#nutrition">Nutrition</a><a href="#download">Download</a><a href="mailto:info@endopamin.com">Contact</a>
       </div>
