@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Articles — The Science of Movement & Motivation | Endopamin</title>
+<meta name="description" content="The science of motivation, dopamine, endorphins, training and habits — from the team building Endopamin, your AI fitness coach." />
+<link rel="canonical" href="https://endopamin.com/articles" />
+<meta property="og:title" content="Articles — The Science of Movement & Motivation | Endopamin" />
+<meta property="og:description" content="The science of motivation, dopamine, endorphins, training and habits — from the team building Endopamin." />
+<meta property="og:url" content="https://endopamin.com/articles" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://endopamin.com/images/site.png" />
+<meta name="twitter:card" content="summary_large_image"  rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/articles/article.css" />
+</head>
+<body>
+  <div class="aura"></div>
+
+  <nav>
+    <a href="/" class="brand"><b>ENDO</b>PAMIN</a>
+    <div class="navlinks">
+      <a href="/#coach">Coach</a>
+      <a href="/#nutrition">Nutrition</a>
+      <a href="/articles" class="active">Articles</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/#proof">Results</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="wrap">
+
+      <header class="list-hero">
+        <div class="eyebrow">Mind · Body · Drive</div>
+        <h1>THE <span class="lime">ENDOPAMIN</span> JOURNAL</h1>
+        <p>The science of motivation, movement and habit — and how to actually put it to work.</p>
+      </header>
+
+      <div class="filters" id="fis">
+        <button class="filter-tab active" data-filter="all">All</button>
+        <button class="filter-tab" data-filter="science">Science</button>
+        <button class="filter-tab" data-filter="fitness">Fitness</button>
+        <button class="filter-tab" data-filter="nutrition">Nutrition</button>
+        <button class="filter-tab" data-filter="mindset">Mindset</button>
+      </div>
+
+      <div class="artgrid" id="grid">
+
+        <a class="artcard" data-category="science" href="/articles/dopamine-vs-endorphins">
+          <img class="thumb" src="/articles/images/dopamine-vs-endorphins.png" alt="Dopamine and endorphins during cardio and strength training" />
+          <div class="body">
+            <div class="meta"><span class="pill">Science</span></div>
+            <h2>Dopamine vs. Endorphins: What Really Happens When You Exercise?</h2>
+            <p>How dopamine, endorphins, and other brain systems respond to cardio and strength training — and why it matters for motivation.</p>
+            <span cls="read">13 min read →</span>
+          </div>
+        </a>
+
+      </div>
+
+    </div>
+
+    <footer>
+      <div class="fbrand"><b>ENDO</b>PAMIN</div>
+      <p>MIND. BODY. DRIVE.</p>
+      <div class="flinks">
+        <a href="/#coach">Coach</a>
+        <a href="/#nutrition">Nutrition</a>
+        <a href="/#download">Download</a>
+        <a href="mailto:info@endopamin.com">Contact</a>
+      </div>
+      <div class="flinks">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/disclaimer.html">Disclaimer</a>
+      </div>
+      <p class="copy">© 2026 ENDOPAMIN LLC · endopamin.com</p>
+    </footer>
+  </div>
+
+  <script>
+    (function(){
+      var tabs = document.querySelectorAll('.filter-tab');
+      var cards = document.querySelectorAll('#grid .artcard');
+      tabs.forEach(function(tab){
+        tab.addEventListener('click', function(){
+          tabs.forEach(function(t){ t.classList.remove('active'); });
+          tab.classList.add('active');
+          var fab.getAttribute('data-filter');
+          cards.forEach(function(card){
+            var show = (f === 'all') || (card.getAttribute('data-category') === f);
+            card.style.display = show ? 'flex' : 'none';
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
