@@ -32,6 +32,7 @@
       <a href="/#pricing">Pricing</a>
       <a href="/#proof">Results</a>
     </div>
+    <button class="navtoggle" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </nav>
 
   <div class="page">
@@ -397,5 +398,19 @@
       <p class="copy">&copy; 2026 ENDOPAMIN LLC &middot; endopamin.com</p>
     </footer>
   </div>
+  <script>
+    (function(){
+      var nav=document.querySelector('nav'), t=document.querySelector('.navtoggle');
+      if(t&&nav){
+        t.addEventListener('click',function(){
+          var open=nav.classList.toggle('open');
+          t.setAttribute('aria-expanded', open?'true':'false');
+        });
+        nav.querySelectorAll('.navlinks a').forEach(function(a){
+          a.addEventListener('click',function(){nav.classList.remove('open'); t.setAttribute('aria-expanded','false');});
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

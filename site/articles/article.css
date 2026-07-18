@@ -241,3 +241,30 @@ footer .copy{margin-top:20px; font-size:12px; opacity:.6; letter-spacing:.04em}
 .art-figure{margin:34px 0; }
 .art-figure img{width:100%; aspect-ratio:2/1; object-fit:cover; border-radius:16px; border:1px solid var(--line); display:block}
 .art-figure figcaption{margin-top:10px; font-size:.82rem; color:var(--muted); text-align:center; letter-spacing:.01em; line-height:1.5}
+
+/* ============================================================
+   MOBILE MENU (hamburger) — shows under 720px
+   ============================================================ */
+.navtoggle{display:none; width:28px; height:22px; padding:0; margin:0; background:none; border:0; cursor:pointer; position:relative; z-index:60}
+.navtoggle span{display:block; position:absolute; left:0; height:2px; width:100%; background:var(--fg); border-radius:2px; transition:transform .3s ease, opacity .2s ease}
+.navtoggle span:nth-child(1){top:3px}
+.navtoggle span:nth-child(2){top:10px}
+.navtoggle span:nth-child(3){top:17px}
+nav.open .navtoggle span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+nav.open .navtoggle span:nth-child(2){opacity:0}
+nav.open .navtoggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media(max-width:720px){
+  .navtoggle{display:block}
+  .brand{position:relative; z-index:60}
+  .navlinks{
+    position:fixed; p:0; left:0; right:0;
+    flex-direction:column; align-items:flex-start; gap:0;
+    padding:78px 26px 28px;
+    background:rgba(6,6,6,.98); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    border-bottom:1px solid var(--line);
+    transform:translateY(-100%); transition:transform .35s ease;
+    display:flex; font-size:17px;
+  }
+  nav.open .navlinks{transform:translateY(0)}
+  .navlinks a{padding:15px 0; width:100%; border-bottom:1px solid rgba(255,255,255,.06); color:var(--fg)}
+}
