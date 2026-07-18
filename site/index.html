@@ -64,6 +64,7 @@
   nav.open .navtoggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
   @media(max-width:720px){
     .navtoggle{display:block}
+  nav,nav.scrolled{backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(6,6,6,.92)}
     .brand{position:relative; z-index:60}
     .navlinks{position:fixed; top:0; left:0; right:0; flex-direction:column; align-items:flex-start; gap:0; padding:78px 26px 28px; background:rgba(6,6,6,.98); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border-bottom:1px solid var(--line); transform:translateY(-100%); transition:transform .35s ease; display:flex; font-size:17px}
     nav.open .navlinks{transform:translateY(0)}
