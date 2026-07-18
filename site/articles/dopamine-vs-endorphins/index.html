@@ -402,6 +402,7 @@
     (function(){
       var nav=document.querySelector('nav'), t=document.querySelector('.navtoggle');
       if(t&&nav){
+        window.addEventListener('pageshow',function(){nav.classList.remove('open'); t.setAttribute('aria-expanded','false');});
         t.addEventListener('click',function(){
           var open=nav.classList.toggle('open');
           t.setAttribute('aria-expanded', open?'true':'false');
