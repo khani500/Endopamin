@@ -100,7 +100,7 @@
         tab.addEventListener('click', function(){
           tabs.forEach(function(t){ t.classList.remove('active'); });
           tab.classList.add('active');
-          var fab.getAttribute('data-filter');
+          var f = tab.getAttribute('data-filter');
           cards.forEach(function(card){
             var show = (f === 'all') || (card.getAttribute('data-category') === f);
             card.style.display = show ? 'flex' : 'none';
