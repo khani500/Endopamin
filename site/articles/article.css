@@ -269,3 +269,20 @@ nav.open .navtoggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
   nav.open .navlinks{transform:translateY(0)}
   .navlinks a{padding:15px 0; width:100%; border-bottom:1px solid rgba(255,255,255,.06); color:var(--fg)}
 }
+
+/* ===== Article callout box ===== */
+.callout{
+  margin:2rem 0;
+  padding:1.25rem 1.5rem;
+  border:1px solid rgba(204,255,0,.35);
+  border-radius:14px;
+  background:rgba(204,255,0,.04);
+}
+.callout .k{
+  font-family:'Bebas Neue',sans-serif;
+  letter-spacing:.04em;
+  font-size:1.15rem;
+  color:#CCFF00;
+  margin-bottom:.4rem;
+}
+.callout p{ margin:0; }
