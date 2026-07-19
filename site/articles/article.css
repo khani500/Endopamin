@@ -286,3 +286,12 @@ nav.open .navtoggle span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
   margin-bottom:.4rem;
 }
 .callout p{ margin:0; }
+
+/* Tall/portrait figures — show full image, no crop */
+.art-figure.tall img{
+  aspect-ratio:auto;
+  object-fit:contain;
+  max-width:520px;
+  margin:0 auto;
+  background:#0A0A0A;
+}
