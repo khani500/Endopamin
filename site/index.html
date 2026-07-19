@@ -85,8 +85,19 @@
     padding:22px 26px}
 
   /* hero */
-  .hero{position:relative; overflow:hidden; min-height:100vh; min-height:600px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding-top:120px}
-  .hero-content{position:relative; z-index:1}
+  .hero{position:relative; overflow:hidden; min-height:100vh; min-height:600px; display:flex; flex-direction:column; justify-content:flex-end; align-items:flex-end; text-align:left; padding:120px clamp(20px,5vw,64px) clamp(56px,12vh,140px); background:#0A0A0A}
+  .hero-athlete{position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden}
+  .hero-athlete img{width:100%; height:100%; object-fit:cover; object-position:left center; display:block}
+  .hero-athlete::after{content:""; position:absolute; inset:0; background:linear-gradient(90deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0) 35%, rgba(10,10,10,0.85) 65%, #0A0A0A 100%)}
+  .hero-content{position:relative; z-index:2; width:min(540px,48%); margin-left:auto; text-align:left}
+  @media(max-width:720px){
+    .hero{align-items:center; text-align:center; justify-content:flex-end; padding:110px 20px calc(48px + env(safe-area-inset-bottom,0px))}
+    .hero-content{width:100%; max-width:100%; margin:0; text-align:center}
+    .hero-athlete img{opacity:.42; object-position:center top}
+    .hero-athlete::after{background:linear-gradient(180deg, rgba(10,10,10,.4) 0%, rgba(10,10,10,.78) 42%, #0A0A0A 78%)}
+    .hero h1{font-size:clamp(48px,14vw,96px)}
+    .hero .sub{margin-left:auto; margin-right:auto}
+  }
   .sig{margin-bottom:26px}
   .sig svg{width:118px; overflow:visible}
   .sig *{stroke:var(--lime); fill:none; stroke-width:5; stroke-linecap:round; stroke-linejoin:round; filter:drop-shadow(0 0 6px rgba(204,255,0,.6))}
@@ -94,14 +105,14 @@
   @keyframes draw{to{stroke-dashoffset:0}}
   .beat{animation:beat 1.6s ease-in-out 3s infinite}
   @keyframes beat{0%,100%{opacity:.55}50%{opacity:1}}
-  .hero h1{font-size:clamp(54px,12vw,140px); line-height:.9; font-weight:800; font-style:italic; transform:skewX(-7deg);
+  .hero h1{font-size:clamp(44px,6.5vw,104px); line-height:.92; overflow-wrap:break-word; font-weight:800; font-style:italic; transform:skewX(-7deg);
     text-transform:uppercase; letter-spacing:-2px;
     color:var(--lime); filter:drop-shadow(0 0 14px rgba(204,255,0,.18));
     opacity:0; animation:popIn 1s cubic-bezier(.2,.9,.25,1) 1.4s forwards}
   .hero h1 b{color:var(--lime)}
   @keyframes popIn{0%{opacity:0; transform:skewX(-7deg) translateY(28px) scale(.96)}100%{opacity:1; transform:skewX(-7deg) translateY(0) scale(1)}}
-  .hero .tag{margin-top:28px; font-size:clamp(17px,3vw,26px); color:#FFFFFF; font-weight:700; text-transform:uppercase; letter-spacing:2px; text-shadow: 0 2px 18px rgba(0,0,0,0.85), 0 0 4px rgba(0,0,0,0.9); opacity:0; animation:fadeUp .9s ease 1.8s forwards}
-  .hero .sub{margin-top:26px; max-width:540px; color:#c8ceba; font-size:clamp(14px,2vw,16px); line-height:1.7;
+  .hero .tag{margin-top:28px; font-size:clamp(17px,3vw,26px); color:#F5F5F5; font-weight:700; text-transform:uppercase; letter-spacing:2px; text-shadow: 0 2px 18px rgba(0,0,0,0.85), 0 0 4px rgba(0,0,0,0.9); opacity:0; animation:fadeUp .9s ease 1.8s forwards}
+  .hero .sub{margin-top:26px; max-width:540px; color:rgba(255,255,255,0.68); font-size:clamp(14px,2vw,16px); line-height:1.7;
     padding:16px 24px; text-shadow: 0 2px 14px rgba(0,0,0,0.8); opacity:0; animation:fadeUp .9s ease 1.95s forwards}
   .discover{margin-top:34px; font-size:13px; letter-spacing:1px; color:var(--muted); text-decoration:none;
     border:1px solid var(--line); border-radius:30px; padding:12px 24px; transition:border-color .2s,color .2s;
@@ -323,7 +334,9 @@
     <!-- HERO -->
     <header class="hero">
       <canvas id="endo-hero-bg" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
-      <div style="position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 50%, rgba(4,4,4,0.55), rgba(4,4,4,0.15) 70%, transparent);z-index:0;pointer-events:none;"></div>
+      <div class="hero-athlete" aria-hidden="true">
+        <img src="/images/hero-athlete.png" alt="" width="1600" height="2000" decoding="async" fetchpriority="high">
+      </div>
       <div class="hero-content">
         <h1><b>ENDO</b>PAMIN</h1>
         <p class="tag">MIND. BODY. DRIVE.</p>
