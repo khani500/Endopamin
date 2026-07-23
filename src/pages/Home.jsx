@@ -52,7 +52,7 @@ export default function Home() {
 
       {/* Header */}
       <div className="flex justify-between items-center px-6 pt-4 pb-3">
-        <div className="font-['Orbitron',monospace] font-black text-[19px] tracking-[3px]">
+        <div className="font-['Bebas_Neue',sans-serif] font-black text-[19px] tracking-[3px]">
           <span className="text-[#CCFF00]">∃</span>NDOPAMIN
         </div>
         <Link to="/profile" className="w-9 h-9 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-[13px] font-black text-[#CCFF00] no-underline">
@@ -62,7 +62,7 @@ export default function Home() {
 
       {/* Greeting */}
       <div className="px-6 pb-5">
-        <h1 className="text-[34px] font-bold tracking-tight leading-tight">Hi, {displayName}</h1>
+        <h1 className="font-['Bebas_Neue',sans-serif] text-[34px] font-bold tracking-tight leading-tight">Hi, {displayName}</h1>
         <p className="text-sm text-white/40 mt-1 italic font-light">Your dopamine. Your discipline.</p>
       </div>
 
@@ -100,7 +100,7 @@ export default function Home() {
                 style={{ filter: 'drop-shadow(0 0 8px #CCFF00) drop-shadow(0 0 18px rgba(204,255,0,0.4))', transition: 'stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1)' }} />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-[30px] font-extrabold leading-none">{streak}</span>
+              <span className="font-['Bebas_Neue',sans-serif] text-[30px] font-extrabold leading-none">{streak}</span>
               <span className="text-[10px] text-white/40 mt-0.5">days</span>
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function Home() {
                 style={{ transition: 'stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1)' }} />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-[30px] font-extrabold leading-none">{endoScore}</span>
+              <span className="font-['Bebas_Neue',sans-serif] text-[30px] font-extrabold leading-none">{endoScore}</span>
               <span className="text-[10px] text-white/40 mt-0.5">/100</span>
             </div>
           </div>

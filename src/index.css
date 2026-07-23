@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
 
 @source "./**/*.{js,jsx,ts,tsx}";
 @source "../index.html";
@@ -21,6 +21,7 @@ body {
   display: flex;
   justify-content: center;
   min-height: 100vh;
+  font-family: 'DM Sans', system-ui, sans-serif;
 }
 
 #root {
@@ -32,3 +33,6 @@ body {
   box-sizing: border-box;
   overflow-x: hidden;
 }
+
+.font-display { font-family: 'Bebas Neue', system-ui, sans-serif; }
+.font-body { font-family: 'DM Sans', system-ui, sans-serif; }
