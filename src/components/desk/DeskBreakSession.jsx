@@ -71,14 +71,14 @@ export function DeskBreakSession({ breakId, onComplete }) {
 
   if (!breakData) {
     return (
-      <main className="min-h-screen bg-[#080808] text-white flex items-center justify-center">
+      <main className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
         <p className="text-white/50">Break not found</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#080808] text-white pb-28">
+    <main className="min-h-screen bg-[#0A0A0A] text-white pb-28">
       <div className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-72 h-48 rounded-full bg-[#A064FF] opacity-[0.04] blur-3xl" />
 
       {/* Header */}

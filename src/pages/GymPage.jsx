@@ -404,7 +404,7 @@ export default function GymPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#080808] text-white pb-24 overflow-x-hidden">
+    <main className="min-h-screen bg-[#0A0A0A] text-white pb-24 overflow-x-hidden">
       <div className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-72 h-48 rounded-full bg-[#CCFF00] opacity-[0.03] blur-3xl" />
 
       <div className="px-5 pt-14 pb-4">

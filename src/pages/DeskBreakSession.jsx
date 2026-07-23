@@ -291,7 +291,7 @@ export default function DeskBreakSession() {
 
   if (phase === 'intro') {
     return (
-      <div className="flex min-h-screen flex-col bg-[#0a0a0a] p-4">
+      <div className="flex min-h-screen flex-col bg-[#0A0A0A] p-4">
         <button type="button" onClick={() => navigate(-1)} className="mb-4 text-left text-gray-400">← Back</button>
         <TimeLabel slot={timeSlot} label={timeLabel} />
         <div className="mb-6 text-center">
@@ -332,7 +332,7 @@ export default function DeskBreakSession() {
 
   if (phase === 'complete') {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0a] p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#0A0A0A] p-4">
         <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#CCFF00]/10 text-[#CCFF00]">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8">
             <polyline points="20 6 9 17 4 12" />
@@ -351,7 +351,7 @@ export default function DeskBreakSession() {
   const circumference = 2 * Math.PI * 50;
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0a0a0a] p-4">
+    <div className="flex min-h-screen flex-col bg-[#0A0A0A] p-4">
       <button type="button" onClick={() => navigate(-1)} className="mb-4 text-left text-gray-400">← Back</button>
       <TimeLabel slot={timeSlot} label={timeLabel} />
       <div className="mb-6 flex gap-1">

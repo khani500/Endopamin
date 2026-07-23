@@ -912,7 +912,7 @@ export default function CoachPage() {
 
   // ════════════════════════════════════════
   return (
-    <main className="h-[100dvh] bg-[#080808] text-white flex flex-col pb-20 overflow-hidden">
+    <main className="h-[100dvh] bg-[#0A0A0A] text-white flex flex-col pb-20 overflow-hidden">
       <div className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-80 h-56 rounded-full opacity-[0.035] blur-3xl transition-all duration-700"
         style={{ background: coach.color }} />
 

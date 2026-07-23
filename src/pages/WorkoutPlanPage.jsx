@@ -335,7 +335,7 @@ export default function WorkoutPlanPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0a", color: "#fff", fontFamily: "sans-serif", paddingBottom: "100px" }}>
+    <div style={{ minHeight: "100vh", background: "#0A0A0A", color: "#fff", fontFamily: "sans-serif", paddingBottom: "100px" }}>
 
       {/* Header */}
       <div style={{ padding: "20px 16px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>

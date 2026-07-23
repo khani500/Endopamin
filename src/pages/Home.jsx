@@ -39,7 +39,7 @@ export default function Home() {
   const initials = displayName.split(/\s+/).map(p => p[0]).join('').slice(0, 2).toUpperCase() || 'AT';
 
   return (
-    <main className="min-h-screen bg-[#080808] text-white pb-28 overflow-x-hidden">
+    <main className="min-h-screen bg-[#0A0A0A] text-white pb-28 overflow-x-hidden">
 
       {/* Top ambient glow */}
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-72 h-48 rounded-full bg-[#CCFF00] opacity-[0.04] blur-3xl" />

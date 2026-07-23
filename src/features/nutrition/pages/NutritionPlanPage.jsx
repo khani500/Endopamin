@@ -156,7 +156,7 @@ export default function NutritionPlanPage() {
   );
 
   return (
-    <main className="np-main" style={{ minHeight: '100vh', background: '#080808', color: '#fff', paddingTop: 56 }}>
+    <main className="np-main" style={{ minHeight: '100vh', background: '#0A0A0A', color: '#fff', paddingTop: 56 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <div>
           <p style={{ margin: 0, fontSize: 11, color: '#CCFF00', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>

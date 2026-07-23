@@ -9,7 +9,7 @@ export default function PlaceholderPage({ title }) {
     <div
       style={{
         minHeight: '100vh',
-        background: '#0a0a0a',
+        background: '#0A0A0A',
         color: '#fafafa',
         padding: '48px 20px 100px',
         fontFamily: 'system-ui, sans-serif',

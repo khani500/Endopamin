@@ -108,7 +108,7 @@ export const AuthPage = ({ embedded = false }) => {
   };
 
   const content = (
-    <div className={`${embedded ? 'py-4' : 'min-h-screen'} flex flex-col items-center justify-center bg-[#0a0a0a] p-6 text-white`}>
+    <div className={`${embedded ? 'py-4' : 'min-h-screen'} flex flex-col items-center justify-center bg-[#0A0A0A] p-6 text-white`}>
       <div className="mb-10 text-center">
         <h1 className="text-4xl font-black tracking-tight">
           ENDO<span className="text-[#CCFF00]">PAMIN</span>

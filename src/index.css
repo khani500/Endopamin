@@ -17,7 +17,7 @@
 
 body {
   margin: 0;
-  background: #050505;
+  background: #0A0A0A;
   display: flex;
   justify-content: center;
   min-height: 100vh;
@@ -28,7 +28,7 @@ body {
   width: 430px;
   max-width: 100%;
   min-height: 100vh;
-  background: #0a0a0a;
+  background: #0A0A0A;
   margin: 0 auto;
   box-sizing: border-box;
   overflow-x: hidden;
