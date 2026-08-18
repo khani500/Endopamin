@@ -174,7 +174,26 @@ export default async function handler(req, res) {
     const now = Date.now();
     const results = [];
 
+    // One push token can be attached to several profiles when multiple accounts
+    // sign in on the same device. Keep only the most recently updated profile per
+    // token so a device never receives duplicate notifications.
+    const newestProfileByToken = new Map();
     for (const profile of users) {
+      if (!profile.fcm_token) continue;
+      const existing = newestProfileByToken.get(profile.fcm_token);
+      if (!existing) {
+        newestProfileByToken.set(profile.fcm_token, profile);
+        continue;
+      }
+      const existingTime = new Date(existing.last_active || existing.created_at || 0).getTime();
+      const currentTime = new Date(profile.last_active || profile.created_at || 0).getTime();
+      if (currentTime > existingTime) {
+        newestProfileByToken.set(profile.fcm_token, profile);
+      }
+    }
+    const uniqueProfiles = Array.from(newestProfileByToken.values());
+
+    for (const profile of uniqueProfiles) {
       if (!profile.fcm_token) continue;
 
       if (profile.last_notification_at) {
