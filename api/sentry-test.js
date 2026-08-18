@@ -2,7 +2,7 @@ import { reportError } from './_sentry.js';
 
 // Temporary diagnostic route. Delete after verifying Sentry works.
 export default async function handler(req, res) {
-  const secret = process.env.REVENUECAT_WEBHOOK_AUTH;
+  const secret = process.env.SENTRY_TEST_KEY;
   if (!secret || req.query.key !== secret) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
