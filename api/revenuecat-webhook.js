@@ -129,20 +129,40 @@ export default async function handler(req, res) {
       console.log(`Granted Pro for user ${userId} (event: ${eventType})`);
     }
   } else if (REVOKE_EVENT_TYPES.has(eventType)) {
-    const { error } = await supabase
-      .from('profiles')
-      .update({ is_pro: false })
-      .eq('id', userId);
+    let shouldRevoke = true;
 
-    if (error) {
-      console.error(`Failed to revoke Pro for user ${userId}:`, error.message);
-      activationError = error;
-      await reportError(new Error(`Failed to revoke Pro for user ${userId}: ${error.message}`), {
-        route: 'revenuecat-webhook',
-        step: 'revoke-pro',
-      });
-    } else {
-      console.log(`Revoked Pro for user ${userId} (event: ${eventType})`);
+    const { data: profileRow, error: lookupError } = await supabase
+      .from('profiles')
+      .select('pro_expires_at')
+      .eq('id', userId)
+      .single();
+
+    if (lookupError) {
+      console.log(`Could not read pro_expires_at for user ${userId}: ${lookupError.message} - proceeding with revoke`);
+    } else if (
+      profileRow?.pro_expires_at &&
+      new Date(profileRow.pro_expires_at).getTime() > Date.now()
+    ) {
+      shouldRevoke = false;
+      console.log(`Skipped revoke for user ${userId} (event: ${eventType}) - pro_expires_at ${profileRow.pro_expires_at} is still in the future`);
+    }
+
+    if (shouldRevoke) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_pro: false })
+        .eq('id', userId);
+
+      if (error) {
+        console.error(`Failed to revoke Pro for user ${userId}:`, error.message);
+        activationError = error;
+        await reportError(new Error(`Failed to revoke Pro for user ${userId}: ${error.message}`), {
+          route: 'revenuecat-webhook',
+          step: 'revoke-pro',
+        });
+      } else {
+        console.log(`Revoked Pro for user ${userId} (event: ${eventType})`);
+      }
     }
   } else if (NO_OP_EVENT_TYPES.has(eventType)) {
     console.log(`No-op for user ${userId} (event: ${eventType})`);
