@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { reportError } from './_sentry.js';
 
 function isValidUuid(value) {
   return typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
@@ -81,6 +82,10 @@ export default async function handler(req, res) {
   const userId = resolveUserId(event);
   if (!userId) {
     console.log('No valid Supabase user id in RC event');
+    await reportError(
+      new Error(`RevenueCat event could not be matched to a user (type: ${event.type})`),
+      { route: 'revenuecat-webhook', step: 'user-resolution' },
+    );
     return res.status(200).json({ received: true, noUser: true });
   }
 
@@ -116,6 +121,10 @@ export default async function handler(req, res) {
     if (error) {
       console.error(`Failed to grant Pro for user ${userId}:`, error.message);
       activationError = error;
+      await reportError(new Error(`Failed to grant Pro for user ${userId}: ${error.message}`), {
+        route: 'revenuecat-webhook',
+        step: 'grant-pro',
+      });
     } else {
       console.log(`Granted Pro for user ${userId} (event: ${eventType})`);
     }
@@ -128,6 +137,10 @@ export default async function handler(req, res) {
     if (error) {
       console.error(`Failed to revoke Pro for user ${userId}:`, error.message);
       activationError = error;
+      await reportError(new Error(`Failed to revoke Pro for user ${userId}: ${error.message}`), {
+        route: 'revenuecat-webhook',
+        step: 'revoke-pro',
+      });
     } else {
       console.log(`Revoked Pro for user ${userId} (event: ${eventType})`);
     }
