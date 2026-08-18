@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { reportError } from './_sentry.js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -105,6 +106,7 @@ Return ONLY raw JSON: {"title": "...", "body": "..."}`;
     return parsed;
   } catch (err) {
     console.warn('Gemini notification generation failed:', err?.message);
+    await reportError(err, { route: 'cron-notify', step: 'gemini-generate' });
     const defaults = {
       kane: { title: 'Get off the couch.', body: 'No excuses. The bar is loaded. Move.' },
       elias: { title: 'Your muscles need stimulus.', body: 'Recovery window is closing. Time to train.' },
@@ -243,6 +245,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ sent: results.length, notifications: results });
   } catch (err) {
     console.error('Cron notify error:', err);
+    await reportError(err, { route: 'cron-notify', step: 'handler' });
     return res.status(500).json({ error: err.message });
   }
 }
