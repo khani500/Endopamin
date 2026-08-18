@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { checkRateLimit } from './_rateLimit.js';
+import { reportError } from './_sentry.js';
 
 export const config = {
   api: {
@@ -146,6 +147,11 @@ export default async function handler(req, res) {
         // use raw text
       }
       console.error('Gemini API error:', errorMessage, response.status);
+      await reportError(new Error(`Gemini API returned ${response.status}: ${String(errorMessage).slice(0, 300)}`), {
+        route: 'gemini',
+        step: 'upstream-response',
+        status: response.status,
+      });
       res.setHeader('Content-Type', 'application/json');
       return res.status(response.status).send(text);
     }
@@ -176,6 +182,7 @@ export default async function handler(req, res) {
       });
     }
     console.error('Gemini API error:', err.message, err.status);
+    await reportError(err, { route: 'gemini', step: 'handler' });
     return res.status(500).json({
       error: err.message || 'Internal Server Error',
       details: err.message,
