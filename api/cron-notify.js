@@ -76,6 +76,8 @@ RULES:
 Return ONLY raw JSON: {"title": "...", "body": "..."}`;
 
   try {
+    if (!GEMINI_KEY) throw new Error('GEMINI_API_KEY is not set');
+
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
       {
@@ -83,15 +85,26 @@ Return ONLY raw JSON: {"title": "...", "body": "..."}`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.95, maxOutputTokens: 150 },
+          generationConfig: { temperature: 0.95, maxOutputTokens: 400 },
         }),
       }
     );
+
+    if (!res.ok) {
+      const errorBody = await res.text();
+      throw new Error(`Gemini HTTP ${res.status}: ${errorBody.slice(0, 200)}`);
+    }
+
     const data = await res.json();
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if (!text) throw new Error(`Gemini returned no text: ${JSON.stringify(data).slice(0, 200)}`);
+
     const clean = text.replace(/```json|```/g, '').trim();
-    return JSON.parse(clean);
-  } catch {
+    const parsed = JSON.parse(clean);
+    if (!parsed?.title || !parsed?.body) throw new Error(`Gemini JSON missing fields: ${clean.slice(0, 200)}`);
+    return parsed;
+  } catch (err) {
+    console.warn('Gemini notification generation failed:', err?.message);
     const defaults = {
       kane: { title: 'Get off the couch.', body: 'No excuses. The bar is loaded. Move.' },
       elias: { title: 'Your muscles need stimulus.', body: 'Recovery window is closing. Time to train.' },
