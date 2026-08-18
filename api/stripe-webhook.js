@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
+import { reportError } from './_sentry.js';
 
 export const config = {
   api: {
@@ -54,6 +55,7 @@ async function resolveCustomerEmail(customerId, hints = {}) {
     return customer.email || null;
   } catch (err) {
     console.error('Failed to retrieve Stripe customer:', err.message);
+    await reportError(err, { route: 'stripe-webhook', step: 'retrieve-customer' });
     return null;
   }
 }
@@ -89,6 +91,7 @@ export default async function handler(req, res) {
     event = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error('Webhook signature verification failed:', err.message);
+    await reportError(err, { route: 'stripe-webhook', step: 'signature-verification' });
     return res.status(400).json({ error: `Webhook Error: ${err.message}` });
   }
 
@@ -126,6 +129,10 @@ export default async function handler(req, res) {
 
     if (!userId) {
       console.log(`Could not find user for subscription ${subscription.id}`);
+      await reportError(
+        new Error(`Paid subscription could not be matched to a user: ${subscription.id}`),
+        { route: 'stripe-webhook', step: 'user-resolution' },
+      );
       return;
     }
 
@@ -184,6 +191,10 @@ export default async function handler(req, res) {
     if (error) {
       console.error('Failed to activate Pro:', error.message);
       activationError = error;
+      await reportError(new Error(`Failed to activate Pro for user ${userId}: ${error.message}`), {
+        route: 'stripe-webhook',
+        step: 'activate-pro',
+      });
       return;
     }
 
