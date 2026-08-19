@@ -87,7 +87,12 @@ Return ONLY raw JSON: {"title": "...", "body": "..."}`;
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.95, maxOutputTokens: 400 },
+          generationConfig: {
+            temperature: 0.95,
+            maxOutputTokens: 400,
+            responseMimeType: 'application/json',
+            thinkingConfig: { thinkingBudget: 0 },
+          },
         }),
       }
     );
