@@ -32,3 +32,26 @@ export async function reportError(error, context = {}) {
     console.warn('Sentry reporting failed:', err?.message);
   }
 }
+
+// Tell Sentry a cron job has started. Returns a check-in id, or null if Sentry is not configured.
+export function startCheckIn(monitorSlug) {
+  try {
+    ensureInit();
+    if (!process.env.SENTRY_DSN) return null;
+    return Sentry.captureCheckIn({ monitorSlug, status: 'in_progress' });
+  } catch (err) {
+    console.warn('Sentry check-in start failed:', err?.message);
+    return null;
+  }
+}
+
+// Close a cron check-in with 'ok' or 'error'. Always awaits flush.
+export async function finishCheckIn(monitorSlug, checkInId, status) {
+  try {
+    if (!checkInId || !process.env.SENTRY_DSN) return;
+    Sentry.captureCheckIn({ checkInId, monitorSlug, status });
+    await Sentry.flush(2000);
+  } catch (err) {
+    console.warn('Sentry check-in finish failed:', err?.message);
+  }
+}

@@ -1,9 +1,10 @@
 import crypto from 'crypto';
-import { reportError } from './_sentry.js';
+import { reportError, startCheckIn, finishCheckIn } from './_sentry.js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
+const CRON_MONITOR_SLUG = 'daily-notification-cron';
 
 const COACH_PERSONALITIES = {
   kane: 'Harsh drill sergeant. Military tone. No sympathy. Very short commands.',
@@ -170,6 +171,8 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
+  const checkInId = startCheckIn(CRON_MONITOR_SLUG);
+
   try {
     const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || '{}');
     const projectId = sa.project_id;
@@ -242,10 +245,12 @@ export default async function handler(req, res) {
       }
     }
 
+    await finishCheckIn(CRON_MONITOR_SLUG, checkInId, 'ok');
     return res.status(200).json({ sent: results.length, notifications: results });
   } catch (err) {
     console.error('Cron notify error:', err);
     await reportError(err, { route: 'cron-notify', step: 'handler' });
+    await finishCheckIn(CRON_MONITOR_SLUG, checkInId, 'error');
     return res.status(500).json({ error: err.message });
   }
 }
