@@ -136,15 +136,18 @@ export default function WorkoutSession({ planMode = false }) {
       }
     : defaultSession;
 
-  // C110 P0.1 phase 2. Held, not yet written. The workout_logs columns that
-  // will carry these are nullable and no writer sends them. A session reached
+  // C110 P0.1. Which plan and which day this session came from, taken only
+  // from the navigation state the weekly plan page put there. A session reached
   // without plan navigation, or after a refresh that clears history state,
-  // keeps both null rather than reconstructing them from the weekday.
-  const planIdentityRef = useRef({ planId: null, dayIndex: null });
-  planIdentityRef.current = {
+  // keeps both null: the weekday, the date and the URL are never used to
+  // reconstruct them, because a wrong plan reference is worse than none.
+  //
+  // A memo, not a ref. The previous version assigned to ref.current in the
+  // render body, which React rejects outright.
+  const planIdentity = useMemo(() => ({
     planId: planState?.planId ?? null,
     dayIndex: Number.isInteger(planState?.dayIndex) ? planState.dayIndex : null,
-  };
+  }), [planState?.planId, planState?.dayIndex]);
 
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [setIndex, setSetIndex] = useState(0);
@@ -269,6 +272,8 @@ export default function WorkoutSession({ planMode = false }) {
         await supabase.from('workout_logs').insert({
           user_id: user.id,
           workout_type: sessionType,
+          plan_id: planIdentity.planId,
+          day_index: planIdentity.dayIndex,
           duration_minutes: durationMinutes,
           exercises: {
             sets: logs,
