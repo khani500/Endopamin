@@ -12,6 +12,13 @@ const XP_PER_SET = 10;
 const ALL_SETS_BONUS_XP = 50;
 const XP_PER_LEVEL = 500;
 
+/**
+ * The closed set of values this screen may store in workout_logs.workout_type.
+ * Kept beside WORKOUT_SESSIONS on purpose: a session shape without an entry here
+ * could be shown but never stored, and the two must not drift apart.
+ */
+const SESSION_TYPES = ['strength', 'cardio', 'mobility', 'hiit'];
+
 const WORKOUT_SESSIONS = {
   strength: {
     title: 'Strength Training',
@@ -113,8 +120,14 @@ export default function WorkoutSession({ planMode = false }) {
   const planState = location.state;
   const hasPlanExercises = Array.isArray(planState?.exercises) && planState.exercises.length > 0;
 
-  const sessionType = planMode ? 'strength' : (type || 'strength').toLowerCase();
-  const defaultSession = WORKOUT_SESSIONS[sessionType] || WORKOUT_SESSIONS.strength;
+  // C110 P0.3b. /workout/:type puts a raw URL segment in `type`, and it used to
+  // reach workout_type unchecked: /workout/banana stored 'banana' while the
+  // screen quietly showed strength. The value is normalised once here, so the
+  // session on screen and the row in the database can no longer disagree, and
+  // nothing outside the vocabulary can be written.
+  const requestedType = planMode ? 'strength' : String(type || '').trim().toLowerCase();
+  const sessionType = SESSION_TYPES.includes(requestedType) ? requestedType : 'strength';
+  const defaultSession = WORKOUT_SESSIONS[sessionType];
   const session = hasPlanExercises
     ? {
         title: [planState.dayName, planState.focus].filter(Boolean).join(' · ') || defaultSession.title,
