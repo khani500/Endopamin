@@ -169,6 +169,13 @@ export default function WorkoutPlanPage() {
   const { user, profile: authProfile } = useAuth();
 
   const [plan, setPlan] = useState(null);
+  // C110 P0.1 phase 2. The row's primary key, kept beside the plan it belongs
+  // to. It comes only from a real workout_plans row and is null whenever there
+  // is no such row to name; nothing is derived from the user, the plan JSON or
+  // the date. This page fetches its own row rather than reading the id from
+  // WorkoutContext, whose separate fetch would go stale the moment a plan is
+  // regenerated here.
+  const [planRowId, setPlanRowId] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -250,6 +257,7 @@ export default function WorkoutPlanPage() {
           data.plan_data,
         );
         setPlan(data.plan_data);
+        setPlanRowId(data.id ?? null);
         return true;
       }
     } catch (_) {}
@@ -260,6 +268,7 @@ export default function WorkoutPlanPage() {
     if (generating) return;
     await deleteUserWorkoutPlans();
     setPlan(null);
+    setPlanRowId(null);
     await generatePlan();
   }
 
@@ -325,11 +334,17 @@ export default function WorkoutPlanPage() {
 
   function startWorkoutSession(day, dayIndex) {
     if (isDayLocked(dayIndex, day) || day?.type === 'rest' || !day?.exercises?.length) return;
+    // Both call sites already hold the position in `days`, which is
+    // plan?.days with no filter and no sort, so this is the canonical
+    // position and not a display one. A missing position stays null rather
+    // than becoming a number that would point at the wrong day.
     navigate('/workout-session', {
       state: {
         exercises: day.exercises,
         dayName: day.day,
         focus: day.focus,
+        planId: planRowId,
+        dayIndex: Number.isInteger(dayIndex) && dayIndex >= 0 ? dayIndex : null,
       },
     });
   }

@@ -136,6 +136,16 @@ export default function WorkoutSession({ planMode = false }) {
       }
     : defaultSession;
 
+  // C110 P0.1 phase 2. Held, not yet written. The workout_logs columns that
+  // will carry these are nullable and no writer sends them. A session reached
+  // without plan navigation, or after a refresh that clears history state,
+  // keeps both null rather than reconstructing them from the weekday.
+  const planIdentityRef = useRef({ planId: null, dayIndex: null });
+  planIdentityRef.current = {
+    planId: planState?.planId ?? null,
+    dayIndex: Number.isInteger(planState?.dayIndex) ? planState.dayIndex : null,
+  };
+
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [setIndex, setSetIndex] = useState(0);
   const [phase, setPhase] = useState('active');
