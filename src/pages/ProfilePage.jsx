@@ -656,7 +656,7 @@ export default function ProfilePage() {
 
     const { error: workoutDeleteError } = await supabase
       .from('workout_plans')
-      .delete()
+      .update({ is_active: false })
       .eq('user_id', user.id);
     if (workoutDeleteError) {
       console.error('Failed to delete workout plans:', workoutDeleteError);
@@ -665,7 +665,7 @@ export default function ProfilePage() {
 
     const { error: nutritionDeleteError } = await supabase
       .from('nutrition_plans')
-      .delete()
+      .update({ is_active: false })
       .eq('user_id', user.id);
     if (nutritionDeleteError) {
       console.error('Failed to delete nutrition plans:', nutritionDeleteError);
