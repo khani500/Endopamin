@@ -120,6 +120,11 @@ async function fetchWeeklyWorkoutLogs(userId, weekStart, weekEnd) {
     .from('workout_logs')
     .select('logged_at')
     .eq('user_id', userId)
+    // C110 P0.3b. Desk breaks are stored in this table but are not workouts.
+    // A null type is kept on purpose: every historical row predates the column
+    // and must stay visible. Measured before this change: 12 logs, 0 null,
+    // 0 desk_break, 0 outside the vocabulary.
+    .or('workout_type.is.null,workout_type.in.(strength,cardio,mobility,hiit)')
     .gte('logged_at', weekStart.toISOString())
     .lte('logged_at', weekEnd.toISOString());
 
@@ -361,6 +366,7 @@ export default function Progress() {
       let query = supabase
         .from('workout_logs')
         .select('duration_minutes, logged_at')
+        .or('workout_type.is.null,workout_type.in.(strength,cardio,mobility,hiit)')
         .eq('user_id', user.id);
 
       if (startDate) {
@@ -409,6 +415,7 @@ export default function Progress() {
         .from('workout_logs')
         .select('logged_at')
         .eq('user_id', user.id)
+        .or('workout_type.is.null,workout_type.in.(strength,cardio,mobility,hiit)')
         .gte('logged_at', monthMeta.monthStart.toISOString());
 
       if (cancelled) return;
