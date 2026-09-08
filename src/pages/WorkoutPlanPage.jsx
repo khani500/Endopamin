@@ -209,7 +209,7 @@ export default function WorkoutPlanPage() {
     if (!user?.id) return;
     const { error } = await supabase
       .from("workout_plans")
-      .delete()
+      .update({ is_active: false })
       .eq("user_id", user.id);
     if (error) {
       console.error("[WorkoutPlan] Failed to delete workout plans:", error);
