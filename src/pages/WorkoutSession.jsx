@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -132,7 +133,18 @@ export default function WorkoutSession({ planMode = false }) {
     ? {
         title: [planState.dayName, planState.focus].filter(Boolean).join(' · ') || defaultSession.title,
         duration: defaultSession.duration,
-        exercises: planState.exercises.map(normalizePlanExercise),
+        // C110 P0.1 phase 4d-2. The position is taken here, in the map that
+        // already walks the plan's own array, rather than inside
+        // normalizePlanExercise which never sees an index. This screen applies
+        // no filter today, so the canonical position and the display position
+        // happen to agree; taking it from the source keeps them agreeing if a
+        // filter is ever added. internalExerciseId comes from the raw plan
+        // exercise because normalizePlanExercise does not carry it.
+        exercises: planState.exercises.map((ex, planExerciseIndex) => ({
+          ...normalizePlanExercise(ex),
+          planExerciseIndex,
+          internalExerciseId: ex.internalExerciseId ?? null,
+        })),
       }
     : defaultSession;
 
@@ -150,6 +162,12 @@ export default function WorkoutSession({ planMode = false }) {
     Number.isInteger(planState?.dayIndex) && planState.dayIndex >= 0
       ? planState.dayIndex
       : null;
+
+  // One id for the life of this mounted attempt. The lazy initialiser runs once,
+  // so a rerender keeps it and a retry resends it, which meets the partial
+  // unique index on (user_id, client_attempt_id) instead of writing a second
+  // workout. A new session mounts fresh and gets a new id.
+  const [clientAttemptId] = useState(() => uuidv4());
 
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [setIndex, setSetIndex] = useState(0);
@@ -276,6 +294,7 @@ export default function WorkoutSession({ planMode = false }) {
           workout_type: sessionType,
           plan_id: planId,
           day_index: dayIndex,
+          client_attempt_id: clientAttemptId,
           duration_minutes: durationMinutes,
           exercises: {
             sets: logs,
@@ -341,6 +360,7 @@ export default function WorkoutSession({ planMode = false }) {
     speak,
     planId,
     dayIndex,
+    clientAttemptId,
   ]);
 
   const advanceAfterSet = useCallback((logs, exIdx, currentSetIdx) => {
@@ -387,6 +407,16 @@ export default function WorkoutSession({ planMode = false }) {
     const log = {
       exercise: exercise.name,
       exerciseIndex,
+      // The position in the plan's own exercise array. exerciseIndex above is
+      // the position in the list this screen is walking; the two are different
+      // things and neither substitutes for the other. A session that did not
+      // come from a plan has neither.
+      planExerciseIndex: Number.isInteger(exercise.planExerciseIndex)
+        ? exercise.planExerciseIndex
+        : null,
+      // Carried from the plan snapshot only. Nothing here looks a name up, so
+      // this stays null until the resolver runs at plan-write time.
+      internalExerciseId: exercise.internalExerciseId ?? null,
       set: setIndex + 1,
       weight: weight.trim() || null,
       reps: reps.trim() || null,
