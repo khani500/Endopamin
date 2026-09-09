@@ -144,10 +144,12 @@ export default function WorkoutSession({ planMode = false }) {
   //
   // A memo, not a ref. The previous version assigned to ref.current in the
   // render body, which React rejects outright.
-  const planIdentity = useMemo(() => ({
-    planId: planState?.planId ?? null,
-    dayIndex: Number.isInteger(planState?.dayIndex) ? planState.dayIndex : null,
-  }), [planState?.planId, planState?.dayIndex]);
+  const planId = planState?.planId ?? null;
+
+  const dayIndex =
+    Number.isInteger(planState?.dayIndex) && planState.dayIndex >= 0
+      ? planState.dayIndex
+      : null;
 
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [setIndex, setSetIndex] = useState(0);
@@ -272,8 +274,8 @@ export default function WorkoutSession({ planMode = false }) {
         await supabase.from('workout_logs').insert({
           user_id: user.id,
           workout_type: sessionType,
-          plan_id: planIdentity.planId,
-          day_index: planIdentity.dayIndex,
+          plan_id: planId,
+          day_index: dayIndex,
           duration_minutes: durationMinutes,
           exercises: {
             sets: logs,
@@ -337,6 +339,8 @@ export default function WorkoutSession({ planMode = false }) {
     user?.id,
     setProfile,
     speak,
+    planId,
+    dayIndex,
   ]);
 
   const advanceAfterSet = useCallback((logs, exIdx, currentSetIdx) => {
