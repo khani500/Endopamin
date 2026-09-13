@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { applyCorsHeaders } from './_cors.js';
 import { checkRateLimit } from './_rateLimit.js';
@@ -269,9 +270,9 @@ export function mapRpcError(code) {
   }
 }
 
-async function handleRequest(req, res) {
+async function handleRequest(req, res, requestId) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method not allowed', requestId });
   }
 
   const allowed = await checkRateLimit(req, res, { name: 'replace-plans', max: 5, windowSec: 60 });
@@ -279,19 +280,19 @@ async function handleRequest(req, res) {
 
   const contentLength = Number(req.headers['content-length'] || 0);
   if (contentLength > MAX_BODY_BYTES) {
-    return res.status(413).json({ error: 'Request body too large', maxBytes: MAX_BODY_BYTES });
+    return res.status(413).json({ error: 'Request body too large', maxBytes: MAX_BODY_BYTES, requestId });
   }
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
-    return res.status(500).json({ error: 'Server not configured' });
+    return res.status(500).json({ error: 'Server not configured', requestId });
   }
 
   const authHeader = req.headers.authorization || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
   if (!token) {
-    return res.status(401).json({ error: 'Missing access token' });
+    return res.status(401).json({ error: 'Missing access token', requestId });
   }
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
@@ -300,7 +301,7 @@ async function handleRequest(req, res) {
 
   const { data: userData, error: userErr } = await admin.auth.getUser(token);
   if (userErr || !userData || !userData.user) {
-    return res.status(401).json({ error: 'Invalid or expired token' });
+    return res.status(401).json({ error: 'Invalid or expired token', requestId });
   }
   // The single source of the owner id. Nothing else may supply it.
   const userId = userData.user.id;
@@ -310,6 +311,7 @@ async function handleRequest(req, res) {
     return res.status(validated.error.status).json({
       error: validated.error.message,
       field: validated.error.field,
+      requestId,
     });
   }
   const input = validated.value;
@@ -324,14 +326,24 @@ async function handleRequest(req, res) {
     .maybeSingle();
 
   if (profileErr) {
-    reportError(profileErr, { endpoint: 'replace-plans', stage: 'profile-lookup' });
-    return res.status(500).json({ error: 'Could not read profile' });
+    console.error('replace-plans profile read failed', {
+      requestId,
+      userId,
+      code: profileErr.code,
+      message: profileErr.message,
+      details: profileErr.details,
+      hint: profileErr.hint,
+    });
+    await reportError(profileErr, { endpoint: 'replace-plans', stage: 'profile-lookup', requestId });
+    return res.status(500).json({ error: 'Could not read profile', requestId });
   }
 
   const gender = String(profile?.gender || '').toLowerCase();
   if (!GENDERS.has(gender)) {
+    console.warn('replace-plans gender missing', { requestId, userId });
     return res.status(422).json({
       error: 'Profile gender is not set; complete your profile before generating a plan',
+      requestId,
     });
   }
 
@@ -352,19 +364,46 @@ async function handleRequest(req, res) {
   if (error) {
     const mapped = mapRpcError(error.code);
     if (mapped) {
-      return res.status(mapped.status).json({ error: mapped.error, code: error.code });
+      console.warn('replace-plans mapped error', {
+        requestId,
+        userId,
+        attemptId: input.clientAttemptId,
+        code: error.code,
+        status: mapped.status,
+      });
+      return res.status(mapped.status).json({ error: mapped.error, code: error.code, requestId });
     }
-    reportError(error, { endpoint: 'replace-plans', stage: 'rpc' });
-    return res.status(500).json({ error: 'Could not save plan' });
+    console.error('replace-plans rpc error', {
+      requestId,
+      userId,
+      attemptId: input.clientAttemptId,
+      code: error.code ?? null,
+      message: error.message ?? null,
+      details: error.details ?? null,
+      hint: error.hint ?? null,
+      constraint: error.constraint ?? null,
+      table: error.table ?? null,
+      column: error.column ?? null,
+      schema: error.schema ?? null,
+    });
+    await reportError(error, { endpoint: 'replace-plans', stage: 'rpc', requestId });
+    return res.status(500).json({ error: 'Could not save plan', requestId });
   }
 
   const row = Array.isArray(data) ? data[0] : data;
   if (!row || !row.workout_plan_id) {
-    reportError(new Error('replace_user_plans_atomic returned no row'), {
-      endpoint: 'replace-plans', stage: 'rpc-result',
+    console.error('replace-plans no row', { requestId, userId, attemptId: input.clientAttemptId });
+    await reportError(new Error('replace_user_plans_atomic returned no row'), {
+      endpoint: 'replace-plans', stage: 'rpc-result', requestId,
     });
-    return res.status(500).json({ error: 'Could not save plan' });
+    return res.status(500).json({ error: 'Could not save plan', requestId });
   }
+
+  console.info('replace-plans ok', {
+    requestId,
+    userId,
+    attemptId: input.clientAttemptId,
+  });
 
   return res.status(200).json({
     workoutPlanId: row.workout_plan_id,
@@ -374,6 +413,7 @@ async function handleRequest(req, res) {
 }
 
 export default async function handler(req, res) {
+  const requestId = crypto.randomBytes(4).toString('hex');
   const allowedOrigin = applyCorsHeaders(req, res);
 
   try {
@@ -381,15 +421,16 @@ export default async function handler(req, res) {
       return res.status(204).end();
     }
 
-    return await handleRequest(req, res);
-  } catch (error) {
+    return await handleRequest(req, res, requestId);
+  } catch (err) {
+    console.error('replace-plans unhandled', { requestId, message: err?.message, stack: err?.stack });
     try {
-      reportError(error, { endpoint: 'replace-plans', stage: 'unhandled' });
+      await reportError(err, { endpoint: 'replace-plans', stage: 'unhandled', requestId });
     } catch {
       // Error reporting must never replace the endpoint's own 500 response.
     }
 
     if (res.headersSent) return res.end();
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error', requestId });
   }
 }
