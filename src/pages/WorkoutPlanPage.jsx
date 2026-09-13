@@ -2,117 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
-import { generateWorkoutPlan, getFallbackWorkoutPlan } from "../lib/gemini";
 import { ProPaywall } from "../components/paywall/ProPaywall";
-
-const ex = (name, sets, reps, rest) => ({ name, sets, reps, rest });
-
-const FALLBACK_PLAN = (coachId) => ({
-  coachId,
-  days: [
-    {
-      day: "Saturday",
-      focus: "Push",
-      type: "training",
-      exercises: [
-        ex("Bench Press", "4", "8-10", "90s"),
-        ex("OHP", "3", "8-10", "90s"),
-        ex("Incline DB Press", "3", "10-12", "60s"),
-        ex("Lateral Raise", "3", "15", "45s"),
-        ex("Tricep Pushdown", "3", "12-15", "45s"),
-        ex("Cable Fly", "3", "12-15", "45s"),
-        ex("Dips", "3", "10-12", "60s"),
-      ],
-    },
-    {
-      day: "Sunday",
-      focus: "Pull",
-      type: "training",
-      exercises: [
-        ex("Deadlift", "4", "5", "120s"),
-        ex("Barbell Row", "3", "8-10", "90s"),
-        ex("Lat Pulldown", "3", "10-12", "60s"),
-        ex("Face Pull", "3", "15", "45s"),
-        ex("Bicep Curl", "3", "10-12", "60s"),
-        ex("Hammer Curl", "3", "12", "45s"),
-        ex("Rear Delt Fly", "3", "15", "45s"),
-      ],
-    },
-    {
-      day: "Monday",
-      focus: "Active Rest",
-      type: "rest",
-      exercises: [
-        ex("30 min walk", "-", "-", "-"),
-        ex("Light stretching", "-", "10 min", "-"),
-      ],
-    },
-    {
-      day: "Tuesday",
-      focus: "Legs",
-      type: "training",
-      exercises: [
-        ex("Squat", "4", "8", "120s"),
-        ex("Leg Press", "3", "12", "90s"),
-        ex("Romanian Deadlift", "3", "10", "90s"),
-        ex("Leg Curl", "3", "12", "60s"),
-        ex("Leg Extension", "3", "12", "60s"),
-        ex("Calf Raise", "4", "15", "45s"),
-        ex("Hip Thrust", "3", "12", "60s"),
-      ],
-    },
-    {
-      day: "Wednesday",
-      focus: "Core + Cardio",
-      type: "training",
-      exercises: [
-        ex("Plank", "3", "60s", "45s"),
-        ex("Crunches", "3", "20", "45s"),
-        ex("Russian Twist", "3", "20", "45s"),
-        ex("Mountain Climber", "3", "30s", "30s"),
-        ex("Bicycle Crunch", "3", "20", "45s"),
-        ex("Dead Bug", "3", "12", "45s"),
-        ex("Hollow Hold", "3", "30s", "45s"),
-      ],
-    },
-    {
-      day: "Thursday",
-      focus: "Upper Body Mix",
-      type: "training",
-      exercises: [
-        ex("Pull Up", "3", "8", "90s"),
-        ex("Dip", "3", "10-12", "60s"),
-        ex("DB Shoulder Press", "3", "10", "60s"),
-        ex("Cable Row", "3", "10-12", "60s"),
-        ex("Chest Fly", "3", "12-15", "45s"),
-        ex("Tricep Extension", "3", "12", "45s"),
-        ex("Shrug", "3", "12-15", "45s"),
-      ],
-    },
-    {
-      day: "Friday",
-      focus: "Full Rest",
-      type: "rest",
-      exercises: [
-        ex("Recovery", "-", "-", "-"),
-      ],
-    },
-  ],
-});
-
-function logFallbackTemplateVerification(coachId = "aria") {
-  const template = FALLBACK_PLAN(coachId);
-  const summary = template.days.map((d) => ({
-    day: d.day,
-    focus: d.focus,
-    type: d.type,
-    exerciseCount: d.exercises?.length ?? 0,
-    exercises: d.exercises?.map((e) => e.name),
-  }));
-  console.log("[WorkoutPlan] Fallback template exercise counts:", summary);
-  console.log("[WorkoutPlan] Fallback template full:", template);
-  return template;
-}
 
 function logPlanSource(label, planData) {
   const summary = planData?.days?.map((d) => ({
@@ -120,32 +10,6 @@ function logPlanSource(label, planData) {
     exerciseCount: d.exercises?.length ?? 0,
   }));
   console.log(`[WorkoutPlan] ${label}`, summary);
-}
-
-logFallbackTemplateVerification();
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-function is503Error(err) {
-  const msg = err?.message || String(err);
-  return msg.includes("503") || err?.status === 503;
-}
-
-async function generateWorkoutPlanWithRetry(coach, user, userProfile) {
-  const maxRetries = 2;
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      return await generateWorkoutPlan(coach, user, userProfile);
-    } catch (err) {
-      if (is503Error(err) && attempt < maxRetries) {
-        console.warn(`Gemini 503, retrying in 3s (attempt ${attempt + 1}/${maxRetries + 1})...`);
-        await sleep(3000);
-        continue;
-      }
-      throw err;
-    }
-  }
 }
 
 const ACTIVE_DAY_COLOR = "#CCFF00";
@@ -164,6 +28,19 @@ const EQUIPMENT_MAP = {
   bodyweight: "bodyweight",
 };
 
+const setupButtonStyle = {
+  width: "100%",
+  background: "#CCFF00",
+  color: "#0A0A0A",
+  border: "none",
+  borderRadius: 14,
+  padding: "16px",
+  fontSize: 14,
+  fontWeight: 700,
+  cursor: "pointer",
+  letterSpacing: "0.04em",
+};
+
 export default function WorkoutPlanPage() {
   const navigate = useNavigate();
   const { user, profile: authProfile } = useAuth();
@@ -173,12 +50,11 @@ export default function WorkoutPlanPage() {
   // to. It comes only from a real workout_plans row and is null whenever there
   // is no such row to name; nothing is derived from the user, the plan JSON or
   // the date. This page fetches its own row rather than reading the id from
-  // WorkoutContext, whose separate fetch would go stale the moment a plan is
-  // regenerated here.
+  // WorkoutContext, whose separate fetch would go stale if the plan changes.
   const [planRowId, setPlanRowId] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
+  const [genderMismatch, setGenderMismatch] = useState(false);
   const [activeDay, setActiveDay] = useState(null);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -190,11 +66,10 @@ export default function WorkoutPlanPage() {
   async function init() {
     setLoading(true);
     const profileData = await fetchProfile();
-    const hasPlan = profileData ? await loadPlan(profileData.gender) : false;
-    setLoading(false);
-    if (!hasPlan && profileData) {
-      generatePlan(profileData);
+    if (profileData) {
+      await loadPlan(profileData.gender);
     }
+    setLoading(false);
   }
 
   async function fetchProfile() {
@@ -212,23 +87,19 @@ export default function WorkoutPlanPage() {
     return null;
   }
 
-  async function deleteUserWorkoutPlans() {
-    if (!user?.id) return;
-    const { error } = await supabase
-      .from("workout_plans")
-      .update({ is_active: false })
-      .eq("user_id", user.id);
-    if (error) {
-      console.error("[WorkoutPlan] Failed to delete workout plans:", error);
-    }
-  }
-
   function normalizeGender(gender) {
     return String(gender || "male").toLowerCase();
   }
 
+  function goToPlanSetup() {
+    navigate("/profile");
+  }
+
   async function loadPlan(profileGender) {
     const expectedGender = normalizeGender(profileGender);
+    setGenderMismatch(false);
+    setPlan(null);
+    setPlanRowId(null);
 
     try {
       const { data } = await supabase
@@ -244,12 +115,8 @@ export default function WorkoutPlanPage() {
         const cachedGender = normalizeGender(data.plan_data.gender);
 
         if (!data.plan_data.gender || cachedGender !== expectedGender) {
-          console.log("[WorkoutPlan] Cached plan gender mismatch, deleting and regenerating", {
-            cachedGender: data.plan_data.gender || null,
-            expectedGender,
-          });
-          await deleteUserWorkoutPlans();
-          return false;
+          setGenderMismatch(true);
+          return;
         }
 
         logPlanSource(
@@ -258,65 +125,8 @@ export default function WorkoutPlanPage() {
         );
         setPlan(data.plan_data);
         setPlanRowId(data.id ?? null);
-        return true;
       }
     } catch (_) {}
-    return false;
-  }
-
-  async function refreshPlan() {
-    if (generating) return;
-    await deleteUserWorkoutPlans();
-    setPlan(null);
-    setPlanRowId(null);
-    await generatePlan();
-  }
-
-  async function generatePlan(profileOverride) {
-    setGenerating(true);
-
-    const activeProfile = profileOverride || profile;
-    const activeCoach = activeProfile?.coach_persona || activeProfile?.selected_coach || activeProfile?.current_coach || activeProfile?.coach_id || coach;
-    const profileGender = normalizeGender(activeProfile?.gender);
-
-    const userProfile = {
-      fitnessLevel: activeProfile?.experience || "beginner",
-      availableEquipment: activeProfile?.equipment || "full_gym",
-      goal: activeProfile?.goal || "general fitness",
-      injuries: activeProfile?.injuries || activeProfile?.health_conditions || "none",
-      age: activeProfile?.age || null,
-      weight: activeProfile?.weight_kg || null,
-      isReturning: false,
-      setting: "gym",
-    };
-
-    let planSource = "gemini";
-    let planData;
-    try {
-      planData = await generateWorkoutPlanWithRetry(activeCoach, user, userProfile);
-      logPlanSource("Generated via Gemini", planData);
-    } catch (e) {
-      console.error("Gemini failed, using fallback:", e);
-      planData = getFallbackWorkoutPlan(activeCoach, profileGender, activeProfile?.session_duration);
-      planSource = "fallback";
-      logPlanSource("Using gender-aware FALLBACK template", planData);
-    }
-
-    planData = { ...planData, gender: profileGender };
-
-    await deleteUserWorkoutPlans();
-
-    await supabase.from("workout_plans").insert({
-      user_id: user.id,
-      coach_id: activeCoach,
-      plan_data: planData,
-      week_start: new Date().toISOString().split("T")[0],
-      is_active: true,
-    });
-
-    console.log(`[WorkoutPlan] Saved new plan (source=${planSource})`);
-    setPlan(planData);
-    setGenerating(false);
   }
 
   const days = plan?.days || [];
@@ -349,6 +159,14 @@ export default function WorkoutPlanPage() {
     });
   }
 
+  function renderSetupButton() {
+    return (
+      <button type="button" onClick={goToPlanSetup} style={setupButtonStyle}>
+        Set up your plan
+      </button>
+    );
+  }
+
   return (
     <div style={{ minHeight: "100vh", background: "#0A0A0A", color: "#fff", fontFamily: "sans-serif", paddingBottom: "100px" }}>
 
@@ -364,17 +182,27 @@ export default function WorkoutPlanPage() {
       </div>
 
       <div style={{ padding: "20px 16px" }}>
-        {loading || generating ? (
+        {loading ? (
           <div style={{ textAlign: "center", padding: 60, color: "#555" }}>
-            {generating ? "Building your plan..." : "Loading..."}
+            Loading...
+          </div>
+        ) : genderMismatch ? (
+          <div style={{ textAlign: "center", padding: "60px 20px" }}>
+            <div style={{ fontSize: 64, marginBottom: 16 }}>🏋️</div>
+            <h2 style={{ margin: "0 0 8px", fontSize: 18 }}>Plan does not match your profile</h2>
+            <p style={{ color: "#666", fontSize: 14, marginBottom: 20 }}>
+              This plan was built for a different profile. Regenerate it from Athlete Setup.
+            </p>
+            {renderSetupButton()}
           </div>
         ) : !plan ? (
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
             <div style={{ fontSize: 64, marginBottom: 16 }}>🏋️</div>
-            <h2 style={{ margin: "0 0 8px", fontSize: 18 }}>No plan yet</h2>
-            <p style={{ color: "#666", fontSize: 14 }}>
-              Coach {label} is preparing your weekly plan
+            <h2 style={{ margin: "0 0 8px", fontSize: 18 }}>No active plan</h2>
+            <p style={{ color: "#666", fontSize: 14, marginBottom: 20 }}>
+              Create your weekly plan from Athlete Setup.
             </p>
+            {renderSetupButton()}
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -446,12 +274,12 @@ export default function WorkoutPlanPage() {
                       <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: "4px 12px", fontSize: 11, color: "#555", marginBottom: 8, paddingBottom: 6, borderBottom: "1px solid #1a1a1a" }}>
                         <span>Exercise</span><span>Sets</span><span>Reps</span><span>Rest</span>
                       </div>
-                      {d.exercises.map((ex, j) => (
+                      {d.exercises.map((exercise, j) => (
                         <div key={j} style={{ display: "grid", gridTemplateColumns: "1fr auto auto auto", gap: "4px 12px", padding: "7px 0", borderBottom: j < d.exercises.length - 1 ? "1px solid #1a1a1a" : "none", alignItems: "center" }}>
-                          <span style={{ fontSize: 13, color: "#ddd" }}>{ex.name}</span>
-                          <span style={{ fontSize: 12, color: ACTIVE_DAY_COLOR, fontWeight: 600 }}>{ex.sets}</span>
-                          <span style={{ fontSize: 12, color: "#aaa" }}>{ex.reps}</span>
-                          <span style={{ fontSize: 11, color: "#555" }}>{ex.rest}</span>
+                          <span style={{ fontSize: 13, color: "#ddd" }}>{exercise.name}</span>
+                          <span style={{ fontSize: 12, color: ACTIVE_DAY_COLOR, fontWeight: 600 }}>{exercise.sets}</span>
+                          <span style={{ fontSize: 12, color: "#aaa" }}>{exercise.reps}</span>
+                          <span style={{ fontSize: 11, color: "#555" }}>{exercise.rest}</span>
                         </div>
                       ))}
                     </div>
