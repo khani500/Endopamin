@@ -559,9 +559,12 @@ export default function ProfilePage() {
     setProfileLoaded(true);
   }, [profile, profileLoaded]);
 
-  useEffect(() => () => {
-    pageMountedRef.current = false;
-    if (loadingTimerRef.current) window.clearInterval(loadingTimerRef.current);
+  useEffect(() => {
+    pageMountedRef.current = true;
+    return () => {
+      pageMountedRef.current = false;
+      if (loadingTimerRef.current) window.clearInterval(loadingTimerRef.current);
+    };
   }, []);
 
   useEffect(() => {
