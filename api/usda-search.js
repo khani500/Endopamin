@@ -1,9 +1,12 @@
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+import { applyCorsHeaders } from './_cors.js';
 
-  if (req.method === 'OPTIONS') {
+export default async function handler(req, res) {
+  const allowedOrigin = applyCorsHeaders(req, res, {
+    methods: 'GET, OPTIONS',
+    headers: 'content-type',
+  });
+
+  if (req.method === 'OPTIONS' && allowedOrigin) {
     return res.status(200).end();
   }
 

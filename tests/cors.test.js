@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveAllowedOrigin } from '../api/replace-plans.js';
+import { resolveAllowedOrigin } from '../api/_cors.js';
 
 describe('resolveAllowedOrigin', () => {
   it.each([

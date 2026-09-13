@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { applyCorsHeaders } from './_cors.js';
 import { checkRateLimit } from './_rateLimit.js';
 import { reportError } from './_sentry.js';
 
@@ -11,13 +12,6 @@ export const config = {
 };
 
 const MAX_BODY_BYTES = 256 * 1024;
-
-const ALLOWED_ORIGINS = new Set([
-  'http://localhost:5173',
-  'https://www.endopamin.com',
-  'https://endopamin.com',
-  'https://app.endopamin.com',
-]);
 
 const COACH_IDS = new Set(['aria', 'kane', 'blaze', 'nova', 'zara']);
 const PLAN_TYPES = new Set(['weekly']);
@@ -57,21 +51,6 @@ const ALLOWED_EXERCISE_KEYS = new Set([
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-
-export function resolveAllowedOrigin(requestOrigin) {
-  return typeof requestOrigin === 'string' && ALLOWED_ORIGINS.has(requestOrigin)
-    ? requestOrigin
-    : null;
-}
-
-function setCorsHeaders(req, res) {
-  const allowedOrigin = resolveAllowedOrigin(req.headers.origin);
-  if (!allowedOrigin) return null;
-
-  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
-  res.setHeader('Vary', 'Origin');
-  return allowedOrigin;
-}
 
 function isPlainObject(v) {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -395,13 +374,10 @@ async function handleRequest(req, res) {
 }
 
 export default async function handler(req, res) {
-  const allowedOrigin = setCorsHeaders(req, res);
+  const allowedOrigin = applyCorsHeaders(req, res);
 
   try {
     if (req.method === 'OPTIONS' && allowedOrigin) {
-      res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'authorization, content-type');
-      res.setHeader('Access-Control-Max-Age', '86400');
       return res.status(204).end();
     }
 

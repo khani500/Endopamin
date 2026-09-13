@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { applyCorsHeaders } from './_cors.js';
 import { checkRateLimit } from './_rateLimit.js';
 import { reportError } from './_sentry.js';
 
@@ -33,6 +34,11 @@ function isPayloadTooLargeError(err) {
 }
 
 export default async function handler(req, res) {
+  const allowedOrigin = applyCorsHeaders(req, res);
+  if (req.method === 'OPTIONS' && allowedOrigin) {
+    return res.status(204).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
