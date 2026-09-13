@@ -136,6 +136,40 @@ const COACH_GENERATION_CONFIG = {
   maxOutputTokens: 1024,
 };
 
+async function postToGeminiEndpoint(requestBody, signal) {
+  const serializedBody = JSON.stringify(requestBody);
+  const response = await fetch(endpoint(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
+    body: serializedBody,
+    signal,
+  });
+
+  if (response.status !== 401) {
+    return response;
+  }
+
+  let refreshResult;
+  try {
+    refreshResult = await supabase.auth.refreshSession();
+  } catch {
+    return response;
+  }
+
+  if (refreshResult?.error || !refreshResult?.data?.session) {
+    return response;
+  }
+
+  console.warn('Gemini proxy returned 401; refreshed the session and retrying once.');
+
+  return fetch(endpoint(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
+    body: serializedBody,
+    signal,
+  });
+}
+
 async function generateContent({ prompt, systemPrompt = '', generationConfig = {}, signal } = {}) {
   const body = {
     contents: [{ parts: [{ text: prompt }] }],
@@ -148,12 +182,7 @@ async function generateContent({ prompt, systemPrompt = '', generationConfig = {
     };
   }
 
-  const response = await fetch(endpoint(), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-    body: JSON.stringify(buildRequestPayload(body)),
-    signal,
-  });
+  const response = await postToGeminiEndpoint(buildRequestPayload(body), signal);
   const data = await response.json();
   if (!response.ok || data.error) {
     const message = data.error?.message || `Gemini request failed with status ${response.status}`;
@@ -175,12 +204,7 @@ async function generateChatContent({ contents, systemPrompt = '', signal } = {})
     };
   }
 
-  const response = await fetch(endpoint(), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-    body: JSON.stringify(buildRequestPayload(body)),
-    signal,
-  });
+  const response = await postToGeminiEndpoint(buildRequestPayload(body), signal);
 
   const responseText = await response.text();
   let data;
