@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+import { mapGoalForSave } from '../lib/profileUtils';
 import {
   fetchTrainingKnowledgeForOnboarding,
   generateOnboardingNutritionPlan,
@@ -138,7 +139,6 @@ const EXPERIENCE = [
   { id: 'beginner', label: 'Beginner', sub: 'Just starting out', color: '#666' },
   { id: 'intermediate', label: 'Intermediate', sub: '6 mo – 2 years', color: '#FFA53C' },
   { id: 'advanced', label: 'Advanced', sub: '2+ years', color: '#FF6B6B' },
-  { id: 'athlete', label: 'Athlete', sub: 'Competitive level', color: '#CCFF00' },
 ];
 
 const ONBOARDING_CSS = `
@@ -494,7 +494,7 @@ export default function OnboardingPage() {
       weight_unit: form.weight_unit,
       height: form.height ? Number(form.height) : null,
       height_unit: form.height_unit,
-      goal: form.goal,
+      goal: mapGoalForSave(form.goal),
       experience: form.experience,
       coach_persona: form.coach_persona,
       injuries: form.injuries,

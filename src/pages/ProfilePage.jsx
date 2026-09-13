@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { deleteUserAccount } from '../lib/accountDeletion';
+import { mapGoalForSave } from '../lib/profileUtils';
 import {
   fetchTrainingKnowledgeForOnboarding,
   generateOnboardingNutritionPlan,
@@ -64,16 +65,6 @@ function calcBmi(heightCm, weightKg) {
   if (!heightCm || !weightKg) return null;
   const heightM = heightCm / 100;
   return Math.round((weightKg / (heightM * heightM)) * 10) / 10;
-}
-
-function mapGoalForSave(goal) {
-  const g = String(goal || '').trim().toLowerCase();
-  if (g === 'fat_loss' || g.includes('burn fat') || g.includes('lose weight')) return 'fat_loss';
-  if (g === 'muscle' || g === 'muscle_gain' || g.includes('build muscle') || g.includes('gain mass')) {
-    return 'muscle_gain';
-  }
-  if (g === 'endurance' || g.includes('athletic') || g.includes('endurance')) return 'endurance';
-  return g || 'fat_loss';
 }
 
 function buildAthleteFromProfile(profileRow = {}) {
@@ -215,12 +206,6 @@ const IconTrophy = ({ color = '#888' }) => (
     <path d="M6 3h6v5a3 3 0 0 1-6 0V3Z" stroke={color} strokeWidth="1.2" strokeLinejoin="round"/>
     <path d="M6 5H4a2 2 0 0 0 0 4h2M12 5h2a2 2 0 0 0 0 4h-2" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
     <path d="M9 11v3M7 15h4" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
-  </svg>
-);
-
-const IconLightning = ({ color = '#888' }) => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <path d="M11 2L6 10h5l-1 6 6-8h-5l1-6Z" stroke={color} strokeWidth="1.3" strokeLinejoin="round"/>
   </svg>
 );
 
@@ -1074,7 +1059,6 @@ export default function ProfilePage() {
           { val: 'beginner', label: 'Beginner', sub: 'Just starting out', color: '#555', Icon: IconStar },
           { val: 'intermediate', label: 'Intermediate', sub: '6 mo – 2 years', color: '#FFA53C', Icon: IconStar },
           { val: 'advanced', label: 'Advanced', sub: '2+ years', color: '#FF6B6B', Icon: IconTrophy },
-          { val: 'athlete', label: 'Athlete', sub: 'Competitive level', color: '#CCFF00', Icon: IconLightning },
         ].map(({ val, label, sub, color, Icon }) => (
           <SelectCard key={val} selected={form.experience === val} onClick={() => set('experience', val)}
             style={{ padding: '11px 10px' }}>
