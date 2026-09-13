@@ -1,8 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { generateWorkoutPlan, getFallbackWorkoutPlan } from "../lib/gemini";
+import {
+  canUseLegacyPlanFallback,
+  createClientAttemptId,
+  getRegenerationWeekNumber,
+  replacePlans,
+} from "../lib/replacePlans";
 import { ProPaywall } from "../components/paywall/ProPaywall";
 
 const ex = (name, sets, reps, rest) => ({ name, sets, reps, rest });
@@ -179,6 +185,7 @@ export default function WorkoutPlanPage() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const generatePlanInFlightRef = useRef(false);
   const [activeDay, setActiveDay] = useState(null);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -212,17 +219,6 @@ export default function WorkoutPlanPage() {
     return null;
   }
 
-  async function deleteUserWorkoutPlans() {
-    if (!user?.id) return;
-    const { error } = await supabase
-      .from("workout_plans")
-      .update({ is_active: false })
-      .eq("user_id", user.id);
-    if (error) {
-      console.error("[WorkoutPlan] Failed to delete workout plans:", error);
-    }
-  }
-
   function normalizeGender(gender) {
     return String(gender || "male").toLowerCase();
   }
@@ -244,11 +240,10 @@ export default function WorkoutPlanPage() {
         const cachedGender = normalizeGender(data.plan_data.gender);
 
         if (!data.plan_data.gender || cachedGender !== expectedGender) {
-          console.log("[WorkoutPlan] Cached plan gender mismatch, deleting and regenerating", {
+          console.log("[WorkoutPlan] Cached plan gender mismatch; generating a replacement without archiving the existing row", {
             cachedGender: data.plan_data.gender || null,
             expectedGender,
           });
-          await deleteUserWorkoutPlans();
           return false;
         }
 
@@ -264,59 +259,148 @@ export default function WorkoutPlanPage() {
     return false;
   }
 
+  async function saveNewWorkoutPlan(workoutPlan, coachId, clientAttemptId, weekNumber, profileGender) {
+    if (!user?.id || !supabase) {
+      throw new Error("Cannot save plans without an authenticated user");
+    }
+
+    const weekStart = new Date().toISOString().split("T")[0];
+
+    try {
+      return await replacePlans({
+        clientAttemptId,
+        coachId,
+        planType: "weekly",
+        weekStart,
+        weekNumber,
+        activateOn: null,
+        workoutPlan,
+      });
+    } catch (endpointError) {
+      if (!canUseLegacyPlanFallback(endpointError)) throw endpointError;
+      console.error(
+        "[WorkoutPlan] replace-plans failed; entering temporary legacy Supabase fallback",
+        endpointError,
+      );
+    }
+
+    // A network failure can happen after the endpoint committed but before its
+    // response arrived. Confirm the workout attempt is absent before legacy
+    // writes so the fallback cannot archive a successfully committed replay.
+    const workoutAttempt = await supabase
+      .from("workout_plans")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("client_attempt_id", clientAttemptId)
+      .maybeSingle();
+
+    if (workoutAttempt.error) {
+      throw new Error(`Legacy workout attempt check failed: ${workoutAttempt.error.message}`);
+    }
+    if (workoutAttempt.data) {
+      console.warn("[WorkoutPlan] replace-plans response was lost; committed attempt recovered");
+      return { workoutPlanId: workoutAttempt.data.id, nutritionPlanId: null, replayed: true };
+    }
+
+    const { error: workoutArchiveError } = await supabase
+      .from("workout_plans")
+      .update({ is_active: false })
+      .eq("user_id", user.id);
+    if (workoutArchiveError) {
+      throw new Error(`Legacy workout archive failed: ${workoutArchiveError.message}`);
+    }
+
+    const { data: inserted, error: workoutInsertError } = await supabase
+      .from("workout_plans")
+      .insert({
+        user_id: user.id,
+        coach_id: coachId,
+        plan_data: { ...workoutPlan, gender: profileGender },
+        plan_type: "weekly",
+        week_start: weekStart,
+        week_number: weekNumber,
+        activate_on: null,
+        is_active: true,
+        client_attempt_id: clientAttemptId,
+      })
+      .select("id")
+      .single();
+
+    if (workoutInsertError) {
+      throw new Error(`Legacy workout plan insert failed: ${workoutInsertError.message}`);
+    }
+
+    return { workoutPlanId: inserted?.id, nutritionPlanId: null, replayed: false };
+  }
+
   async function refreshPlan() {
     if (generating) return;
-    await deleteUserWorkoutPlans();
-    setPlan(null);
-    setPlanRowId(null);
     await generatePlan();
   }
 
   async function generatePlan(profileOverride) {
-    setGenerating(true);
+    if (generatePlanInFlightRef.current) return;
+    generatePlanInFlightRef.current = true;
 
-    const activeProfile = profileOverride || profile;
-    const activeCoach = activeProfile?.coach_persona || activeProfile?.selected_coach || activeProfile?.current_coach || activeProfile?.coach_id || coach;
-    const profileGender = normalizeGender(activeProfile?.gender);
-
-    const userProfile = {
-      fitnessLevel: activeProfile?.experience || "beginner",
-      availableEquipment: activeProfile?.equipment || "full_gym",
-      goal: activeProfile?.goal || "general fitness",
-      injuries: activeProfile?.injuries || activeProfile?.health_conditions || "none",
-      age: activeProfile?.age || null,
-      weight: activeProfile?.weight_kg || null,
-      isReturning: false,
-      setting: "gym",
-    };
-
-    let planSource = "gemini";
-    let planData;
     try {
-      planData = await generateWorkoutPlanWithRetry(activeCoach, user, userProfile);
-      logPlanSource("Generated via Gemini", planData);
-    } catch (e) {
-      console.error("Gemini failed, using fallback:", e);
-      planData = getFallbackWorkoutPlan(activeCoach, profileGender, activeProfile?.session_duration);
-      planSource = "fallback";
-      logPlanSource("Using gender-aware FALLBACK template", planData);
+      setGenerating(true);
+
+      const clientAttemptId = createClientAttemptId();
+      const weekNumber = await getRegenerationWeekNumber(user.id);
+
+      const activeProfile = profileOverride || profile;
+      const activeCoach = activeProfile?.coach_persona || activeProfile?.selected_coach || activeProfile?.current_coach || activeProfile?.coach_id || coach;
+      const profileGender = normalizeGender(activeProfile?.gender);
+
+      const userProfile = {
+        fitnessLevel: activeProfile?.experience || "beginner",
+        availableEquipment: activeProfile?.equipment || "full_gym",
+        goal: activeProfile?.goal || "general fitness",
+        injuries: activeProfile?.injuries || activeProfile?.health_conditions || "none",
+        age: activeProfile?.age || null,
+        weight: activeProfile?.weight_kg || null,
+        isReturning: false,
+        setting: "gym",
+      };
+
+      let planSource = "gemini";
+      let planData;
+      try {
+        planData = await generateWorkoutPlanWithRetry(activeCoach, user, userProfile);
+        logPlanSource("Generated via Gemini", planData);
+      } catch (e) {
+        console.error("Gemini failed, using fallback:", e);
+        planData = getFallbackWorkoutPlan(activeCoach, profileGender, activeProfile?.session_duration);
+        planSource = "fallback";
+        logPlanSource("Using gender-aware FALLBACK template", planData);
+      }
+
+      planData = { ...planData, gender: profileGender };
+
+      const saved = await saveNewWorkoutPlan(
+        planData,
+        activeCoach,
+        clientAttemptId,
+        weekNumber,
+        profileGender,
+      );
+
+      if (!saved?.workoutPlanId) {
+        console.error("[WorkoutPlan] Failed to save workout plan.");
+        setGenerating(false);
+        return;
+      }
+
+      console.log(`[WorkoutPlan] Saved new plan (source=${planSource})`);
+      setPlan(planData);
+      setPlanRowId(saved.workoutPlanId);
+      setGenerating(false);
+    } catch (err) {
+      console.error("[WorkoutPlan] Failed to save workout plan:", err);
+      setGenerating(false);
+    } finally {
+      generatePlanInFlightRef.current = false;
     }
-
-    planData = { ...planData, gender: profileGender };
-
-    await deleteUserWorkoutPlans();
-
-    await supabase.from("workout_plans").insert({
-      user_id: user.id,
-      coach_id: activeCoach,
-      plan_data: planData,
-      week_start: new Date().toISOString().split("T")[0],
-      is_active: true,
-    });
-
-    console.log(`[WorkoutPlan] Saved new plan (source=${planSource})`);
-    setPlan(planData);
-    setGenerating(false);
   }
 
   const days = plan?.days || [];
