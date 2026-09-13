@@ -13,6 +13,12 @@ import {
   getFallbackWorkoutPlan,
   normalizeAthleteGoal,
 } from '../lib/gemini';
+import {
+  canUseLegacyPlanFallback,
+  createClientAttemptId,
+  getRegenerationWeekNumber,
+  replacePlans,
+} from '../lib/replacePlans';
 import PlanPreviewScreen from '../components/PlanPreviewScreen';
 
 const PROFILE_STORAGE_KEY = 'endopamin_profile';
@@ -654,28 +660,6 @@ export default function ProfilePage() {
     return profileData;
   };
 
-  const deleteUserPlans = async () => {
-    if (!user?.id || !supabase) return;
-
-    const { error: workoutDeleteError } = await supabase
-      .from('workout_plans')
-      .update({ is_active: false })
-      .eq('user_id', user.id);
-    if (workoutDeleteError) {
-      console.error('Failed to delete workout plans:', workoutDeleteError);
-      throw workoutDeleteError;
-    }
-
-    const { error: nutritionDeleteError } = await supabase
-      .from('nutrition_plans')
-      .update({ is_active: false })
-      .eq('user_id', user.id);
-    if (nutritionDeleteError) {
-      console.error('Failed to delete nutrition plans:', nutritionDeleteError);
-      throw nutritionDeleteError;
-    }
-  };
-
   const handleDeleteAccount = async () => {
     if (deletingAccount) return;
     const confirmed = window.confirm('Are you sure? This will permanently delete your account and all data. This cannot be undone.');
@@ -731,29 +715,110 @@ export default function ProfilePage() {
     return { workoutPlan, nutritionPlan, coachId, athlete };
   };
 
-  const saveNewPlans = async ({ workoutPlan, nutritionPlan, coachId, athlete }) => {
-    if (!user?.id || !supabase) return false;
+  const saveNewPlans = async (
+    { workoutPlan, nutritionPlan, coachId, athlete },
+    clientAttemptId,
+    weekNumber,
+  ) => {
+    if (!user?.id || !supabase) {
+      throw new Error('Cannot save plans without an authenticated user');
+    }
+
+    const weekStart = new Date().toISOString().split('T')[0];
+
+    try {
+      await replacePlans({
+        clientAttemptId,
+        coachId,
+        planType: 'weekly',
+        weekStart,
+        weekNumber,
+        activateOn: null,
+        workoutPlan,
+        nutritionPlan,
+      });
+      return true;
+    } catch (endpointError) {
+      if (!canUseLegacyPlanFallback(endpointError)) throw endpointError;
+      console.error(
+        '[Profile] replace-plans failed; entering temporary legacy Supabase fallback',
+        endpointError,
+      );
+    }
+
+    // A network failure can happen after the endpoint committed but before its
+    // response arrived. Confirm the attempt is absent before legacy writes so
+    // the fallback cannot archive a successfully committed replay.
+    const [workoutAttempt, nutritionAttempt] = await Promise.all([
+      supabase
+        .from('workout_plans')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('client_attempt_id', clientAttemptId)
+        .maybeSingle(),
+      supabase
+        .from('nutrition_plans')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('client_attempt_id', clientAttemptId)
+        .maybeSingle(),
+    ]);
+
+    if (workoutAttempt.error) {
+      throw new Error(`Legacy workout attempt check failed: ${workoutAttempt.error.message}`);
+    }
+    if (nutritionAttempt.error) {
+      throw new Error(`Legacy nutrition attempt check failed: ${nutritionAttempt.error.message}`);
+    }
+    if (workoutAttempt.data && nutritionAttempt.data) {
+      console.warn('[Profile] replace-plans response was lost; committed attempt recovered');
+      return true;
+    }
+    if (workoutAttempt.data || nutritionAttempt.data) {
+      throw new Error('Legacy fallback found an incomplete existing plan attempt');
+    }
+
+    const { error: workoutArchiveError } = await supabase
+      .from('workout_plans')
+      .update({ is_active: false })
+      .eq('user_id', user.id);
+    if (workoutArchiveError) {
+      throw new Error(`Legacy workout archive failed: ${workoutArchiveError.message}`);
+    }
 
     const { error: workoutInsertError } = await supabase.from('workout_plans').insert({
       user_id: user.id,
       coach_id: coachId,
       plan_data: { ...workoutPlan, gender: athlete.gender },
-      week_start: new Date().toISOString().split('T')[0],
+      plan_type: 'weekly',
+      week_start: weekStart,
+      week_number: weekNumber,
+      activate_on: null,
       is_active: true,
+      client_attempt_id: clientAttemptId,
     });
+
     if (workoutInsertError) {
-      console.error('Workout plan save failed:', workoutInsertError);
-      return false;
+      throw new Error(`Legacy workout plan insert failed: ${workoutInsertError.message}`);
+    }
+
+    const { error: nutritionArchiveError } = await supabase
+      .from('nutrition_plans')
+      .update({ is_active: false })
+      .eq('user_id', user.id);
+    if (nutritionArchiveError) {
+      throw new Error(`Legacy nutrition archive failed: ${nutritionArchiveError.message}`);
     }
 
     const { error: nutritionInsertError } = await supabase.from('nutrition_plans').insert({
       user_id: user.id,
       plan_data: nutritionPlan,
       is_active: true,
+      client_attempt_id: clientAttemptId,
     });
+
     if (nutritionInsertError) {
-      console.error('Nutrition plan save failed:', nutritionInsertError);
-      return false;
+      throw new Error(`Legacy nutrition plan insert failed: ${nutritionInsertError.message}`);
     }
 
     return true;
@@ -767,6 +832,9 @@ export default function ProfilePage() {
     startLoadingTimer();
 
     try {
+      const clientAttemptId = createClientAttemptId();
+      const weekNumber = await getRegenerationWeekNumber(user.id);
+
       const athlete = buildAthleteFromForm(form, profile);
       const generated = await generatePlans(athlete);
       if (!pageMountedRef.current) return;
@@ -776,10 +844,7 @@ export default function ProfilePage() {
         return;
       }
 
-      await deleteUserPlans();
-      if (!pageMountedRef.current) return;
-
-      const saved = await saveNewPlans(generated);
+      const saved = await saveNewPlans(generated, clientAttemptId, weekNumber);
       if (!pageMountedRef.current) return;
 
       if (!saved) {
