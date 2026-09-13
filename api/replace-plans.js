@@ -270,6 +270,91 @@ export function mapRpcError(code) {
   }
 }
 
+// The RPC can commit and still look like a failure (no return row, a
+// transport error, a timeout). Both plan tables have a partial unique
+// index on (user_id, client_attempt_id), so this read is at most one
+// row per table. Returns the success body, or null to keep the original 500.
+async function reconcilePlanWrite(admin, {
+  userId, attemptId, requestId, reason, nutritionExpected,
+}) {
+  let workout;
+  let nutrition;
+  try {
+    workout = await admin
+      .from('workout_plans')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('client_attempt_id', attemptId)
+      .maybeSingle();
+
+    if (workout.error) {
+      console.error('replace-plans reconcile failed', {
+        requestId,
+        userId,
+        attemptId,
+        reason,
+        table: 'workout_plans',
+        code: workout.error.code ?? null,
+        message: workout.error.message ?? null,
+      });
+      return null;
+    }
+
+    nutrition = await admin
+      .from('nutrition_plans')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('client_attempt_id', attemptId)
+      .maybeSingle();
+
+    if (nutrition.error) {
+      console.error('replace-plans reconcile failed', {
+        requestId,
+        userId,
+        attemptId,
+        reason,
+        table: 'nutrition_plans',
+        code: nutrition.error.code ?? null,
+        message: nutrition.error.message ?? null,
+      });
+      return null;
+    }
+  } catch (err) {
+    console.error('replace-plans reconcile failed', {
+      requestId,
+      userId,
+      attemptId,
+      reason,
+      message: err?.message ?? null,
+    });
+    return null;
+  }
+
+  const workoutPlanId = workout.data?.id ?? null;
+  const nutritionPlanId = nutrition.data?.id ?? null;
+  if (!workoutPlanId) return null;
+
+  // Workout-only writes leave nutrition absent. A requested nutrition row
+  // missing after a landed workout write is still returned as null rather
+  // than 500: the RPC is one transaction, and a 500 here is the false
+  // failure this read exists to close.
+  console.warn('replace-plans reconciled', {
+    requestId,
+    userId,
+    attemptId,
+    reason,
+    workoutPlanId,
+    nutritionPlanId,
+    nutritionExpected: nutritionExpected === true,
+  });
+
+  return {
+    workoutPlanId,
+    nutritionPlanId: nutritionPlanId ?? null,
+    replayed: false,
+  };
+}
+
 async function handleRequest(req, res, requestId) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed', requestId });
@@ -349,7 +434,7 @@ async function handleRequest(req, res, requestId) {
 
   const workoutPlanData = { coachId: input.coachId, days: input.workoutPlan.days, gender };
 
-  const { data, error } = await admin.rpc('replace_user_plans_atomic', {
+  const rpcArgs = {
     p_user_id: userId,
     p_client_attempt_id: input.clientAttemptId,
     p_workout_coach_id: input.coachId,
@@ -359,7 +444,30 @@ async function handleRequest(req, res, requestId) {
     p_workout_activate_on: input.activateOn,
     p_workout_plan_data: workoutPlanData,
     p_nutrition_plan_data: input.nutritionPlan,
-  });
+  };
+
+  const reconcileArgs = {
+    userId,
+    attemptId: input.clientAttemptId,
+    requestId,
+    nutritionExpected: input.nutritionPlan != null,
+  };
+
+  let data;
+  let error;
+  try {
+    ({ data, error } = await admin.rpc('replace_user_plans_atomic', rpcArgs));
+  } catch (rpcThrown) {
+    // supabase-js usually returns { error } for transport failures; a
+    // thrown timeout after commit still has to be reconciled here or it
+    // becomes the unhandled 500.
+    const recovered = await reconcilePlanWrite(admin, {
+      ...reconcileArgs,
+      reason: 'rpc-thrown',
+    });
+    if (recovered) return res.status(200).json(recovered);
+    throw rpcThrown;
+  }
 
   if (error) {
     const mapped = mapRpcError(error.code);
@@ -387,6 +495,11 @@ async function handleRequest(req, res, requestId) {
       schema: error.schema ?? null,
     });
     await reportError(error, { endpoint: 'replace-plans', stage: 'rpc', requestId });
+    const recovered = await reconcilePlanWrite(admin, {
+      ...reconcileArgs,
+      reason: 'rpc-error',
+    });
+    if (recovered) return res.status(200).json(recovered);
     return res.status(500).json({ error: 'Could not save plan', requestId });
   }
 
@@ -396,6 +509,11 @@ async function handleRequest(req, res, requestId) {
     await reportError(new Error('replace_user_plans_atomic returned no row'), {
       endpoint: 'replace-plans', stage: 'rpc-result', requestId,
     });
+    const recovered = await reconcilePlanWrite(admin, {
+      ...reconcileArgs,
+      reason: 'no-row',
+    });
+    if (recovered) return res.status(200).json(recovered);
     return res.status(500).json({ error: 'Could not save plan', requestId });
   }
 
