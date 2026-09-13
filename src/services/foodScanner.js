@@ -726,7 +726,7 @@ async function callGeminiVision({
     body.systemInstruction = { parts: [{ text: systemInstruction }] };
   }
 
-  let response = await fetch('/api/gemini', {
+  let response = await fetch('https://www.endopamin.com/api/gemini', {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
@@ -735,7 +735,7 @@ async function callGeminiVision({
 
   if (response.status === 503) {
     await new Promise(r => setTimeout(r, 1500));
-    response = await fetch('/api/gemini', {
+    response = await fetch('https://www.endopamin.com/api/gemini', {
       method: 'POST',
       signal,
       headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },

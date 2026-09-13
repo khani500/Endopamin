@@ -96,45 +96,24 @@ export async function buildKnowledgeContext(userLevel) {
   return block;
 }
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
 const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_PROXY_URL = 'https://www.endopamin.com/api/gemini';
 
-function useGeminiProxy() {
-  return typeof window !== 'undefined' && window.location.hostname !== 'localhost';
-}
-
-function endpoint(action = 'generateContent') {
-  if (useGeminiProxy()) {
-    return '/api/gemini';
-  }
-  return `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:${action}?key=${GEMINI_API_KEY}`;
+function endpoint() {
+  return GEMINI_PROXY_URL;
 }
 
 function streamEndpoint() {
-  if (useGeminiProxy()) {
-    return '/api/gemini';
-  }
-  return `${endpoint('streamGenerateContent')}&alt=sse`;
+  return GEMINI_PROXY_URL;
 }
 
 function buildRequestPayload(body, action = 'generateContent', { stream = false } = {}) {
-  if (!useGeminiProxy()) return body;
   return {
     model: GEMINI_MODEL,
     action,
     ...(stream ? { alt: 'sse' } : {}),
     ...body,
   };
-}
-
-function assertConfigured() {
-  if (!GEMINI_API_KEY && !useGeminiProxy()) {
-    throw new Error('Gemini API key is missing. Add VITE_GEMINI_API_KEY to .env.local and restart Vite.');
-  }
-}
-
-function isConfigured() {
-  return Boolean(GEMINI_API_KEY) || useGeminiProxy();
 }
 
 function extractText(data) {
@@ -185,9 +164,6 @@ async function generateContent({ prompt, systemPrompt = '', generationConfig = {
 
 /** Multi-turn chat with full conversation history for coach sessions. */
 async function generateChatContent({ contents, systemPrompt = '', signal } = {}) {
-  const isProduction =
-    typeof window !== 'undefined' && window.location.hostname !== 'localhost';
-
   const body = {
     contents,
     generationConfig: COACH_GENERATION_CONFIG,
@@ -199,27 +175,12 @@ async function generateChatContent({ contents, systemPrompt = '', signal } = {})
     };
   }
 
-  let response;
-  if (isProduction) {
-    // fix: always use Vercel proxy in production (fixes Safari iOS CORS block)
-    response = await fetch('/api/gemini', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-      body: JSON.stringify({
-        model: GEMINI_MODEL,
-        action: 'generateContent',
-        ...body,
-      }),
-      signal,
-    });
-  } else {
-    response = await fetch(endpoint(), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-      body: JSON.stringify(buildRequestPayload(body)),
-      signal,
-    });
-  }
+  const response = await fetch(endpoint(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
+    body: JSON.stringify(buildRequestPayload(body)),
+    signal,
+  });
 
   const responseText = await response.text();
   let data;
@@ -241,7 +202,6 @@ async function generateChatContent({ contents, systemPrompt = '', signal } = {})
 }
 
 async function generateAudioContent({ audioBase64, mimeType, prompt }) {
-  assertConfigured();
   const body = {
     contents: [
       {
@@ -278,10 +238,6 @@ export const testConnection = async () => {
 };
 
 export const askGemini = async (prompt, systemPrompt = '') => {
-  if (!isConfigured()) {
-    return 'Coach is offline — API key missing';
-  }
-
   try {
     const data = await generateContent({ prompt, systemPrompt });
     return extractText(data) || 'No response';
@@ -296,11 +252,6 @@ export const askGemini = async (prompt, systemPrompt = '') => {
  * @param {{ messages: { role: 'user'|'assistant', text: string }[], systemPrompt?: string }} params
  */
 export const askGeminiChat = async ({ messages, systemPrompt = '', signal, throwOnError = false } = {}) => {
-  if (!isConfigured()) {
-    if (throwOnError) throw new Error('Coach is offline — API key missing');
-    return 'Coach is offline — API key missing';
-  }
-
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const data = await generateChatContent({ contents: messages, systemPrompt, signal });
@@ -341,8 +292,6 @@ export async function askGeminiChatStream({
   signal,
   onToken,
 } = {}) {
-  assertConfigured();
-
   const body = {
     contents: messages,
     generationConfig: COACH_GENERATION_CONFIG,
@@ -412,9 +361,6 @@ export async function askGeminiChatStream({
 }
 
 export const askGeminiWithImage = async (base64Image, prompt) => {
-  const isProduction =
-    typeof window !== 'undefined' && window.location.hostname !== 'localhost';
-
   const body = {
     contents: [
       {
@@ -433,21 +379,11 @@ export const askGeminiWithImage = async (base64Image, prompt) => {
   };
 
   try {
-    let response;
-    if (isProduction) {
-      response = await fetch('/api/gemini', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-        body: JSON.stringify({ ...body, model: 'gemini-2.5-flash', action: 'generateContent' }),
-      });
-    } else {
-      if (!GEMINI_API_KEY) return null;
-      response = await fetch(endpoint(), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
-        body: JSON.stringify(body),
-      });
-    }
+    const response = await fetch(endpoint(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
+      body: JSON.stringify(buildRequestPayload(body)),
+    });
 
     const rawText = await response.text();
     if (!response.ok) {
@@ -551,7 +487,7 @@ FORMAT:
   ]
 }`;
 
-  const response = await fetch('/api/gemini', {
+  const response = await fetch(endpoint(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
     body: JSON.stringify({

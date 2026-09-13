@@ -233,7 +233,7 @@ export async function fetchFromGeminiFallback(barcode, { signal } = {}) {
     },
   };
 
-  const response = await fetch('/api/gemini', {
+  const response = await fetch('https://www.endopamin.com/api/gemini', {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json', ...(await getAuthHeaders()) },
