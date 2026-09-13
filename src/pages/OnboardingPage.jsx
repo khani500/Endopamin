@@ -8,6 +8,11 @@ import {
   getFallbackNutritionPlan,
   getFallbackWorkoutPlan,
 } from '../lib/gemini';
+import {
+  canUseLegacyPlanFallback,
+  createClientAttemptId,
+  replacePlans,
+} from '../lib/replacePlans';
 import PlanPreviewScreen from '../components/PlanPreviewScreen';
 
 const LOADING_PHASES = [
@@ -303,9 +308,12 @@ export default function OnboardingPage() {
     if (initDone && generatedPlans) console.log('SUCCESS SCREEN');
   }, [initDone, generatedPlans]);
 
-  useEffect(() => () => {
-    pageMountedRef.current = false;
-    if (loadingTimerRef.current) window.clearInterval(loadingTimerRef.current);
+  useEffect(() => {
+    pageMountedRef.current = true;
+    return () => {
+      pageMountedRef.current = false;
+      if (loadingTimerRef.current) window.clearInterval(loadingTimerRef.current);
+    };
   }, []);
 
   const startLoadingTimer = () => {
@@ -365,41 +373,107 @@ export default function OnboardingPage() {
     return { workoutPlan, nutritionPlan, coachId, athlete };
   };
 
-  const saveNewPlans = async ({ workoutPlan, nutritionPlan, coachId, athlete }) => {
+  const saveNewPlans = async (
+    { workoutPlan, nutritionPlan, coachId, athlete },
+    clientAttemptId,
+  ) => {
     if (!user?.id || !supabase) return false;
 
-    await supabase
+    const weekStart = new Date().toISOString().split('T')[0];
+
+    try {
+      await replacePlans({
+        clientAttemptId,
+        coachId,
+        planType: 'weekly',
+        weekStart,
+        weekNumber: 1,
+        activateOn: null,
+        workoutPlan,
+        nutritionPlan,
+      });
+      return true;
+    } catch (endpointError) {
+      if (!canUseLegacyPlanFallback(endpointError)) throw endpointError;
+      console.error(
+        '[Onboarding] replace-plans failed; entering temporary legacy Supabase fallback',
+        endpointError,
+      );
+    }
+
+    // A network failure can happen after the endpoint committed but before its
+    // response arrived. Confirm the attempt is absent before legacy writes so
+    // the fallback cannot archive a successfully committed replay.
+    const [workoutAttempt, nutritionAttempt] = await Promise.all([
+      supabase
+        .from('workout_plans')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('client_attempt_id', clientAttemptId)
+        .maybeSingle(),
+      supabase
+        .from('nutrition_plans')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('client_attempt_id', clientAttemptId)
+        .maybeSingle(),
+    ]);
+
+    if (workoutAttempt.error) {
+      throw new Error(`Legacy workout attempt check failed: ${workoutAttempt.error.message}`);
+    }
+    if (nutritionAttempt.error) {
+      throw new Error(`Legacy nutrition attempt check failed: ${nutritionAttempt.error.message}`);
+    }
+    if (workoutAttempt.data && nutritionAttempt.data) {
+      console.warn('[Onboarding] replace-plans response was lost; committed attempt recovered');
+      return true;
+    }
+    if (workoutAttempt.data || nutritionAttempt.data) {
+      throw new Error('Legacy fallback found an incomplete existing plan attempt');
+    }
+
+    const { error: workoutArchiveError } = await supabase
       .from('workout_plans')
       .update({ is_active: false })
       .eq('user_id', user.id);
+    if (workoutArchiveError) {
+      throw new Error(`Legacy workout archive failed: ${workoutArchiveError.message}`);
+    }
 
     const { error: workoutInsertError } = await supabase.from('workout_plans').insert({
       user_id: user.id,
       coach_id: coachId,
       plan_data: { ...workoutPlan, gender: athlete.gender },
-      week_start: new Date().toISOString().split('T')[0],
+      plan_type: 'weekly',
+      week_start: weekStart,
+      week_number: 1,
+      activate_on: null,
       is_active: true,
+      client_attempt_id: clientAttemptId,
     });
 
     if (workoutInsertError) {
-      console.error('Workout plan save failed:', workoutInsertError);
-      return false;
+      throw new Error(`Legacy workout plan insert failed: ${workoutInsertError.message}`);
     }
 
-    await supabase
+    const { error: nutritionArchiveError } = await supabase
       .from('nutrition_plans')
       .update({ is_active: false })
       .eq('user_id', user.id);
+    if (nutritionArchiveError) {
+      throw new Error(`Legacy nutrition archive failed: ${nutritionArchiveError.message}`);
+    }
 
     const { error: nutritionInsertError } = await supabase.from('nutrition_plans').insert({
       user_id: user.id,
       plan_data: nutritionPlan,
       is_active: true,
+      client_attempt_id: clientAttemptId,
     });
 
     if (nutritionInsertError) {
-      console.error('Nutrition plan save failed:', nutritionInsertError);
-      return false;
+      throw new Error(`Legacy nutrition plan insert failed: ${nutritionInsertError.message}`);
     }
 
     return true;
@@ -407,6 +481,7 @@ export default function OnboardingPage() {
 
   const save = async () => {
     if (!user || !supabase) { next(); return; }
+    const clientAttemptId = createClientAttemptId();
     sessionStorage.setItem('onboarding_init_active', 'true');
     setSaving(true);
     const payload = {
@@ -449,7 +524,7 @@ export default function OnboardingPage() {
         return;
       }
 
-      const saved = await saveNewPlans(generated);
+      const saved = await saveNewPlans(generated, clientAttemptId);
       if (!pageMountedRef.current) return;
 
       if (!saved) {
@@ -461,7 +536,7 @@ export default function OnboardingPage() {
     } catch (err) {
       console.error('Plan generation failed:', err);
       if (pageMountedRef.current) {
-        setPlanError('Something went wrong. Your existing plans were kept.');
+        setPlanError(err?.message || 'Something went wrong. Your existing plans were kept.');
       }
     } finally {
       stopLoadingTimer();
