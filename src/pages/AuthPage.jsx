@@ -3,6 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
+export function buildSignupProfilePayload(userId, displayName) {
+  return {
+    id: userId,
+    display_name: displayName,
+    days_per_week: 4,
+    created_at: new Date().toISOString(),
+  };
+}
+
 export const AuthPage = ({ embedded = false }) => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
@@ -48,16 +57,10 @@ export const AuthPage = ({ embedded = false }) => {
     }
 
     if (data.user) {
-      const { error: profileError } = await supabase.from('profiles').upsert({
-        id: data.user.id,
-        display_name: name.trim(),
-        goal: 'strength_gain',
-        experience: 'intermediate',
-        gender: 'male',
-        job_type: 'mixed',
-        days_per_week: 4,
-        created_at: new Date().toISOString(),
-      }, { onConflict: 'id' });
+      const { error: profileError } = await supabase.from('profiles').upsert(
+        buildSignupProfilePayload(data.user.id, name.trim()),
+        { onConflict: 'id' },
+      );
 
       if (profileError) {
         console.warn('Profile bootstrap skipped:', profileError.message);
