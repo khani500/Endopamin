@@ -242,6 +242,87 @@ describe('planProfileWrite', () => {
     });
   });
 
+  it('stamps a confirmed valid gender and writes it', () => {
+    const result = planProfileWrite(
+      fields({ gender: { value: 'female', intent: 'confirmed' } }),
+      { now: NOW },
+    );
+    expect(result.value.patch.gender).toBe('female');
+    expect(result.value.written.gender).toEqual({ state: 'confirmed' });
+    expect(result.value.patch.field_provenance.gender).toEqual({
+      state: 'confirmed',
+      ...STAMP,
+    });
+  });
+
+  it('rejects a confirmed invalid gender with 422 and no patch', () => {
+    const invalid = planProfileWrite(
+      fields({ gender: { value: 'unknown', intent: 'confirmed' } }),
+      { now: NOW },
+    );
+    expectNoWrite(invalid);
+    expect(invalid.error.status).toBe(422);
+    expect(invalid.error.fields.gender).toEqual(expect.any(String));
+
+    const valid = planProfileWrite(
+      fields({ gender: { value: 'male', intent: 'confirmed' } }),
+      { now: NOW },
+    );
+    expect(valid.value.patch.gender).toBe('male');
+    expect(valid.value.written.gender.state).toBe('confirmed');
+  });
+
+  it('rejects clearing gender with cannot-be-cleared, not unknown-field', () => {
+    const result = planProfileWrite(
+      fields({ gender: { intent: 'cleared' } }),
+      { now: NOW },
+    );
+    expectNoWrite(result);
+    expect(result.error.status).toBe(400);
+    expect(result.error.field).toBe('gender');
+    expect(result.error.message).toBe('This field cannot be cleared');
+  });
+
+  it('stamps a confirmed valid location and writes it', () => {
+    const result = planProfileWrite(
+      fields({ location: { value: 'home', intent: 'confirmed' } }),
+      { now: NOW },
+    );
+    expect(result.value.patch.location).toBe('home');
+    expect(result.value.written.location).toEqual({ state: 'confirmed' });
+    expect(result.value.patch.field_provenance.location).toEqual({
+      state: 'confirmed',
+      ...STAMP,
+    });
+  });
+
+  it('rejects a confirmed invalid location with 422 and no patch', () => {
+    const invalid = planProfileWrite(
+      fields({ location: { value: 'office', intent: 'confirmed' } }),
+      { now: NOW },
+    );
+    expectNoWrite(invalid);
+    expect(invalid.error.status).toBe(422);
+    expect(invalid.error.fields.location).toEqual(expect.any(String));
+
+    const valid = planProfileWrite(
+      fields({ location: { value: 'gym', intent: 'confirmed' } }),
+      { now: NOW },
+    );
+    expect(valid.value.patch.location).toBe('gym');
+  });
+
+  it('rejects clearing location with cannot-be-cleared, not unknown-field', () => {
+    const result = planProfileWrite(
+      fields({ location: { intent: 'cleared' } }),
+      { now: NOW },
+    );
+    expectNoWrite(result);
+    expect(result.error.status).toBe(400);
+    expect(result.error.field).toBe('location');
+    expect(result.error.message).toBe('This field cannot be cleared');
+  });
+
   it('does not write billing columns or owner ids', () => {
     expectNoWrite(planProfileWrite({
       fields: { age: { value: 28, intent: 'confirmed' } },
@@ -344,6 +425,32 @@ describe('handleRequest', () => {
       fields({ age: { value: 28, intent: 'not_loaded' } }),
     );
     expect(res.statusCode).toBe(400);
+    expect(admin.updates).toHaveLength(0);
+  });
+
+  it('writes a confirmed valid gender and writes nothing for an invalid one', async () => {
+    const invalid = await postSave(
+      fields({ gender: { value: 'unknown', intent: 'confirmed' } }),
+    );
+    expect(invalid.res.statusCode).toBe(422);
+    expect(invalid.res.body.fields.gender).toEqual(expect.any(String));
+    expect(invalid.admin.updates).toHaveLength(0);
+
+    const valid = await postSave(
+      fields({ gender: { value: 'female', intent: 'confirmed' } }),
+    );
+    expect(valid.res.statusCode).toBe(200);
+    expect(valid.admin.updates).toHaveLength(1);
+    expect(valid.admin.updates[0].patch.gender).toBe('female');
+    expect(valid.admin.updates[0].patch.field_provenance.gender.state).toBe('confirmed');
+  });
+
+  it('rejects clearing gender without writing', async () => {
+    const { res, admin } = await postSave(
+      fields({ gender: { intent: 'cleared' } }),
+    );
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('This field cannot be cleared');
     expect(admin.updates).toHaveLength(0);
   });
 

@@ -74,10 +74,19 @@ const WRITABLE_FIELDS = Object.freeze([
   'equipment',
   'injuries',
   'priority_muscle',
+  'gender',
+  'location',
+  'activity',
+  'diet',
 ]);
 
 const WRITABLE = new Set(WRITABLE_FIELDS);
 const INTENTS = new Set(['confirmed', 'cleared']);
+
+const GENDERS = new Set(['male', 'female']);
+const LOCATIONS = new Set(['gym', 'home']);
+const ACTIVITIES = new Set(['sedentary', 'moderate', 'active']);
+const DIETS = new Set(['none', 'vegetarian', 'no_dairy', 'gluten_free']);
 
 function isPlainObject(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -103,6 +112,14 @@ function validateText(value, field) {
   }
   if (value.length > MAX_TEXT_CHARS) {
     return { valid: false, reason: `${field} must be at most ${MAX_TEXT_CHARS} characters` };
+  }
+  return { valid: true, value };
+}
+
+function validateAllowed(value, field, allowed) {
+  if (value === null || value === undefined) return { valid: true, absent: true };
+  if (!allowed.has(value)) {
+    return { valid: false, reason: `${field} is not an allowed value` };
   }
   return { valid: true, value };
 }
@@ -180,6 +197,10 @@ function validateConfirmed(field, value, ctx) {
     case 'equipment': return validateEquipment(value);
     case 'injuries': return validateText(value, 'injuries');
     case 'priority_muscle': return validateText(value, 'priority_muscle');
+    case 'gender': return validateAllowed(value, 'gender', GENDERS);
+    case 'location': return validateAllowed(value, 'location', LOCATIONS);
+    case 'activity': return validateAllowed(value, 'activity', ACTIVITIES);
+    case 'diet': return validateAllowed(value, 'diet', DIETS);
     default: return { valid: false, reason: `${field} is not writable` };
   }
 }
