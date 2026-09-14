@@ -3,6 +3,9 @@
 -- UNEXECUTED. Manual rollback only. Do not supabase db push. Do not apply this
 -- file together with the forward migration. Apply in the SQL Editor only to
 -- undo 20260914143400, after review.
+-- The reverse file must NEVER be executed as part of a sequential migration
+-- run. This repo's production migrations are applied one at a time by hand
+-- in the SQL Editor. supabase db push is never run against production.
 --
 -- Restores the eleven original default expressions, verbatim as they appear in
 -- the live catalog. equipment's default is an array literal cast onto a text
@@ -104,6 +107,7 @@ DECLARE
   n_drop     integer;
   n_null     integer;
   n_match    integer;
+  n_keep_all integer;
   rec        record;
 BEGIN
   IF rel_oid IS NULL THEN
@@ -147,6 +151,20 @@ BEGIN
     RAISE EXCEPTION 'reverse precondition failed: catalog matches neither the post-forward state (11 null defaults) nor the measured originals (11 exact expressions); null=% match=%',
       n_null, n_match;
   END IF;
+
+  SELECT count(*) INTO n_keep_all FROM _keep_pre;
+  IF n_keep_all <> 12 THEN
+    RAISE EXCEPTION 'reverse precondition failed: _keep_pre has % rows, expected exactly 12 (eight keep-list + four do-not-touch)',
+      n_keep_all;
+  END IF;
+
+  FOREACH col IN ARRAY ARRAY['coach_id', 'coach', 'selected_coach', 'current_coach'] LOOP
+    SELECT * INTO rec FROM _keep_pre WHERE attname = col;
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'reverse precondition failed: do-not-touch column public.profiles.% is absent from _keep_pre',
+        col;
+    END IF;
+  END LOOP;
 END
 $mig$;
 
@@ -192,6 +210,8 @@ DECLARE
   post_nn   boolean;
   n_pre     bigint;
   n_post    bigint;
+  n_untouch integer;
+  n_untouch_seen integer;
 BEGIN
   FOREACH col IN ARRAY drop_list LOOP
     SELECT e.def INTO expected FROM _expected_defaults e WHERE e.attname = col;
@@ -247,10 +267,20 @@ BEGIN
     END IF;
   END LOOP;
 
+  SELECT count(*) INTO n_untouch
+    FROM _keep_pre
+   WHERE attname = ANY (ARRAY['coach_id', 'coach', 'selected_coach', 'current_coach']::name[]);
+  IF n_untouch <> 4 THEN
+    RAISE EXCEPTION 'reverse postcondition failed: _keep_pre has % do-not-touch rows, expected 4',
+      n_untouch;
+  END IF;
+
+  n_untouch_seen := 0;
   FOR pre IN
     SELECT * FROM _keep_pre
      WHERE attname = ANY (ARRAY['coach_id', 'coach', 'selected_coach', 'current_coach']::name[])
   LOOP
+    n_untouch_seen := n_untouch_seen + 1;
     SELECT a.atthasdef, pg_get_expr(d.adbin, d.adrelid), a.atttypid, a.atttypmod, a.attnotnull
       INTO hasdef, def, post_type, post_mod, post_nn
       FROM pg_attribute a
@@ -269,6 +299,11 @@ BEGIN
         pre.attname;
     END IF;
   END LOOP;
+
+  IF n_untouch_seen <> 4 THEN
+    RAISE EXCEPTION 'reverse postcondition failed: do-not-touch loop ran % times, expected 4',
+      n_untouch_seen;
+  END IF;
 
   SELECT count(*) INTO n_pre  FROM _profiles_pre;
   SELECT count(*) INTO n_post FROM public.profiles;
