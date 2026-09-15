@@ -238,6 +238,42 @@ describe('validateTargetGoalConsistency', () => {
     expectAbsent(validateTargetGoalConsistency(65, 60, undefined));
     expectAbsent(validateTargetGoalConsistency(65, 60, ''));
   });
+
+  it('does not apply when target is absent', () => {
+    expectAbsent(validateTargetGoalConsistency(null, 60, 'muscle_gain'));
+    expectAbsent(validateTargetGoalConsistency(undefined, 60, 'muscle_gain'));
+  });
+});
+
+describe('validateGoal pair consistency', () => {
+  it('rejects muscle_gain when target is below current, next to a target above', () => {
+    expectInvalid(
+      validateGoal('muscle_gain', { weight: 60, target_weight: 56 }),
+      validateGoal('muscle_gain', { weight: 60, target_weight: 65 }),
+    );
+  });
+
+  it('rejects fat_loss when target is above current, next to a target below', () => {
+    expectInvalid(
+      validateGoal('fat_loss', { weight: 60, target_weight: 65 }),
+      validateGoal('fat_loss', { weight: 60, target_weight: 56 }),
+    );
+  });
+
+  it('does not apply consistency when target is absent', () => {
+    expectValid(validateGoal('muscle_gain'), 'muscle_gain');
+    expectValid(validateGoal('muscle_gain', { weight: 60 }), 'muscle_gain');
+    expectValid(validateGoal('fat_loss', { weight: 60 }), 'fat_loss');
+  });
+
+  it('names the same conflict as validateTargetWeight', () => {
+    const viaGoal = validateGoal('muscle_gain', { weight: 60, target_weight: 56 });
+    const viaTarget = validateTargetWeight(56, 'kg', { weight: 60, goal: 'muscle_gain' });
+    expect(viaGoal.valid).toBe(false);
+    expect(viaTarget.valid).toBe(false);
+    expect(viaGoal.reason).toBe(TARGET_GOAL_INCONSISTENT);
+    expect(viaTarget.reason).toBe(viaGoal.reason);
+  });
 });
 
 describe('units', () => {

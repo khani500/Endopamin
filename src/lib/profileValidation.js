@@ -153,6 +153,8 @@ function isKnownGoal(goal) {
   return goal.trim() !== '';
 }
 
+// The goal/target_weight pair is resolved only here. Both field validators
+// reach this through applyPairConsistency so neither write direction can drift.
 export function validateTargetGoalConsistency(target, current, goal) {
   if (isAbsent(target) || isAbsent(current) || !isKnownGoal(goal)) return absent();
   const targetNumber = parseFiniteNumber(target);
@@ -169,6 +171,14 @@ export function validateTargetGoalConsistency(target, current, goal) {
   return ok(targetNumber);
 }
 
+function applyPairConsistency(fieldResult, target, current, goal) {
+  if (fieldResult.absent || !fieldResult.valid) return fieldResult;
+  const consistency = validateTargetGoalConsistency(target, current, goal);
+  if (consistency.absent) return fieldResult;
+  if (!consistency.valid) return consistency;
+  return fieldResult;
+}
+
 export function validateTargetWeight(value, unit, { weight, goal } = {}) {
   const boundsResult = validateMeasured(value, unit, {
     units: WEIGHT_UNIT_SET,
@@ -176,11 +186,7 @@ export function validateTargetWeight(value, unit, { weight, goal } = {}) {
     label: 'target_weight',
     unitLabel: 'weight_unit',
   });
-  if (boundsResult.absent || !boundsResult.valid) return boundsResult;
-  const consistency = validateTargetGoalConsistency(boundsResult.value, weight, goal);
-  if (consistency.absent) return boundsResult;
-  if (!consistency.valid) return consistency;
-  return boundsResult;
+  return applyPairConsistency(boundsResult, boundsResult.value, weight, goal);
 }
 
 export function validateHeightUnit(value) {
@@ -207,8 +213,8 @@ export function validateExperience(value) {
   return validateEnum('experience', value);
 }
 
-export function validateGoal(value) {
-  return validateEnum('goal', value);
+export function validateGoal(value, { weight, target_weight } = {}) {
+  return applyPairConsistency(validateEnum('goal', value), target_weight, weight, value);
 }
 
 export function validateJobType(value) {

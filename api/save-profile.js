@@ -143,10 +143,10 @@ function stamp(state, at) {
   return { state, at: at.toISOString(), source: PROVENANCE_SOURCE };
 }
 
-function confirmedStoredGoal(existing) {
-  const stamp = existing?.field_provenance?.goal;
+function confirmedStored(existing, field) {
+  const stamp = existing?.field_provenance?.[field];
   if (!isPlainObject(stamp) || stamp.state !== 'confirmed') return undefined;
-  return existing?.goal;
+  return existing?.[field];
 }
 
 function overlayContext(fields, existing) {
@@ -154,7 +154,8 @@ function overlayContext(fields, existing) {
     height_unit: existing?.height_unit,
     weight_unit: existing?.weight_unit,
     weight: existing?.weight,
-    goal: confirmedStoredGoal(existing),
+    goal: confirmedStored(existing, 'goal'),
+    target_weight: confirmedStored(existing, 'target_weight'),
   };
 
   const unit = fields.height_unit;
@@ -174,6 +175,13 @@ function overlayContext(fields, existing) {
   } else if (fields.weight?.intent === 'confirmed') {
     const result = validateWeight(fields.weight.value, ctx.weight_unit);
     if (result.valid && !result.absent) ctx.weight = result.value;
+  }
+
+  if (fields.target_weight?.intent === 'cleared') {
+    ctx.target_weight = null;
+  } else if (fields.target_weight?.intent === 'confirmed') {
+    const result = validateTargetWeight(fields.target_weight.value, ctx.weight_unit);
+    if (result.valid && !result.absent) ctx.target_weight = result.value;
   }
 
   if (fields.goal?.intent === 'confirmed') {
@@ -197,7 +205,11 @@ function validateConfirmed(field, value, ctx) {
         goal: ctx.goal,
       });
     case 'experience': return validateExperience(value);
-    case 'goal': return validateGoal(value);
+    case 'goal':
+      return validateGoal(value, {
+        weight: ctx.weight,
+        target_weight: ctx.target_weight,
+      });
     case 'job_type': return validateJobType(value);
     case 'coach_persona': return validateCoachPersona(value);
     case 'days_per_week': return validateDaysPerWeek(value);
@@ -326,7 +338,7 @@ export async function handleRequest(req, res, requestId, deps = {}) {
 
   const { data: profile, error: profileErr } = await admin
     .from('profiles')
-    .select('field_provenance, height_unit, weight_unit, weight, goal')
+    .select('field_provenance, height_unit, weight_unit, weight, goal, target_weight')
     .eq('id', userId)
     .maybeSingle();
 

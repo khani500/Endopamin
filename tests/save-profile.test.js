@@ -563,4 +563,112 @@ describe('handleRequest', () => {
     expect(res.body.fields.target_weight).toBe(TARGET_GOAL_INCONSISTENT);
     expect(admin.updates).toHaveLength(0);
   });
+
+  it('rejects goal muscle_gain when a confirmed target is below confirmed weight', async () => {
+    const profile = {
+      height_unit: 'cm',
+      weight_unit: 'kg',
+      weight: 60,
+      target_weight: 56,
+      field_provenance: {
+        target_weight: { state: 'confirmed', at: NOW.toISOString(), source: 'save-profile' },
+      },
+    };
+    const { res, admin } = await postSave(
+      fields({ goal: { value: 'muscle_gain', intent: 'confirmed' } }),
+      { profile },
+    );
+    expect(res.statusCode).toBe(422);
+    expect(res.body.fields.goal).toBe(TARGET_GOAL_INCONSISTENT);
+    expect(admin.updates).toHaveLength(0);
+
+    const neighbour = await postSave(
+      fields({ goal: { value: 'muscle_gain', intent: 'confirmed' } }),
+      { profile: { ...profile, target_weight: 65 } },
+    );
+    expect(neighbour.res.statusCode).toBe(200);
+    expect(neighbour.admin.updates[0].patch.goal).toBe('muscle_gain');
+    expect(neighbour.admin.updates[0].patch).not.toHaveProperty('target_weight');
+  });
+
+  it('rejects goal fat_loss when a confirmed target is above confirmed weight', async () => {
+    const { res, admin } = await postSave(
+      fields({ goal: { value: 'fat_loss', intent: 'confirmed' } }),
+      {
+        profile: {
+          height_unit: 'cm',
+          weight_unit: 'kg',
+          weight: 60,
+          target_weight: 65,
+          field_provenance: {
+            target_weight: { state: 'confirmed', at: NOW.toISOString(), source: 'save-profile' },
+          },
+        },
+      },
+    );
+    expect(res.statusCode).toBe(422);
+    expect(res.body.fields.goal).toBe(TARGET_GOAL_INCONSISTENT);
+    expect(admin.updates).toHaveLength(0);
+  });
+
+  it('does not apply consistency to a goal write when stored target is not confirmed', async () => {
+    const { res, admin } = await postSave(
+      fields({ goal: { value: 'muscle_gain', intent: 'confirmed' } }),
+      {
+        profile: {
+          height_unit: 'cm',
+          weight_unit: 'kg',
+          weight: 60,
+          target_weight: 56,
+          field_provenance: null,
+        },
+      },
+    );
+    expect(res.statusCode).toBe(200);
+    expect(admin.updates[0].patch.goal).toBe('muscle_gain');
+  });
+
+  it('qa-m2d sequence: target first with no goal is accepted, then the goal write is 422', async () => {
+    const step1 = await postSave(
+      fields({
+        weight: { value: 60, intent: 'confirmed' },
+        weight_unit: { value: 'kg', intent: 'confirmed' },
+        target_weight: { value: 56, intent: 'confirmed' },
+      }),
+      {
+        profile: {
+          height_unit: 'cm',
+          weight_unit: 'kg',
+          weight: null,
+          goal: null,
+          target_weight: null,
+          field_provenance: null,
+        },
+      },
+    );
+    expect(step1.res.statusCode).toBe(200);
+    expect(step1.admin.updates[0].patch.target_weight).toBe(56);
+    expect(step1.admin.updates[0].patch.weight).toBe(60);
+
+    const step2 = await postSave(
+      fields({ goal: { value: 'muscle_gain', intent: 'confirmed' } }),
+      {
+        profile: {
+          height_unit: 'cm',
+          weight_unit: 'kg',
+          weight: 60,
+          goal: null,
+          target_weight: 56,
+          field_provenance: {
+            weight: { state: 'confirmed', at: NOW.toISOString(), source: 'save-profile' },
+            weight_unit: { state: 'confirmed', at: NOW.toISOString(), source: 'save-profile' },
+            target_weight: { state: 'confirmed', at: NOW.toISOString(), source: 'save-profile' },
+          },
+        },
+      },
+    );
+    expect(step2.res.statusCode).toBe(422);
+    expect(step2.res.body.fields.goal).toBe(TARGET_GOAL_INCONSISTENT);
+    expect(step2.admin.updates).toHaveLength(0);
+  });
 });
