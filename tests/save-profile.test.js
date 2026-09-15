@@ -3,6 +3,10 @@ import {
   handleRequest,
   planProfileWrite,
 } from '../api/save-profile.js';
+import {
+  HEALTH_CONDITIONS_STORED,
+  HEALTH_CONDITIONS_WIRE,
+} from './healthConditions.wire.fixture.mjs';
 
 const NOW = new Date('2026-09-14T21:00:00.000Z');
 const STAMP = {
@@ -504,4 +508,14 @@ describe('handleRequest', () => {
     expect(valid.res.statusCode).toBe(200);
     expect(valid.admin.updates[0].patch.health_conditions).toBe('["none"]');
   });
+
+  it.each(Object.entries(HEALTH_CONDITIONS_WIRE))(
+    'accepts the mobile Level 1 %s health_conditions wire fixture',
+    async (name, entry) => {
+      const { res, admin } = await postSave(fields({ health_conditions: entry }));
+      expect(res.statusCode).toBe(200);
+      expect(admin.updates[0].patch.health_conditions).toBe(HEALTH_CONDITIONS_STORED[name]);
+      expect(res.body.written.health_conditions).toEqual({ state: 'confirmed' });
+    },
+  );
 });
