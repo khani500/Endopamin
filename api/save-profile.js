@@ -143,12 +143,18 @@ function stamp(state, at) {
   return { state, at: at.toISOString(), source: PROVENANCE_SOURCE };
 }
 
+function confirmedStoredGoal(existing) {
+  const stamp = existing?.field_provenance?.goal;
+  if (!isPlainObject(stamp) || stamp.state !== 'confirmed') return undefined;
+  return existing?.goal;
+}
+
 function overlayContext(fields, existing) {
   const ctx = {
     height_unit: existing?.height_unit,
     weight_unit: existing?.weight_unit,
     weight: existing?.weight,
-    goal: existing?.goal,
+    goal: confirmedStoredGoal(existing),
   };
 
   const unit = fields.height_unit;

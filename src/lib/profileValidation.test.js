@@ -186,6 +186,40 @@ describe('validateTargetWeight', () => {
     expectValid(validateTargetWeight(190, 'lb', { weight: 180 }), 190);
   });
 
+  it('fat_loss + target above current is still invalid', () => {
+    expectInvalid(
+      validateTargetWeight(65, 'kg', { weight: 60, goal: 'fat_loss' }),
+      validateTargetWeight(56, 'kg', { weight: 60, goal: 'fat_loss' }),
+    );
+  });
+
+  it('fat_loss + target below current is valid', () => {
+    expectValid(validateTargetWeight(56, 'kg', { weight: 60, goal: 'fat_loss' }), 56);
+  });
+
+  it('no goal + any in-bounds target is valid and not rejected for inconsistency', () => {
+    const above = validateTargetWeight(65, 'kg', { weight: 60 });
+    const below = validateTargetWeight(56, 'kg', { weight: 60 });
+    expectValid(above, 65);
+    expectValid(below, 56);
+    expect(above).not.toHaveProperty('reason');
+    expect(below).not.toHaveProperty('reason');
+  });
+
+  it('muscle_gain + target below current is still invalid', () => {
+    expectInvalid(
+      validateTargetWeight(56, 'kg', { weight: 60, goal: 'muscle_gain' }),
+      validateTargetWeight(65, 'kg', { weight: 60, goal: 'muscle_gain' }),
+    );
+  });
+
+  it('out-of-bounds target with no goal is invalid for bounds, not consistency', () => {
+    const result = validateTargetWeight(29, 'kg');
+    expect(result.valid).toBe(false);
+    expect(result.reason).not.toBe(TARGET_GOAL_INCONSISTENT);
+    expectValid(validateTargetWeight(56, 'kg'), 56);
+  });
+
   it('shares weight bounds and unit with validateWeight', () => {
     expectInvalid(validateTargetWeight(29, 'kg'), validateTargetWeight(30, 'kg'));
     expectValid(validateTargetWeight(190, 'lb'), 190);
@@ -197,6 +231,12 @@ describe('validateTargetGoalConsistency', () => {
     const result = validateTargetGoalConsistency(190, 180, 'fat_loss');
     expect(result).toEqual({ valid: false, reason: TARGET_GOAL_INCONSISTENT });
     expectValid(validateTargetGoalConsistency(170, 180, 'fat_loss'), 170);
+  });
+
+  it('does not apply when goal is absent', () => {
+    expectAbsent(validateTargetGoalConsistency(65, 60, null));
+    expectAbsent(validateTargetGoalConsistency(65, 60, undefined));
+    expectAbsent(validateTargetGoalConsistency(65, 60, ''));
   });
 });
 

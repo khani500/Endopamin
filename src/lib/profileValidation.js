@@ -147,8 +147,14 @@ export function validateWeight(value, unit) {
   });
 }
 
+function isKnownGoal(goal) {
+  if (isAbsent(goal)) return false;
+  if (typeof goal !== 'string') return false;
+  return goal.trim() !== '';
+}
+
 export function validateTargetGoalConsistency(target, current, goal) {
-  if (isAbsent(target) || isAbsent(current) || isAbsent(goal)) return absent();
+  if (isAbsent(target) || isAbsent(current) || !isKnownGoal(goal)) return absent();
   const targetNumber = parseFiniteNumber(target);
   const currentNumber = parseFiniteNumber(current);
   if (targetNumber === null || currentNumber === null) {

@@ -3,6 +3,7 @@ import {
   handleRequest,
   planProfileWrite,
 } from '../api/save-profile.js';
+import { TARGET_GOAL_INCONSISTENT } from '../src/lib/profileValidation.js';
 import {
   HEALTH_CONDITIONS_STORED,
   HEALTH_CONDITIONS_WIRE,
@@ -518,4 +519,48 @@ describe('handleRequest', () => {
       expect(res.body.written.health_conditions).toEqual({ state: 'confirmed' });
     },
   );
+
+  it('does not apply target/goal consistency to an unconfirmed stored goal', async () => {
+    const body = fields({
+      weight: { value: 60, intent: 'confirmed' },
+      weight_unit: { value: 'kg', intent: 'confirmed' },
+      target_weight: { value: 56, intent: 'confirmed' },
+    });
+    const { res, admin } = await postSave(body, {
+      profile: {
+        height_unit: 'cm',
+        weight_unit: 'kg',
+        weight: 80,
+        goal: 'muscle_gain',
+        field_provenance: null,
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(admin.updates[0].patch.target_weight).toBe(56);
+    expect(admin.updates[0].patch.weight).toBe(60);
+  });
+
+  it('still rejects a target below current when stored goal is confirmed muscle_gain', async () => {
+    const { res, admin } = await postSave(
+      fields({
+        weight: { value: 60, intent: 'confirmed' },
+        weight_unit: { value: 'kg', intent: 'confirmed' },
+        target_weight: { value: 56, intent: 'confirmed' },
+      }),
+      {
+        profile: {
+          height_unit: 'cm',
+          weight_unit: 'kg',
+          weight: 80,
+          goal: 'muscle_gain',
+          field_provenance: {
+            goal: { state: 'confirmed', at: NOW.toISOString(), source: 'save-profile' },
+          },
+        },
+      },
+    );
+    expect(res.statusCode).toBe(422);
+    expect(res.body.fields.target_weight).toBe(TARGET_GOAL_INCONSISTENT);
+    expect(admin.updates).toHaveLength(0);
+  });
 });
