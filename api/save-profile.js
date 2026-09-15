@@ -10,6 +10,7 @@ import {
   validateEquipment,
   validateExperience,
   validateGoal,
+  validateHealthConditions,
   validateHeight,
   validateHeightUnit,
   validateJobType,
@@ -73,6 +74,7 @@ const WRITABLE_FIELDS = Object.freeze([
   'session_duration',
   'equipment',
   'injuries',
+  'health_conditions',
   'priority_muscle',
   'gender',
   'location',
@@ -196,6 +198,7 @@ function validateConfirmed(field, value, ctx) {
     case 'session_duration': return validateSessionDuration(value);
     case 'equipment': return validateEquipment(value);
     case 'injuries': return validateText(value, 'injuries');
+    case 'health_conditions': return validateHealthConditions(value);
     case 'priority_muscle': return validateText(value, 'priority_muscle');
     case 'gender': return validateAllowed(value, 'gender', GENDERS);
     case 'location': return validateAllowed(value, 'location', LOCATIONS);

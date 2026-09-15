@@ -5,6 +5,7 @@ import {
   MIN_AGE,
   PROFILE_ENUMS,
   TARGET_GOAL_INCONSISTENT,
+  encodeHealthConditions,
   validateAge,
   validateCoachPersona,
   validateDaysPerWeek,
@@ -12,6 +13,7 @@ import {
   validateEnum,
   validateExperience,
   validateGoal,
+  validateHealthConditions,
   validateHeight,
   validateHeightUnit,
   validateJobType,
@@ -321,5 +323,47 @@ describe('validateEquipment', () => {
       validateEquipment(['nope']).reason,
     ];
     expect(new Set(shapeReasons).size).toBe(shapeReasons.length);
+  });
+});
+
+describe('validateHealthConditions', () => {
+  it('writes a token array as canonical compact JSON text', () => {
+    expectValid(
+      validateHealthConditions(['breathing', 'blood_sugar']),
+      '["breathing","blood_sugar"]',
+    );
+    expect(encodeHealthConditions(['blood_sugar', 'breathing'])).toBe(
+      '["breathing","blood_sugar"]',
+    );
+  });
+
+  it('re-serialises a client JSON string and never stores it as-is', () => {
+    const spaced = '[ "none" ]';
+    const result = validateHealthConditions(spaced);
+    expectValid(result, '["none"]');
+    expect(result.value).not.toBe(spaced);
+  });
+
+  it('rejects the corrupt literal "{}" instead of storing it', () => {
+    expectInvalid(validateHealthConditions('{}'), validateHealthConditions(['none']));
+    expectInvalid(validateHealthConditions('I have asthma'), validateHealthConditions(['breathing']));
+  });
+
+  it('rejects pregnancy without exactly one status, next to a valid pregnancy selection', () => {
+    expectInvalid(
+      validateHealthConditions(['pregnancy']),
+      validateHealthConditions(['pregnancy', 'pregnancy_routine']),
+    );
+    expectInvalid(
+      validateHealthConditions(['pregnancy_routine']),
+      validateHealthConditions(['pregnancy', 'pregnancy_routine']),
+    );
+  });
+
+  it('rejects mixing none with other tokens, next to a lone none', () => {
+    expectInvalid(
+      validateHealthConditions(['none', 'breathing']),
+      validateHealthConditions(['none']),
+    );
   });
 });

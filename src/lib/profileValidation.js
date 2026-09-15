@@ -236,3 +236,101 @@ export function validateEquipment(value) {
   if (isPlainObject(value)) return invalid(EQUIPMENT_REASONS.object);
   return invalid(EQUIPMENT_REASONS.other);
 }
+
+// public.profiles.health_conditions is text, nullable, no default.
+// Encoding: canonical compact JSON array of tokens in HEALTH_CONDITION_TOKENS
+// order, e.g. ["none"], ["prefer_not_to_answer"], ["pregnancy","pregnancy_routine"].
+// HTTP value may be a token array or a JSON array string. Both are parsed,
+// validated against the closed set, and re-serialized. Free text is rejected.
+export const HEALTH_CONDITION_TOKENS = Object.freeze([
+  'none',
+  'prefer_not_to_answer',
+  'heart_bp_chest',
+  'dizziness_fainting',
+  'breathing',
+  'blood_sugar',
+  'pregnancy',
+  'pregnancy_routine',
+  'pregnancy_unsure',
+  'pregnancy_high_risk',
+  'musculoskeletal',
+  'musculoskeletal_acute',
+  'clinician_advised',
+  'other',
+]);
+
+const HEALTH_CONDITION_TOKEN_SET = new Set(HEALTH_CONDITION_TOKENS);
+const HEALTH_EXCLUSIVE_TOKENS = new Set(['none', 'prefer_not_to_answer']);
+const PREGNANCY_STATUS_TOKENS = new Set([
+  'pregnancy_routine',
+  'pregnancy_unsure',
+  'pregnancy_high_risk',
+]);
+
+export const HEALTH_CONDITION_REASONS = Object.freeze({
+  emptyArray: 'empty array is not a known health_conditions selection',
+  unknownToken: 'health_conditions array contains a token that is not known',
+  duplicate: 'health_conditions must not contain duplicate tokens',
+  exclusiveMix: 'none and prefer_not_to_answer cannot mix with other tokens',
+  exclusiveBoth: 'none and prefer_not_to_answer cannot be stored together',
+  pregnancyStatus: 'pregnancy requires exactly one status token',
+  pregnancyOrphan: 'pregnancy status tokens require pregnancy',
+  musculoskeletalOrphan: 'musculoskeletal_acute requires musculoskeletal',
+  object: 'health_conditions object is not a token array',
+  other: 'health_conditions is not an array of known tokens',
+});
+
+function parseHealthConditionTokens(value) {
+  if (Array.isArray(value)) return { tokens: value };
+  if (typeof value !== 'string') return { error: HEALTH_CONDITION_REASONS.other };
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) return { tokens: parsed };
+  } catch {
+    return { error: HEALTH_CONDITION_REASONS.other };
+  }
+  return { error: HEALTH_CONDITION_REASONS.other };
+}
+
+export function encodeHealthConditions(tokens) {
+  const selected = new Set(tokens);
+  return JSON.stringify(HEALTH_CONDITION_TOKENS.filter((token) => selected.has(token)));
+}
+
+export function validateHealthConditions(value) {
+  if (isAbsent(value)) return absent();
+  if (isPlainObject(value)) return invalid(HEALTH_CONDITION_REASONS.object);
+
+  const parsed = parseHealthConditionTokens(value);
+  if (parsed.error) return invalid(parsed.error);
+
+  const tokens = parsed.tokens;
+  if (tokens.length === 0) return invalid(HEALTH_CONDITION_REASONS.emptyArray);
+  if (!tokens.every((token) => typeof token === 'string' && HEALTH_CONDITION_TOKEN_SET.has(token))) {
+    return invalid(HEALTH_CONDITION_REASONS.unknownToken);
+  }
+  if (new Set(tokens).size !== tokens.length) {
+    return invalid(HEALTH_CONDITION_REASONS.duplicate);
+  }
+
+  const selected = new Set(tokens);
+  if (selected.has('none') && selected.has('prefer_not_to_answer')) {
+    return invalid(HEALTH_CONDITION_REASONS.exclusiveBoth);
+  }
+  if ([...selected].some((token) => HEALTH_EXCLUSIVE_TOKENS.has(token)) && selected.size !== 1) {
+    return invalid(HEALTH_CONDITION_REASONS.exclusiveMix);
+  }
+
+  const pregnancyStatuses = [...PREGNANCY_STATUS_TOKENS].filter((token) => selected.has(token));
+  if (selected.has('pregnancy') && pregnancyStatuses.length !== 1) {
+    return invalid(HEALTH_CONDITION_REASONS.pregnancyStatus);
+  }
+  if (!selected.has('pregnancy') && pregnancyStatuses.length > 0) {
+    return invalid(HEALTH_CONDITION_REASONS.pregnancyOrphan);
+  }
+  if (selected.has('musculoskeletal_acute') && !selected.has('musculoskeletal')) {
+    return invalid(HEALTH_CONDITION_REASONS.musculoskeletalOrphan);
+  }
+
+  return ok(encodeHealthConditions(tokens));
+}

@@ -474,4 +474,34 @@ describe('handleRequest', () => {
       goal: 'muscle_gain',
     });
   });
+
+  it('writes canonical health_conditions text and never stores a client string as-is', async () => {
+    const spaced = await postSave(
+      fields({ health_conditions: { value: '[ "breathing" ]', intent: 'confirmed' } }),
+    );
+    expect(spaced.res.statusCode).toBe(200);
+    expect(spaced.admin.updates[0].patch.health_conditions).toBe('["breathing"]');
+    expect(spaced.admin.updates[0].patch.health_conditions).not.toBe('[ "breathing" ]');
+    expect(spaced.admin.updates[0].patch.field_provenance.health_conditions.state).toBe('confirmed');
+
+    const asArray = await postSave(
+      fields({ health_conditions: { value: ['blood_sugar', 'breathing'], intent: 'confirmed' } }),
+    );
+    expect(asArray.admin.updates[0].patch.health_conditions).toBe('["breathing","blood_sugar"]');
+  });
+
+  it('rejects malformed health_conditions text without writing', async () => {
+    const { res, admin } = await postSave(
+      fields({ health_conditions: { value: '{}', intent: 'confirmed' } }),
+    );
+    expect(res.statusCode).toBe(422);
+    expect(res.body.fields.health_conditions).toEqual(expect.any(String));
+    expect(admin.updates).toHaveLength(0);
+
+    const valid = await postSave(
+      fields({ health_conditions: { value: ['none'], intent: 'confirmed' } }),
+    );
+    expect(valid.res.statusCode).toBe(200);
+    expect(valid.admin.updates[0].patch.health_conditions).toBe('["none"]');
+  });
 });
