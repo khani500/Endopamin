@@ -2,6 +2,7 @@ import { supabase } from './supabase';
 
 export const REPLACE_PLANS_URL = 'https://www.endopamin.com/api/replace-plans';
 
+// Keep all five ids: live rows and saves still carry legacy personas.
 const COACH_IDS = new Set(['aria', 'kane', 'blaze', 'nova', 'zara']);
 const EXERCISE_KEYS = ['sets', 'reps', 'rest', 'notes', 'muscle', 'equipment'];
 const UUID_RE =

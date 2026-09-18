@@ -6,10 +6,27 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
 const CRON_MONITOR_SLUG = 'daily-notification-cron';
 
+// Canonical alias table: EndopaminMobile/src/config/coaches.js (COACH_ID_ALIASES).
+// This file cannot import from src/, so the map is duplicated here.
+const COACH_ID_ALIASES = {
+  elias: 'aria',
+  rex: 'kane',
+  maya: 'kane',
+  blaze: 'kane',
+  nova: 'aria',
+  zara: 'aria',
+};
+const DEFAULT_COACH_ID = 'aria';
+
+function resolveCoachId(coachId) {
+  const id = String(coachId || DEFAULT_COACH_ID).trim();
+  if (!id) return DEFAULT_COACH_ID;
+  return COACH_ID_ALIASES[id] || (id === 'aria' || id === 'kane' ? id : DEFAULT_COACH_ID);
+}
+
 const COACH_PERSONALITIES = {
-  kane: 'Harsh drill sergeant. Military tone. No sympathy. Very short commands.',
-  elias: 'Calm scientific coach. Uses data and physiology. Warm underneath but precise.',
-  aria: 'Warm encouraging scientist. Playful, data-driven, genuinely cares.',
+  kane: 'Direct, focused, demanding, action-oriented. Clear action. No wasted effort.',
+  aria: 'Calm, supportive, clear, evidence-led. Calm guidance. Clear reasons. Steady progress.',
 };
 
 async function getAccessToken() {
@@ -43,7 +60,7 @@ async function getAccessToken() {
 }
 
 async function generateContent(profile) {
-  const coachId = profile.coach_persona || 'elias';
+  const coachId = resolveCoachId(profile.coach_persona);
   const name = profile.display_name || 'Champion';
   const streak = profile.streak_count || 0;
   const goal = profile.goal || 'fitness';
@@ -66,7 +83,7 @@ async function generateContent(profile) {
   const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
 
   const prompt = `You are ${coachId.toUpperCase()} fitness coach texting your athlete at ${tod}.
-PERSONALITY: ${COACH_PERSONALITIES[coachId] || COACH_PERSONALITIES.elias}
+PERSONALITY: ${COACH_PERSONALITIES[coachId] || COACH_PERSONALITIES.aria}
 MISSION: ${scenario}
 USER GOAL: ${goal}
 RULES:
@@ -115,10 +132,9 @@ Return ONLY raw JSON: {"title": "...", "body": "..."}`;
     await reportError(err, { route: 'cron-notify', step: 'gemini-generate' });
     const defaults = {
       kane: { title: 'Get off the couch.', body: 'No excuses. The bar is loaded. Move.' },
-      elias: { title: 'Your muscles need stimulus.', body: 'Recovery window is closing. Time to train.' },
       aria: { title: 'Missing you! 💚', body: 'Consistency beats intensity. Let\'s go!' },
     };
-    return defaults[coachId] || defaults.elias;
+    return defaults[coachId] || defaults.aria;
   }
 }
 

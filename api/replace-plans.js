@@ -14,6 +14,7 @@ export const config = {
 
 const MAX_BODY_BYTES = 256 * 1024;
 
+// Keep all five ids: live rows and saves still carry legacy personas.
 const COACH_IDS = new Set(['aria', 'kane', 'blaze', 'nova', 'zara']);
 const PLAN_TYPES = new Set(['weekly']);
 const GENDERS = new Set(['male', 'female']);

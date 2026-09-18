@@ -18,6 +18,10 @@ export const PROFILE_ENUMS = Object.freeze({
   coach_persona: Object.freeze(['aria', 'kane', 'blaze', 'nova', 'zara']),
 });
 
+// Selectable ids for a new client choice. PROFILE_ENUMS.coach_persona stays the
+// server accept list so stored legacy personas still validate on save.
+export const SELECTABLE_COACH_IDS = Object.freeze(['aria', 'kane']);
+
 export const EQUIPMENT_TOKENS = Object.freeze([
   'full_gym',
   'home_basic',
