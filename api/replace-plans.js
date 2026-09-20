@@ -32,6 +32,7 @@ const MAX_TEXT_CHARS = 200;
 const ALLOWED_TOP_LEVEL = new Set([
   'clientAttemptId',
   'coachId',
+  'planSchemaVersion',
   'planType',
   'weekStart',
   'weekNumber',
@@ -40,6 +41,10 @@ const ALLOWED_TOP_LEVEL = new Set([
   'nutritionPlan',
 ]);
 
+// First versioned-client signal only. Absence keeps current behavior.
+// S1 does not switch validation on this value.
+export const PLAN_SCHEMA_VERSION = 1;
+
 // Any of these in the body means the caller misunderstood the contract: the
 // owner is taken only from the verified token. Presence is an error, not
 // something to ignore.
@@ -47,8 +52,13 @@ const FORBIDDEN_OWNER_KEYS = ['userId', 'user_id', 'ownerId', 'owner_id', 'uid']
 
 const ALLOWED_DAY_KEYS = new Set(['day', 'type', 'focus', 'exercises']);
 const ALLOWED_EXERCISE_KEYS = new Set([
-  'name', 'sets', 'reps', 'rest', 'notes', 'muscle', 'equipment',
+  'name', 'sets', 'reps', 'rest', 'notes', 'muscle', 'equipment', 'exerciseId',
 ]);
+const MAX_EXERCISE_ID_CHARS = 80;
+const EXERCISE_ID_RE = /^(fx|gx)_[0-9a-z_]+$/;
+
+// Stable first-token so Vercel logs can filter this later. Not sent to Sentry.
+export const UNKNOWN_EXERCISE_KEY_EVENT = 'replace-plans unknown-exercise-key';
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -84,6 +94,20 @@ function cleanText(value, max) {
   return trimmed;
 }
 
+function validateExerciseId(value, field) {
+  if (typeof value !== 'string') {
+    return badRequest(field, 'Must be a string');
+  }
+  if (value.length > MAX_EXERCISE_ID_CHARS) {
+    return badRequest(field, 'Too long');
+  }
+  // Exact match only: no trim, lowercase, or other repair.
+  if (value !== value.trim() || !EXERCISE_ID_RE.test(value)) {
+    return badRequest(field, 'Must be a canonical exercise id');
+  }
+  return { value };
+}
+
 function validateWorkoutPlan(plan) {
   if (!isPlainObject(plan)) return badRequest('workoutPlan', 'Must be an object');
   if (!Array.isArray(plan.days)) return badRequest('workoutPlan.days', 'Must be an array');
@@ -96,6 +120,8 @@ function validateWorkoutPlan(plan) {
 
   const days = [];
   let total = 0;
+  const unknownExerciseKeys = [];
+  const seenUnknown = new Set();
 
   for (let d = 0; d < plan.days.length; d += 1) {
     const raw = plan.days[d];
@@ -146,9 +172,25 @@ function validateWorkoutPlan(plan) {
 
       // Unknown fields are dropped rather than stored: unbounded jsonb written
       // from a client is an injection surface into every future reader.
+      // S1 still drops them (no 400). A structured diagnostic is recorded so
+      // later fail-closed can be decided from logs rather than guesswork.
       const kept = { name };
       for (const key of Object.keys(src)) {
-        if (key === 'name' || !ALLOWED_EXERCISE_KEYS.has(key)) continue;
+        if (key === 'name') continue;
+        if (!ALLOWED_EXERCISE_KEYS.has(key)) {
+          const field = `${where}.${key}`;
+          if (!seenUnknown.has(field)) {
+            seenUnknown.add(field);
+            unknownExerciseKeys.push({ field, key });
+          }
+          continue;
+        }
+        if (key === 'exerciseId') {
+          const id = validateExerciseId(src.exerciseId, `${where}.exerciseId`);
+          if (id.error) return id;
+          kept.exerciseId = src.exerciseId;
+          continue;
+        }
         const v = src[key];
         if (typeof v === 'string') {
           const t = v.trim();
@@ -166,7 +208,7 @@ function validateWorkoutPlan(plan) {
     days.push({ day, type, focus, exercises });
   }
 
-  return { value: { days } };
+  return { value: { days }, unknownExerciseKeys };
 }
 
 function validateNutritionPlan(plan) {
@@ -236,6 +278,14 @@ export function validatePlanRequest(body, now = new Date()) {
     activateOn = body.activateOn;
   }
 
+  let planSchemaVersion;
+  if ('planSchemaVersion' in body) {
+    if (!Number.isInteger(body.planSchemaVersion) || body.planSchemaVersion !== PLAN_SCHEMA_VERSION) {
+      return badRequest('planSchemaVersion', `Must be the integer ${PLAN_SCHEMA_VERSION}`);
+    }
+    planSchemaVersion = body.planSchemaVersion;
+  }
+
   const workout = validateWorkoutPlan(body.workoutPlan);
   if (workout.error) return workout;
 
@@ -257,6 +307,9 @@ export function validatePlanRequest(body, now = new Date()) {
       workoutPlan: workout.value,
       nutritionPlan: nutrition,
     },
+    // Signal + diagnostics only. Never copied into workoutPlan or RPC args.
+    planSchemaVersion,
+    unknownExerciseKeys: workout.unknownExerciseKeys,
   };
 }
 
@@ -356,7 +409,29 @@ async function reconcilePlanWrite(admin, {
   };
 }
 
-async function handleRequest(req, res, requestId) {
+function createAdmin() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
+
+function logUnknownExerciseKeys(requestId, unknownExerciseKeys, planSchemaVersion) {
+  if (!unknownExerciseKeys?.length) return;
+  for (const entry of unknownExerciseKeys) {
+    const payload = {
+      requestId,
+      field: entry.field,
+      key: entry.key,
+    };
+    if (planSchemaVersion !== undefined) payload.planSchemaVersion = planSchemaVersion;
+    console.warn(UNKNOWN_EXERCISE_KEY_EVENT, payload);
+  }
+}
+
+export async function handleRequest(req, res, requestId, deps = {}) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed', requestId });
   }
@@ -369,9 +444,8 @@ async function handleRequest(req, res, requestId) {
     return res.status(413).json({ error: 'Request body too large', maxBytes: MAX_BODY_BYTES, requestId });
   }
 
-  const SUPABASE_URL = process.env.SUPABASE_URL;
-  const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
+  const admin = deps.admin || createAdmin();
+  if (!admin) {
     return res.status(500).json({ error: 'Server not configured', requestId });
   }
 
@@ -380,10 +454,6 @@ async function handleRequest(req, res, requestId) {
   if (!token) {
     return res.status(401).json({ error: 'Missing access token', requestId });
   }
-
-  const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
 
   const { data: userData, error: userErr } = await admin.auth.getUser(token);
   if (userErr || !userData || !userData.user) {
@@ -401,6 +471,7 @@ async function handleRequest(req, res, requestId) {
     });
   }
   const input = validated.value;
+  logUnknownExerciseKeys(requestId, validated.unknownExerciseKeys, validated.planSchemaVersion);
 
   // gender is re-derived from the profile and the body value is ignored. Fail
   // closed rather than trusting client input: a client-controlled gender drives
