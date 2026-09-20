@@ -2,9 +2,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   handleRequest,
   PLAN_SCHEMA_VERSION,
+  PLAN_SCHEMA_VERSION_ABSENT,
   UNKNOWN_EXERCISE_KEY_EVENT,
+  UNKNOWN_EXERCISE_KEY_NAME_CAP,
+  UNKNOWN_EXERCISE_KEY_NAME_MAX,
   validatePlanRequest,
 } from '../api/replace-plans.js';
+import * as sentry from '../api/_sentry.js';
 
 const NOW = new Date('2026-09-19T21:00:00.000Z');
 const ATTEMPT_ID = '11111111-1111-4111-8111-111111111111';
@@ -107,11 +111,18 @@ function fakeAdmin({ gender = 'female', userId = 'user-1' } = {}) {
   };
 }
 
-async function postReplace(payload, { gender = 'female' } = {}) {
+async function postReplace(payload, { gender = 'female', useRealReportMessage = false } = {}) {
   const admin = fakeAdmin({ gender });
   const res = fakeRes();
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
   const info = vi.spyOn(console, 'info').mockImplementation(() => {});
+  const originalReportMessage = sentry.reportMessage;
+  const reportMessage = vi.spyOn(sentry, 'reportMessage');
+  if (useRealReportMessage) {
+    reportMessage.mockImplementation((...args) => originalReportMessage(...args));
+  } else {
+    reportMessage.mockResolvedValue(undefined);
+  }
   await handleRequest(
     {
       method: 'POST',
@@ -122,7 +133,20 @@ async function postReplace(payload, { gender = 'female' } = {}) {
     'abcd1234',
     { admin },
   );
-  return { res, admin, warn, info };
+  return { res, admin, warn, info, reportMessage };
+}
+
+function sentryPayload(reportMessage) {
+  return JSON.stringify(reportMessage.mock.calls);
+}
+
+function sevenDays(perDayExercises) {
+  return Array.from({ length: 7 }, (_, index) => ({
+    day: `Day ${index + 1}`,
+    type: index === 6 ? 'rest' : 'training',
+    focus: index === 6 ? 'Recovery' : 'Strength',
+    exercises: perDayExercises[index] || [],
+  }));
 }
 
 afterEach(() => {
@@ -369,5 +393,168 @@ describe('handleRequest stored and RPC shape', () => {
       key: 'vendorId',
     });
     expect(events[0][1]).not.toHaveProperty('planSchemaVersion');
+  });
+});
+
+describe('handleRequest S1b telemetry', () => {
+  it('still returns 200 when unknown exercise keys are present', async () => {
+    const { res } = await postReplace(body({
+      exercise: { vendorId: 'secret-value' },
+    }));
+
+    expect(res.statusCode).toBe(200);
+  });
+
+  it('sends exactly one Sentry message for unknown keys on multiple days and exercises', async () => {
+    const { res, reportMessage } = await postReplace(body({
+      planSchemaVersion: 1,
+      workoutPlan: {
+        days: sevenDays({
+          0: [{ name: 'Squat', vendorId: 'secret-a', animationPath: '/a.mp4' }],
+          1: [
+            { name: 'Bench', vendorId: 'secret-b', extraField: 'x' },
+            { name: 'Row', vendorId: 'secret-c', foo: 'y' },
+          ],
+        }),
+      },
+    }));
+
+    expect(res.statusCode).toBe(200);
+    expect(reportMessage).toHaveBeenCalledTimes(1);
+    expect(reportMessage.mock.calls[0][0]).toBe(UNKNOWN_EXERCISE_KEY_EVENT);
+    expect(reportMessage.mock.calls[0][1]).toBe('warning');
+    expect(reportMessage.mock.calls[0][2]).toEqual({
+      unknownKeyCount: 4,
+      planSchemaVersion: 1,
+    });
+    expect(reportMessage.mock.calls[0][3]).toEqual({
+      unknownKeys: ['vendorId', 'animationPath', 'extraField', 'foo'],
+    });
+  });
+
+  it('dedupes the same unknown key name across days into one extra entry', async () => {
+    const { reportMessage } = await postReplace(body({
+      workoutPlan: {
+        days: sevenDays({
+          0: [{ name: 'Squat', vendorId: 'secret-a' }],
+          1: [{ name: 'Bench', vendorId: 'secret-b' }],
+          2: [{ name: 'Row', vendorId: 'secret-c' }],
+        }),
+      },
+    }));
+
+    expect(reportMessage).toHaveBeenCalledTimes(1);
+    expect(reportMessage.mock.calls[0][2].unknownKeyCount).toBe(1);
+    expect(reportMessage.mock.calls[0][3].unknownKeys).toEqual(['vendorId']);
+  });
+
+  it('truncates the extra key list at the cap and still reports the distinct count', async () => {
+    const extras = {};
+    for (let i = 0; i < UNKNOWN_EXERCISE_KEY_NAME_CAP + 2; i += 1) {
+      extras[`customKey${i}`] = `value-${i}`;
+    }
+
+    const { res, reportMessage } = await postReplace(body({
+      exercise: extras,
+    }));
+
+    expect(res.statusCode).toBe(200);
+    expect(reportMessage).toHaveBeenCalledTimes(1);
+    expect(reportMessage.mock.calls[0][2].unknownKeyCount).toBe(UNKNOWN_EXERCISE_KEY_NAME_CAP + 2);
+    expect(reportMessage.mock.calls[0][3].unknownKeys).toHaveLength(UNKNOWN_EXERCISE_KEY_NAME_CAP);
+    expect(reportMessage.mock.calls[0][3].unknownKeys).toEqual(
+      Array.from({ length: UNKNOWN_EXERCISE_KEY_NAME_CAP }, (_, i) => `customKey${i}`),
+    );
+    expect(reportMessage.mock.calls[0][3].unknownKeys).not.toContain(`customKey${UNKNOWN_EXERCISE_KEY_NAME_CAP}`);
+  });
+
+  it('truncates an oversized key name before sending it to Sentry', async () => {
+    const longKey = `k${'x'.repeat(UNKNOWN_EXERCISE_KEY_NAME_MAX + 10)}`;
+    const { reportMessage } = await postReplace(body({
+      exercise: { [longKey]: 'hidden-value' },
+    }));
+
+    const sent = reportMessage.mock.calls[0][3].unknownKeys[0];
+    expect(sent).toHaveLength(UNKNOWN_EXERCISE_KEY_NAME_MAX);
+    expect(sent).toBe(longKey.slice(0, UNKNOWN_EXERCISE_KEY_NAME_MAX));
+  });
+
+  it('does not send exercise names, key values, userId, or plan content to Sentry', async () => {
+    const { reportMessage } = await postReplace(body({
+      exercise: { vendorId: 'secret-value', animationPath: '/media/squat.mp4' },
+      planSchemaVersion: 1,
+    }));
+
+    const sent = sentryPayload(reportMessage);
+    expect(sent).not.toContain('Squat');
+    expect(sent).not.toContain('secret-value');
+    expect(sent).not.toContain('/media/squat.mp4');
+    expect(sent).not.toContain('user-1');
+    expect(sent).not.toContain('Day 1');
+    expect(sent).not.toContain('aria');
+    expect(sent).not.toContain('female');
+    expect(sent).not.toContain(ATTEMPT_ID);
+    expect(sent).not.toContain('test-token');
+    expect(sent).not.toContain('workoutPlan');
+  });
+
+  it('uses the fixed unknown-exercise-key message literal', async () => {
+    const { reportMessage } = await postReplace(body({
+      exercise: { vendorId: 'wger-1' },
+    }));
+
+    expect(reportMessage.mock.calls[0][0]).toBe('replace-plans unknown-exercise-key');
+  });
+
+  it('succeeds without throwing when SENTRY_DSN is absent', async () => {
+    const previous = process.env.SENTRY_DSN;
+    delete process.env.SENTRY_DSN;
+    try {
+      const { res, reportMessage } = await postReplace(
+        body({ exercise: { vendorId: 'wger-1' } }),
+        { useRealReportMessage: true },
+      );
+
+      expect(res.statusCode).toBe(200);
+      expect(reportMessage).toHaveBeenCalledTimes(1);
+    } finally {
+      if (previous === undefined) delete process.env.SENTRY_DSN;
+      else process.env.SENTRY_DSN = previous;
+    }
+  });
+
+  it('emits no Sentry message on a clean request', async () => {
+    const { res, reportMessage } = await postReplace(body({ planSchemaVersion: 1 }));
+
+    expect(res.statusCode).toBe(200);
+    expect(reportMessage).not.toHaveBeenCalled();
+  });
+
+  it('writes the version integer on a versioned success log and not to the RPC', async () => {
+    const { info, admin } = await postReplace(body({ planSchemaVersion: 1 }));
+
+    const ok = info.mock.calls.filter(([event]) => event === 'replace-plans ok');
+    expect(ok).toHaveLength(1);
+    expect(ok[0][1]).toEqual({
+      requestId: 'abcd1234',
+      userId: 'user-1',
+      attemptId: ATTEMPT_ID,
+      planSchemaVersion: PLAN_SCHEMA_VERSION,
+    });
+    expect(admin.calls.rpc[0].args.p_workout_plan_data).toEqual({
+      coachId: 'aria',
+      days: expect.any(Array),
+      gender: 'female',
+    });
+    expect(JSON.stringify(admin.calls.rpc[0].args)).not.toContain('planSchemaVersion');
+  });
+
+  it('writes the legacy marker on an unversioned success log', async () => {
+    const { info } = await postReplace(body());
+
+    const ok = info.mock.calls.filter(([event]) => event === 'replace-plans ok');
+    expect(ok).toHaveLength(1);
+    expect(ok[0][1].planSchemaVersion).toBe(PLAN_SCHEMA_VERSION_ABSENT);
+    expect(ok[0][1].planSchemaVersion).toBe('legacy');
   });
 });

@@ -55,3 +55,24 @@ export async function finishCheckIn(monitorSlug, checkInId, status) {
     console.warn('Sentry check-in finish failed:', err?.message);
   }
 }
+
+// Report a non-exception event to Sentry from a serverless function.
+// context entries become tags (same as reportError). extra is setExtra only.
+// Always awaits flush, because Vercel may freeze the function right after the response.
+export async function reportMessage(message, level, context = {}, extra = {}) {
+  try {
+    ensureInit();
+    if (!process.env.SENTRY_DSN) {
+      console.warn('Sentry DSN missing, message not reported:', message);
+      return;
+    }
+    Sentry.withScope((scope) => {
+      Object.entries(context).forEach(([key, value]) => scope.setTag(key, String(value)));
+      Object.entries(extra).forEach(([key, value]) => scope.setExtra(key, value));
+      Sentry.captureMessage(message, level);
+    });
+    await Sentry.flush(2000);
+  } catch (err) {
+    console.warn('Sentry reporting failed:', err?.message);
+  }
+}

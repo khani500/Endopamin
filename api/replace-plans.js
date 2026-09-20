@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { applyCorsHeaders } from './_cors.js';
 import { checkRateLimit } from './_rateLimit.js';
-import { reportError } from './_sentry.js';
+import { reportError, reportMessage } from './_sentry.js';
 
 export const config = {
   api: {
@@ -44,6 +44,8 @@ const ALLOWED_TOP_LEVEL = new Set([
 // First versioned-client signal only. Absence keeps current behavior.
 // S1 does not switch validation on this value.
 export const PLAN_SCHEMA_VERSION = 1;
+// Greppable success-log / Sentry tag when the client omitted planSchemaVersion.
+export const PLAN_SCHEMA_VERSION_ABSENT = 'legacy';
 
 // Any of these in the body means the caller misunderstood the contract: the
 // owner is taken only from the verified token. Presence is an error, not
@@ -57,8 +59,11 @@ const ALLOWED_EXERCISE_KEYS = new Set([
 const MAX_EXERCISE_ID_CHARS = 80;
 const EXERCISE_ID_RE = /^(fx|gx)_[0-9a-z_]+$/;
 
-// Stable first-token so Vercel logs can filter this later. Not sent to Sentry.
+// Stable first-token so Vercel logs can filter this later.
+// Also the fixed Sentry captureMessage literal (at most one event per request).
 export const UNKNOWN_EXERCISE_KEY_EVENT = 'replace-plans unknown-exercise-key';
+export const UNKNOWN_EXERCISE_KEY_NAME_CAP = 8;
+export const UNKNOWN_EXERCISE_KEY_NAME_MAX = 40;
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -418,6 +423,10 @@ function createAdmin() {
   });
 }
 
+function schemaVersionMarker(planSchemaVersion) {
+  return planSchemaVersion === undefined ? PLAN_SCHEMA_VERSION_ABSENT : planSchemaVersion;
+}
+
 function logUnknownExerciseKeys(requestId, unknownExerciseKeys, planSchemaVersion) {
   if (!unknownExerciseKeys?.length) return;
   for (const entry of unknownExerciseKeys) {
@@ -429,6 +438,36 @@ function logUnknownExerciseKeys(requestId, unknownExerciseKeys, planSchemaVersio
     if (planSchemaVersion !== undefined) payload.planSchemaVersion = planSchemaVersion;
     console.warn(UNKNOWN_EXERCISE_KEY_EVENT, payload);
   }
+}
+
+// One Sentry message per request. Key names only: no values, field paths, or body.
+async function reportUnknownExerciseKeys(unknownExerciseKeys, planSchemaVersion) {
+  if (!unknownExerciseKeys?.length) return;
+
+  const seen = new Set();
+  const distinct = [];
+  for (const entry of unknownExerciseKeys) {
+    const raw = typeof entry.key === 'string' ? entry.key : '';
+    if (!raw || seen.has(raw)) continue;
+    seen.add(raw);
+    distinct.push(raw);
+  }
+
+  const reportedKeys = distinct
+    .slice(0, UNKNOWN_EXERCISE_KEY_NAME_CAP)
+    .map((key) => key.slice(0, UNKNOWN_EXERCISE_KEY_NAME_MAX));
+
+  await reportMessage(
+    UNKNOWN_EXERCISE_KEY_EVENT,
+    'warning',
+    {
+      unknownKeyCount: distinct.length,
+      planSchemaVersion: schemaVersionMarker(planSchemaVersion),
+    },
+    {
+      unknownKeys: reportedKeys,
+    },
+  );
 }
 
 export async function handleRequest(req, res, requestId, deps = {}) {
@@ -471,7 +510,9 @@ export async function handleRequest(req, res, requestId, deps = {}) {
     });
   }
   const input = validated.value;
-  logUnknownExerciseKeys(requestId, validated.unknownExerciseKeys, validated.planSchemaVersion);
+  const requestPlanSchemaVersion = validated.planSchemaVersion;
+  logUnknownExerciseKeys(requestId, validated.unknownExerciseKeys, requestPlanSchemaVersion);
+  await reportUnknownExerciseKeys(validated.unknownExerciseKeys, requestPlanSchemaVersion);
 
   // gender is re-derived from the profile and the body value is ignored. Fail
   // closed rather than trusting client input: a client-controlled gender drives
@@ -593,6 +634,7 @@ export async function handleRequest(req, res, requestId, deps = {}) {
     requestId,
     userId,
     attemptId: input.clientAttemptId,
+    planSchemaVersion: schemaVersionMarker(requestPlanSchemaVersion),
   });
 
   return res.status(200).json({
