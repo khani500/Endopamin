@@ -166,15 +166,16 @@ describe('validateTargetWeight', () => {
     expectValid(validateTargetWeight(170, 'lb', { weight: 180, goal: 'fat_loss' }), 170);
   });
 
-  it('rejects weight_loss with target above current, and strength_gain with target below', () => {
+  it('rejects weight_loss with target above current', () => {
     expectInvalid(
       validateTargetWeight(90, 'kg', { weight: 80, goal: 'weight_loss' }),
       validateTargetWeight(70, 'kg', { weight: 80, goal: 'weight_loss' }),
     );
-    expectInvalid(
-      validateTargetWeight(70, 'kg', { weight: 80, goal: 'strength_gain' }),
-      validateTargetWeight(90, 'kg', { weight: 80, goal: 'strength_gain' }),
-    );
+  });
+
+  it('accepts strength_gain with target below or above current', () => {
+    expectValid(validateTargetWeight(70, 'kg', { weight: 80, goal: 'strength_gain' }), 70);
+    expectValid(validateTargetWeight(90, 'kg', { weight: 80, goal: 'strength_gain' }), 90);
   });
 
   it('accepts muscle_gain with target below or above current', () => {
@@ -250,6 +251,11 @@ describe('validateGoal pair consistency', () => {
     expectValid(validateGoal('muscle_gain', { weight: 60, target_weight: 65 }), 'muscle_gain');
   });
 
+  it('accepts strength_gain when target is below or above current', () => {
+    expectValid(validateGoal('strength_gain', { weight: 80, target_weight: 70 }), 'strength_gain');
+    expectValid(validateGoal('strength_gain', { weight: 80, target_weight: 90 }), 'strength_gain');
+  });
+
   it('rejects fat_loss when target is above current, next to a target below', () => {
     expectInvalid(
       validateGoal('fat_loss', { weight: 60, target_weight: 65 }),
@@ -264,8 +270,8 @@ describe('validateGoal pair consistency', () => {
   });
 
   it('names the same conflict as validateTargetWeight', () => {
-    const viaGoal = validateGoal('strength_gain', { weight: 60, target_weight: 56 });
-    const viaTarget = validateTargetWeight(56, 'kg', { weight: 60, goal: 'strength_gain' });
+    const viaGoal = validateGoal('fat_loss', { weight: 60, target_weight: 65 });
+    const viaTarget = validateTargetWeight(65, 'kg', { weight: 60, goal: 'fat_loss' });
     expect(viaGoal.valid).toBe(false);
     expect(viaTarget.valid).toBe(false);
     expect(viaGoal.reason).toBe(TARGET_GOAL_INCONSISTENT);
@@ -298,7 +304,7 @@ describe('goal/target_weight direction matrix', () => {
     expectAccepted('weight_loss', equal);
     expectRejected('weight_loss', above);
 
-    expectRejected('strength_gain', below);
+    expectAccepted('strength_gain', below);
     expectAccepted('strength_gain', equal);
     expectAccepted('strength_gain', above);
 

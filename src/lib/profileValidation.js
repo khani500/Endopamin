@@ -60,8 +60,6 @@ const WEIGHT_BOUNDS = Object.freeze({
   lb: Object.freeze({ min: 66, max: 660 }),
 });
 const LOSS_GOALS = new Set(['fat_loss', 'weight_loss']);
-// muscle_gain allows recomp: target below current is valid. strength_gain still does not.
-const GAIN_GOALS = new Set(['strength_gain']);
 
 function absent() {
   return { valid: true, absent: true };
@@ -168,9 +166,6 @@ export function validateTargetGoalConsistency(target, current, goal) {
     return invalid(TARGET_GOAL_INCONSISTENT);
   }
   if (LOSS_GOALS.has(goal) && targetNumber > currentNumber) {
-    return invalid(TARGET_GOAL_INCONSISTENT);
-  }
-  if (GAIN_GOALS.has(goal) && targetNumber < currentNumber) {
     return invalid(TARGET_GOAL_INCONSISTENT);
   }
   return ok(targetNumber);
