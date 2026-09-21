@@ -540,12 +540,12 @@ describe('handleRequest', () => {
     expect(admin.updates[0].patch.weight).toBe(60);
   });
 
-  it('still rejects a target below current when stored goal is confirmed muscle_gain', async () => {
+  it('accepts a target below current when stored goal is confirmed muscle_gain', async () => {
     const { res, admin } = await postSave(
       fields({
-        weight: { value: 60, intent: 'confirmed' },
+        weight: { value: 80, intent: 'confirmed' },
         weight_unit: { value: 'kg', intent: 'confirmed' },
-        target_weight: { value: 56, intent: 'confirmed' },
+        target_weight: { value: 70, intent: 'confirmed' },
       }),
       {
         profile: {
@@ -559,17 +559,17 @@ describe('handleRequest', () => {
         },
       },
     );
-    expect(res.statusCode).toBe(422);
-    expect(res.body.fields.target_weight).toBe(TARGET_GOAL_INCONSISTENT);
-    expect(admin.updates).toHaveLength(0);
+    expect(res.statusCode).toBe(200);
+    expect(admin.updates[0].patch.target_weight).toBe(70);
+    expect(admin.updates[0].patch.weight).toBe(80);
   });
 
-  it('rejects goal muscle_gain when a confirmed target is below confirmed weight', async () => {
+  it('accepts goal muscle_gain when a confirmed target is below confirmed weight', async () => {
     const profile = {
       height_unit: 'cm',
       weight_unit: 'kg',
-      weight: 60,
-      target_weight: 56,
+      weight: 80,
+      target_weight: 70,
       field_provenance: {
         target_weight: { state: 'confirmed', at: NOW.toISOString(), source: 'save-profile' },
       },
@@ -578,13 +578,13 @@ describe('handleRequest', () => {
       fields({ goal: { value: 'muscle_gain', intent: 'confirmed' } }),
       { profile },
     );
-    expect(res.statusCode).toBe(422);
-    expect(res.body.fields.goal).toBe(TARGET_GOAL_INCONSISTENT);
-    expect(admin.updates).toHaveLength(0);
+    expect(res.statusCode).toBe(200);
+    expect(admin.updates[0].patch.goal).toBe('muscle_gain');
+    expect(admin.updates[0].patch).not.toHaveProperty('target_weight');
 
     const neighbour = await postSave(
       fields({ goal: { value: 'muscle_gain', intent: 'confirmed' } }),
-      { profile: { ...profile, target_weight: 65 } },
+      { profile: { ...profile, target_weight: 90 } },
     );
     expect(neighbour.res.statusCode).toBe(200);
     expect(neighbour.admin.updates[0].patch.goal).toBe('muscle_gain');
@@ -628,7 +628,7 @@ describe('handleRequest', () => {
     expect(admin.updates[0].patch.goal).toBe('muscle_gain');
   });
 
-  it('qa-m2d sequence: target first with no goal is accepted, then the goal write is 422', async () => {
+  it('qa-m2d sequence: target first with no goal is accepted, then muscle_gain is accepted', async () => {
     const step1 = await postSave(
       fields({
         weight: { value: 60, intent: 'confirmed' },
@@ -667,8 +667,7 @@ describe('handleRequest', () => {
         },
       },
     );
-    expect(step2.res.statusCode).toBe(422);
-    expect(step2.res.body.fields.goal).toBe(TARGET_GOAL_INCONSISTENT);
-    expect(step2.admin.updates).toHaveLength(0);
+    expect(step2.res.statusCode).toBe(200);
+    expect(step2.admin.updates[0].patch.goal).toBe('muscle_gain');
   });
 });

@@ -60,7 +60,8 @@ const WEIGHT_BOUNDS = Object.freeze({
   lb: Object.freeze({ min: 66, max: 660 }),
 });
 const LOSS_GOALS = new Set(['fat_loss', 'weight_loss']);
-const GAIN_GOALS = new Set(['muscle_gain', 'strength_gain']);
+// muscle_gain allows recomp: target below current is valid. strength_gain still does not.
+const GAIN_GOALS = new Set(['strength_gain']);
 
 function absent() {
   return { valid: true, absent: true };
