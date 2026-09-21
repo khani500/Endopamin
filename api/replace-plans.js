@@ -64,6 +64,9 @@ const EXERCISE_ID_RE = /^(fx|gx)_[0-9a-z_]+$/;
 export const UNKNOWN_EXERCISE_KEY_EVENT = 'replace-plans unknown-exercise-key';
 export const UNKNOWN_EXERCISE_KEY_NAME_CAP = 8;
 export const UNKNOWN_EXERCISE_KEY_NAME_MAX = 40;
+// Durable Sentry captureMessage literal for the contract-version success
+// signal. One info event per successful request. Never interpolate this string.
+export const PLAN_SAVE_OK_EVENT = 'replace-plans ok';
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -636,6 +639,13 @@ export async function handleRequest(req, res, requestId, deps = {}) {
     attemptId: input.clientAttemptId,
     planSchemaVersion: schemaVersionMarker(requestPlanSchemaVersion),
   });
+
+  await reportMessage(
+    PLAN_SAVE_OK_EVENT,
+    'info',
+    { planSchemaVersion: schemaVersionMarker(requestPlanSchemaVersion) },
+    { requestId },
+  );
 
   return res.status(200).json({
     workoutPlanId: row.workout_plan_id,
