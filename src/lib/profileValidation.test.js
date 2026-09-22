@@ -63,11 +63,11 @@ describe('PROFILE_ENUMS', () => {
 });
 
 describe('validateAge', () => {
-  it('exports MIN_AGE as 16', () => {
-    expect(MIN_AGE).toBe(16);
+  it('exports MIN_AGE as 18', () => {
+    expect(MIN_AGE).toBe(18);
   });
 
-  it.each([6, 14])('rejects production age %s', age => {
+  it.each([6, 14, 16])('rejects production age %s', age => {
     expectInvalid(validateAge(age), validateAge(MIN_AGE));
   });
 
@@ -76,13 +76,19 @@ describe('validateAge', () => {
     expectInvalid(validateAge(101), validateAge(100));
   });
 
-  it('rejects 15 next to MIN_AGE', () => {
-    expectInvalid(validateAge(15), validateAge(MIN_AGE));
+  it('rejects 17 next to MIN_AGE', () => {
+    expectInvalid(validateAge(17), validateAge(MIN_AGE));
   });
 
   it('rejects non-integers next to a valid integer', () => {
-    expectInvalid(validateAge(16.5), validateAge(16));
+    expectInvalid(validateAge(16.5), validateAge(18));
     expectInvalid(validateAge('28.0'), validateAge('28'));
+  });
+
+  it('treats 16 and 17 as invalid and 18 as valid', () => {
+    expectInvalid(validateAge(16), validateAge(18));
+    expectInvalid(validateAge(17), validateAge(18));
+    expectValid(validateAge(18), 18);
   });
 
   it('treats null and undefined as absent, not invalid', () => {

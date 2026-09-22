@@ -128,10 +128,10 @@ describe('planProfileWrite', () => {
     expect(invalid.error.fields.age).toEqual(expect.any(String));
 
     const valid = planProfileWrite(
-      fields({ age: { value: 16, intent: 'confirmed' } }),
+      fields({ age: { value: 18, intent: 'confirmed' } }),
       { now: NOW },
     );
-    expect(valid.value.patch.age).toBe(16);
+    expect(valid.value.patch.age).toBe(18);
     expect(valid.value.written.age.state).toBe('confirmed');
   });
 
@@ -365,7 +365,7 @@ describe('handleRequest', () => {
     expect(admin.updates).toHaveLength(0);
 
     const neighbour = await postSave(
-      fields({ age: { value: 16, intent: 'confirmed' } }),
+      fields({ age: { value: 18, intent: 'confirmed' } }),
     );
     expect(neighbour.res.statusCode).toBe(200);
     expect(neighbour.admin.updates).toHaveLength(1);
