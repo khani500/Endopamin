@@ -82,23 +82,38 @@ function fakeRes() {
   };
 }
 
-function fakeAdmin({ gender = 'female', userId = 'user-1' } = {}) {
-  const calls = { rpc: [] };
+function fakeAdmin({ gender = 'female', age = 28, userId = 'user-1' } = {}) {
+  const calls = { rpc: [], from: [] };
   return {
     calls,
     auth: {
       getUser: async () => ({ data: { user: { id: userId } }, error: null }),
     },
-    from() {
+    from(table) {
+      const record = { table, ops: [] };
+      calls.from.push(record);
       return {
-        select() {
+        select(cols) {
+          record.ops.push({ op: 'select', cols });
           return {
             eq() {
               return {
-                maybeSingle: async () => ({ data: { gender }, error: null }),
+                maybeSingle: async () => ({ data: { gender, age }, error: null }),
               };
             },
           };
+        },
+        insert() {
+          record.ops.push({ op: 'insert' });
+          throw new Error('unexpected insert');
+        },
+        update() {
+          record.ops.push({ op: 'update' });
+          throw new Error('unexpected update');
+        },
+        delete() {
+          record.ops.push({ op: 'delete' });
+          throw new Error('unexpected delete');
         },
       };
     },
@@ -112,8 +127,8 @@ function fakeAdmin({ gender = 'female', userId = 'user-1' } = {}) {
   };
 }
 
-async function postReplace(payload, { gender = 'female', useRealReportMessage = false } = {}) {
-  const admin = fakeAdmin({ gender });
+async function postReplace(payload, { gender = 'female', age = 28, useRealReportMessage = false } = {}) {
+  const admin = fakeAdmin({ gender, age });
   const res = fakeRes();
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
   const info = vi.spyOn(console, 'info').mockImplementation(() => {});
@@ -690,6 +705,73 @@ describe('handleRequest S1c contract-version telemetry', () => {
     expect(reportMessage.mock.calls[1][1]).toBe('info');
     expect(reportMessage.mock.calls[1][2]).toEqual({ planSchemaVersion: 1 });
     expect(reportMessage.mock.calls[0][0]).not.toBe(reportMessage.mock.calls[1][0]);
+  });
+});
+
+function expectAgeIneligible(res, admin, fieldAge) {
+  expect(res.statusCode).toBe(422);
+  expect(res.body).toEqual({
+    error: 'Profile validation failed',
+    code: 'age_ineligible',
+    requestId: 'abcd1234',
+    fields: { age: fieldAge },
+  });
+  expect(res.body.fields.age).toBe(fieldAge);
+  expect(admin.calls.rpc).toHaveLength(0);
+  expect(admin.calls.from.every(({ table }) => table === 'profiles')).toBe(true);
+  expect(admin.calls.from.some(({ table }) => (
+    table === 'workout_plans' || table === 'nutrition_plans'
+  ))).toBe(false);
+  expect(admin.calls.from.flatMap(({ ops }) => ops).every(({ op }) => op === 'select')).toBe(true);
+}
+
+describe('handleRequest stored age gate', () => {
+  it('returns 422 age_ineligible underage when stored age is 17 and does not call the RPC', async () => {
+    const { res, admin } = await postReplace(body(), { age: 17 });
+    expectAgeIneligible(res, admin, 'underage');
+  });
+
+  it('returns fields.age missing when stored age is null', async () => {
+    const { res, admin } = await postReplace(body(), { age: null });
+    expectAgeIneligible(res, admin, 'missing');
+  });
+
+  it.each([
+    ['abc', 'abc'],
+    [17.5, 17.5],
+    [101, 101],
+  ])('returns fields.age invalid when stored age is %s', async (age) => {
+    const { res, admin } = await postReplace(body(), { age });
+    expectAgeIneligible(res, admin, 'invalid');
+  });
+
+  it.each([18, 35])('proceeds to the RPC when stored age is %s', async (age) => {
+    const { res, admin } = await postReplace(body(), { age });
+    expect(res.statusCode).toBe(200);
+    expect(admin.calls.rpc).toHaveLength(1);
+    expect(admin.calls.rpc[0].name).toBe('replace_user_plans_atomic');
+  });
+
+  it('ignores request-body age 30 when stored age is 17', async () => {
+    const { res, admin } = await postReplace(
+      body({ workoutPlan: { age: 30, days: days() } }),
+      { age: 17 },
+    );
+    expectAgeIneligible(res, admin, 'underage');
+  });
+
+  it('keeps the existing gender-missing 422 when gender is absent', async () => {
+    const { res, admin } = await postReplace(body({ planSchemaVersion: 1 }), {
+      gender: '',
+    });
+
+    expect(res.statusCode).toBe(422);
+    expect(res.body).toEqual({
+      error: 'Profile gender is not set; complete your profile before generating a plan',
+      requestId: 'abcd1234',
+    });
+    expect(res.body).not.toHaveProperty('code');
+    expect(admin.calls.rpc).toHaveLength(0);
   });
 });
 

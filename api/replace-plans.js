@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { applyCorsHeaders } from './_cors.js';
 import { checkRateLimit } from './_rateLimit.js';
 import { reportError, reportMessage } from './_sentry.js';
+import { classifyStoredAge } from '../src/lib/adultAge.js';
 
 export const config = {
   api: {
@@ -522,7 +523,7 @@ export async function handleRequest(req, res, requestId, deps = {}) {
   // a destructive archive path on read.
   const { data: profile, error: profileErr } = await admin
     .from('profiles')
-    .select('gender')
+    .select('gender, age')
     .eq('id', userId)
     .maybeSingle();
 
@@ -545,6 +546,16 @@ export async function handleRequest(req, res, requestId, deps = {}) {
     return res.status(422).json({
       error: 'Profile gender is not set; complete your profile before generating a plan',
       requestId,
+    });
+  }
+
+  const ageStatus = classifyStoredAge(profile?.age);
+  if (ageStatus !== 'ok') {
+    return res.status(422).json({
+      error: 'Profile validation failed',
+      code: 'age_ineligible',
+      requestId,
+      fields: { age: ageStatus },
     });
   }
 
