@@ -3,7 +3,7 @@ import {
   handleRequest,
   planProfileWrite,
 } from '../api/save-profile.js';
-import { TARGET_GOAL_INCONSISTENT } from '../src/lib/profileValidation.js';
+import { TARGET_GOAL_INCONSISTENT, EQUIPMENT_EXTRAS_REASONS } from '../src/lib/profileValidation.js';
 import {
   HEALTH_CONDITIONS_STORED,
   HEALTH_CONDITIONS_WIRE,
@@ -669,5 +669,118 @@ describe('handleRequest', () => {
     );
     expect(step2.res.statusCode).toBe(200);
     expect(step2.admin.updates[0].patch.goal).toBe('muscle_gain');
+  });
+
+  it('writes equipment_extras array and stamps provenance without touching equipment', async () => {
+    const { res, admin } = await postSave(
+      fields({
+        equipment_extras: {
+          value: ['bands', 'pullup_bar', 'door_anchor'],
+          intent: 'confirmed',
+        },
+      }),
+      {
+        profile: {
+          height_unit: 'cm',
+          weight_unit: 'lb',
+          weight: 180,
+          goal: 'fat_loss',
+          equipment: '{}',
+          field_provenance: null,
+        },
+      },
+    );
+    expect(res.statusCode).toBe(200);
+    expect(admin.updates).toHaveLength(1);
+    expect(admin.updates[0].patch.equipment_extras).toEqual([
+      'bands',
+      'pullup_bar',
+      'door_anchor',
+    ]);
+    expect(admin.updates[0].patch.field_provenance.equipment_extras.state).toBe('confirmed');
+    expect(admin.updates[0].patch.field_provenance.equipment_extras.source).toBe('save-profile');
+    expect(admin.updates[0].patch).not.toHaveProperty('equipment');
+    expect(res.body.written.equipment_extras).toEqual({ state: 'confirmed' });
+  });
+
+  it('normalizes confirmed empty equipment_extras to NULL and stamps cleared like injuries', async () => {
+    const { res, admin } = await postSave(
+      fields({ equipment_extras: { value: [], intent: 'confirmed' } }),
+      {
+        profile: {
+          height_unit: 'cm',
+          weight_unit: 'lb',
+          weight: 180,
+          goal: 'fat_loss',
+          equipment: '{}',
+          equipment_extras: ['bands'],
+          field_provenance: null,
+        },
+      },
+    );
+    expect(res.statusCode).toBe(200);
+    expect(admin.updates[0].patch.equipment_extras).toBeNull();
+    expect(admin.updates[0].patch.field_provenance.equipment_extras.state).toBe('cleared');
+    expect(admin.updates[0].patch.field_provenance.equipment_extras.source).toBe('save-profile');
+    expect(res.body.written.equipment_extras).toEqual({ state: 'cleared' });
+    expect(admin.updates[0].patch).not.toHaveProperty('equipment');
+  });
+
+  it('stamps equipment_extras provenance confirmed / cleared to match injuries clear', () => {
+    const injuriesCleared = planProfileWrite(
+      fields({ injuries: { intent: 'cleared' } }),
+      { now: NOW },
+    );
+    const extrasExplicitClear = planProfileWrite(
+      fields({ equipment_extras: { intent: 'cleared' } }),
+      { now: NOW },
+    );
+    const extrasEmptyArray = planProfileWrite(
+      fields({ equipment_extras: { value: [], intent: 'confirmed' } }),
+      { now: NOW },
+    );
+    const extrasConfirmed = planProfileWrite(
+      fields({ equipment_extras: { value: ['bands'], intent: 'confirmed' } }),
+      { now: NOW },
+    );
+
+    const clearedStamp = { state: 'cleared', ...STAMP };
+    expect(injuriesCleared.value.patch.field_provenance.injuries).toEqual(clearedStamp);
+    expect(extrasExplicitClear.value.patch.equipment_extras).toBeNull();
+    expect(extrasExplicitClear.value.patch.field_provenance.equipment_extras).toEqual(clearedStamp);
+    expect(extrasExplicitClear.value.written.equipment_extras).toEqual({ state: 'cleared' });
+    expect(extrasEmptyArray.value.patch.equipment_extras).toBeNull();
+    expect(extrasEmptyArray.value.patch.field_provenance.equipment_extras).toEqual(clearedStamp);
+    expect(extrasEmptyArray.value.written.equipment_extras).toEqual({ state: 'cleared' });
+    expect(extrasConfirmed.value.patch.equipment_extras).toEqual(['bands']);
+    expect(extrasConfirmed.value.patch.field_provenance.equipment_extras).toEqual({
+      state: 'confirmed',
+      ...STAMP,
+    });
+    expect(extrasConfirmed.value.written.equipment_extras).toEqual({ state: 'confirmed' });
+  });
+
+  it('rejects invalid equipment_extras with 422 reason code and writes nothing', async () => {
+    const { res, admin } = await postSave(
+      fields({
+        age: { value: 28, intent: 'confirmed' },
+        equipment_extras: { value: ['door_anchor'], intent: 'confirmed' },
+      }),
+      {
+        profile: {
+          height_unit: 'cm',
+          weight_unit: 'lb',
+          weight: 180,
+          goal: 'fat_loss',
+          equipment: '{}',
+          field_provenance: null,
+        },
+      },
+    );
+    expect(res.statusCode).toBe(422);
+    expect(res.body.fields.equipment_extras).toBe(
+      EQUIPMENT_EXTRAS_REASONS.doorAnchorRequiresBands,
+    );
+    expect(admin.updates).toHaveLength(0);
   });
 });

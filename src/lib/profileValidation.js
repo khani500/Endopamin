@@ -249,6 +249,44 @@ export function validateEquipment(value) {
   return invalid(EQUIPMENT_REASONS.other);
 }
 
+// public.profiles.equipment_extras is text[] NULL, no DEFAULT.
+// NULL / [] mean "no extras" only — never imply anything about equipment.
+export const EQUIPMENT_EXTRAS_TOKENS = Object.freeze([
+  'bands',
+  'pullup_bar',
+  'door_anchor',
+]);
+
+const EQUIPMENT_EXTRAS_TOKEN_SET = new Set(EQUIPMENT_EXTRAS_TOKENS);
+
+export const EQUIPMENT_EXTRAS_REASONS = Object.freeze({
+  notArray: 'not_array',
+  invalidElement: 'invalid_element',
+  unknownToken: 'unknown_token',
+  duplicateToken: 'duplicate_token',
+  doorAnchorRequiresBands: 'door_anchor_requires_bands',
+});
+
+export function validateEquipmentExtras(value) {
+  if (isAbsent(value)) return absent();
+  if (!Array.isArray(value)) return invalid(EQUIPMENT_EXTRAS_REASONS.notArray);
+  if (value.length === 0) return ok(null);
+
+  for (const token of value) {
+    if (typeof token !== 'string') return invalid(EQUIPMENT_EXTRAS_REASONS.invalidElement);
+    if (!EQUIPMENT_EXTRAS_TOKEN_SET.has(token)) {
+      return invalid(EQUIPMENT_EXTRAS_REASONS.unknownToken);
+    }
+  }
+  if (new Set(value).size !== value.length) {
+    return invalid(EQUIPMENT_EXTRAS_REASONS.duplicateToken);
+  }
+  if (value.includes('door_anchor') && !value.includes('bands')) {
+    return invalid(EQUIPMENT_EXTRAS_REASONS.doorAnchorRequiresBands);
+  }
+  return ok(value);
+}
+
 // public.profiles.health_conditions is text, nullable, no default.
 // Encoding: canonical compact JSON array of tokens in HEALTH_CONDITION_TOKENS
 // order, e.g. ["none"], ["prefer_not_to_answer"], ["pregnancy","pregnancy_routine"].

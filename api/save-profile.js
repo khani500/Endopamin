@@ -8,6 +8,7 @@ import {
   validateCoachPersona,
   validateDaysPerWeek,
   validateEquipment,
+  validateEquipmentExtras,
   validateExperience,
   validateGoal,
   validateHealthConditions,
@@ -55,6 +56,7 @@ export const CLEARABLE_FIELDS = Object.freeze([
   'target_weight',
   'injuries',
   'priority_muscle',
+  'equipment_extras',
 ]);
 
 const CLEARABLE = new Set(CLEARABLE_FIELDS);
@@ -73,6 +75,7 @@ const WRITABLE_FIELDS = Object.freeze([
   'days_per_week',
   'session_duration',
   'equipment',
+  'equipment_extras',
   'injuries',
   'health_conditions',
   'priority_muscle',
@@ -215,6 +218,7 @@ function validateConfirmed(field, value, ctx) {
     case 'days_per_week': return validateDaysPerWeek(value);
     case 'session_duration': return validateSessionDuration(value);
     case 'equipment': return validateEquipment(value);
+    case 'equipment_extras': return validateEquipmentExtras(value);
     case 'injuries': return validateText(value, 'injuries');
     case 'health_conditions': return validateHealthConditions(value);
     case 'priority_muscle': return validateText(value, 'priority_muscle');
@@ -283,6 +287,14 @@ export function planProfileWrite(body, { existing = {}, now = new Date() } = {})
     const result = validateConfirmed(name, entry.value, ctx);
     if (result.absent || !result.valid) {
       reasons[name] = result.reason || 'confirmed field must have a value';
+      continue;
+    }
+    // Clearable fields that validate to null (e.g. equipment_extras []) are a
+    // clear, not a confirmed answer — same provenance as intent: 'cleared'.
+    if (result.value === null && CLEARABLE.has(name)) {
+      patch[name] = null;
+      written[name] = { state: 'cleared' };
+      provenance[name] = stamp('cleared', now);
       continue;
     }
     patch[name] = result.value;
