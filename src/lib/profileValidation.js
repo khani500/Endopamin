@@ -33,12 +33,20 @@ export const HEIGHT_UNITS = Object.freeze(['cm', 'in']);
 export const WEIGHT_UNITS = Object.freeze(['kg', 'lb']);
 
 export const EQUIPMENT_REASONS = Object.freeze({
-  emptyArray: 'empty array is not a known equipment selection',
   corruptObjectString: "literal '{}' is corrupt equipment data, not an empty selection",
   unknownToken: 'not a known equipment token',
-  object: 'equipment object is not a known token or array of tokens',
-  unknownInArray: 'equipment array contains a token that is not known',
-  other: 'equipment is not a known token or array of known tokens',
+  array: 'equipment must be a single selection, not a list',
+  object: 'equipment must be one of the available selections',
+  other: 'equipment must be one of the available selections',
+});
+
+// Stable machine codes, kept separate from the human text in EQUIPMENT_REASONS.
+export const EQUIPMENT_REASON_CODES = Object.freeze({
+  legacyObjectString: 'equipment_legacy_object_string',
+  unknownToken: 'equipment_unknown_token',
+  arrayNotAllowed: 'equipment_array_not_allowed',
+  objectNotAllowed: 'equipment_object_not_allowed',
+  invalidType: 'equipment_invalid_type',
 });
 
 export const TARGET_GOAL_INCONSISTENT = 'target_weight is inconsistent with goal';
@@ -69,8 +77,8 @@ function ok(value) {
   return { valid: true, value };
 }
 
-function invalid(reason) {
-  return { valid: false, reason };
+function invalid(reason, code) {
+  return code === undefined ? { valid: false, reason } : { valid: false, reason, code };
 }
 
 function isAbsent(value) {
@@ -235,18 +243,20 @@ export function validateSessionDuration(value) {
 
 export function validateEquipment(value) {
   if (isAbsent(value)) return absent();
-  if (value === '{}') return invalid(EQUIPMENT_REASONS.corruptObjectString);
+  if (value === '{}') {
+    return invalid(EQUIPMENT_REASONS.corruptObjectString, EQUIPMENT_REASON_CODES.legacyObjectString);
+  }
   if (typeof value === 'string') {
     if (EQUIPMENT_TOKEN_SET.has(value)) return ok(value);
-    return invalid(EQUIPMENT_REASONS.unknownToken);
+    return invalid(EQUIPMENT_REASONS.unknownToken, EQUIPMENT_REASON_CODES.unknownToken);
   }
   if (Array.isArray(value)) {
-    if (value.length === 0) return invalid(EQUIPMENT_REASONS.emptyArray);
-    if (value.every(token => EQUIPMENT_TOKEN_SET.has(token))) return ok(value);
-    return invalid(EQUIPMENT_REASONS.unknownInArray);
+    return invalid(EQUIPMENT_REASONS.array, EQUIPMENT_REASON_CODES.arrayNotAllowed);
   }
-  if (isPlainObject(value)) return invalid(EQUIPMENT_REASONS.object);
-  return invalid(EQUIPMENT_REASONS.other);
+  if (isPlainObject(value)) {
+    return invalid(EQUIPMENT_REASONS.object, EQUIPMENT_REASON_CODES.objectNotAllowed);
+  }
+  return invalid(EQUIPMENT_REASONS.other, EQUIPMENT_REASON_CODES.invalidType);
 }
 
 // public.profiles.equipment_extras is text[] NULL, no DEFAULT.

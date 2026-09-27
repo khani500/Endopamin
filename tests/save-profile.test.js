@@ -3,7 +3,11 @@ import {
   handleRequest,
   planProfileWrite,
 } from '../api/save-profile.js';
-import { TARGET_GOAL_INCONSISTENT, EQUIPMENT_EXTRAS_REASONS } from '../src/lib/profileValidation.js';
+import {
+  TARGET_GOAL_INCONSISTENT,
+  EQUIPMENT_EXTRAS_REASONS,
+  EQUIPMENT_REASONS,
+} from '../src/lib/profileValidation.js';
 import {
   HEALTH_CONDITIONS_STORED,
   HEALTH_CONDITIONS_WIRE,
@@ -362,6 +366,7 @@ describe('handleRequest', () => {
     );
     expect(res.statusCode).toBe(422);
     expect(res.body.fields.age).toEqual(expect.any(String));
+    expect(res.body).not.toHaveProperty('reasonCodes');
     expect(admin.updates).toHaveLength(0);
 
     const neighbour = await postSave(
@@ -781,6 +786,45 @@ describe('handleRequest', () => {
     expect(res.body.fields.equipment_extras).toBe(
       EQUIPMENT_EXTRAS_REASONS.doorAnchorRequiresBands,
     );
+    expect(admin.updates).toHaveLength(0);
+  });
+
+  it('rejects array equipment with human text in fields and a code in reasonCodes', async () => {
+    const { res, admin } = await postSave(
+      fields({
+        age: { value: 28, intent: 'confirmed' },
+        equipment: { value: ['full_gym'], intent: 'confirmed' },
+      }),
+    );
+    expect(res.statusCode).toBe(422);
+    expect(res.body.error).toBe('Profile validation failed');
+    expect(res.body.fields).toEqual({ equipment: EQUIPMENT_REASONS.array });
+    expect(res.body.fields.equipment).not.toBe('equipment_array_not_allowed');
+    expect(res.body.reasonCodes).toEqual({ equipment: 'equipment_array_not_allowed' });
+    expect(admin.updates).toHaveLength(0);
+  });
+
+  it('still saves a valid equipment bucket string', async () => {
+    const { res, admin } = await postSave(
+      fields({ equipment: { value: 'home_basic', intent: 'confirmed' } }),
+    );
+    expect(res.statusCode).toBe(200);
+    expect(admin.updates).toHaveLength(1);
+    expect(admin.updates[0].patch.equipment).toBe('home_basic');
+    expect(res.body.written.equipment).toEqual({ state: 'confirmed' });
+  });
+
+  it('adds reasonCodes only for the field whose validator returned a code', async () => {
+    const { res, admin } = await postSave(
+      fields({
+        age: { value: 14, intent: 'confirmed' },
+        equipment: { value: {}, intent: 'confirmed' },
+      }),
+    );
+    expect(res.statusCode).toBe(422);
+    expect(res.body.fields.age).toEqual(expect.any(String));
+    expect(res.body.fields.equipment).toBe(EQUIPMENT_REASONS.object);
+    expect(res.body.reasonCodes).toEqual({ equipment: 'equipment_object_not_allowed' });
     expect(admin.updates).toHaveLength(0);
   });
 });

@@ -101,14 +101,14 @@ function contractError(field, message) {
   return { error: { status: 400, field, message } };
 }
 
-function validationError(fields) {
-  return {
-    error: {
-      status: 422,
-      message: 'Profile validation failed',
-      fields,
-    },
+function validationError(fields, reasonCodes) {
+  const error = {
+    status: 422,
+    message: 'Profile validation failed',
+    fields,
   };
+  if (Object.keys(reasonCodes).length > 0) error.reasonCodes = reasonCodes;
+  return { error };
 }
 
 function validateText(value, field) {
@@ -271,6 +271,7 @@ export function planProfileWrite(body, { existing = {}, now = new Date() } = {})
 
   const ctx = overlayContext(fields, existing);
   const reasons = {};
+  const reasonCodes = {};
   const patch = {};
   const written = {};
   const provenance = priorProvenance(existing);
@@ -287,6 +288,7 @@ export function planProfileWrite(body, { existing = {}, now = new Date() } = {})
     const result = validateConfirmed(name, entry.value, ctx);
     if (result.absent || !result.valid) {
       reasons[name] = result.reason || 'confirmed field must have a value';
+      if (result.code) reasonCodes[name] = result.code;
       continue;
     }
     // Clearable fields that validate to null (e.g. equipment_extras []) are a
@@ -302,7 +304,7 @@ export function planProfileWrite(body, { existing = {}, now = new Date() } = {})
     provenance[name] = stamp('confirmed', now);
   }
 
-  if (Object.keys(reasons).length > 0) return validationError(reasons);
+  if (Object.keys(reasons).length > 0) return validationError(reasons, reasonCodes);
   if (Object.keys(written).length === 0) return { value: { patch: null, written: {} } };
 
   patch.field_provenance = provenance;
@@ -380,6 +382,7 @@ export async function handleRequest(req, res, requestId, deps = {}) {
     };
     if (planned.error.field) payload.field = planned.error.field;
     if (planned.error.fields) payload.fields = planned.error.fields;
+    if (planned.error.reasonCodes) payload.reasonCodes = planned.error.reasonCodes;
     return res.status(planned.error.status).json(payload);
   }
 

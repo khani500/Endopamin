@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   EQUIPMENT_EXTRAS_REASONS,
   EQUIPMENT_REASONS,
+  EQUIPMENT_REASON_CODES,
   EQUIPMENT_TOKENS,
   MIN_AGE,
   PROFILE_ENUMS,
@@ -397,64 +398,75 @@ describe('validateDaysPerWeek and validateSessionDuration', () => {
 });
 
 describe('validateEquipment', () => {
-  it('accepts a known bare token and an array of known tokens', () => {
-    expectValid(validateEquipment('full_gym'), 'full_gym');
-    expectValid(validateEquipment('home_full'), 'home_full');
-    expectValid(validateEquipment(['full_gym', 'home_basic']), ['full_gym', 'home_basic']);
+  it('accepts each known bucket string', () => {
     expect(EQUIPMENT_TOKENS).toEqual(['full_gym', 'home_basic', 'bodyweight', 'home_full']);
+    for (const token of EQUIPMENT_TOKENS) {
+      expectValid(validateEquipment(token), token);
+    }
   });
 
-  it('rejects an empty array with a distinct reason', () => {
-    const result = validateEquipment([]);
-    expectInvalid(result, validateEquipment(['full_gym']));
-    expect(result.reason).toBe(EQUIPMENT_REASONS.emptyArray);
+  it('treats null and undefined as absent, never as full_gym', () => {
+    expectAbsent(validateEquipment(null));
+    expectAbsent(validateEquipment(undefined));
   });
 
-  it("rejects the corrupt literal '{}' with a distinct reason, not as an empty selection", () => {
+  it('rejects any array, empty or not, with the array code and human text', () => {
+    for (const value of [['full_gym'], [], ['nope'], ['full_gym', 'home_basic']]) {
+      const result = validateEquipment(value);
+      expectInvalid(result, validateEquipment('full_gym'));
+      expect(result.reason).toBe(EQUIPMENT_REASONS.array);
+      expect(result.code).toBe(EQUIPMENT_REASON_CODES.arrayNotAllowed);
+      expect(result.code).toBe('equipment_array_not_allowed');
+    }
+  });
+
+  it("rejects the legacy literal '{}' with its own code", () => {
     const result = validateEquipment('{}');
     expectInvalid(result, validateEquipment('full_gym'));
     expect(result.reason).toBe(EQUIPMENT_REASONS.corruptObjectString);
-    expect(result.reason).not.toBe(EQUIPMENT_REASONS.emptyArray);
+    expect(result.code).toBe('equipment_legacy_object_string');
   });
 
-  it('treats null and undefined as absent, not invalid', () => {
-    expectAbsent(validateEquipment(null));
-    expectAbsent(validateEquipment(undefined));
-    expectValid(validateEquipment('full_gym'), 'full_gym');
-  });
-
-  it('rejects an unknown bare string token with a distinct reason', () => {
+  it('rejects an unknown bare string token with its own code', () => {
     const result = validateEquipment('home');
     expectInvalid(result, validateEquipment('home_full'));
     expect(result.reason).toBe(EQUIPMENT_REASONS.unknownToken);
+    expect(result.code).toBe('equipment_unknown_token');
   });
 
-  it('rejects a plain object with a distinct reason', () => {
+  it('rejects a plain object with its own code', () => {
     const result = validateEquipment({});
-    expectInvalid(result, validateEquipment(['bodyweight']));
+    expectInvalid(result, validateEquipment('bodyweight'));
     expect(result.reason).toBe(EQUIPMENT_REASONS.object);
+    expect(result.code).toBe('equipment_object_not_allowed');
   });
 
-  it('uses a different reason string for each equipment shape', () => {
-    const reasons = [
-      validateEquipment(['full_gym']).valid,
-      validateEquipment([]).reason,
-      validateEquipment('{}').reason,
-      validateEquipment(null).absent,
-      validateEquipment('full_gym').value,
-      validateEquipment({ gym: true }).reason,
-    ];
-    expect(reasons[0]).toBe(true);
-    expect(reasons[3]).toBe(true);
-    expect(reasons[4]).toBe('full_gym');
-    const shapeReasons = [
-      validateEquipment([]).reason,
-      validateEquipment('{}').reason,
-      validateEquipment('not_a_token').reason,
-      validateEquipment({}).reason,
-      validateEquipment(['nope']).reason,
-    ];
-    expect(new Set(shapeReasons).size).toBe(shapeReasons.length);
+  it('rejects any other type with the invalid-type code', () => {
+    const result = validateEquipment(5);
+    expectInvalid(result, validateEquipment('home_basic'));
+    expect(result.reason).toBe(EQUIPMENT_REASONS.other);
+    expect(result.code).toBe('equipment_invalid_type');
+  });
+
+  it('keeps human reason text separate from the stable codes', () => {
+    expect(Object.isFrozen(EQUIPMENT_REASON_CODES)).toBe(true);
+    expect(Object.values(EQUIPMENT_REASON_CODES)).toEqual([
+      'equipment_legacy_object_string',
+      'equipment_unknown_token',
+      'equipment_array_not_allowed',
+      'equipment_object_not_allowed',
+      'equipment_invalid_type',
+    ]);
+    const cases = [[], '{}', 'not_a_token', {}, 5];
+    const reasons = cases.map(value => validateEquipment(value).reason);
+    const codes = cases.map(value => validateEquipment(value).code);
+    // object and other-type share one human sentence; their codes still differ.
+    expect(new Set(reasons).size).toBe(cases.length - 1);
+    expect(validateEquipment({}).reason).toBe(validateEquipment(5).reason);
+    expect(new Set(codes).size).toBe(cases.length);
+    for (const reason of reasons) {
+      expect(Object.values(EQUIPMENT_REASON_CODES)).not.toContain(reason);
+    }
   });
 });
 
