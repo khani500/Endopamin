@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  EQUIPMENT_EXTRAS_MESSAGES,
   EQUIPMENT_EXTRAS_REASONS,
   EQUIPMENT_REASONS,
   EQUIPMENT_REASON_CODES,
@@ -441,6 +442,16 @@ describe('validateEquipment', () => {
     expect(result.code).toBe('equipment_object_not_allowed');
   });
 
+  it.each(['', '   ', '\t'])('rejects blank string %j with the blank code and human text', (value) => {
+    const result = validateEquipment(value);
+    expectInvalid(result, validateEquipment('full_gym'));
+    expect(result.code).toBe('equipment_blank');
+    expect(result.code).toBe(EQUIPMENT_REASON_CODES.blank);
+    expect(result.reason).toBe(EQUIPMENT_REASONS.blank);
+    expect(result.reason).toBe('Please choose your equipment setup.');
+    expect(Object.values(EQUIPMENT_REASON_CODES)).not.toContain(result.reason);
+  });
+
   it('rejects any other type with the invalid-type code', () => {
     const result = validateEquipment(5);
     expectInvalid(result, validateEquipment('home_basic'));
@@ -456,6 +467,7 @@ describe('validateEquipment', () => {
       'equipment_array_not_allowed',
       'equipment_object_not_allowed',
       'equipment_invalid_type',
+      'equipment_blank',
     ]);
     const cases = [[], '{}', 'not_a_token', {}, 5];
     const reasons = cases.map(value => validateEquipment(value).reason);
@@ -492,52 +504,87 @@ describe('validateEquipmentExtras', () => {
     );
   });
 
+  function expectExtrasInvalid(result, neighbour, code) {
+    expectInvalid(result, neighbour);
+    expect(result.code).toBe(code);
+    expect(result.reason).toBe(EQUIPMENT_EXTRAS_MESSAGES[code]);
+    expect(Object.values(EQUIPMENT_EXTRAS_REASONS)).not.toContain(result.reason);
+  }
+
   it('rejects door_anchor without bands', () => {
     const alone = validateEquipmentExtras(['door_anchor']);
-    expectInvalid(alone, validateEquipmentExtras(['bands', 'door_anchor']));
-    expect(alone.reason).toBe(EQUIPMENT_EXTRAS_REASONS.doorAnchorRequiresBands);
+    expectExtrasInvalid(
+      alone,
+      validateEquipmentExtras(['bands', 'door_anchor']),
+      EQUIPMENT_EXTRAS_REASONS.doorAnchorRequiresBands,
+    );
 
     const withBar = validateEquipmentExtras(['pullup_bar', 'door_anchor']);
-    expectInvalid(withBar, validateEquipmentExtras(['bands', 'door_anchor']));
-    expect(withBar.reason).toBe(EQUIPMENT_EXTRAS_REASONS.doorAnchorRequiresBands);
+    expectExtrasInvalid(
+      withBar,
+      validateEquipmentExtras(['bands', 'door_anchor']),
+      EQUIPMENT_EXTRAS_REASONS.doorAnchorRequiresBands,
+    );
   });
 
   it('rejects duplicate tokens', () => {
     const result = validateEquipmentExtras(['bands', 'bands']);
-    expectInvalid(result, validateEquipmentExtras(['bands']));
-    expect(result.reason).toBe(EQUIPMENT_EXTRAS_REASONS.duplicateToken);
+    expectExtrasInvalid(
+      result,
+      validateEquipmentExtras(['bands']),
+      EQUIPMENT_EXTRAS_REASONS.duplicateToken,
+    );
   });
 
   it('rejects an unknown token', () => {
     const result = validateEquipmentExtras(['kettlebell']);
-    expectInvalid(result, validateEquipmentExtras(['bands']));
-    expect(result.reason).toBe(EQUIPMENT_EXTRAS_REASONS.unknownToken);
+    expectExtrasInvalid(
+      result,
+      validateEquipmentExtras(['bands']),
+      EQUIPMENT_EXTRAS_REASONS.unknownToken,
+    );
   });
 
   it('rejects a scalar string as not_array', () => {
     const result = validateEquipmentExtras('bands');
-    expectInvalid(result, validateEquipmentExtras(['bands']));
-    expect(result.reason).toBe(EQUIPMENT_EXTRAS_REASONS.notArray);
+    expectExtrasInvalid(result, validateEquipmentExtras(['bands']), EQUIPMENT_EXTRAS_REASONS.notArray);
   });
 
   it('rejects non-string elements', () => {
-    const number = validateEquipmentExtras([123]);
-    expectInvalid(number, validateEquipmentExtras(['bands']));
-    expect(number.reason).toBe(EQUIPMENT_EXTRAS_REASONS.invalidElement);
-
-    const nil = validateEquipmentExtras([null]);
-    expectInvalid(nil, validateEquipmentExtras(['bands']));
-    expect(nil.reason).toBe(EQUIPMENT_EXTRAS_REASONS.invalidElement);
-
-    const nested = validateEquipmentExtras([['bands']]);
-    expectInvalid(nested, validateEquipmentExtras(['bands']));
-    expect(nested.reason).toBe(EQUIPMENT_EXTRAS_REASONS.invalidElement);
+    for (const value of [[123], [null], [['bands']]]) {
+      expectExtrasInvalid(
+        validateEquipmentExtras(value),
+        validateEquipmentExtras(['bands']),
+        EQUIPMENT_EXTRAS_REASONS.invalidElement,
+      );
+    }
   });
 
   it('rejects a plain object as not_array', () => {
     const result = validateEquipmentExtras({ bands: true });
-    expectInvalid(result, validateEquipmentExtras(['bands']));
-    expect(result.reason).toBe(EQUIPMENT_EXTRAS_REASONS.notArray);
+    expectExtrasInvalid(result, validateEquipmentExtras(['bands']), EQUIPMENT_EXTRAS_REASONS.notArray);
+  });
+
+  it('keeps EQUIPMENT_EXTRAS_REASONS as unchanged machine codes', () => {
+    expect(EQUIPMENT_EXTRAS_REASONS).toEqual({
+      notArray: 'not_array',
+      invalidElement: 'invalid_element',
+      unknownToken: 'unknown_token',
+      duplicateToken: 'duplicate_token',
+      doorAnchorRequiresBands: 'door_anchor_requires_bands',
+    });
+  });
+
+  it('freezes EQUIPMENT_EXTRAS_MESSAGES with exactly the five extras codes as keys', () => {
+    expect(Object.isFrozen(EQUIPMENT_EXTRAS_MESSAGES)).toBe(true);
+    expect(Object.keys(EQUIPMENT_EXTRAS_MESSAGES).sort()).toEqual(
+      Object.values(EQUIPMENT_EXTRAS_REASONS).sort(),
+    );
+    const codes = Object.values(EQUIPMENT_EXTRAS_REASONS);
+    for (const message of Object.values(EQUIPMENT_EXTRAS_MESSAGES)) {
+      expect(message).toEqual(expect.any(String));
+      expect(codes).not.toContain(message);
+    }
   });
 });
 

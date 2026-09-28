@@ -38,6 +38,7 @@ export const EQUIPMENT_REASONS = Object.freeze({
   array: 'equipment must be a single selection, not a list',
   object: 'equipment must be one of the available selections',
   other: 'equipment must be one of the available selections',
+  blank: 'Please choose your equipment setup.',
 });
 
 // Stable machine codes, kept separate from the human text in EQUIPMENT_REASONS.
@@ -47,6 +48,7 @@ export const EQUIPMENT_REASON_CODES = Object.freeze({
   arrayNotAllowed: 'equipment_array_not_allowed',
   objectNotAllowed: 'equipment_object_not_allowed',
   invalidType: 'equipment_invalid_type',
+  blank: 'equipment_blank',
 });
 
 export const TARGET_GOAL_INCONSISTENT = 'target_weight is inconsistent with goal';
@@ -243,6 +245,9 @@ export function validateSessionDuration(value) {
 
 export function validateEquipment(value) {
   if (isAbsent(value)) return absent();
+  if (typeof value === 'string' && value.trim() === '') {
+    return invalid(EQUIPMENT_REASONS.blank, EQUIPMENT_REASON_CODES.blank);
+  }
   if (value === '{}') {
     return invalid(EQUIPMENT_REASONS.corruptObjectString, EQUIPMENT_REASON_CODES.legacyObjectString);
   }
@@ -277,22 +282,36 @@ export const EQUIPMENT_EXTRAS_REASONS = Object.freeze({
   doorAnchorRequiresBands: 'door_anchor_requires_bands',
 });
 
+// Human text for each EQUIPMENT_EXTRAS_REASONS code; identical to Mobile's
+// EQUIPMENT_EXTRAS_USER_MESSAGES.
+export const EQUIPMENT_EXTRAS_MESSAGES = Object.freeze({
+  not_array: 'Something went wrong with your equipment selection. Please reselect your equipment.',
+  invalid_element: 'Something went wrong with your equipment selection. Please reselect your equipment.',
+  unknown_token: "That equipment option isn't available. Please choose from the list.",
+  duplicate_token: 'Please select each equipment option only once.',
+  door_anchor_requires_bands: 'Door Anchor needs Bands selected. Please select Bands too.',
+});
+
+function invalidExtras(code) {
+  return invalid(EQUIPMENT_EXTRAS_MESSAGES[code], code);
+}
+
 export function validateEquipmentExtras(value) {
   if (isAbsent(value)) return absent();
-  if (!Array.isArray(value)) return invalid(EQUIPMENT_EXTRAS_REASONS.notArray);
+  if (!Array.isArray(value)) return invalidExtras(EQUIPMENT_EXTRAS_REASONS.notArray);
   if (value.length === 0) return ok(null);
 
   for (const token of value) {
-    if (typeof token !== 'string') return invalid(EQUIPMENT_EXTRAS_REASONS.invalidElement);
+    if (typeof token !== 'string') return invalidExtras(EQUIPMENT_EXTRAS_REASONS.invalidElement);
     if (!EQUIPMENT_EXTRAS_TOKEN_SET.has(token)) {
-      return invalid(EQUIPMENT_EXTRAS_REASONS.unknownToken);
+      return invalidExtras(EQUIPMENT_EXTRAS_REASONS.unknownToken);
     }
   }
   if (new Set(value).size !== value.length) {
-    return invalid(EQUIPMENT_EXTRAS_REASONS.duplicateToken);
+    return invalidExtras(EQUIPMENT_EXTRAS_REASONS.duplicateToken);
   }
   if (value.includes('door_anchor') && !value.includes('bands')) {
-    return invalid(EQUIPMENT_EXTRAS_REASONS.doorAnchorRequiresBands);
+    return invalidExtras(EQUIPMENT_EXTRAS_REASONS.doorAnchorRequiresBands);
   }
   return ok(value);
 }

@@ -5,6 +5,7 @@ import {
 } from '../api/save-profile.js';
 import {
   TARGET_GOAL_INCONSISTENT,
+  EQUIPMENT_EXTRAS_MESSAGES,
   EQUIPMENT_EXTRAS_REASONS,
   EQUIPMENT_REASONS,
 } from '../src/lib/profileValidation.js';
@@ -765,7 +766,7 @@ describe('handleRequest', () => {
     expect(extrasConfirmed.value.written.equipment_extras).toEqual({ state: 'confirmed' });
   });
 
-  it('rejects invalid equipment_extras with 422 reason code and writes nothing', async () => {
+  it('rejects invalid equipment_extras with human text in fields, the code in reasonCodes, and writes nothing', async () => {
     const { res, admin } = await postSave(
       fields({
         age: { value: 28, intent: 'confirmed' },
@@ -784,8 +785,34 @@ describe('handleRequest', () => {
     );
     expect(res.statusCode).toBe(422);
     expect(res.body.fields.equipment_extras).toBe(
-      EQUIPMENT_EXTRAS_REASONS.doorAnchorRequiresBands,
+      EQUIPMENT_EXTRAS_MESSAGES[EQUIPMENT_EXTRAS_REASONS.doorAnchorRequiresBands],
     );
+    expect(res.body.fields.equipment_extras).toBe(
+      'Door Anchor needs Bands selected. Please select Bands too.',
+    );
+    expect(res.body.reasonCodes).toEqual({ equipment_extras: 'door_anchor_requires_bands' });
+    expect(admin.updates).toHaveLength(0);
+  });
+
+  it('rejects confirmed blank equipment with human text and the equipment_blank code', async () => {
+    const { res, admin } = await postSave(
+      fields({ equipment: { value: '   ', intent: 'confirmed' } }),
+    );
+    expect(res.statusCode).toBe(422);
+    expect(res.body.error).toBe('Profile validation failed');
+    expect(res.body.fields).toEqual({ equipment: EQUIPMENT_REASONS.blank });
+    expect(res.body.fields.equipment).not.toBe('equipment_blank');
+    expect(res.body.reasonCodes).toEqual({ equipment: 'equipment_blank' });
+    expect(admin.updates).toHaveLength(0);
+  });
+
+  it('keeps confirmed null equipment as the generic 422 with no reason code', async () => {
+    const { res, admin } = await postSave(
+      fields({ equipment: { value: null, intent: 'confirmed' } }),
+    );
+    expect(res.statusCode).toBe(422);
+    expect(res.body.fields.equipment).toBe('confirmed field must have a value');
+    expect(res.body.reasonCodes?.equipment).toBeUndefined();
     expect(admin.updates).toHaveLength(0);
   });
 
