@@ -1,0 +1,43 @@
+{
+ "manifestSchema": 1,
+ "resolverContractVersion": 1,
+ "hashAlgorithm": "sha256",
+ "files": [
+  {
+   "path": "data/exerciseRegistryIndex.js",
+   "sha256": "8b04f1fa658f6d1e91197d5728fae6070410845bfbcf31dda881296465d31196",
+   "bytes": 1184917
+  },
+  {
+   "path": "lib/plan/capabilityMap.js",
+   "sha256": "df328cdebdd708631e5ec7b6de434c8213894137d2642972264921932c1e8bcd",
+   "bytes": 13355
+  },
+  {
+   "path": "lib/plan/equipmentContract.js",
+   "sha256": "d8b3ed189a97e0db536ca718dcd97f2a2edd252039d117d76ffac24cd55ac21b",
+   "bytes": 6955
+  },
+  {
+   "path": "lib/plan/exerciseResolver.v2.js",
+   "sha256": "fa4f273b6804c436417b77a299a11d0196ee9bc4753542ca06dad788d1442c64",
+   "bytes": 16767
+  },
+  {
+   "path": "lib/plan/musclePatternPolicy.js",
+   "sha256": "791d107a2592846fb652a4dca4c91a1db788389d166983a525407f463c4be752",
+   "bytes": 3073
+  },
+  {
+   "path": "lib/plan/roleTypePolicy.js",
+   "sha256": "ea1a6205839cdff0eca76728bd6ddba5a2326a30950a4d2dd57726432ff18baf",
+   "bytes": 755
+  },
+  {
+   "path": "lib/plan/slotPin.js",
+   "sha256": "4ae9c1c0c0aa3cc72f2e73789359d189cf54dd80c6d180563cf948aa6799b1fa",
+   "bytes": 6147
+  }
+ ],
+ "coreHash": "1f5b80f94ec405c26072dc55fe73295ee74738aa1f85e1a70f2bfea8507700b7"
+}
