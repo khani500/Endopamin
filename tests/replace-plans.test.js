@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   handleRequest,
+  mapRpcError,
   PLAN_SAVE_OK_EVENT,
   PLAN_SCHEMA_VERSION,
   PLAN_SCHEMA_VERSION_ABSENT,
@@ -82,7 +83,7 @@ function fakeRes() {
   };
 }
 
-function fakeAdmin({ gender = 'female', age = 28, userId = 'user-1' } = {}) {
+function fakeAdmin({ gender = 'female', age = 28, userId = 'user-1', rpcError = null } = {}) {
   const calls = { rpc: [], from: [] };
   return {
     calls,
@@ -119,6 +120,7 @@ function fakeAdmin({ gender = 'female', age = 28, userId = 'user-1' } = {}) {
     },
     async rpc(name, args) {
       calls.rpc.push({ name, args });
+      if (rpcError) return { data: null, error: rpcError };
       return {
         data: { workout_plan_id: 'wp-1', nutrition_plan_id: null, replayed: false },
         error: null,
@@ -127,8 +129,10 @@ function fakeAdmin({ gender = 'female', age = 28, userId = 'user-1' } = {}) {
   };
 }
 
-async function postReplace(payload, { gender = 'female', age = 28, useRealReportMessage = false } = {}) {
-  const admin = fakeAdmin({ gender, age });
+async function postReplace(payload, {
+  gender = 'female', age = 28, useRealReportMessage = false, rpcError = null,
+} = {}) {
+  const admin = fakeAdmin({ gender, age, rpcError });
   const res = fakeRes();
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
   const info = vi.spyOn(console, 'info').mockImplementation(() => {});
@@ -339,6 +343,7 @@ describe('handleRequest stored and RPC shape', () => {
       'p_workout_activate_on',
       'p_workout_plan_data',
       'p_nutrition_plan_data',
+      'p_expected_safety_fingerprint',
     ]);
     expect(rpcArgs).not.toHaveProperty('planSchemaVersion');
     expect(JSON.stringify(rpcArgs)).not.toContain('planSchemaVersion');
@@ -772,6 +777,140 @@ describe('handleRequest stored age gate', () => {
     });
     expect(res.body).not.toHaveProperty('code');
     expect(admin.calls.rpc).toHaveLength(0);
+  });
+});
+
+const VALID_TOKEN = `v1:${'0123456789abcdef'.repeat(4)}`;
+
+function reconcileReads(admin) {
+  return admin.calls.from.filter(({ table }) => table === 'workout_plans' || table === 'nutrition_plans');
+}
+
+describe('mapRpcError', () => {
+  it.each([
+    ['45409', { status: 409, error: 'Idempotency key reused with a different request shape' }],
+    ['45410', { status: 409, error: 'Idempotency key already used by another write path' }],
+    ['45404', { status: 401, error: 'Invalid or expired token' }],
+    ['22004', { status: 400, error: 'Owner id and attempt id are required' }],
+    ['45413', {
+      status: 409,
+      code: 'safety_profile_changed',
+      error: 'Your profile changed while this plan was being built',
+    }],
+    ['45412', {
+      status: 422,
+      code: 'safety_fingerprint_unavailable',
+      error: 'Profile safety data is unavailable',
+    }],
+    ['P0001', null],
+    ['23505', null],
+    [undefined, null],
+    [null, null],
+    [45413, null],
+    ['', null],
+  ])('maps %j', (code, expected) => {
+    expect(mapRpcError(code)).toEqual(expected);
+  });
+});
+
+describe('validatePlanRequest expectedSafetyFingerprint', () => {
+  it('is optional and defaults to null', () => {
+    const result = validate();
+    expect(result.error).toBeUndefined();
+    expect(result.value.expectedSafetyFingerprint).toBeNull();
+  });
+
+  it('accepts a v1 fingerprint unchanged', () => {
+    const result = validate({ expectedSafetyFingerprint: VALID_TOKEN });
+    expect(result.error).toBeUndefined();
+    expect(result.value.expectedSafetyFingerprint).toBe(VALID_TOKEN);
+  });
+
+  it.each([
+    ['uppercase hex', `v1:${'0123456789ABCDEF'.repeat(4)}`],
+    ['wrong version', `v2:${'0123456789abcdef'.repeat(4)}`],
+    ['too short', `v1:${'a'.repeat(63)}`],
+    ['too long', `v1:${'a'.repeat(65)}`],
+    ['non-hex', `v1:${'g'.repeat(64)}`],
+    ['surrounding space', ` ${VALID_TOKEN}`],
+    ['empty string', ''],
+    ['null', null],
+    ['number', 42],
+    ['object', { value: VALID_TOKEN }],
+  ])('rejects %s with 400 on expectedSafetyFingerprint', (_label, value) => {
+    expectFieldError(validate({ expectedSafetyFingerprint: value }), 'expectedSafetyFingerprint');
+  });
+});
+
+describe('handleRequest safety fingerprint token', () => {
+  it('passes p_expected_safety_fingerprint null when the token is absent', async () => {
+    const { res, admin } = await postReplace(body());
+
+    expect(res.statusCode).toBe(200);
+    const args = admin.calls.rpc[0].args;
+    expect(args).toHaveProperty('p_expected_safety_fingerprint');
+    expect(args.p_expected_safety_fingerprint).toBeNull();
+  });
+
+  it('forwards a valid token unchanged', async () => {
+    const { res, admin } = await postReplace(body({ expectedSafetyFingerprint: VALID_TOKEN }));
+
+    expect(res.statusCode).toBe(200);
+    expect(admin.calls.rpc[0].args.p_expected_safety_fingerprint).toBe(VALID_TOKEN);
+    expect(JSON.stringify(admin.calls.rpc[0].args.p_workout_plan_data)).not.toContain(VALID_TOKEN);
+  });
+
+  it('returns 400 for a malformed token and does not call the RPC', async () => {
+    const { res, admin } = await postReplace(body({ expectedSafetyFingerprint: 'v1:nothex' }));
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.field).toBe('expectedSafetyFingerprint');
+    expect(admin.calls.rpc).toHaveLength(0);
+  });
+
+  it('maps RPC 45413 to 409 safety_profile_changed without a reconcile read', async () => {
+    const { res, admin } = await postReplace(body({ expectedSafetyFingerprint: VALID_TOKEN }), {
+      rpcError: { code: '45413', message: 'plan_safety_profile_changed' },
+    });
+
+    expect(res.statusCode).toBe(409);
+    expect(res.body).toEqual({
+      error: 'Your profile changed while this plan was being built',
+      code: 'safety_profile_changed',
+      requestId: 'abcd1234',
+    });
+    expect(JSON.stringify(res.body)).not.toContain('plan_safety_profile_changed');
+    expect(admin.calls.rpc).toHaveLength(1);
+    expect(reconcileReads(admin)).toHaveLength(0);
+  });
+
+  it('maps RPC 45412 to 422 safety_fingerprint_unavailable without a reconcile read', async () => {
+    const { res, admin } = await postReplace(body({ expectedSafetyFingerprint: VALID_TOKEN }), {
+      rpcError: { code: '45412', message: 'plan_owner_safety_fingerprint_missing' },
+    });
+
+    expect(res.statusCode).toBe(422);
+    expect(res.body).toEqual({
+      error: 'Profile safety data is unavailable',
+      code: 'safety_fingerprint_unavailable',
+      requestId: 'abcd1234',
+    });
+    expect(JSON.stringify(res.body)).not.toContain('plan_owner_safety_fingerprint_missing');
+    expect(reconcileReads(admin)).toHaveLength(0);
+  });
+
+  it('keeps returning the SQLSTATE as code for existing mapped errors', async () => {
+    const { res, admin } = await postReplace(body(), {
+      rpcError: { code: '45409', message: 'plan_attempt_shape_conflict' },
+    });
+
+    expect(res.statusCode).toBe(409);
+    expect(res.body).toEqual({
+      error: 'Idempotency key reused with a different request shape',
+      code: '45409',
+      requestId: 'abcd1234',
+    });
+    expect(reconcileReads(admin)).toHaveLength(0);
   });
 });
 

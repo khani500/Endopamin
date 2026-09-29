@@ -40,7 +40,13 @@ const ALLOWED_TOP_LEVEL = new Set([
   'activateOn',
   'workoutPlan',
   'nutritionPlan',
+  'expectedSafetyFingerprint',
 ]);
+
+// Optimistic concurrency token: the profiles.safety_fingerprint the client
+// read with the profile it generated the plan from. The RPC compares it with
+// the current value and never stores it; the plan stores the value it reads.
+const SAFETY_FINGERPRINT_RE = /^v1:[0-9a-f]{64}$/;
 
 // First versioned-client signal only. Absence keeps current behavior.
 // S1 does not switch validation on this value.
@@ -295,6 +301,18 @@ export function validatePlanRequest(body, now = new Date()) {
     planSchemaVersion = body.planSchemaVersion;
   }
 
+  // TEMPORARY legacy compatibility: an absent token is accepted so app builds
+  // that do not send one can still save (their plan is stored unverified).
+  // Make the token mandatory once the new app build has shipped.
+  let expectedSafetyFingerprint = null;
+  if ('expectedSafetyFingerprint' in body) {
+    if (typeof body.expectedSafetyFingerprint !== 'string'
+        || !SAFETY_FINGERPRINT_RE.test(body.expectedSafetyFingerprint)) {
+      return badRequest('expectedSafetyFingerprint', 'Must match ^v1:[0-9a-f]{64}$');
+    }
+    expectedSafetyFingerprint = body.expectedSafetyFingerprint;
+  }
+
   const workout = validateWorkoutPlan(body.workoutPlan);
   if (workout.error) return workout;
 
@@ -315,6 +333,7 @@ export function validatePlanRequest(body, now = new Date()) {
       activateOn,
       workoutPlan: workout.value,
       nutritionPlan: nutrition,
+      expectedSafetyFingerprint,
     },
     // Signal + diagnostics only. Never copied into workoutPlan or RPC args.
     planSchemaVersion,
@@ -322,13 +341,24 @@ export function validatePlanRequest(body, now = new Date()) {
   };
 }
 
-// Exported for tests.
+// Exported for tests. A mapped `code` replaces the SQLSTATE in the response
+// body; mappings without one keep returning the SQLSTATE as before.
 export function mapRpcError(code) {
   switch (code) {
     case '45409': return { status: 409, error: 'Idempotency key reused with a different request shape' };
     case '45410': return { status: 409, error: 'Idempotency key already used by another write path' };
     case '45404': return { status: 401, error: 'Invalid or expired token' };
     case '22004': return { status: 400, error: 'Owner id and attempt id are required' };
+    case '45413': return {
+      status: 409,
+      code: 'safety_profile_changed',
+      error: 'Your profile changed while this plan was being built',
+    };
+    case '45412': return {
+      status: 422,
+      code: 'safety_fingerprint_unavailable',
+      error: 'Profile safety data is unavailable',
+    };
     default: return null;
   }
 }
@@ -561,6 +591,11 @@ export async function handleRequest(req, res, requestId, deps = {}) {
 
   const workoutPlanData = { coachId: input.coachId, days: input.workoutPlan.days, gender };
 
+  // p_expected_safety_fingerprint exists only after migration A
+  // (20260928140000_profile_safety_fingerprint.sql). Deploy this endpoint
+  // only AFTER migration A is applied: against the M4 function this named
+  // argument matches no signature and every save fails. Always sent; null
+  // when the client sent no token (temporary legacy compatibility).
   const rpcArgs = {
     p_user_id: userId,
     p_client_attempt_id: input.clientAttemptId,
@@ -571,6 +606,7 @@ export async function handleRequest(req, res, requestId, deps = {}) {
     p_workout_activate_on: input.activateOn,
     p_workout_plan_data: workoutPlanData,
     p_nutrition_plan_data: input.nutritionPlan,
+    p_expected_safety_fingerprint: input.expectedSafetyFingerprint,
   };
 
   const reconcileArgs = {
@@ -606,7 +642,12 @@ export async function handleRequest(req, res, requestId, deps = {}) {
         code: error.code,
         status: mapped.status,
       });
-      return res.status(mapped.status).json({ error: mapped.error, code: error.code, requestId });
+      // Mapped errors never reach the reconcile read, and never echo the SQL message.
+      return res.status(mapped.status).json({
+        error: mapped.error,
+        code: mapped.code ?? error.code,
+        requestId,
+      });
     }
     console.error('replace-plans rpc error', {
       requestId,
