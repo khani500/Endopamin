@@ -257,6 +257,8 @@
   .price-card .plan{font-size:12px; letter-spacing:2.5px; text-transform:uppercase; color:var(--lime); font-weight:700; margin-bottom:16px}
   .price-card .amount{font-size:clamp(40px,6vw,52px); font-weight:700; letter-spacing:-1px; line-height:1; color:var(--fg)}
   .price-card .period{font-size:14px; color:var(--muted); margin-top:8px}
+  .price-card .save-line{font-size:13px; font-weight:700; color:var(--lime); margin-top:8px}
+  .price-card .trial-line{font-size:13px; color:var(--muted); margin-top:6px}
   .price-card .badge{font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#0A0A0A; background:var(--lime); border:2px solid var(--lime); border-radius:20px; padding:6px 14px; margin-bottom:12px}
   .price-cta{display:block; margin-top:28px; flex-shrink:0; width:100%; background:var(--lime); color:#0A0A0A; text-decoration:none; font-weight:700; font-size:15px; border-radius:14px; padding:14px 24px; border:2px solid var(--lime); transition:transform .18s, box-shadow .2s; box-shadow:0 10px 36px -12px rgba(204,255,0,.55)}
   .price-cta:hover{transform:translateY(-3px); box-shadow:0 14px 44px -10px rgba(204,255,0,.7)}
@@ -499,7 +501,7 @@
         <div>
           <div class="eyebrow reveal">Connected to you</div>
           <h2 class="reveal d1">Your coach sees<br>what your body does.</h2>
-          <p class="lead glass reveal d2">Steps, heart rate, calories, and sleep flow straight from Apple Health into your plan. Your coach reads them live and adjusts your training and nutrition before you even ask.</p>
+          <p class="lead glass reveal d2">On iPhone, steps, heart rate, calories, and sleep flow straight from Apple Health into your plan. Your coach reads them live and adjusts your training and nutrition before you even ask.</p>
         </div>
       </div>
     </section>
@@ -633,7 +635,7 @@
       <div class="inner">
         <h2 class="reveal d1">Endopamin Pro</h2>
         <ul class="price-feats-shared reveal d2">
-          <li>All 5 AI Coaches</li>
+          <li>Two AI coaches — Aria and Kane</li>
           <li>Unlimited coaching chat</li>
           <li>Personalized workout plans (gym or home)</li>
           <li>Weekly auto-updated plans</li>
@@ -641,7 +643,7 @@
           <li>Food scanner &amp; calorie logging</li>
           <li>Voice coach — step by step with you during your workout</li>
           <li>Full progress tracking</li>
-          <li>Apple Health sync</li>
+          <li>Apple Health sync (iPhone)</li>
         </ul>
         <div class="price-grid reveal d2">
           <div class="price-grid-cell">
@@ -651,8 +653,9 @@
                 <div class="plan">Monthly</div>
                 <div class="amount">$17.99</div>
                 <div class="period">per month</div>
+                <div class="trial-line">7 days free, then $17.99/month</div>
               </div>
-              <a class="price-cta" href="https://buy.stripe.com/6oU7sL7Rh0VvafQ5Iof7i00" target="_blank" rel="noopener">Start Monthly</a>
+              <a class="price-cta" href="#download">Start Free Trial</a>
             </div>
           </div>
           <div class="price-grid-cell">
@@ -660,14 +663,16 @@
               <div class="price-card-head">
                 <div class="badge">Best Value</div>
                 <div class="plan">Yearly</div>
-                <div class="amount">$143.99</div>
+                <div class="amount">$169.99</div>
                 <div class="period">per year</div>
+                <div class="save-line">Save over 20%</div>
+                <div class="trial-line">7 days free, then $169.99/year</div>
               </div>
-              <a class="price-cta" href="https://buy.stripe.com/00w8wP2wXaw55ZA6Msf7i01" target="_blank" rel="noopener">Start Yearly</a>
+              <a class="price-cta" href="#download">Start Free Trial</a>
             </div>
           </div>
         </div>
-        <p class="price-note reveal d3">Cancel anytime &middot; After checkout, download the app and sign in with the same email to unlock Pro.</p>
+        <p class="price-note reveal d3">Subscribe in the Endopamin app on the App Store or Google Play. Free trial for eligible new subscribers. Renews automatically unless canceled. Cancel anytime in your App Store or Google Play settings.</p>
       </div>
     </section>
 
@@ -771,8 +776,8 @@ const wave=document.getElementById('wave');for(let i=0;i<28;i++){const b=documen
     {k:['sets','volume'],a:"A good rule: 10–20 quality sets per muscle per week, split over 2–3 sessions. I auto-adjust your volume as you get stronger."},
     {k:['dopamine','endorphin','hormone'],a:"Training floods you with endorphins and dopamine — that's literally what Endopamin is named for. The app charts that lift next to your heart rate in real time."},
     {k:['voice','talk','hands free'],a:"Yes — I coach by voice, hands-free, reading your rep counts and rest timers aloud so you never touch your phone mid-set."},
-    {k:['sleep','recovery','rest'],a:"Recovery is where you grow. I read your sleep and resting heart rate from Apple Health and dial training up or down to match."},
-    {k:['price','cost','free'],a:"You can start free. Pro unlocks unlimited coaching, full plans and voice mode."}
+    {k:['sleep','recovery','rest'],a:"Recovery is where you grow. On iPhone, I read your sleep and resting heart rate from Apple Health and dial training up or down to match."},
+    {k:['price','cost','free'],a:"Every plan starts with a 7-day free trial for eligible new subscribers, then $17.99/month or $169.99/year. Cancel anytime in your App Store or Google Play settings."}
   ];
   function reply(t){t=t.toLowerCase();for(const e of KB){if(e.k.some(k=>t.includes(k)))return e.a;}return "Great question. In the full app I'd pull your live stats and coach you through it step by step — download Endopamin to get started. 💪";}
   function add(t,who){const d=document.createElement('div');d.className='msg '+who;d.textContent=t;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}
