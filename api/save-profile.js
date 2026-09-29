@@ -12,6 +12,7 @@ import {
   validateExperience,
   validateGoal,
   validateHealthConditions,
+  validateInjuries,
   validateHeight,
   validateHeightUnit,
   validateJobType,
@@ -54,7 +55,6 @@ export const CLEARABLE_FIELDS = Object.freeze([
   'height',
   'weight',
   'target_weight',
-  'injuries',
   'priority_muscle',
   'equipment_extras',
 ]);
@@ -219,7 +219,7 @@ function validateConfirmed(field, value, ctx) {
     case 'session_duration': return validateSessionDuration(value);
     case 'equipment': return validateEquipment(value);
     case 'equipment_extras': return validateEquipmentExtras(value);
-    case 'injuries': return validateText(value, 'injuries');
+    case 'injuries': return validateInjuries(value);
     case 'health_conditions': return validateHealthConditions(value);
     case 'priority_muscle': return validateText(value, 'priority_muscle');
     case 'gender': return validateAllowed(value, 'gender', GENDERS);

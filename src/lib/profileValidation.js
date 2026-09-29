@@ -371,6 +371,31 @@ function parseHealthConditionTokens(value) {
   return { error: HEALTH_CONDITION_REASONS.other };
 }
 
+// public.profiles.injuries is text, nullable. NULL = unanswered. Canonical
+// values: 'none' (explicit No), 'prefer_not_to_answer', or the athlete's
+// reported text (trimmed, non-blank, not a reserved token in any casing).
+export const INJURY_TOKENS = Object.freeze(['none', 'prefer_not_to_answer']);
+const INJURY_TOKEN_SET = new Set(INJURY_TOKENS);
+const MAX_INJURIES_CHARS = 500;
+
+export const INJURY_REASONS = Object.freeze({
+  notString: 'injuries must be a string',
+  blank: 'injuries must not be blank',
+  tooLong: `injuries must be at most ${MAX_INJURIES_CHARS} characters`,
+  reserved: 'injuries text must not be a reserved value',
+});
+
+export function validateInjuries(value) {
+  if (isAbsent(value)) return absent();
+  if (typeof value !== 'string') return invalid(INJURY_REASONS.notString);
+  if (INJURY_TOKEN_SET.has(value)) return ok(value);
+  const text = value.trim();
+  if (text === '') return invalid(INJURY_REASONS.blank);
+  if (text.length > MAX_INJURIES_CHARS) return invalid(INJURY_REASONS.tooLong);
+  if (INJURY_TOKEN_SET.has(text.toLowerCase())) return invalid(INJURY_REASONS.reserved);
+  return ok(text);
+}
+
 export function encodeHealthConditions(tokens) {
   const selected = new Set(tokens);
   return JSON.stringify(HEALTH_CONDITION_TOKENS.filter((token) => selected.has(token)));

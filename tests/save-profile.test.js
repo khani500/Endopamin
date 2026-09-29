@@ -160,16 +160,55 @@ describe('planProfileWrite', () => {
 
   it('clears a clearable field as SQL NULL and stamps cleared', () => {
     const result = planProfileWrite(
-      fields({ injuries: { intent: 'cleared' } }),
+      fields({ priority_muscle: { intent: 'cleared' } }),
       { now: NOW },
     );
 
-    expect(result.value.patch.injuries).toBeNull();
-    expect(result.value.written.injuries).toEqual({ state: 'cleared' });
-    expect(result.value.patch.field_provenance.injuries).toEqual({
+    expect(result.value.patch.priority_muscle).toBeNull();
+    expect(result.value.written.priority_muscle).toEqual({ state: 'cleared' });
+    expect(result.value.patch.field_provenance.priority_muscle).toEqual({
       state: 'cleared',
       ...STAMP,
     });
+  });
+
+  it('rejects clearing injuries', () => {
+    const result = planProfileWrite(
+      fields({ injuries: { intent: 'cleared' } }),
+      { now: NOW },
+    );
+    expectNoWrite(result);
+    expect(result.error.status).toBe(400);
+    expect(result.error.field).toBe('injuries');
+  });
+
+  it('rejects blank, whitespace, reserved-casing and null injuries', () => {
+    for (const value of ['', '   ', 'None', ' prefer_not_to_answer ', null]) {
+      const result = planProfileWrite(
+        fields({ injuries: { value, intent: 'confirmed' } }),
+        { now: NOW },
+      );
+      expectNoWrite(result);
+      expect(result.error.status).toBe(422);
+    }
+  });
+
+  it('stores canonical injury tokens and trimmed reported text as confirmed', () => {
+    for (const [value, stored] of [
+      ['none', 'none'],
+      ['prefer_not_to_answer', 'prefer_not_to_answer'],
+      ['  sore knee  ', 'sore knee'],
+    ]) {
+      const result = planProfileWrite(
+        fields({ injuries: { value, intent: 'confirmed' } }),
+        { now: NOW },
+      );
+      expect(result.value.patch.injuries).toBe(stored);
+      expect(result.value.patch.field_provenance.injuries).toEqual({
+        state: 'confirmed',
+        ...STAMP,
+      });
+    }
   });
 
   it('rejects clearing a non-clearable field', () => {
@@ -709,7 +748,7 @@ describe('handleRequest', () => {
     expect(res.body.written.equipment_extras).toEqual({ state: 'confirmed' });
   });
 
-  it('normalizes confirmed empty equipment_extras to NULL and stamps cleared like injuries', async () => {
+  it('normalizes confirmed empty equipment_extras to NULL and stamps cleared like priority_muscle', async () => {
     const { res, admin } = await postSave(
       fields({ equipment_extras: { value: [], intent: 'confirmed' } }),
       {
@@ -732,9 +771,9 @@ describe('handleRequest', () => {
     expect(admin.updates[0].patch).not.toHaveProperty('equipment');
   });
 
-  it('stamps equipment_extras provenance confirmed / cleared to match injuries clear', () => {
-    const injuriesCleared = planProfileWrite(
-      fields({ injuries: { intent: 'cleared' } }),
+  it('stamps equipment_extras provenance confirmed / cleared to match priority_muscle clear', () => {
+    const muscleCleared = planProfileWrite(
+      fields({ priority_muscle: { intent: 'cleared' } }),
       { now: NOW },
     );
     const extrasExplicitClear = planProfileWrite(
@@ -751,7 +790,7 @@ describe('handleRequest', () => {
     );
 
     const clearedStamp = { state: 'cleared', ...STAMP };
-    expect(injuriesCleared.value.patch.field_provenance.injuries).toEqual(clearedStamp);
+    expect(muscleCleared.value.patch.field_provenance.priority_muscle).toEqual(clearedStamp);
     expect(extrasExplicitClear.value.patch.equipment_extras).toBeNull();
     expect(extrasExplicitClear.value.patch.field_provenance.equipment_extras).toEqual(clearedStamp);
     expect(extrasExplicitClear.value.written.equipment_extras).toEqual({ state: 'cleared' });

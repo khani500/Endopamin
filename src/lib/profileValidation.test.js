@@ -18,6 +18,7 @@ import {
   validateExperience,
   validateGoal,
   validateHealthConditions,
+  validateInjuries,
   validateHeight,
   validateHeightUnit,
   validateJobType,
@@ -43,6 +44,26 @@ function expectValid(result, value) {
 function expectAbsent(result) {
   expect(result).toEqual({ valid: true, absent: true });
 }
+
+describe('validateInjuries', () => {
+  it('accepts canonical tokens and trims reported text', () => {
+    expectValid(validateInjuries('none'), 'none');
+    expectValid(validateInjuries('prefer_not_to_answer'), 'prefer_not_to_answer');
+    expectValid(validateInjuries('  sore knee  '), 'sore knee');
+  });
+
+  it('treats null and undefined as absent', () => {
+    expectAbsent(validateInjuries(null));
+    expectAbsent(validateInjuries(undefined));
+  });
+
+  it('rejects blank, non-string, too long, and reserved-token text', () => {
+    const neighbour = validateInjuries('sore knee');
+    for (const value of ['', '   ', 42, 'x'.repeat(501), 'None', ' NONE ', 'Prefer_Not_To_Answer']) {
+      expectInvalid(validateInjuries(value), neighbour);
+    }
+  });
+});
 
 describe('PROFILE_ENUMS', () => {
   it('is the single CHECK-mirroring list for experience, goal, job_type, and coach_persona', () => {
