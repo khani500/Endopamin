@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
+import { enforceMinimumVersion } from './_appVersion.js';
 import { applyCorsHeaders } from './_cors.js';
 import { checkIpAbuseLimit, checkUserMinuteLimit } from './_rateLimit.js';
 import { reportError } from './_sentry.js';
@@ -424,6 +425,7 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS' && allowedOrigin) {
       return res.status(204).end();
     }
+    if (await enforceMinimumVersion(req, res)) return;
 
     return await handleRequest(req, res, requestId);
   } catch (err) {
