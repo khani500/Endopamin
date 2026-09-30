@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { applyCorsHeaders } from './_cors.js';
-import { checkRateLimit } from './_rateLimit.js';
+import { checkIpAbuseLimit, checkUserMinuteLimit } from './_rateLimit.js';
 import { reportError, reportMessage } from './_sentry.js';
 import { classifyStoredAge } from '../src/lib/adultAge.js';
 
@@ -509,8 +509,8 @@ export async function handleRequest(req, res, requestId, deps = {}) {
     return res.status(405).json({ error: 'Method not allowed', requestId });
   }
 
-  const allowed = await checkRateLimit(req, res, { name: 'replace-plans', max: 5, windowSec: 60 });
-  if (!allowed) return;
+  // Rate limits fail open on a limiter outage; every check below still runs.
+  if (!(await checkIpAbuseLimit(req, res, { endpoint: 'replace-plans', requestId }))) return;
 
   const contentLength = Number(req.headers['content-length'] || 0);
   if (contentLength > MAX_BODY_BYTES) {
@@ -534,6 +534,8 @@ export async function handleRequest(req, res, requestId, deps = {}) {
   }
   // The single source of the owner id. Nothing else may supply it.
   const userId = userData.user.id;
+
+  if (!(await checkUserMinuteLimit(res, { endpoint: 'replace-plans', userId, requestId }))) return;
 
   const validated = validatePlanRequest(req.body);
   if (validated.error) {

@@ -198,28 +198,3 @@ export async function consumeDailyQuota(res, {
   });
   return false;
 }
-
-// Legacy IP-only limiter. gemini and tts use the two-layer limits above; save-profile and
-// replace-plans still use this until they move to them.
-// Returns true if the request is allowed, false if rate limited.
-// Fails OPEN (allows) if Redis is not configured, so the app never breaks.
-export async function checkRateLimit(req, res, { name, max, windowSec }) {
-  const limiter = getLimiter(`rl:${name}`, Ratelimit.slidingWindow(max, `${windowSec} s`));
-  if (!limiter) return true; // Redis not configured -> allow
-  const ip = getClientIp(req);
-  try {
-    const { success, limit, remaining, reset } = await limiter.limit(ip);
-    res.setHeader('X-RateLimit-Limit', String(limit));
-    res.setHeader('X-RateLimit-Remaining', String(remaining));
-    if (!success) {
-      const retryAfter = Math.max(1, Math.ceil((reset - Date.now()) / 1000));
-      res.setHeader('Retry-After', String(retryAfter));
-      res.status(429).json({ error: 'Too many requests. Please slow down and try again shortly.' });
-      return false;
-    }
-    return true;
-  } catch (err) {
-    console.error('Rate limit check failed, allowing request:', err.message);
-    return true; // fail open on Redis error
-  }
-}

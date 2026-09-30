@@ -1,4 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterEach, beforeEach, describe, expect, it, vi,
+} from 'vitest';
 import {
   handleRequest,
   mapRpcError,
@@ -11,6 +13,27 @@ import {
   validatePlanRequest,
 } from '../api/replace-plans.js';
 import * as sentry from '../api/_sentry.js';
+import {
+  callsWithPrefix,
+  resetUpstash,
+  seedWindow,
+  upstash,
+} from './_upstashFake.js';
+
+vi.mock('@upstash/redis', async () => (await import('./_upstashFake.js')).redisModule);
+vi.mock('@upstash/ratelimit', async () => (await import('./_upstashFake.js')).ratelimitModule);
+
+// Every handler test runs against the in-memory limiter with fresh counts.
+beforeEach(() => {
+  resetUpstash();
+  process.env.UPSTASH_REDIS_REST_URL = 'https://example.upstash.io';
+  process.env.UPSTASH_REDIS_REST_TOKEN = 'test-token';
+});
+
+afterEach(() => {
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
+});
 
 const NOW = new Date('2026-09-19T21:00:00.000Z');
 const ATTEMPT_ID = '11111111-1111-4111-8111-111111111111';
@@ -914,3 +937,135 @@ describe('handleRequest safety fingerprint token', () => {
   });
 });
 
+describe('handleRequest rate limits', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-09-29T12:00:00Z') });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  async function postWithAdmin(admin, { headers = { authorization: 'Bearer test-token' } } = {}) {
+    const res = fakeRes();
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'info').mockImplementation(() => {});
+    vi.spyOn(sentry, 'reportMessage').mockResolvedValue(undefined);
+    await handleRequest(
+      {
+        method: 'POST',
+        headers: { 'content-length': '128', ...headers },
+        body: { ...body(), weekStart: todayUtc() },
+      },
+      res,
+      'abcd1234',
+      { admin },
+    );
+    return res;
+  }
+
+  function adminWithBadToken() {
+    const admin = fakeAdmin();
+    admin.auth.getUser = vi.fn(async () => ({ data: { user: null }, error: { message: 'invalid' } }));
+    return admin;
+  }
+
+  it('checks the IP layer, then the per-user layer keyed by the Supabase user id', async () => {
+    const { res } = await postReplace(body());
+    expect(res.statusCode).toBe(200);
+    expect(upstash.calls.map((call) => call.prefix)).toEqual(['rl:v2:ip:replace-plans', 'rl:v2:user:replace-plans']);
+    expect(callsWithPrefix('rl:v2:user:')[0].identifier).toBe('user-1');
+    expect(callsWithPrefix('q:v1:')).toHaveLength(0);
+  });
+
+  it('returns 429 with Retry-After after 5 saves in a minute, and never calls the RPC', async () => {
+    seedWindow('rl:v2:user:replace-plans', 'user-1', 60000, 5);
+    const { res, admin } = await postReplace(body());
+    expect(res.statusCode).toBe(429);
+    expect(Number(res.headers['Retry-After'])).toBeGreaterThanOrEqual(1);
+    expect(Number(res.headers['Retry-After'])).toBeLessThanOrEqual(60);
+    expect(res.body).toMatchObject({ code: 'rate_limited', requestId: 'abcd1234' });
+    expect(res.body.error).toBe(res.body.message);
+    expect(admin.calls.rpc).toHaveLength(0);
+  });
+
+  it('the IP layer runs before auth and returns 429 with Retry-After', async () => {
+    seedWindow('rl:v2:ip:replace-plans', 'unknown', 60000, 30);
+    const admin = fakeAdmin();
+    admin.auth.getUser = vi.fn(admin.auth.getUser);
+    const res = await postWithAdmin(admin);
+    expect(res.statusCode).toBe(429);
+    expect(Number(res.headers['Retry-After'])).toBeGreaterThanOrEqual(1);
+    expect(admin.auth.getUser).not.toHaveBeenCalled();
+    expect(admin.calls.rpc).toHaveLength(0);
+  });
+
+  it('an invalid token uses no per-user minute slot', async () => {
+    const res = await postWithAdmin(adminWithBadToken());
+    expect(res.statusCode).toBe(401);
+    expect(callsWithPrefix('rl:v2:user:')).toHaveLength(0);
+  });
+
+  it('a missing token uses no per-user minute slot', async () => {
+    const res = await postWithAdmin(fakeAdmin(), { headers: {} });
+    expect(res.statusCode).toBe(401);
+    expect(callsWithPrefix('rl:v2:user:')).toHaveLength(0);
+  });
+
+  describe('limiter outage fails open and every other check still runs', () => {
+    for (const mode of ['throw', 'timeout']) {
+      it(`${mode}: a valid plan still saves through the RPC`, async () => {
+        upstash.mode = mode;
+        const { res, admin } = await postReplace(body());
+        expect(res.statusCode).toBe(200);
+        expect(res.headers).not.toHaveProperty('Retry-After');
+        expect(admin.calls.rpc).toHaveLength(1);
+      });
+
+      it(`${mode}: the stored age gate still returns 422`, async () => {
+        upstash.mode = mode;
+        const { res, admin } = await postReplace(body(), { age: 17 });
+        expect(res.statusCode).toBe(422);
+        expect(admin.calls.rpc).toHaveLength(0);
+      });
+
+      it(`${mode}: a malformed safety fingerprint is still rejected with 400`, async () => {
+        upstash.mode = mode;
+        const { res, admin } = await postReplace(body({ expectedSafetyFingerprint: 'v1:nothex' }));
+        expect(res.statusCode).toBe(400);
+        expect(res.body.field).toBe('expectedSafetyFingerprint');
+        expect(admin.calls.rpc).toHaveLength(0);
+      });
+
+      it(`${mode}: an invalid token is still rejected with 401`, async () => {
+        upstash.mode = mode;
+        const admin = adminWithBadToken();
+        const res = await postWithAdmin(admin);
+        expect(res.statusCode).toBe(401);
+        expect(admin.calls.rpc).toHaveLength(0);
+      });
+    }
+
+    it('missing limiter configuration: a valid plan still saves', async () => {
+      delete process.env.UPSTASH_REDIS_REST_URL;
+      vi.resetModules();
+      const { handleRequest: freshHandleRequest } = await import('../api/replace-plans.js');
+      const admin = fakeAdmin();
+      const res = fakeRes();
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+      vi.spyOn(console, 'info').mockImplementation(() => {});
+      await freshHandleRequest(
+        {
+          method: 'POST',
+          headers: { authorization: 'Bearer test-token', 'content-length': '128' },
+          body: { ...body(), weekStart: todayUtc() },
+        },
+        res,
+        'abcd1234',
+        { admin },
+      );
+      expect(res.statusCode).toBe(200);
+      expect(admin.calls.rpc).toHaveLength(1);
+    });
+  });
+});

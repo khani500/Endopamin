@@ -1,8 +1,16 @@
-import { describe, expect, it } from 'vitest';
+import {
+  afterEach, beforeEach, describe, expect, it, vi,
+} from 'vitest';
 import {
   handleRequest,
   planProfileWrite,
 } from '../api/save-profile.js';
+import {
+  callsWithPrefix,
+  resetUpstash,
+  seedWindow,
+  upstash,
+} from './_upstashFake.js';
 import {
   TARGET_GOAL_INCONSISTENT,
   EQUIPMENT_EXTRAS_MESSAGES,
@@ -13,6 +21,21 @@ import {
   HEALTH_CONDITIONS_STORED,
   HEALTH_CONDITIONS_WIRE,
 } from './healthConditions.wire.fixture.mjs';
+
+vi.mock('@upstash/redis', async () => (await import('./_upstashFake.js')).redisModule);
+vi.mock('@upstash/ratelimit', async () => (await import('./_upstashFake.js')).ratelimitModule);
+
+// Every handler test runs against the in-memory limiter with fresh counts.
+beforeEach(() => {
+  resetUpstash();
+  process.env.UPSTASH_REDIS_REST_URL = 'https://example.upstash.io';
+  process.env.UPSTASH_REDIS_REST_TOKEN = 'test-token';
+});
+
+afterEach(() => {
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
+});
 
 const NOW = new Date('2026-09-14T21:00:00.000Z');
 const STAMP = {
@@ -892,5 +915,121 @@ describe('handleRequest', () => {
     expect(res.body.fields.equipment).toBe(EQUIPMENT_REASONS.object);
     expect(res.body.reasonCodes).toEqual({ equipment: 'equipment_object_not_allowed' });
     expect(admin.updates).toHaveLength(0);
+  });
+});
+
+describe('handleRequest rate limits', () => {
+  const VALID_SAVE = fields({ age: { value: 28, intent: 'confirmed' } });
+
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'], now: new Date('2026-09-29T12:00:00Z') });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  function adminWithBadToken() {
+    const admin = fakeAdmin({ profile: { field_provenance: null } });
+    admin.auth.getUser = vi.fn(async () => ({ data: { user: null }, error: { message: 'invalid' } }));
+    return admin;
+  }
+
+  it('checks the IP layer, then the per-user layer keyed by the Supabase user id', async () => {
+    const { res } = await postSave(VALID_SAVE);
+    expect(res.statusCode).toBe(200);
+    expect(upstash.calls.map((call) => call.prefix)).toEqual(['rl:v2:ip:save-profile', 'rl:v2:user:save-profile']);
+    expect(callsWithPrefix('rl:v2:user:')[0].identifier).toBe('user-1');
+    expect(callsWithPrefix('q:v1:')).toHaveLength(0);
+  });
+
+  it('returns 429 with Retry-After after 10 saves in a minute, and writes nothing', async () => {
+    seedWindow('rl:v2:user:save-profile', 'user-1', 60000, 10);
+    const { res, admin } = await postSave(VALID_SAVE);
+    expect(res.statusCode).toBe(429);
+    expect(Number(res.headers['Retry-After'])).toBeGreaterThanOrEqual(1);
+    expect(Number(res.headers['Retry-After'])).toBeLessThanOrEqual(60);
+    expect(res.body).toMatchObject({ code: 'rate_limited', requestId: 'abcd1234' });
+    expect(res.body.error).toBe(res.body.message);
+    expect(admin.updates).toHaveLength(0);
+  });
+
+  it('the IP layer runs before auth and returns 429 with Retry-After', async () => {
+    seedWindow('rl:v2:ip:save-profile', 'unknown', 60000, 60);
+    const admin = fakeAdmin({ profile: { field_provenance: null } });
+    admin.auth.getUser = vi.fn(admin.auth.getUser);
+    const { res } = await postSave(VALID_SAVE, { admin });
+    expect(res.statusCode).toBe(429);
+    expect(Number(res.headers['Retry-After'])).toBeGreaterThanOrEqual(1);
+    expect(admin.auth.getUser).not.toHaveBeenCalled();
+    expect(admin.updates).toHaveLength(0);
+  });
+
+  it('an invalid token uses no per-user minute slot', async () => {
+    const { res } = await postSave(VALID_SAVE, { admin: adminWithBadToken() });
+    expect(res.statusCode).toBe(401);
+    expect(callsWithPrefix('rl:v2:user:')).toHaveLength(0);
+  });
+
+  it('a missing token uses no per-user minute slot', async () => {
+    const res = fakeRes();
+    await handleRequest(
+      { method: 'POST', headers: { 'content-length': '128' }, body: VALID_SAVE },
+      res,
+      'abcd1234',
+      { admin: fakeAdmin({ profile: { field_provenance: null } }) },
+    );
+    expect(res.statusCode).toBe(401);
+    expect(callsWithPrefix('rl:v2:user:')).toHaveLength(0);
+  });
+
+  describe('limiter outage fails open and every other check still runs', () => {
+    for (const mode of ['throw', 'timeout']) {
+      it(`${mode}: a valid save still succeeds`, async () => {
+        upstash.mode = mode;
+        const { res, admin } = await postSave(VALID_SAVE);
+        expect(res.statusCode).toBe(200);
+        expect(res.headers).not.toHaveProperty('Retry-After');
+        expect(admin.updates).toHaveLength(1);
+      });
+
+      it(`${mode}: an invalid field is still rejected with 422`, async () => {
+        upstash.mode = mode;
+        const { res, admin } = await postSave(fields({ age: { value: 14, intent: 'confirmed' } }));
+        expect(res.statusCode).toBe(422);
+        expect(res.body.fields.age).toEqual(expect.any(String));
+        expect(admin.updates).toHaveLength(0);
+      });
+
+      it(`${mode}: an invalid token is still rejected with 401`, async () => {
+        upstash.mode = mode;
+        const admin = adminWithBadToken();
+        const { res } = await postSave(VALID_SAVE, { admin });
+        expect(res.statusCode).toBe(401);
+        expect(admin.updates).toHaveLength(0);
+      });
+    }
+
+    it('missing limiter configuration: a valid save still succeeds', async () => {
+      delete process.env.UPSTASH_REDIS_REST_URL;
+      vi.resetModules();
+      const { handleRequest: freshHandleRequest } = await import('../api/save-profile.js');
+      const res = fakeRes();
+      const admin = fakeAdmin({
+        profile: {
+          height_unit: 'cm', weight_unit: 'lb', weight: 180, goal: 'fat_loss', field_provenance: null,
+        },
+      });
+      await freshHandleRequest(
+        { method: 'POST', headers: { authorization: 'Bearer test-token', 'content-length': '128' }, body: VALID_SAVE },
+        res,
+        'abcd1234',
+        { admin },
+      );
+      expect(res.statusCode).toBe(200);
+      expect(admin.updates).toHaveLength(1);
+    });
   });
 });
