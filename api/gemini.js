@@ -13,6 +13,32 @@ export const config = {
 
 const MAX_BODY_BYTES = 10 * 1024 * 1024;
 
+const DEFAULT_MODEL = 'gemini-2.5-flash';
+const DEFAULT_ACTION = 'generateContent';
+const ALLOWED_MODELS = new Set(['gemini-2.5-flash']);
+const ALLOWED_ACTIONS = new Set(['generateContent', 'streamGenerateContent']);
+
+// Absent model/action fall back to the defaults (older builds omit them).
+// Any present value must be an allowlisted string; it is never replaced by the default.
+// Returns { ok: true, model, action, alt } or { ok: false, error }.
+export function validateGeminiRoute({ model, action, alt } = {}) {
+  if (model !== undefined && (typeof model !== 'string' || !ALLOWED_MODELS.has(model))) {
+    return { ok: false, error: 'Unsupported model' };
+  }
+  if (action !== undefined && (typeof action !== 'string' || !ALLOWED_ACTIONS.has(action))) {
+    return { ok: false, error: 'Unsupported action' };
+  }
+  if (alt !== undefined && alt !== 'sse') {
+    return { ok: false, error: 'Unsupported alt' };
+  }
+  return {
+    ok: true,
+    model: model ?? DEFAULT_MODEL,
+    action: action ?? DEFAULT_ACTION,
+    alt,
+  };
+}
+
 function estimateBodyBytes(body) {
   if (!body) return 0;
   try {
@@ -104,11 +130,17 @@ export default async function handler(req, res) {
   }
 
   const {
-    model = 'gemini-2.5-flash',
-    action = 'generateContent',
-    alt,
+    model: rawModel,
+    action: rawAction,
+    alt: rawAlt,
     ...geminiBody
   } = body;
+
+  const route = validateGeminiRoute({ model: rawModel, action: rawAction, alt: rawAlt });
+  if (!route.ok) {
+    return res.status(400).json({ error: route.error });
+  }
+  const { model, action, alt } = route;
 
   // Forwards full Gemini payload: systemInstruction, generationConfig (responseSchema, maxOutputTokens), contents, etc.
 
