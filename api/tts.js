@@ -2,6 +2,41 @@ import { createClient } from '@supabase/supabase-js';
 import { applyCorsHeaders } from './_cors.js';
 import { checkIpAbuseLimit, checkUserMinuteLimit, consumeDailyQuota } from './_rateLimit.js';
 
+const MAX_TEXT_CHARS = 5000;
+const MAX_TEXT_BYTES = 5000;
+const DEFAULT_VOICE = 'en-US-Neural2-F';
+// Current coaches use F (Aria) and D (Kane); builds before the roster change also sent C, E, G and J.
+const ALLOWED_VOICES = new Set([
+  'en-US-Neural2-C',
+  'en-US-Neural2-D',
+  'en-US-Neural2-E',
+  'en-US-Neural2-F',
+  'en-US-Neural2-G',
+  'en-US-Neural2-J',
+]);
+
+// Returns { ok: true, text, voiceName } or { ok: false, error }.
+export function validateTtsRequest({ text, voiceName } = {}) {
+  const trimmed = String(text || '').trim();
+  if (!trimmed) {
+    return { ok: false, error: 'text is required' };
+  }
+  if (trimmed.length > MAX_TEXT_CHARS) {
+    return { ok: false, error: 'text exceeds 5000 character limit' };
+  }
+  if (Buffer.byteLength(trimmed, 'utf8') > MAX_TEXT_BYTES) {
+    return { ok: false, error: 'text exceeds 5000 byte limit' };
+  }
+  // Empty or missing voice falls back to the default, as before.
+  if (!voiceName) {
+    return { ok: true, text: trimmed, voiceName: DEFAULT_VOICE };
+  }
+  if (typeof voiceName !== 'string' || !ALLOWED_VOICES.has(voiceName)) {
+    return { ok: false, error: 'Unsupported voice' };
+  }
+  return { ok: true, text: trimmed, voiceName };
+}
+
 export default async function handler(req, res) {
   const allowedOrigin = applyCorsHeaders(req, res);
   if (req.method === 'OPTIONS' && allowedOrigin) {
@@ -40,14 +75,10 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Google TTS API key not configured' });
   }
 
-  const { text, voiceName } = req.body || {};
-  const trimmed = String(text || '').trim();
-  if (!trimmed) {
-    return res.status(400).json({ error: 'text is required' });
-  }
-
-  if (trimmed.length > 5000) {
-    return res.status(400).json({ error: 'text exceeds 5000 character limit' });
+  // Bounds run before the daily quota, so a rejected request never costs a unit.
+  const validated = validateTtsRequest(req.body || {});
+  if (!validated.ok) {
+    return res.status(400).json({ error: validated.error });
   }
 
   // One daily unit per request, taken only when we are about to call Google.
@@ -60,10 +91,10 @@ export default async function handler(req, res) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          input: { text: trimmed },
+          input: { text: validated.text },
           voice: {
             languageCode: 'en-US',
-            name: voiceName || 'en-US-Neural2-F',
+            name: validated.voiceName,
           },
           audioConfig: {
             audioEncoding: 'MP3',
