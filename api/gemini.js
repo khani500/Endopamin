@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { applyCorsHeaders } from './_cors.js';
-import { checkRateLimit } from './_rateLimit.js';
+import { checkIpAbuseLimit, checkUserMinuteLimit, consumeDailyQuota } from './_rateLimit.js';
 import { reportError } from './_sentry.js';
 
 export const config = {
@@ -68,8 +68,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
-  const allowed = await checkRateLimit(req, res, { name: 'gemini', max: 20, windowSec: 60 });
-  if (!allowed) return;
+  if (!(await checkIpAbuseLimit(req, res, { endpoint: 'gemini' }))) return;
 
   const authHeader = req.headers.authorization || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
@@ -85,6 +84,9 @@ export default async function handler(req, res) {
   if (userErr || !userData || !userData.user) {
     return res.status(401).json({ error: 'Invalid or expired token' });
   }
+  const userId = userData.user.id;
+
+  if (!(await checkUserMinuteLimit(res, { endpoint: 'gemini', userId, paid: true }))) return;
 
   const contentLength = Number(req.headers['content-length'] || 0);
   if (contentLength > MAX_BODY_BYTES) {
@@ -157,6 +159,10 @@ export default async function handler(req, res) {
         maxBytes: MAX_BODY_BYTES,
       });
     }
+
+    // One daily unit per client request, taken only when we are about to call Google,
+    // and before the retry loop so internal 503 retries never cost extra units.
+    if (!(await consumeDailyQuota(res, { endpoint: 'gemini', userId }))) return;
 
     let response;
     let lastErr;

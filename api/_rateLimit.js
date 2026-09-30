@@ -199,8 +199,8 @@ export async function consumeDailyQuota(res, {
   return false;
 }
 
-// Legacy IP-only limiter, still used by save-profile and replace-plans until they move
-// to the two-layer limits above.
+// Legacy IP-only limiter. gemini and tts use the two-layer limits above; save-profile and
+// replace-plans still use this until they move to them.
 // Returns true if the request is allowed, false if rate limited.
 // Fails OPEN (allows) if Redis is not configured, so the app never breaks.
 export async function checkRateLimit(req, res, { name, max, windowSec }) {

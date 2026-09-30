@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { applyCorsHeaders } from './_cors.js';
-import { checkRateLimit } from './_rateLimit.js';
+import { checkIpAbuseLimit, checkUserMinuteLimit, consumeDailyQuota } from './_rateLimit.js';
 
 export default async function handler(req, res) {
   const allowedOrigin = applyCorsHeaders(req, res);
@@ -11,8 +11,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
-  const allowed = await checkRateLimit(req, res, { name: 'tts', max: 30, windowSec: 60 });
-  if (!allowed) return;
+  if (!(await checkIpAbuseLimit(req, res, { endpoint: 'tts' }))) return;
 
   const authHeader = req.headers.authorization || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
@@ -28,6 +27,9 @@ export default async function handler(req, res) {
   if (userErr || !userData || !userData.user) {
     return res.status(401).json({ error: 'Invalid or expired token' });
   }
+  const userId = userData.user.id;
+
+  if (!(await checkUserMinuteLimit(res, { endpoint: 'tts', userId, paid: true }))) return;
 
   const TTS_API_KEY = process.env.VITE_GOOGLE_TTS_API_KEY
     || process.env.GOOGLE_TTS_API_KEY
@@ -47,6 +49,9 @@ export default async function handler(req, res) {
   if (trimmed.length > 5000) {
     return res.status(400).json({ error: 'text exceeds 5000 character limit' });
   }
+
+  // One daily unit per request, taken only when we are about to call Google.
+  if (!(await consumeDailyQuota(res, { endpoint: 'tts', userId }))) return;
 
   try {
     const response = await fetch(
