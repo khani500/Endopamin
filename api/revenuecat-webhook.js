@@ -1,39 +1,32 @@
-import { createClient } from '@supabase/supabase-js';
+import crypto from 'node:crypto';
+import {
+  createAdmin,
+  isValidUuid,
+  missingEnv,
+  reconcileUser,
+} from './_entitlement.js';
 import { reportError } from './_sentry.js';
 
-function isValidUuid(value) {
-  return typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+// Constant-time comparison. A length mismatch still runs one comparison so the
+// time taken does not depend on where the values differ.
+function safeEqual(received, expected) {
+  const left = Buffer.from(String(received));
+  const right = Buffer.from(String(expected));
+  if (left.length !== right.length) {
+    crypto.timingSafeEqual(left, left);
+    return false;
+  }
+  return crypto.timingSafeEqual(left, right);
 }
 
-const GRANT_EVENT_TYPES = new Set([
-  'INITIAL_PURCHASE',
-  'RENEWAL',
-  'UNCANCELLATION',
-  'PRODUCT_CHANGE',
-  'NON_RENEWING_PURCHASE',
-]);
-
-const REVOKE_EVENT_TYPES = new Set([
-  'EXPIRATION',
-]);
-
-const NO_OP_EVENT_TYPES = new Set([
-  'CANCELLATION',
-  'BILLING_ISSUE',
-  'SUBSCRIPTION_PAUSED',
-  'TEST',
-]);
-
-function resolveUserId(event) {
-  const candidates = [];
-
-  if (event.app_user_id) candidates.push(event.app_user_id);
-  if (event.original_app_user_id) candidates.push(event.original_app_user_id);
-  if (Array.isArray(event.aliases)) {
-    candidates.push(...event.aliases);
+// Every id the event names. TRANSFER carries transferred_from / transferred_to
+// instead of app_user_id; both sides are reconciled.
+function collectCandidateIds(event) {
+  const candidates = [event.app_user_id, event.original_app_user_id];
+  for (const key of ['aliases', 'transferred_from', 'transferred_to']) {
+    if (Array.isArray(event[key])) candidates.push(...event[key]);
   }
-
-  return candidates.find(isValidUuid) || null;
+  return [...new Set(candidates.filter((id) => typeof id === 'string' && id.length > 0))];
 }
 
 export default async function handler(req, res) {
@@ -43,137 +36,56 @@ export default async function handler(req, res) {
 
   const webhookAuth = process.env.REVENUECAT_WEBHOOK_AUTH;
   if (!webhookAuth) {
-    console.error('REVENUECAT_WEBHOOK_AUTH is not configured');
-    return res.status(500).json({ error: 'Webhook auth not configured' });
+    await reportError(new Error('REVENUECAT_WEBHOOK_AUTH is not configured'), {
+      route: 'revenuecat-webhook', step: 'config',
+    });
+    return res.status(500).json({ error: 'Webhook not configured' });
   }
 
-  const authHeader = req.headers.authorization || '';
-  if (authHeader !== webhookAuth) {
+  if (!safeEqual(req.headers.authorization || '', webhookAuth)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  if (!supabaseUrl) {
-    console.error('SUPABASE_URL is not configured');
-    return res.status(500).json({ error: 'Supabase URL not configured' });
+  const missing = missingEnv();
+  if (missing.length > 0) {
+    await reportError(new Error(`Missing environment variables: ${missing.join(', ')}`), {
+      route: 'revenuecat-webhook', step: 'config',
+    });
+    return res.status(500).json({ error: 'Webhook not configured' });
   }
-
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.error('SUPABASE_SERVICE_ROLE_KEY is not set');
-    return res.status(500).json({ error: 'Supabase service role key not configured' });
-  }
-
-  const supabase = createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
   let body = req.body;
   if (typeof body === 'string') {
     try {
       body = JSON.parse(body);
-    } catch (err) {
-      console.error('Failed to parse RevenueCat webhook body:', err.message);
+    } catch {
       return res.status(400).json({ error: 'Invalid JSON body' });
     }
   }
   const event = body?.event;
-  if (!event) {
+  if (!event || typeof event !== 'object') {
     return res.status(200).json({ received: true, ignored: true });
   }
 
-  const userId = resolveUserId(event);
-  if (!userId) {
-    console.log('No valid Supabase user id in RC event');
-    await reportError(
-      new Error(`RevenueCat event could not be matched to a user (type: ${event.type})`),
-      { route: 'revenuecat-webhook', step: 'user-resolution' },
-    );
-    return res.status(200).json({ received: true, noUser: true });
+  const eventType = typeof event.type === 'string' ? event.type : null;
+  const candidates = collectCandidateIds(event);
+  const userIds = candidates.filter(isValidUuid);
+
+  const admin = createAdmin();
+  let reconciled = 0;
+  let skipped = candidates.length - userIds.length;
+  let failed = 0;
+
+  for (const userId of userIds) {
+    const result = await reconcileUser(admin, userId, { source: 'webhook', eventType });
+    if (result.skipped) skipped += 1;
+    else if (result.ok) reconciled += 1;
+    else failed += 1;
   }
 
-  console.log(`Resolved RevenueCat user ${userId} for event type ${event.type}`);
-
-  let activationError = null;
-  const eventType = event.type;
-
-  if (GRANT_EVENT_TYPES.has(eventType)) {
-    let proExpiresAt;
-    if (typeof event.expiration_at_ms === 'number' && event.expiration_at_ms > 0) {
-      proExpiresAt = new Date(event.expiration_at_ms).toISOString();
-    }
-
-    const updatePayload = { is_pro: true };
-    if (proExpiresAt) {
-      updatePayload.pro_expires_at = proExpiresAt;
-    }
-
-    let { error } = await supabase
-      .from('profiles')
-      .update(updatePayload)
-      .eq('id', userId);
-
-    if (error?.message?.includes('pro_expires_at')) {
-      console.log('pro_expires_at column missing, retrying without it');
-      ({ error } = await supabase
-        .from('profiles')
-        .update({ is_pro: true })
-        .eq('id', userId));
-    }
-
-    if (error) {
-      console.error(`Failed to grant Pro for user ${userId}:`, error.message);
-      activationError = error;
-      await reportError(new Error(`Failed to grant Pro for user ${userId}: ${error.message}`), {
-        route: 'revenuecat-webhook',
-        step: 'grant-pro',
-      });
-    } else {
-      console.log(`Granted Pro for user ${userId} (event: ${eventType})`);
-    }
-  } else if (REVOKE_EVENT_TYPES.has(eventType)) {
-    let shouldRevoke = true;
-
-    const { data: profileRow, error: lookupError } = await supabase
-      .from('profiles')
-      .select('pro_expires_at')
-      .eq('id', userId)
-      .single();
-
-    if (lookupError) {
-      console.log(`Could not read pro_expires_at for user ${userId}: ${lookupError.message} - proceeding with revoke`);
-    } else if (
-      profileRow?.pro_expires_at &&
-      new Date(profileRow.pro_expires_at).getTime() > Date.now()
-    ) {
-      shouldRevoke = false;
-      console.log(`Skipped revoke for user ${userId} (event: ${eventType}) - pro_expires_at ${profileRow.pro_expires_at} is still in the future`);
-    }
-
-    if (shouldRevoke) {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_pro: false })
-        .eq('id', userId);
-
-      if (error) {
-        console.error(`Failed to revoke Pro for user ${userId}:`, error.message);
-        activationError = error;
-        await reportError(new Error(`Failed to revoke Pro for user ${userId}: ${error.message}`), {
-          route: 'revenuecat-webhook',
-          step: 'revoke-pro',
-        });
-      } else {
-        console.log(`Revoked Pro for user ${userId} (event: ${eventType})`);
-      }
-    }
-  } else if (NO_OP_EVENT_TYPES.has(eventType)) {
-    console.log(`No-op for user ${userId} (event: ${eventType})`);
-  } else {
-    console.log(`Unknown event type for user ${userId}: ${eventType} — no-op`);
+  // 500 makes RevenueCat retry; reconciliation is idempotent.
+  if (failed > 0) {
+    return res.status(500).json({ error: 'Reconciliation failed' });
   }
-
-  return res.status(activationError ? 500 : 200).json({
-    received: true,
-    type: eventType,
-    userId,
-    error: activationError?.message,
-  });
+  return res.status(200).json({ received: true, reconciled, skipped });
 }

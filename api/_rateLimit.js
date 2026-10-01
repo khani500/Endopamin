@@ -11,6 +11,7 @@ export const LIMITS = {
   tts: { ipPerMinute: 150, userPerMinute: 30, daily: 500 },
   'replace-plans': { ipPerMinute: 30, userPerMinute: 5 },
   'save-profile': { ipPerMinute: 60, userPerMinute: 10 },
+  'entitlement-sync': { ipPerMinute: 30, userPerMinute: 6 },
 };
 
 export const RATE_LIMIT_MESSAGES = {

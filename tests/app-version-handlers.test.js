@@ -76,6 +76,7 @@ function fakeRes() {
 // network, Redis or Supabase: a wrong method (405) or, for usda-search, a
 // one-letter query (400). Reaching that check proves the guard let it through.
 const guardedHandlers = [
+  { name: 'entitlement-sync', method: 'GET', query: {}, passStatus: 405 },
   { name: 'gemini', method: 'GET', query: {}, passStatus: 405 },
   { name: 'replace-plans', method: 'GET', query: {}, passStatus: 405 },
   { name: 'save-profile', method: 'GET', query: {}, passStatus: 405 },
