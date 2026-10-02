@@ -383,6 +383,36 @@ describe('entitlement-sync', () => {
     });
   });
 
+  it('a subscription in its trial period reconciles to active until the trial end', async () => {
+    const trialEnd = NOW.getTime() + 7 * DAY_MS;
+    db.profiles[USER_A] = { id: USER_A, is_pro: false };
+    rc.customers[USER_A] = {
+      entitlements: [proEntitlement(trialEnd)],
+      subscriptions: [proSubscription({ status: 'trialing', current_period_ends_at: trialEnd })],
+    };
+    const res = await postSync();
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ active: true, accessExpiresAt: new Date(trialEnd).toISOString() });
+    expect(db.writes).toEqual([
+      expect.objectContaining({
+        table: 'user_entitlements',
+        op: 'upsert',
+        row: expect.objectContaining({
+          user_id: USER_A,
+          active: true,
+          access_expires_at: new Date(trialEnd).toISOString(),
+          subscription_status: 'trialing',
+        }),
+      }),
+      {
+        table: 'profiles',
+        op: 'update',
+        id: USER_A,
+        patch: { is_pro: true, pro_expires_at: new Date(trialEnd).toISOString() },
+      },
+    ]);
+  });
+
   it('RevenueCat down -> 503 and no DB write', async () => {
     db.profiles[USER_A] = { id: USER_A, is_pro: true };
     rc.down = true;
