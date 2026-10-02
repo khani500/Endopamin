@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../api/_sentry.js', () => ({
   reportError: vi.fn().mockResolvedValue(undefined),
@@ -8,10 +8,16 @@ vi.mock('../api/_sentry.js', () => ({
 const {
   ENFORCEMENT_ENV,
   NEGATIVE_RECHECK_TTL_MS,
+  REPORT_THROTTLE_WINDOW_MS,
   decideFromRow,
   enforceEntitlement,
   isEnforcementOn,
+  resetReportThrottleForTests,
 } = await import('../api/_entitlementGate.js');
+
+beforeEach(() => {
+  resetReportThrottleForTests();
+});
 
 const NOW = new Date('2026-10-02T12:00:00Z');
 const DAY_MS = 86400000;
@@ -72,10 +78,9 @@ function fakeAdmin({ row = null, error = null, throws = false } = {}) {
 
 async function run({
   mode, admin = fakeAdmin(), headers = VERSION_HEADERS, reconcileResult, reconcileThrows = false,
+  endpoint = 'gemini', now = NOW, log = vi.fn(), report = vi.fn().mockResolvedValue(undefined),
 } = {}) {
   const res = fakeRes();
-  const log = vi.fn();
-  const report = vi.fn().mockResolvedValue(undefined);
   const reconcile = vi.fn(async () => {
     if (reconcileThrows) throw new Error('boom');
     return reconcileResult;
@@ -83,11 +88,11 @@ async function run({
   const sent = await enforceEntitlement({ headers }, res, {
     admin,
     userId: USER,
-    endpoint: 'gemini',
+    endpoint,
     requestId: REQUEST_ID,
     deps: {
       env: mode === undefined ? {} : { [ENFORCEMENT_ENV]: mode },
-      now: () => NOW,
+      now: () => now,
       reconcile,
       report,
       log,
@@ -324,5 +329,48 @@ describe('enforceEntitlement: verification failure fails open', () => {
     });
     expect(sent).toBe(false);
     expect(res.statusCode).toBeNull();
+  });
+});
+
+describe('enforceEntitlement: Sentry throttle on fail open', () => {
+  const readError = () => fakeAdmin({ error: { message: 'boom' } });
+  const at = (offsetMs) => new Date(NOW.getTime() + offsetMs);
+
+  it('is a 1 minute window', () => {
+    expect(REPORT_THROTTLE_WINDOW_MS).toBe(60000);
+  });
+
+  it('same endpoint and code inside the window -> one report, two logs; reported again after it', async () => {
+    const log = vi.fn();
+    const report = vi.fn().mockResolvedValue(undefined);
+    const shared = { mode: 'on', log, report };
+
+    expectAllowed(await run({ ...shared, admin: readError() }));
+    expectAllowed(await run({ ...shared, admin: readError(), now: at(REPORT_THROTTLE_WINDOW_MS - 1) }));
+    expect(report).toHaveBeenCalledTimes(1);
+    expect(log).toHaveBeenCalledTimes(2);
+
+    expectAllowed(await run({ ...shared, admin: readError(), now: at(REPORT_THROTTLE_WINDOW_MS) }));
+    expect(report).toHaveBeenCalledTimes(2);
+    expect(log).toHaveBeenCalledTimes(3);
+  });
+
+  it('a different endpoint or a different code is reported independently', async () => {
+    const log = vi.fn();
+    const report = vi.fn().mockResolvedValue(undefined);
+    const shared = { mode: 'on', log, report };
+
+    await run({ ...shared, admin: readError() });
+    await run({ ...shared, admin: readError(), endpoint: 'tts' });
+    await run({ ...shared, reconcileResult: { ok: false } });
+    await run({ ...shared, admin: readError() });
+
+    expect(report).toHaveBeenCalledTimes(3);
+    expect(report.mock.calls.map(([err, context]) => `${context.endpoint}:${err.message}`)).toEqual([
+      'gemini:entitlement_gate_row_read_failed',
+      'tts:entitlement_gate_row_read_failed',
+      'gemini:entitlement_gate_reconcile_failed',
+    ]);
+    expect(log).toHaveBeenCalledTimes(4);
   });
 });

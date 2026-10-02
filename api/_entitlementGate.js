@@ -14,7 +14,26 @@ export const SUBSCRIPTION_REQUIRED_CODE = 'subscription_required';
 // last_synced_at is a recent negative verification.
 export const NEGATIVE_RECHECK_TTL_MS = 3 * 60 * 1000;
 
+// Sentry gets at most one fail-open report per (endpoint, code) in this window,
+// per function instance. The structured log line is written every time.
+export const REPORT_THROTTLE_WINDOW_MS = 60 * 1000;
+
 const ROW_COLUMNS = 'active, access_expires_at, last_synced_at';
+
+const lastFailOpenReport = new Map();
+
+// Tests only.
+export function resetReportThrottleForTests() {
+  lastFailOpenReport.clear();
+}
+
+function shouldReport(endpoint, code, nowMs) {
+  const key = `${endpoint}:${code}`;
+  const last = lastFailOpenReport.get(key);
+  if (last !== undefined && nowMs - last >= 0 && nowMs - last < REPORT_THROTTLE_WINDOW_MS) return false;
+  lastFailOpenReport.set(key, nowMs);
+  return true;
+}
 
 // Only the exact string "on" enables blocking. Unset or anything else is OFF.
 export function isEnforcementOn(env = process.env) {
@@ -100,6 +119,7 @@ export async function enforceEntitlement(req, res, {
     log('entitlement.check_failed', {
       endpoint, userId, code, enforcement: enforcementOn ? 'on' : 'off', requestId, ...extra,
     });
+    if (!shouldReport(endpoint, code, now().getTime())) return false;
     try {
       await report(new Error(code), {
         area: 'entitlement-gate', code, endpoint, userId, requestId,

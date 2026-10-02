@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { enforceMinimumVersion } from './_appVersion.js';
 import { applyCorsHeaders } from './_cors.js';
+import { enforceEntitlement } from './_entitlementGate.js';
 import { checkIpAbuseLimit, checkUserMinuteLimit, consumeDailyQuota } from './_rateLimit.js';
 import { reportError } from './_sentry.js';
 
@@ -189,6 +190,9 @@ export default async function handler(req, res) {
   const userId = userData.user.id;
 
   if (!(await checkUserMinuteLimit(res, { endpoint: 'gemini', userId, paid: true }))) return;
+  if (await enforceEntitlement(req, res, {
+    admin: supabaseAdmin, userId, endpoint: 'gemini', requestId: null,
+  })) return;
 
   const contentLength = Number(req.headers['content-length'] || 0);
   if (contentLength > MAX_BODY_BYTES) {

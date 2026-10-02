@@ -746,7 +746,10 @@ function expectAgeIneligible(res, admin, fieldAge) {
   });
   expect(res.body.fields.age).toBe(fieldAge);
   expect(admin.calls.rpc).toHaveLength(0);
-  expect(admin.calls.from.every(({ table }) => table === 'profiles')).toBe(true);
+  // The entitlement gate reads user_entitlements before the profile lookup.
+  expect(admin.calls.from.every(({ table }) => (
+    table === 'profiles' || table === 'user_entitlements'
+  ))).toBe(true);
   expect(admin.calls.from.some(({ table }) => (
     table === 'workout_plans' || table === 'nutrition_plans'
   ))).toBe(false);

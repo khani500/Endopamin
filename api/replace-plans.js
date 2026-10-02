@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { enforceMinimumVersion } from './_appVersion.js';
 import { applyCorsHeaders } from './_cors.js';
+import { enforceEntitlement } from './_entitlementGate.js';
 import { checkIpAbuseLimit, checkUserMinuteLimit } from './_rateLimit.js';
 import { reportError, reportMessage } from './_sentry.js';
 import { classifyStoredAge } from '../src/lib/adultAge.js';
@@ -537,6 +538,9 @@ export async function handleRequest(req, res, requestId, deps = {}) {
   const userId = userData.user.id;
 
   if (!(await checkUserMinuteLimit(res, { endpoint: 'replace-plans', userId, requestId }))) return;
+  if (await enforceEntitlement(req, res, {
+    admin, userId, endpoint: 'replace-plans', requestId,
+  })) return;
 
   const validated = validatePlanRequest(req.body);
   if (validated.error) {

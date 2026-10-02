@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { enforceMinimumVersion } from './_appVersion.js';
 import { applyCorsHeaders } from './_cors.js';
+import { enforceEntitlement } from './_entitlementGate.js';
 import { checkIpAbuseLimit, checkUserMinuteLimit, consumeDailyQuota } from './_rateLimit.js';
 
 const MAX_TEXT_CHARS = 5000;
@@ -67,6 +68,9 @@ export default async function handler(req, res) {
   const userId = userData.user.id;
 
   if (!(await checkUserMinuteLimit(res, { endpoint: 'tts', userId, paid: true }))) return;
+  if (await enforceEntitlement(req, res, {
+    admin: supabaseAdmin, userId, endpoint: 'tts', requestId: null,
+  })) return;
 
   const TTS_API_KEY = process.env.VITE_GOOGLE_TTS_API_KEY
     || process.env.GOOGLE_TTS_API_KEY
