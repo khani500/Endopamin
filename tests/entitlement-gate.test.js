@@ -8,15 +8,20 @@ vi.mock('../api/_sentry.js', () => ({
 const {
   ENFORCEMENT_ENV,
   NEGATIVE_RECHECK_TTL_MS,
+  POSITIVE_RECHECK_TTL_MS,
   REPORT_THROTTLE_WINDOW_MS,
+  REVALIDATE_COOLDOWN_MS,
+  REVALIDATE_TIMEOUT_MS,
   decideFromRow,
   enforceEntitlement,
   isEnforcementOn,
   resetReportThrottleForTests,
+  resetRevalidateCooldownForTests,
 } = await import('../api/_entitlementGate.js');
 
 beforeEach(() => {
   resetReportThrottleForTests();
+  resetRevalidateCooldownForTests();
 });
 
 const NOW = new Date('2026-10-02T12:00:00Z');
@@ -79,12 +84,13 @@ function fakeAdmin({ row = null, error = null, throws = false } = {}) {
 async function run({
   mode, admin = fakeAdmin(), headers = VERSION_HEADERS, reconcileResult, reconcileThrows = false,
   endpoint = 'gemini', now = NOW, log = vi.fn(), report = vi.fn().mockResolvedValue(undefined),
+  reconcileImpl, setTimer, clearTimer,
 } = {}) {
   const res = fakeRes();
-  const reconcile = vi.fn(async () => {
+  const reconcile = vi.fn(reconcileImpl ?? (async () => {
     if (reconcileThrows) throw new Error('boom');
     return reconcileResult;
-  });
+  }));
   const sent = await enforceEntitlement({ headers }, res, {
     admin,
     userId: USER,
@@ -96,6 +102,8 @@ async function run({
       reconcile,
       report,
       log,
+      ...(setTimer ? { setTimer } : {}),
+      ...(clearTimer ? { clearTimer } : {}),
     },
   });
   return {
@@ -145,6 +153,21 @@ describe('decideFromRow', () => {
       .toEqual({ action: 'allow', rowState: 'effective' });
     expect(decideFromRow({ row: LIFETIME_ROW, now: NOW, enforcementOn }))
       .toEqual({ action: 'allow', rowState: 'effective' });
+  });
+
+  it.each([true, false])('positive TTL boundary and stale lifetime row (enforcementOn=%s)', (enforcementOn) => {
+    const effective = (lastSyncedAt) => ({ ...EFFECTIVE_ROW, last_synced_at: lastSyncedAt });
+    const decide = (row) => decideFromRow({ row, now: NOW, enforcementOn });
+    expect(POSITIVE_RECHECK_TTL_MS).toBe(DAY_MS);
+    expect(decide(effective(iso(-(POSITIVE_RECHECK_TTL_MS - 1)))))
+      .toEqual({ action: 'allow', rowState: 'effective' });
+    expect(decide(effective(iso(-POSITIVE_RECHECK_TTL_MS))))
+      .toEqual({ action: 'revalidate', rowState: 'effective' });
+    expect(decide({ ...LIFETIME_ROW, last_synced_at: iso(-POSITIVE_RECHECK_TTL_MS) }))
+      .toEqual({ action: 'revalidate', rowState: 'effective' });
+    for (const lastSyncedAt of [null, 'not a date', iso(60000)]) {
+      expect(decide(effective(lastSyncedAt)).action).toBe('revalidate');
+    }
   });
 
   it.each([
@@ -372,5 +395,124 @@ describe('enforceEntitlement: Sentry throttle on fail open', () => {
       'gemini:entitlement_gate_reconcile_failed',
     ]);
     expect(log).toHaveBeenCalledTimes(4);
+  });
+});
+
+describe('enforceEntitlement: stale effective row is re-verified', () => {
+  const STALE_EFFECTIVE_ROW = { ...EFFECTIVE_ROW, last_synced_at: iso(-POSITIVE_RECHECK_TTL_MS - 60000) };
+  const staleAdmin = () => fakeAdmin({ row: STALE_EFFECTIVE_ROW });
+  const at = (offsetMs) => new Date(NOW.getTime() + offsetMs);
+  const ACTIVE = { ok: true, active: true, accessExpiresAt: iso(30 * DAY_MS) };
+  const INACTIVE = { ok: true, active: false, accessExpiresAt: null };
+  const REVALIDATE_FIELDS = {
+    endpoint: 'gemini',
+    userId: USER,
+    rowState: 'effective',
+    verified: 'revalidate',
+    result: 'inactive',
+    clientHeaders: 'present',
+    platform: 'ios',
+    version: '1.0.3',
+    build: '13',
+    requestId: REQUEST_ID,
+  };
+
+  // Hands the gate a timer that fires only when the test says so.
+  function manualTimer() {
+    const timer = { fire: null, setTimer: vi.fn(), clearTimer: vi.fn() };
+    timer.setTimer.mockImplementation((fn, ms) => {
+      timer.fire = fn;
+      timer.ms = ms;
+      return 'timer-1';
+    });
+    return timer;
+  }
+
+  it.each([undefined, 'on'])('mode %j: still active -> allow, timer cleared, no log', async (mode) => {
+    const timer = manualTimer();
+    const admin = staleAdmin();
+    const outcome = await run({
+      mode, admin, reconcileResult: ACTIVE, setTimer: timer.setTimer, clearTimer: timer.clearTimer,
+    });
+    expectAllowed(outcome);
+    expect(outcome.reconcile).toHaveBeenCalledTimes(1);
+    expect(outcome.reconcile).toHaveBeenCalledWith(admin, USER, { source: 'app_sync' });
+    expect(timer.ms).toBe(REVALIDATE_TIMEOUT_MS);
+    expect(timer.clearTimer).toHaveBeenCalledWith('timer-1');
+    expect(outcome.log).not.toHaveBeenCalled();
+    expect(outcome.report).not.toHaveBeenCalled();
+  });
+
+  it('ON + now inactive -> 402 and a blocked log verified by revalidate', async () => {
+    const outcome = await run({ mode: 'on', admin: staleAdmin(), reconcileResult: INACTIVE });
+    expectBlocked(outcome);
+    expect(outcome.log).toHaveBeenCalledTimes(1);
+    expect(outcome.log).toHaveBeenCalledWith('entitlement.blocked', REVALIDATE_FIELDS);
+  });
+
+  it('OFF + now inactive -> allow and a would_block log verified by revalidate', async () => {
+    const outcome = await run({ mode: undefined, admin: staleAdmin(), reconcileResult: INACTIVE });
+    expectAllowed(outcome);
+    expect(outcome.reconcile).toHaveBeenCalledTimes(1);
+    expect(outcome.log).toHaveBeenCalledTimes(1);
+    expect(outcome.log).toHaveBeenCalledWith('entitlement.would_block', REVALIDATE_FIELDS);
+  });
+
+  it.each([
+    ['{ ok: false } (includes 404 while active)', { reconcileResult: { ok: false } }, 'entitlement_gate_revalidate_failed'],
+    ['skipped', { reconcileResult: { skipped: 'no_profile' } }, 'entitlement_gate_revalidate_skipped'],
+    ['throws', { reconcileThrows: true }, 'entitlement_gate_revalidate_threw'],
+  ])('ON + reconcile %s -> allow and report its own code', async (_label, setup, code) => {
+    const outcome = await run({ mode: 'on', admin: staleAdmin(), ...setup });
+    expectAllowed(outcome);
+    expect(outcome.report).toHaveBeenCalledTimes(1);
+    expect(outcome.report).toHaveBeenCalledWith(
+      expect.objectContaining({ message: code }),
+      expect.objectContaining({ area: 'entitlement-gate', code, endpoint: 'gemini' }),
+    );
+    expect(outcome.log).toHaveBeenCalledWith('entitlement.check_failed', expect.objectContaining({
+      code, rowState: 'effective',
+    }));
+  });
+
+  it('timeout -> allow with the timeout code; a later rejection is handled', async () => {
+    const unhandled = [];
+    const onUnhandled = (reason) => unhandled.push(reason);
+    process.on('unhandledRejection', onUnhandled);
+    try {
+      const timer = manualTimer();
+      let rejectLate;
+      const reconcileImpl = () => new Promise((_resolve, reject) => {
+        rejectLate = reject;
+        Promise.resolve().then(() => timer.fire());
+      });
+      const outcome = await run({
+        mode: 'on', admin: staleAdmin(), reconcileImpl, setTimer: timer.setTimer, clearTimer: timer.clearTimer,
+      });
+      expectAllowed(outcome);
+      expect(outcome.report).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'entitlement_gate_revalidate_timeout' }),
+        expect.anything(),
+      );
+
+      rejectLate(new Error('late'));
+      await new Promise((resolve) => { setTimeout(resolve, 0); });
+      expect(unhandled).toEqual([]);
+    } finally {
+      process.off('unhandledRejection', onUnhandled);
+    }
+  });
+
+  it('cooldown: a second request inside 10 minutes skips reconcile; after it, reconciles again', async () => {
+    expect(REVALIDATE_COOLDOWN_MS).toBe(10 * 60 * 1000);
+    const reconcileImpl = vi.fn(async () => ({ ok: false }));
+    const shared = { mode: 'on', reconcileImpl };
+
+    expectAllowed(await run({ ...shared, admin: staleAdmin() }));
+    expectAllowed(await run({ ...shared, admin: staleAdmin(), now: at(REVALIDATE_COOLDOWN_MS - 1) }));
+    expect(reconcileImpl).toHaveBeenCalledTimes(1);
+
+    expectAllowed(await run({ ...shared, admin: staleAdmin(), now: at(REVALIDATE_COOLDOWN_MS) }));
+    expect(reconcileImpl).toHaveBeenCalledTimes(2);
   });
 });

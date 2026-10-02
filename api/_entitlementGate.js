@@ -14,6 +14,20 @@ export const SUBSCRIPTION_REQUIRED_CODE = 'subscription_required';
 // last_synced_at is a recent negative verification.
 export const NEGATIVE_RECHECK_TTL_MS = 3 * 60 * 1000;
 
+// An effective row synced more recently than this is trusted as-is. An older
+// one (including a row with no expiry) is re-verified before it is trusted.
+export const POSITIVE_RECHECK_TTL_MS = 24 * 60 * 60 * 1000;
+
+// At most one re-verification attempt per user in this window, per function
+// instance, whatever its outcome. Inside the window the row is trusted.
+export const REVALIDATE_COOLDOWN_MS = 10 * 60 * 1000;
+
+// A re-verification slower than this lets the request through (fail open).
+export const REVALIDATE_TIMEOUT_MS = 2500;
+
+// The cooldown map is emptied when it reaches this size.
+export const REVALIDATE_COOLDOWN_MAX_ENTRIES = 5000;
+
 // Sentry gets at most one fail-open report per (endpoint, code) in this window,
 // per function instance. The structured log line is written every time.
 export const REPORT_THROTTLE_WINDOW_MS = 60 * 1000;
@@ -21,10 +35,26 @@ export const REPORT_THROTTLE_WINDOW_MS = 60 * 1000;
 const ROW_COLUMNS = 'active, access_expires_at, last_synced_at';
 
 const lastFailOpenReport = new Map();
+const lastRevalidateAttempt = new Map();
 
 // Tests only.
 export function resetReportThrottleForTests() {
   lastFailOpenReport.clear();
+}
+
+// Tests only.
+export function resetRevalidateCooldownForTests() {
+  lastRevalidateAttempt.clear();
+}
+
+function inRevalidateCooldown(userId, nowMs) {
+  const last = lastRevalidateAttempt.get(userId);
+  return last !== undefined && nowMs - last >= 0 && nowMs - last < REVALIDATE_COOLDOWN_MS;
+}
+
+function recordRevalidateAttempt(userId, nowMs) {
+  if (lastRevalidateAttempt.size >= REVALIDATE_COOLDOWN_MAX_ENTRIES) lastRevalidateAttempt.clear();
+  lastRevalidateAttempt.set(userId, nowMs);
 }
 
 function shouldReport(endpoint, code, nowMs) {
@@ -50,11 +80,12 @@ function rowStateOf(row, now) {
   return row.active === true ? 'expired' : 'inactive';
 }
 
-function syncedWithinTtl(row, now) {
+// A missing, unreadable or future last_synced_at is never fresh.
+function syncedWithinTtl(row, now, ttlMs) {
   const synced = new Date(row.last_synced_at).getTime();
   if (!Number.isFinite(synced)) return false;
   const age = now.getTime() - synced;
-  return age >= 0 && age < NEGATIVE_RECHECK_TTL_MS;
+  return age >= 0 && age < ttlMs;
 }
 
 /**
@@ -62,15 +93,20 @@ function syncedWithinTtl(row, now) {
  * row: the user's user_entitlements row ({ active, access_expires_at,
  * last_synced_at }) or null when there is none.
  * -> { action, rowState }
- *   action:   'allow' | 'would_block' | 'block' | 'reconcile'
+ *   action:   'allow' | 'revalidate' | 'would_block' | 'block' | 'reconcile'
  *   rowState: 'effective' | 'missing' | 'inactive' | 'expired'
+ * 'revalidate' (both modes): an effective row not synced within
+ * POSITIVE_RECHECK_TTL_MS.
  */
 export function decideFromRow({ row, now, enforcementOn } = {}) {
   const at = now instanceof Date ? now : new Date();
   const rowState = rowStateOf(row, at);
-  if (rowState === 'effective') return { action: 'allow', rowState };
+  if (rowState === 'effective') {
+    const fresh = syncedWithinTtl(row, at, POSITIVE_RECHECK_TTL_MS);
+    return { action: fresh ? 'allow' : 'revalidate', rowState };
+  }
   if (enforcementOn !== true) return { action: 'would_block', rowState };
-  if (rowState !== 'missing' && syncedWithinTtl(row, at)) return { action: 'block', rowState };
+  if (rowState !== 'missing' && syncedWithinTtl(row, at, NEGATIVE_RECHECK_TTL_MS)) return { action: 'block', rowState };
   return { action: 'reconcile', rowState };
 }
 
@@ -96,13 +132,38 @@ function sendSubscriptionRequired(res, requestId) {
   return true;
 }
 
+// -> { result } | { threw: true } | { timedOut: true }. Never rejects.
+// The race does not cancel reconcile: after a timeout it may still finish (and
+// write) or fail, but nothing waits for it. Its rejection is always handled.
+async function reconcileWithTimeout(reconcile, admin, userId, { setTimer, clearTimer }) {
+  let settled;
+  try {
+    settled = Promise.resolve(reconcile(admin, userId, { source: 'app_sync' }))
+      .then((result) => ({ result }), () => ({ threw: true }));
+  } catch {
+    return { threw: true };
+  }
+  let timer;
+  const timeout = new Promise((resolve) => {
+    timer = setTimer(() => resolve({ timedOut: true }), REVALIDATE_TIMEOUT_MS);
+  });
+  try {
+    return await Promise.race([settled, timeout]);
+  } finally {
+    clearTimer(timer);
+  }
+}
+
 /**
  * Handlers call, after the user is authenticated:
  *   if (await enforceEntitlement(req, res, { admin, userId, endpoint, requestId })) return;
  * Resolves true only when it sent the 402.
- * OFF (shadow mode): never blocks, never calls RevenueCat, never writes; logs
- * "entitlement.would_block" for a request that ON would not let straight through.
- * deps (tests only): { env, now, reconcile, report, log }.
+ * OFF (shadow mode): never blocks; logs "entitlement.would_block" for a request
+ * that ON would not let straight through. It never calls RevenueCat for a
+ * non-effective row, but it does re-verify a stale effective row (at most once
+ * per REVALIDATE_COOLDOWN_MS per user per instance), which calls RevenueCat and
+ * lets reconcileUser write.
+ * deps (tests only): { env, now, reconcile, report, log, setTimer, clearTimer }.
  */
 export async function enforceEntitlement(req, res, {
   admin, userId, endpoint, requestId, deps = {},
@@ -112,6 +173,8 @@ export async function enforceEntitlement(req, res, {
   const reconcile = deps.reconcile ?? reconcileUser;
   const report = deps.report ?? reportError;
   const log = deps.log ?? defaultLog;
+  const setTimer = deps.setTimer ?? setTimeout;
+  const clearTimer = deps.clearTimer ?? clearTimeout;
 
   const enforcementOn = isEnforcementOn(env);
 
@@ -146,6 +209,34 @@ export async function enforceEntitlement(req, res, {
   const { action, rowState } = decideFromRow({ row, now: now(), enforcementOn });
 
   if (action === 'allow') return false;
+
+  if (action === 'revalidate') {
+    const startMs = now().getTime();
+    if (inRevalidateCooldown(userId, startMs)) return false;
+    recordRevalidateAttempt(userId, startMs);
+
+    const outcome = await reconcileWithTimeout(reconcile, admin, userId, { setTimer, clearTimer });
+    if (outcome.timedOut) return failOpen('entitlement_gate_revalidate_timeout', { rowState });
+    if (outcome.threw) return failOpen('entitlement_gate_revalidate_threw', { rowState });
+    const { result } = outcome;
+    if (!result || result.ok !== true) {
+      const code = result?.skipped
+        ? 'entitlement_gate_revalidate_skipped'
+        : 'entitlement_gate_revalidate_failed';
+      return failOpen(code, { rowState });
+    }
+    if (result.active === true) return false;
+
+    const fields = {
+      endpoint, userId, rowState, verified: 'revalidate', result: 'inactive', ...clientFields(req), requestId,
+    };
+    if (!enforcementOn) {
+      log('entitlement.would_block', fields);
+      return false;
+    }
+    log('entitlement.blocked', fields);
+    return sendSubscriptionRequired(res, requestId);
+  }
 
   if (action === 'would_block') {
     log('entitlement.would_block', {

@@ -42,7 +42,7 @@ const NOW = new Date('2026-10-02T12:00:00Z');
 const DAY_MS = 86400000;
 const iso = (offsetMs) => new Date(NOW.getTime() + offsetMs).toISOString();
 
-const EFFECTIVE_ROW = { active: true, access_expires_at: iso(30 * DAY_MS), last_synced_at: iso(-DAY_MS) };
+const EFFECTIVE_ROW = { active: true, access_expires_at: iso(30 * DAY_MS), last_synced_at: iso(-60000) };
 const RECENT_INACTIVE_ROW = {
   active: false, access_expires_at: null, last_synced_at: iso(-(NEGATIVE_RECHECK_TTL_MS - 60000)),
 };
