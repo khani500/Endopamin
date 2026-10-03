@@ -106,7 +106,10 @@ function fakeRes() {
   };
 }
 
-function fakeAdmin({ gender = 'female', age = 28, userId = 'user-1', rpcError = null } = {}) {
+function fakeAdmin({
+  gender = 'female', age = 28, userId = 'user-1', rpcError = null, rpcData = null,
+  storedOperation = null, storedReadError = null,
+} = {}) {
   const calls = { rpc: [], from: [] };
   return {
     calls,
@@ -122,7 +125,15 @@ function fakeAdmin({ gender = 'female', age = 28, userId = 'user-1', rpcError = 
           return {
             eq() {
               return {
-                maybeSingle: async () => ({ data: { gender, age }, error: null }),
+                maybeSingle: async () => {
+                  // The replay-mismatch read of the stored operation label.
+                  if (table === 'workout_plans' && cols === 'operation') {
+                    if (storedReadError === 'throw') throw new Error('read exploded');
+                    if (storedReadError) return { data: null, error: storedReadError };
+                    return { data: { operation: storedOperation }, error: null };
+                  }
+                  return { data: { gender, age }, error: null };
+                },
               };
             },
           };
@@ -145,7 +156,7 @@ function fakeAdmin({ gender = 'female', age = 28, userId = 'user-1', rpcError = 
       calls.rpc.push({ name, args });
       if (rpcError) return { data: null, error: rpcError };
       return {
-        data: { workout_plan_id: 'wp-1', nutrition_plan_id: null, replayed: false },
+        data: rpcData || { workout_plan_id: 'wp-1', nutrition_plan_id: null, replayed: false },
         error: null,
       };
     },
@@ -154,8 +165,11 @@ function fakeAdmin({ gender = 'female', age = 28, userId = 'user-1', rpcError = 
 
 async function postReplace(payload, {
   gender = 'female', age = 28, useRealReportMessage = false, rpcError = null,
+  rpcData = null, storedOperation = null, storedReadError = null,
 } = {}) {
-  const admin = fakeAdmin({ gender, age, rpcError });
+  const admin = fakeAdmin({
+    gender, age, rpcError, rpcData, storedOperation, storedReadError,
+  });
   const res = fakeRes();
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
   const info = vi.spyOn(console, 'info').mockImplementation(() => {});
@@ -367,6 +381,7 @@ describe('handleRequest stored and RPC shape', () => {
       'p_workout_plan_data',
       'p_nutrition_plan_data',
       'p_expected_safety_fingerprint',
+      'p_operation',
     ]);
     expect(rpcArgs).not.toHaveProperty('planSchemaVersion');
     expect(JSON.stringify(rpcArgs)).not.toContain('planSchemaVersion');
@@ -594,6 +609,7 @@ describe('handleRequest S1b telemetry', () => {
       userId: 'user-1',
       attemptId: ATTEMPT_ID,
       planSchemaVersion: PLAN_SCHEMA_VERSION,
+      operation: 'legacy',
     });
     expect(admin.calls.rpc[0].args.p_workout_plan_data).toEqual({
       coachId: 'aria',
@@ -626,7 +642,7 @@ describe('handleRequest S1c contract-version telemetry', () => {
     expect(reportMessage.mock.calls[0][0]).toBe(PLAN_SAVE_OK_EVENT);
     expect(reportMessage.mock.calls[0][0]).toBe('replace-plans ok');
     expect(reportMessage.mock.calls[0][1]).toBe('info');
-    expect(reportMessage.mock.calls[0][2]).toEqual({ planSchemaVersion: 1 });
+    expect(reportMessage.mock.calls[0][2]).toEqual({ planSchemaVersion: 1, operation: 'legacy' });
     expect(reportMessage.mock.calls[0][2]).not.toHaveProperty('userId');
     expect(reportMessage.mock.calls[0][2]).not.toHaveProperty('attemptId');
     expect(reportMessage.mock.calls[0][2]).not.toHaveProperty('requestId');
@@ -644,6 +660,7 @@ describe('handleRequest S1c contract-version telemetry', () => {
     expect(reportMessage.mock.calls[0][1]).toBe('info');
     expect(reportMessage.mock.calls[0][2]).toEqual({
       planSchemaVersion: PLAN_SCHEMA_VERSION_ABSENT,
+      operation: 'legacy',
     });
     expect(reportMessage.mock.calls[0][2].planSchemaVersion).toBe('legacy');
   });
@@ -731,7 +748,7 @@ describe('handleRequest S1c contract-version telemetry', () => {
     expect(reportMessage.mock.calls[0][1]).toBe('warning');
     expect(reportMessage.mock.calls[1][0]).toBe(PLAN_SAVE_OK_EVENT);
     expect(reportMessage.mock.calls[1][1]).toBe('info');
-    expect(reportMessage.mock.calls[1][2]).toEqual({ planSchemaVersion: 1 });
+    expect(reportMessage.mock.calls[1][2]).toEqual({ planSchemaVersion: 1, operation: 'legacy' });
     expect(reportMessage.mock.calls[0][0]).not.toBe(reportMessage.mock.calls[1][0]);
   });
 });
@@ -937,6 +954,205 @@ describe('handleRequest safety fingerprint token', () => {
       requestId: 'abcd1234',
     });
     expect(reconcileReads(admin)).toHaveLength(0);
+  });
+});
+
+describe('validatePlanRequest operation', () => {
+  it.each(['initial_setup', 'feedback_adjustment', 'safety_regeneration'])(
+    'passes %s through unchanged',
+    (operation) => {
+      const result = validate({ operation, expectedSafetyFingerprint: VALID_TOKEN });
+      expect(result.error).toBeUndefined();
+      expect(result.value.operation).toBe(operation);
+    },
+  );
+
+  it.each([['absent', undefined], ['null', null]])('treats %s as legacy null', (_label, operation) => {
+    const result = validate(operation === undefined ? {} : { operation });
+    expect(result.error).toBeUndefined();
+    expect(result.value.operation).toBeNull();
+  });
+
+  it.each([
+    ['unknown value', 'weekly_rollover'],
+    ['wrong case', 'Initial_Setup'],
+    ['empty string', ''],
+    ['number', 1],
+  ])('rejects %s with 400 on operation', (_label, operation) => {
+    expectFieldError(validate({ operation, expectedSafetyFingerprint: VALID_TOKEN }), 'operation');
+  });
+
+  it('rejects safety_regeneration without a token with 400 on expectedSafetyFingerprint', () => {
+    expectFieldError(validate({ operation: 'safety_regeneration' }), 'expectedSafetyFingerprint');
+  });
+});
+
+describe('handleRequest operation', () => {
+  it('sends p_operation null for a legacy body and the declared value otherwise', async () => {
+    const legacy = await postReplace(body());
+    expect(legacy.res.statusCode).toBe(200);
+    expect(legacy.admin.calls.rpc[0].args).toHaveProperty('p_operation', null);
+    vi.restoreAllMocks();
+
+    const declared = await postReplace(body({
+      operation: 'feedback_adjustment', expectedSafetyFingerprint: VALID_TOKEN,
+    }));
+    expect(declared.res.statusCode).toBe(200);
+    expect(declared.admin.calls.rpc[0].args.p_operation).toBe('feedback_adjustment');
+    expect(declared.reportMessage.mock.calls[0][2]).toEqual({
+      planSchemaVersion: 'legacy', operation: 'feedback_adjustment',
+    });
+    const ok = declared.info.mock.calls.find(([event]) => event === 'replace-plans ok');
+    expect(ok[1].operation).toBe('feedback_adjustment');
+  });
+
+  it('returns 400 for an unknown operation and does not call the RPC', async () => {
+    const { res, admin } = await postReplace(body({ operation: 'weekly_rollover' }));
+    expect(res.statusCode).toBe(400);
+    expect(res.body.field).toBe('operation');
+    expect(admin.calls.rpc).toHaveLength(0);
+  });
+
+  it('maps 45414 with a valid DETAIL to 409 plan_adjustment_cooldown with nextAvailableAt', async () => {
+    const { res, admin } = await postReplace(body({
+      operation: 'feedback_adjustment', expectedSafetyFingerprint: VALID_TOKEN,
+    }), {
+      rpcError: { code: '45414', message: 'plan_adjustment_cooldown', details: '2026-10-09T14:03:07.123Z' },
+    });
+
+    expect(res.statusCode).toBe(409);
+    expect(res.body).toEqual({
+      error: 'Plan adjustment not available yet',
+      code: 'plan_adjustment_cooldown',
+      requestId: 'abcd1234',
+      nextAvailableAt: '2026-10-09T14:03:07.123Z',
+    });
+    expect(reconcileReads(admin)).toHaveLength(0);
+  });
+
+  it.each([
+    ['garbage', 'soon'],
+    ['impossible date', '2026-02-31T00:00:00.000Z'],
+    ['offset instead of Z', '2026-10-09T14:03:07.123+02:00'],
+    ['missing', undefined],
+  ])('maps 45414 with %s DETAIL to 409 without nextAvailableAt and warns', async (_label, details) => {
+    const { res, warn } = await postReplace(body({
+      operation: 'feedback_adjustment', expectedSafetyFingerprint: VALID_TOKEN,
+    }), {
+      rpcError: { code: '45414', message: 'plan_adjustment_cooldown', details },
+    });
+
+    expect(res.statusCode).toBe(409);
+    expect(res.body).toEqual({
+      error: 'Plan adjustment not available yet',
+      code: 'plan_adjustment_cooldown',
+      requestId: 'abcd1234',
+    });
+    expect(warn.mock.calls.some(([event]) => event === 'replace-plans cooldown without a valid nextAvailableAt'))
+      .toBe(true);
+  });
+
+  it('maps 45415 to 409 plan_operation_not_allowed', async () => {
+    const { res, admin } = await postReplace(body({
+      operation: 'initial_setup', expectedSafetyFingerprint: VALID_TOKEN,
+    }), {
+      rpcError: { code: '45415', message: 'plan_operation_not_allowed' },
+    });
+
+    expect(res.statusCode).toBe(409);
+    expect(res.body).toEqual({
+      error: 'This plan change is not allowed right now',
+      code: 'plan_operation_not_allowed',
+      requestId: 'abcd1234',
+    });
+    expect(reconcileReads(admin)).toHaveLength(0);
+  });
+
+  it('maps 22023 to 400 invalid_operation on field operation', async () => {
+    const { res } = await postReplace(body({
+      operation: 'initial_setup', expectedSafetyFingerprint: VALID_TOKEN,
+    }), {
+      rpcError: { code: '22023', message: 'plan_operation_unknown' },
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({
+      error: 'Unknown operation',
+      code: 'invalid_operation',
+      field: 'operation',
+      requestId: 'abcd1234',
+    });
+  });
+
+  it('maps through mapRpcError with the whole error or the code alone, never 429', () => {
+    expect(mapRpcError({ code: '45415' }).status).toBe(409);
+    expect(mapRpcError('45415').status).toBe(409);
+    expect(mapRpcError('45414')).toEqual({
+      status: 409, code: 'plan_adjustment_cooldown', error: 'Plan adjustment not available yet',
+    });
+    for (const code of ['45414', '45415', '22023']) {
+      expect(mapRpcError({ code }).status).not.toBe(429);
+    }
+  });
+});
+
+describe('handleRequest replay operation check', () => {
+  const REPLAYED = { workout_plan_id: 'wp-1', nutrition_plan_id: null, replayed: true };
+  const REPLAY_RESPONSE = { workoutPlanId: 'wp-1', nutritionPlanId: null, replayed: true };
+
+  function operationReads(admin) {
+    return admin.calls.from.filter(({ table, ops }) => (
+      table === 'workout_plans' && ops.some(({ cols }) => cols === 'operation')
+    ));
+  }
+
+  it('warns when the declared operation differs from the stored one and keeps the response', async () => {
+    const { res, warn, admin } = await postReplace(body({
+      operation: 'feedback_adjustment', expectedSafetyFingerprint: VALID_TOKEN,
+    }), { rpcData: REPLAYED, storedOperation: 'initial_setup' });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual(REPLAY_RESPONSE);
+    expect(operationReads(admin)).toHaveLength(1);
+    const mismatch = warn.mock.calls.find(([event]) => event === 'replace-plans replay operation mismatch');
+    expect(mismatch[1]).toEqual({
+      requestId: 'abcd1234', userId: 'user-1', declared: 'feedback_adjustment', stored: 'initial_setup',
+    });
+  });
+
+  it('does not warn when the stored operation matches', async () => {
+    const { res, warn } = await postReplace(body({
+      operation: 'initial_setup', expectedSafetyFingerprint: VALID_TOKEN,
+    }), { rpcData: REPLAYED, storedOperation: 'initial_setup' });
+
+    expect(res.body).toEqual(REPLAY_RESPONSE);
+    expect(warn.mock.calls.some(([event]) => event === 'replace-plans replay operation mismatch')).toBe(false);
+  });
+
+  it.each([
+    ['returns an error', { code: 'PGRST000', message: 'down' }],
+    ['throws', 'throw'],
+  ])('keeps the response when the stored read %s', async (_label, storedReadError) => {
+    const { res, warn } = await postReplace(body({
+      operation: 'feedback_adjustment', expectedSafetyFingerprint: VALID_TOKEN,
+    }), { rpcData: REPLAYED, storedReadError });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual(REPLAY_RESPONSE);
+    expect(warn.mock.calls.some(([event]) => event === 'replace-plans replay operation read failed')).toBe(true);
+  });
+
+  it('skips the read for a legacy replay and for a fresh save', async () => {
+    const legacy = await postReplace(body(), { rpcData: REPLAYED });
+    expect(legacy.res.body).toEqual(REPLAY_RESPONSE);
+    expect(operationReads(legacy.admin)).toHaveLength(0);
+    vi.restoreAllMocks();
+
+    const fresh = await postReplace(body({
+      operation: 'feedback_adjustment', expectedSafetyFingerprint: VALID_TOKEN,
+    }));
+    expect(fresh.res.body.replayed).toBe(false);
+    expect(operationReads(fresh.admin)).toHaveLength(0);
   });
 });
 

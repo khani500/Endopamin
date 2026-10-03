@@ -43,7 +43,21 @@ const ALLOWED_TOP_LEVEL = new Set([
   'workoutPlan',
   'nutritionPlan',
   'expectedSafetyFingerprint',
+  'operation',
 ]);
+
+// The client's declared intent for this save. The RPC proves it under its
+// per-user lock (migration C); the endpoint only checks the spelling.
+export const PLAN_OPERATIONS = new Set([
+  'initial_setup',
+  'feedback_adjustment',
+  'safety_regeneration',
+]);
+// Greppable log / Sentry tag when the client sent no operation.
+export const PLAN_OPERATION_ABSENT = 'legacy';
+
+// Server-computed next allowed adjustment time, from the RPC's 45414 DETAIL.
+const ISO_UTC_TIMESTAMP_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;
 
 // Optimistic concurrency token: the profiles.safety_fingerprint the client
 // read with the profile it generated the plan from. The RPC compares it with
@@ -315,6 +329,23 @@ export function validatePlanRequest(body, now = new Date()) {
     expectedSafetyFingerprint = body.expectedSafetyFingerprint;
   }
 
+  // TEMPORARY legacy compatibility: an absent operation is accepted so app
+  // builds that do not send one can still save (the RPC skips its gate).
+  // Make the operation mandatory once the new app build has shipped and the
+  // minimum version is enforced.
+  let operation = null;
+  if (body.operation !== undefined && body.operation !== null) {
+    if (typeof body.operation !== 'string' || !PLAN_OPERATIONS.has(body.operation)) {
+      return badRequest('operation', `Must be one of: ${[...PLAN_OPERATIONS].join(', ')}`);
+    }
+    operation = body.operation;
+  }
+  // Without a token the regenerated plan would be stored unverified, which
+  // would authorize another regeneration. The RPC refuses it too (45415).
+  if (operation === 'safety_regeneration' && expectedSafetyFingerprint === null) {
+    return badRequest('expectedSafetyFingerprint', 'Required when operation is safety_regeneration');
+  }
+
   const workout = validateWorkoutPlan(body.workoutPlan);
   if (workout.error) return workout;
 
@@ -336,6 +367,7 @@ export function validatePlanRequest(body, now = new Date()) {
       workoutPlan: workout.value,
       nutritionPlan: nutrition,
       expectedSafetyFingerprint,
+      operation,
     },
     // Signal + diagnostics only. Never copied into workoutPlan or RPC args.
     planSchemaVersion,
@@ -343,10 +375,46 @@ export function validatePlanRequest(body, now = new Date()) {
   };
 }
 
-// Exported for tests. A mapped `code` replaces the SQLSTATE in the response
-// body; mappings without one keep returning the SQLSTATE as before.
-export function mapRpcError(code) {
+// The 45414 DETAIL, only when it is a real ISO-8601 UTC timestamp. Returned
+// as sent; anything else is null and the caller omits it.
+export function parseNextAvailableAt(details) {
+  if (typeof details !== 'string' || !ISO_UTC_TIMESTAMP_RE.test(details)) return null;
+  const ms = Date.parse(details);
+  if (!Number.isFinite(ms)) return null;
+  // Round trip to the second, so '2026-02-31T…' is rejected, not rolled over.
+  if (new Date(ms).toISOString().slice(0, 19) !== details.slice(0, 19)) return null;
+  return details;
+}
+
+// Exported for tests. Takes the RPC error (or its SQLSTATE alone). A mapped
+// `code` replaces the SQLSTATE in the response body; mappings without one
+// keep returning the SQLSTATE as before. None of these is ever a 429: the app
+// retries 429s, and none of these refusals goes away on a retry.
+export function mapRpcError(errorOrCode) {
+  const isError = typeof errorOrCode === 'object' && errorOrCode !== null;
+  const code = isError ? errorOrCode.code : errorOrCode;
   switch (code) {
+    case '45414': {
+      const mapped = {
+        status: 409,
+        code: 'plan_adjustment_cooldown',
+        error: 'Plan adjustment not available yet',
+      };
+      const nextAvailableAt = parseNextAvailableAt(isError ? errorOrCode.details : null);
+      if (nextAvailableAt) mapped.nextAvailableAt = nextAvailableAt;
+      return mapped;
+    }
+    case '45415': return {
+      status: 409,
+      code: 'plan_operation_not_allowed',
+      error: 'This plan change is not allowed right now',
+    };
+    case '22023': return {
+      status: 400,
+      code: 'invalid_operation',
+      error: 'Unknown operation',
+      field: 'operation',
+    };
     case '45409': return { status: 409, error: 'Idempotency key reused with a different request shape' };
     case '45410': return { status: 409, error: 'Idempotency key already used by another write path' };
     case '45404': return { status: 401, error: 'Invalid or expired token' };
@@ -461,6 +529,41 @@ function createAdmin() {
 
 function schemaVersionMarker(planSchemaVersion) {
   return planSchemaVersion === undefined ? PLAN_SCHEMA_VERSION_ABSENT : planSchemaVersion;
+}
+
+function operationMarker(operation) {
+  return operation ?? PLAN_OPERATION_ABSENT;
+}
+
+// A replay is a pure read in the RPC and ignores the declared operation. A
+// different stored label means the client reused an attempt id across
+// operations; record it and change nothing. Never throws.
+async function warnOnReplayOperationMismatch(admin, {
+  requestId, userId, workoutPlanId, declared,
+}) {
+  try {
+    const { data, error } = await admin
+      .from('workout_plans')
+      .select('operation')
+      .eq('id', workoutPlanId)
+      .maybeSingle();
+    if (error) {
+      console.warn('replace-plans replay operation read failed', {
+        requestId, userId, code: error.code ?? null,
+      });
+      return;
+    }
+    const stored = data?.operation ?? null;
+    if (stored !== declared) {
+      console.warn('replace-plans replay operation mismatch', {
+        requestId, userId, declared, stored,
+      });
+    }
+  } catch (err) {
+    console.warn('replace-plans replay operation read failed', {
+      requestId, userId, message: err?.message ?? null,
+    });
+  }
 }
 
 function logUnknownExerciseKeys(requestId, unknownExerciseKeys, planSchemaVersion) {
@@ -598,11 +701,12 @@ export async function handleRequest(req, res, requestId, deps = {}) {
 
   const workoutPlanData = { coachId: input.coachId, days: input.workoutPlan.days, gender };
 
-  // p_expected_safety_fingerprint exists only after migration A
-  // (20260928140000_profile_safety_fingerprint.sql). Deploy this endpoint
-  // only AFTER migration A is applied: against the M4 function this named
-  // argument matches no signature and every save fails. Always sent; null
-  // when the client sent no token (temporary legacy compatibility).
+  // p_operation exists only after migration C
+  // (20261002120000_plan_operation_cooldown.sql), which is applied. This
+  // endpoint must never be deployed against the migration A catalog: there
+  // this named argument matches no signature and every save fails.
+  // p_expected_safety_fingerprint and p_operation are always sent; each is
+  // null when the client sent none (temporary legacy compatibility).
   const rpcArgs = {
     p_user_id: userId,
     p_client_attempt_id: input.clientAttemptId,
@@ -614,6 +718,7 @@ export async function handleRequest(req, res, requestId, deps = {}) {
     p_workout_plan_data: workoutPlanData,
     p_nutrition_plan_data: input.nutritionPlan,
     p_expected_safety_fingerprint: input.expectedSafetyFingerprint,
+    p_operation: input.operation,
   };
 
   const reconcileArgs = {
@@ -640,7 +745,7 @@ export async function handleRequest(req, res, requestId, deps = {}) {
   }
 
   if (error) {
-    const mapped = mapRpcError(error.code);
+    const mapped = mapRpcError(error);
     if (mapped) {
       console.warn('replace-plans mapped error', {
         requestId,
@@ -648,13 +753,24 @@ export async function handleRequest(req, res, requestId, deps = {}) {
         attemptId: input.clientAttemptId,
         code: error.code,
         status: mapped.status,
+        operation: operationMarker(input.operation),
       });
+      if (error.code === '45414' && !mapped.nextAvailableAt) {
+        console.warn('replace-plans cooldown without a valid nextAvailableAt', {
+          requestId,
+          userId,
+          details: typeof error.details === 'string' ? error.details.slice(0, 64) : null,
+        });
+      }
       // Mapped errors never reach the reconcile read, and never echo the SQL message.
-      return res.status(mapped.status).json({
+      const payload = {
         error: mapped.error,
         code: mapped.code ?? error.code,
         requestId,
-      });
+      };
+      if (mapped.field) payload.field = mapped.field;
+      if (mapped.nextAvailableAt) payload.nextAvailableAt = mapped.nextAvailableAt;
+      return res.status(mapped.status).json(payload);
     }
     console.error('replace-plans rpc error', {
       requestId,
@@ -668,8 +784,11 @@ export async function handleRequest(req, res, requestId, deps = {}) {
       table: error.table ?? null,
       column: error.column ?? null,
       schema: error.schema ?? null,
+      operation: operationMarker(input.operation),
     });
-    await reportError(error, { endpoint: 'replace-plans', stage: 'rpc', requestId });
+    await reportError(error, {
+      endpoint: 'replace-plans', stage: 'rpc', requestId, operation: operationMarker(input.operation),
+    });
     const recovered = await reconcilePlanWrite(admin, {
       ...reconcileArgs,
       reason: 'rpc-error',
@@ -697,14 +816,25 @@ export async function handleRequest(req, res, requestId, deps = {}) {
     userId,
     attemptId: input.clientAttemptId,
     planSchemaVersion: schemaVersionMarker(requestPlanSchemaVersion),
+    operation: operationMarker(input.operation),
   });
 
   await reportMessage(
     PLAN_SAVE_OK_EVENT,
     'info',
-    { planSchemaVersion: schemaVersionMarker(requestPlanSchemaVersion) },
+    {
+      planSchemaVersion: schemaVersionMarker(requestPlanSchemaVersion),
+      operation: operationMarker(input.operation),
+    },
     { requestId },
   );
+
+  // Logging only: the response below is the same whatever this finds.
+  if (row.replayed === true && input.operation !== null) {
+    await warnOnReplayOperationMismatch(admin, {
+      requestId, userId, workoutPlanId: row.workout_plan_id, declared: input.operation,
+    });
+  }
 
   return res.status(200).json({
     workoutPlanId: row.workout_plan_id,
