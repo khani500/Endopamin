@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
-import { enforceMinimumVersion } from './_appVersion.js';
+import { enforceMinimumVersion, readClientVersion } from './_appVersion.js';
 import { applyCorsHeaders } from './_cors.js';
 import { enforceEntitlement } from './_entitlementGate.js';
 import { checkIpAbuseLimit, checkUserMinuteLimit } from './_rateLimit.js';
@@ -31,6 +31,22 @@ const MAX_EXERCISES_PER_DAY = 20;
 const MAX_EXERCISES_TOTAL = 100;
 const MAX_EXERCISE_NAME_CHARS = 120;
 const MAX_TEXT_CHARS = 200;
+
+// Day i of a stored plan is exactly PLAN_WEEK_DAYS[i] (after trim, case-sensitive).
+export const PLAN_WEEK_DAYS = Object.freeze([
+  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+]);
+const DAY_TYPES = new Set(['training', 'rest']);
+const DAYS_PER_WEEK_MIN = 1;
+const DAYS_PER_WEEK_MAX = 7;
+
+export const PLAN_STRUCTURE_INVALID = 'plan_structure_invalid';
+export const DAYS_PER_WEEK_UNAVAILABLE = 'days_per_week_unavailable';
+const PLAN_STRUCTURE_INVALID_MESSAGE = 'Workout plan structure is invalid';
+const DAYS_PER_WEEK_UNAVAILABLE_MESSAGE = 'Profile training days per week is unavailable';
+// Fixed console / Sentry literal for every structure or days_per_week 422.
+// Never interpolate this string.
+export const STRUCTURE_REJECTED_EVENT = 'replace-plans structure-rejected';
 
 const ALLOWED_TOP_LEVEL = new Set([
   'clientAttemptId',
@@ -103,6 +119,19 @@ function badRequest(field, message) {
   return { error: { status: 400, field, message } };
 }
 
+// A structure refusal names the rule and the field path only, never content.
+function structureError(field, reason) {
+  return {
+    error: {
+      status: 422,
+      field,
+      message: PLAN_STRUCTURE_INVALID_MESSAGE,
+      code: PLAN_STRUCTURE_INVALID,
+      reason,
+    },
+  };
+}
+
 // Parses an ISO date as UTC midnight and confirms the round trip, so
 // '2026-02-31' is rejected rather than rolled forward.
 function parseIsoDate(value) {
@@ -151,6 +180,7 @@ function validateWorkoutPlan(plan) {
 
   const days = [];
   let total = 0;
+  let trainingDays = 0;
   const unknownExerciseKeys = [];
   const seenUnknown = new Set();
 
@@ -166,15 +196,24 @@ function validateWorkoutPlan(plan) {
 
     const day = cleanText(raw.day, MAX_TEXT_CHARS);
     if (day === null) return badRequest(`workoutPlan.days[${d}].day`, 'Must be a non-empty string');
+    if (day !== PLAN_WEEK_DAYS[d]) return structureError(`workoutPlan.days[${d}].day`, 'day-name');
     const type = cleanText(raw.type, MAX_TEXT_CHARS);
     if (type === null) return badRequest(`workoutPlan.days[${d}].type`, 'Must be a non-empty string');
+    if (!DAY_TYPES.has(type)) return structureError(`workoutPlan.days[${d}].type`, 'day-type');
     const focus = cleanText(raw.focus, MAX_TEXT_CHARS);
     if (focus === null) return badRequest(`workoutPlan.days[${d}].focus`, 'Must be a non-empty string');
 
     if (!Array.isArray(raw.exercises)) {
       return badRequest(`workoutPlan.days[${d}].exercises`, 'Must be an array');
     }
-    // A rest day is valid and may carry zero exercises. Emptiness is not an error.
+    // A rest day may carry zero or more exercises. A training day needs at
+    // least one; every exercise below must have a non-empty name.
+    if (type === 'training') {
+      if (raw.exercises.length === 0) {
+        return structureError(`workoutPlan.days[${d}].exercises`, 'empty-training-day');
+      }
+      trainingDays += 1;
+    }
     if (raw.exercises.length > MAX_EXERCISES_PER_DAY) {
       return badRequest(
         `workoutPlan.days[${d}].exercises`,
@@ -239,7 +278,7 @@ function validateWorkoutPlan(plan) {
     days.push({ day, type, focus, exercises });
   }
 
-  return { value: { days }, unknownExerciseKeys };
+  return { value: { days }, unknownExerciseKeys, trainingDays };
 }
 
 function validateNutritionPlan(plan) {
@@ -372,7 +411,32 @@ export function validatePlanRequest(body, now = new Date()) {
     // Signal + diagnostics only. Never copied into workoutPlan or RPC args.
     planSchemaVersion,
     unknownExerciseKeys: workout.unknownExerciseKeys,
+    // Compared with the profile's days_per_week by the handler, not here.
+    trainingDays: workout.trainingDays,
   };
+}
+
+// Exported for tests. Pure. Null when the plan's training-day count matches
+// the profile, otherwise the 422 error for the handler to send.
+export function checkDaysPerWeek(daysPerWeek, trainingDays) {
+  if (daysPerWeek === null || daysPerWeek === undefined) {
+    return {
+      error: {
+        status: 422, code: DAYS_PER_WEEK_UNAVAILABLE, reason: 'missing', field: 'days_per_week',
+      },
+    };
+  }
+  if (!Number.isInteger(daysPerWeek)
+      || daysPerWeek < DAYS_PER_WEEK_MIN
+      || daysPerWeek > DAYS_PER_WEEK_MAX) {
+    return {
+      error: {
+        status: 422, code: DAYS_PER_WEEK_UNAVAILABLE, reason: 'invalid', field: 'days_per_week',
+      },
+    };
+  }
+  if (trainingDays !== daysPerWeek) return structureError('workoutPlan.days', 'training-count');
+  return null;
 }
 
 // The 45414 DETAIL, only when it is a real ISO-8601 UTC timestamp. Returned
@@ -609,6 +673,69 @@ async function reportUnknownExerciseKeys(unknownExerciseKeys, planSchemaVersion)
   );
 }
 
+const CLIENT_PLATFORMS = new Set(['ios', 'android']);
+const CLIENT_VERSION_RE = /^\d{1,4}(\.\d{1,4}){0,3}$/;
+
+// Client headers are untrusted: only a known platform or a plain dotted
+// version is logged; anything else (or absence) is 'unknown'.
+function clientTags(req) {
+  const { platform, version } = readClientVersion(req);
+  return {
+    platform: CLIENT_PLATFORMS.has(platform) ? platform : 'unknown',
+    appVersion: typeof version === 'string' && CLIENT_VERSION_RE.test(version) ? version : 'unknown',
+  };
+}
+
+// The one response path for every structure / days_per_week 422. Logs the
+// rule and field path only: no user id, exercise names, or plan content.
+async function sendStructureRejection(req, res, requestId, error) {
+  const { platform, appVersion } = clientTags(req);
+  console.warn(STRUCTURE_REJECTED_EVENT, {
+    requestId, code: error.code, reason: error.reason, field: error.field, platform, appVersion,
+  });
+  await reportMessage(STRUCTURE_REJECTED_EVENT, 'warning', {
+    code: error.code, reason: error.reason, platform, appVersion,
+  });
+
+  if (error.code === DAYS_PER_WEEK_UNAVAILABLE) {
+    return res.status(error.status).json({
+      error: DAYS_PER_WEEK_UNAVAILABLE_MESSAGE,
+      code: error.code,
+      fields: { days_per_week: error.reason },
+      requestId,
+    });
+  }
+  return res.status(error.status).json({
+    error: error.message,
+    code: error.code,
+    reason: error.reason,
+    field: error.field,
+    requestId,
+  });
+}
+
+// True only when this user already saved this attempt: the RPC's replay
+// branch then returns the prior result, so the profile-dependent checks are
+// skipped. A read error or throw is false (the checks run: fail closed).
+async function attemptAlreadySaved(admin, { userId, attemptId, requestId }) {
+  try {
+    const { data, error } = await admin
+      .from('workout_plans')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('client_attempt_id', attemptId)
+      .maybeSingle();
+    if (error) {
+      console.warn('replace-plans attempt lookup failed', { requestId, code: error.code ?? null });
+      return false;
+    }
+    return Boolean(data?.id);
+  } catch (err) {
+    console.warn('replace-plans attempt lookup failed', { requestId, message: err?.message ?? null });
+    return false;
+  }
+}
+
 export async function handleRequest(req, res, requestId, deps = {}) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed', requestId });
@@ -646,6 +773,9 @@ export async function handleRequest(req, res, requestId, deps = {}) {
   })) return;
 
   const validated = validatePlanRequest(req.body);
+  if (validated.error?.code === PLAN_STRUCTURE_INVALID) {
+    return sendStructureRejection(req, res, requestId, validated.error);
+  }
   if (validated.error) {
     return res.status(validated.error.status).json({
       error: validated.error.message,
@@ -663,7 +793,7 @@ export async function handleRequest(req, res, requestId, deps = {}) {
   // a destructive archive path on read.
   const { data: profile, error: profileErr } = await admin
     .from('profiles')
-    .select('gender, age')
+    .select('gender, age, days_per_week')
     .eq('id', userId)
     .maybeSingle();
 
@@ -697,6 +827,16 @@ export async function handleRequest(req, res, requestId, deps = {}) {
       requestId,
       fields: { age: ageStatus },
     });
+  }
+
+  // The training-day count must match the profile, except for an attempt
+  // this user already saved: its replay returns the stored plan unchanged.
+  const alreadySaved = await attemptAlreadySaved(admin, {
+    userId, attemptId: input.clientAttemptId, requestId,
+  });
+  if (!alreadySaved) {
+    const countError = checkDaysPerWeek(profile?.days_per_week, validated.trainingDays);
+    if (countError) return sendStructureRejection(req, res, requestId, countError.error);
   }
 
   const workoutPlanData = { coachId: input.coachId, days: input.workoutPlan.days, gender };

@@ -16,13 +16,20 @@ vi.mock('@supabase/supabase-js', () => ({
     auth: { getUser: async () => ({ data: { user: { id: 'u1' } }, error: null }) },
     from(table) {
       return {
-        select: () => ({
-          eq: () => ({
-            maybeSingle: async () => (table === 'user_entitlements'
-              ? { data: db.entitlementRow, error: db.entitlementError }
-              : { data: { gender: 'female', age: 28 }, error: null }),
-          }),
-        }),
+        select: () => {
+          // Chainable: replace-plans looks up a saved attempt with two filters.
+          const query = {
+            eq: () => query,
+            maybeSingle: async () => {
+              if (table === 'user_entitlements') {
+                return { data: db.entitlementRow, error: db.entitlementError };
+              }
+              if (table === 'workout_plans') return { data: null, error: null };
+              return { data: { gender: 'female', age: 28, days_per_week: 6 }, error: null };
+            },
+          };
+          return query;
+        },
       };
     },
     async rpc(name, args) {
@@ -57,7 +64,7 @@ const ENV = {
 
 function planDays() {
   return Array.from({ length: 7 }, (_, index) => ({
-    day: `Day ${index + 1}`,
+    day: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][index],
     type: index === 6 ? 'rest' : 'training',
     focus: index === 6 ? 'Recovery' : 'Strength',
     exercises: index === 6 ? [] : [{

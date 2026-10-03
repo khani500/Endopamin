@@ -6,6 +6,7 @@ import {
   mapRpcError,
   PLAN_SAVE_OK_EVENT,
   PLAN_SCHEMA_VERSION,
+  STRUCTURE_REJECTED_EVENT,
   PLAN_SCHEMA_VERSION_ABSENT,
   UNKNOWN_EXERCISE_KEY_EVENT,
   UNKNOWN_EXERCISE_KEY_NAME_CAP,
@@ -43,9 +44,13 @@ function todayUtc() {
   return new Date().toISOString().slice(0, 10);
 }
 
+const WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+// days() and sevenDays() both carry six training days; the fake profile matches.
+const FIXTURE_DAYS_PER_WEEK = 6;
+
 function days(exerciseOverrides = {}) {
   return Array.from({ length: 7 }, (_, index) => ({
-    day: `Day ${index + 1}`,
+    day: WEEK[index],
     type: index === 6 ? 'rest' : 'training',
     focus: index === 6 ? 'Recovery' : 'Strength',
     exercises: index === 6
@@ -107,8 +112,9 @@ function fakeRes() {
 }
 
 function fakeAdmin({
-  gender = 'female', age = 28, userId = 'user-1', rpcError = null, rpcData = null,
-  storedOperation = null, storedReadError = null,
+  gender = 'female', age = 28, daysPerWeek = FIXTURE_DAYS_PER_WEEK, userId = 'user-1',
+  rpcError = null, rpcData = null, storedOperation = null, storedReadError = null,
+  attemptRow = null, attemptReadError = null,
 } = {}) {
   const calls = { rpc: [], from: [] };
   return {
@@ -117,26 +123,35 @@ function fakeAdmin({
       getUser: async () => ({ data: { user: { id: userId } }, error: null }),
     },
     from(table) {
-      const record = { table, ops: [] };
+      // beforeRpc separates the pre-RPC attempt lookup from the reconcile read,
+      // which selects the same columns after the RPC.
+      const record = { table, ops: [], beforeRpc: calls.rpc.length === 0 };
       calls.from.push(record);
       return {
         select(cols) {
           record.ops.push({ op: 'select', cols });
-          return {
-            eq() {
-              return {
-                maybeSingle: async () => {
-                  // The replay-mismatch read of the stored operation label.
-                  if (table === 'workout_plans' && cols === 'operation') {
-                    if (storedReadError === 'throw') throw new Error('read exploded');
-                    if (storedReadError) return { data: null, error: storedReadError };
-                    return { data: { operation: storedOperation }, error: null };
-                  }
-                  return { data: { gender, age }, error: null };
-                },
-              };
+          const query = {
+            eq(col, value) {
+              record.ops.push({ op: 'eq', col, value });
+              return query;
+            },
+            maybeSingle: async () => {
+              // The replay-mismatch read of the stored operation label.
+              if (table === 'workout_plans' && cols === 'operation') {
+                if (storedReadError === 'throw') throw new Error('read exploded');
+                if (storedReadError) return { data: null, error: storedReadError };
+                return { data: { operation: storedOperation }, error: null };
+              }
+              // The pre-RPC lookup of an attempt this user already saved.
+              if (table === 'workout_plans' && cols === 'id' && record.beforeRpc) {
+                if (attemptReadError === 'throw') throw new Error('lookup exploded');
+                if (attemptReadError) return { data: null, error: attemptReadError };
+                return { data: attemptRow, error: null };
+              }
+              return { data: { gender, age, days_per_week: daysPerWeek }, error: null };
             },
           };
+          return query;
         },
         insert() {
           record.ops.push({ op: 'insert' });
@@ -164,11 +179,13 @@ function fakeAdmin({
 }
 
 async function postReplace(payload, {
-  gender = 'female', age = 28, useRealReportMessage = false, rpcError = null,
-  rpcData = null, storedOperation = null, storedReadError = null,
+  gender = 'female', age = 28, daysPerWeek = FIXTURE_DAYS_PER_WEEK, useRealReportMessage = false,
+  rpcError = null, rpcData = null, storedOperation = null, storedReadError = null,
+  attemptRow = null, attemptReadError = null, headers = {},
 } = {}) {
   const admin = fakeAdmin({
-    gender, age, rpcError, rpcData, storedOperation, storedReadError,
+    gender, age, daysPerWeek, rpcError, rpcData, storedOperation, storedReadError,
+    attemptRow, attemptReadError,
   });
   const res = fakeRes();
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -183,7 +200,7 @@ async function postReplace(payload, {
   await handleRequest(
     {
       method: 'POST',
-      headers: { authorization: 'Bearer test-token', 'content-length': '128' },
+      headers: { authorization: 'Bearer test-token', 'content-length': '128', ...headers },
       body: { ...payload, weekStart: todayUtc() },
     },
     res,
@@ -201,12 +218,14 @@ function sentryCallsByMessage(reportMessage, message) {
   return reportMessage.mock.calls.filter(([event]) => event === message);
 }
 
+// A training day without a listed exercise gets one plain Plank, so the plan
+// stays valid and adds no unknown keys.
 function sevenDays(perDayExercises) {
   return Array.from({ length: 7 }, (_, index) => ({
-    day: `Day ${index + 1}`,
+    day: WEEK[index],
     type: index === 6 ? 'rest' : 'training',
     focus: index === 6 ? 'Recovery' : 'Strength',
-    exercises: perDayExercises[index] || [],
+    exercises: perDayExercises[index] || (index === 6 ? [] : [{ name: 'Plank' }]),
   }));
 }
 
@@ -557,7 +576,7 @@ describe('handleRequest S1b telemetry', () => {
     expect(sent).not.toContain('secret-value');
     expect(sent).not.toContain('/media/squat.mp4');
     expect(sent).not.toContain('user-1');
-    expect(sent).not.toContain('Day 1');
+    expect(sent).not.toContain('Monday');
     expect(sent).not.toContain('aria');
     expect(sent).not.toContain('female');
     expect(sent).not.toContain(ATTEMPT_ID);
@@ -687,7 +706,7 @@ describe('handleRequest S1c contract-version telemetry', () => {
 
     const sent = sentryPayload(reportMessage);
     expect(sent).not.toContain('Squat');
-    expect(sent).not.toContain('Day 1');
+    expect(sent).not.toContain('Monday');
     expect(sent).not.toContain('Strength');
     expect(sent).not.toContain('aria');
     expect(sent).not.toContain('female');
@@ -770,7 +789,8 @@ function expectAgeIneligible(res, admin, fieldAge) {
   expect(admin.calls.from.some(({ table }) => (
     table === 'workout_plans' || table === 'nutrition_plans'
   ))).toBe(false);
-  expect(admin.calls.from.flatMap(({ ops }) => ops).every(({ op }) => op === 'select')).toBe(true);
+  // Reads only: selects and their eq filters, never a write.
+  expect(admin.calls.from.flatMap(({ ops }) => ops).every(({ op }) => op === 'select' || op === 'eq')).toBe(true);
 }
 
 describe('handleRequest stored age gate', () => {
@@ -825,8 +845,11 @@ describe('handleRequest stored age gate', () => {
 
 const VALID_TOKEN = `v1:${'0123456789abcdef'.repeat(4)}`;
 
+// Post-RPC reads only: the pre-RPC attempt lookup is not a reconcile read.
 function reconcileReads(admin) {
-  return admin.calls.from.filter(({ table }) => table === 'workout_plans' || table === 'nutrition_plans');
+  return admin.calls.from.filter(({ table, beforeRpc }) => (
+    !beforeRpc && (table === 'workout_plans' || table === 'nutrition_plans')
+  ));
 }
 
 describe('mapRpcError', () => {
@@ -1286,5 +1309,164 @@ describe('handleRequest rate limits', () => {
       expect(res.statusCode).toBe(200);
       expect(admin.calls.rpc).toHaveLength(1);
     });
+  });
+});
+
+describe('plan day structure', () => {
+  const REPLAYED = { workout_plan_id: 'wp-1', nutrition_plan_id: null, replayed: true };
+
+  // Monday..Sunday with the first `training` days as training days.
+  function weekPlan(training) {
+    return WEEK.map((day, index) => (index < training
+      ? { day, type: 'training', focus: 'Strength', exercises: [{ name: 'Squat' }] }
+      : { day, type: 'rest', focus: 'Recovery', exercises: [] }));
+  }
+
+  function withDay(index, patch) {
+    const list = days();
+    list[index] = { ...list[index], ...patch };
+    return body({ workoutPlan: { days: list } });
+  }
+
+  function expectStructure422(res, admin, reason, field) {
+    expect(res.statusCode).toBe(422);
+    expect(res.body).toEqual({
+      error: 'Workout plan structure is invalid',
+      code: 'plan_structure_invalid',
+      reason,
+      field,
+      requestId: 'abcd1234',
+    });
+    expect(admin.calls.rpc).toHaveLength(0);
+    expect(reconcileReads(admin)).toHaveLength(0);
+  }
+
+  function attemptLookups(admin) {
+    return admin.calls.from.filter(({ table, beforeRpc, ops }) => (
+      table === 'workout_plans' && beforeRpc && ops.some(({ cols }) => cols === 'id')
+    ));
+  }
+
+  it.each([1, 7])('accepts days_per_week %i with a matching plan', async (n) => {
+    const { res, admin } = await postReplace(
+      body({ workoutPlan: { days: weekPlan(n) } }),
+      { daysPerWeek: n },
+    );
+    expect(res.statusCode).toBe(200);
+    expect(admin.calls.rpc).toHaveLength(1);
+  });
+
+  it("rejects 'Mon' with 422 day-name on workoutPlan.days[0].day and no RPC", async () => {
+    const { res, admin } = await postReplace(withDay(0, { day: 'Mon' }));
+    expectStructure422(res, admin, 'day-name', 'workoutPlan.days[0].day');
+  });
+
+  it('rejects valid day names in the wrong order with day-name', async () => {
+    const list = days();
+    [list[0], list[1]] = [{ ...list[1] }, { ...list[0] }];
+    const { res, admin } = await postReplace(body({ workoutPlan: { days: list } }));
+    expectStructure422(res, admin, 'day-name', 'workoutPlan.days[0].day');
+  });
+
+  it.each(['Training', 'active_recovery'])('rejects type %j with day-type', async (type) => {
+    const { res, admin } = await postReplace(withDay(2, { type }));
+    expectStructure422(res, admin, 'day-type', 'workoutPlan.days[2].type');
+  });
+
+  it('rejects a training day with no exercises as empty-training-day', async () => {
+    const { res, admin } = await postReplace(withDay(3, { exercises: [] }));
+    expectStructure422(res, admin, 'empty-training-day', 'workoutPlan.days[3].exercises');
+  });
+
+  it('accepts a rest day with exercises and a rest day with none', async () => {
+    const withWalk = await postReplace(withDay(6, { exercises: [{ name: 'Walk' }] }));
+    expect(withWalk.res.statusCode).toBe(200);
+    vi.restoreAllMocks();
+
+    const empty = await postReplace(body());
+    expect(empty.res.statusCode).toBe(200);
+    expect(empty.admin.calls.rpc).toHaveLength(1);
+  });
+
+  it('rejects a training-day count that differs from days_per_week, with no RPC', async () => {
+    const { res, admin } = await postReplace(body(), { daysPerWeek: 4 });
+    expectStructure422(res, admin, 'training-count', 'workoutPlan.days');
+  });
+
+  it.each([
+    [null, 'missing'],
+    [0, 'invalid'],
+    [8, 'invalid'],
+  ])('returns 422 days_per_week_unavailable when the profile value is %j', async (daysPerWeek, status) => {
+    const { res, admin } = await postReplace(body(), { daysPerWeek });
+    expect(res.statusCode).toBe(422);
+    expect(res.body).toEqual({
+      error: 'Profile training days per week is unavailable',
+      code: 'days_per_week_unavailable',
+      fields: { days_per_week: status },
+      requestId: 'abcd1234',
+    });
+    expect(admin.calls.rpc).toHaveLength(0);
+  });
+
+  it('replays an attempt this user already saved even after days_per_week changed', async () => {
+    const { res, admin } = await postReplace(body(), {
+      daysPerWeek: 3, attemptRow: { id: 'wp-1' }, rpcData: REPLAYED,
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ workoutPlanId: 'wp-1', nutritionPlanId: null, replayed: true });
+    expect(admin.calls.rpc).toHaveLength(1);
+  });
+
+  it('looks the attempt up by both user_id and client_attempt_id, and checks when no row', async () => {
+    const { res, admin } = await postReplace(body(), { daysPerWeek: 4 });
+    const lookups = attemptLookups(admin);
+    expect(lookups).toHaveLength(1);
+    expect(lookups[0].ops.filter(({ op }) => op === 'eq')).toEqual([
+      { op: 'eq', col: 'user_id', value: 'user-1' },
+      { op: 'eq', col: 'client_attempt_id', value: ATTEMPT_ID },
+    ]);
+    expectStructure422(res, admin, 'training-count', 'workoutPlan.days');
+  });
+
+  it.each([
+    ['returns an error', { code: 'PGRST000', message: 'down' }],
+    ['throws', 'throw'],
+  ])('still runs the checks when the attempt lookup %s', async (_label, attemptReadError) => {
+    const { res, admin } = await postReplace(body(), {
+      daysPerWeek: 4, attemptReadError, attemptRow: { id: 'wp-1' },
+    });
+    expectStructure422(res, admin, 'training-count', 'workoutPlan.days');
+  });
+
+  it('logs and reports only code, reason, field, platform and app version', async () => {
+    const { warn, reportMessage } = await postReplace(
+      withDay(0, { exercises: [{ name: 'Secret Lift' }], focus: 'Private Focus' }),
+      {
+        daysPerWeek: 4,
+        headers: { 'x-endopamin-platform': 'ios', 'x-endopamin-app-version': '1.0.2' },
+      },
+    );
+
+    const logged = warn.mock.calls.filter(([event]) => event === STRUCTURE_REJECTED_EVENT);
+    expect(logged).toEqual([[STRUCTURE_REJECTED_EVENT, {
+      requestId: 'abcd1234',
+      code: 'plan_structure_invalid',
+      reason: 'training-count',
+      field: 'workoutPlan.days',
+      platform: 'ios',
+      appVersion: '1.0.2',
+    }]]);
+    expect(reportMessage.mock.calls).toEqual([[STRUCTURE_REJECTED_EVENT, 'warning', {
+      code: 'plan_structure_invalid',
+      reason: 'training-count',
+      platform: 'ios',
+      appVersion: '1.0.2',
+    }]]);
+    const sent = JSON.stringify([logged, reportMessage.mock.calls]);
+    for (const secret of ['user-1', ATTEMPT_ID, 'Secret Lift', 'Squat', 'Private Focus', 'Monday', 'aria', 'female']) {
+      expect(sent).not.toContain(secret);
+    }
+    expect(sentryCallsByMessage(reportMessage, PLAN_SAVE_OK_EVENT)).toHaveLength(0);
   });
 });
