@@ -1,3 +1,9 @@
+-- SUPERSEDED after 20261002120000_plan_operation_cooldown.sql (migration C)
+-- is applied: use VERIFY_plan_operation_cooldown.sql instead. Step 3 below
+-- expects the ten-argument RPC with migration A's body and fails against
+-- migration C's eleven-argument function. Steps 6-9 call the RPC without
+-- p_operation (legacy path), which migration C still accepts.
+--
 -- NOT A MIGRATION. Scratch verification only. Do not apply with
 -- supabase db push / migration up. The filename has no timestamp on
 -- purpose. Do not run this from the task that authored it.
