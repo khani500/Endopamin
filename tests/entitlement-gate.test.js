@@ -251,6 +251,16 @@ describe('enforceEntitlement: OFF (shadow mode)', () => {
 });
 
 describe('enforceEntitlement: ON', () => {
+  function manualTimer() {
+    const timer = { fire: null, setTimer: vi.fn(), clearTimer: vi.fn() };
+    timer.setTimer.mockImplementation((fn, ms) => {
+      timer.fire = fn;
+      timer.ms = ms;
+      return 'reconcile-timer';
+    });
+    return timer;
+  }
+
   it.each([
     ['inactive', inactiveRow(RECENT_SYNC)],
     ['expired', expiredRow(RECENT_SYNC)],
@@ -304,6 +314,75 @@ describe('enforceEntitlement: ON', () => {
     });
     expectAllowed(outside);
     expect(outside.reconcile).toHaveBeenCalledTimes(1);
+  });
+
+  it('reconcile timeout allows the request and reports its distinct code', async () => {
+    const timer = manualTimer();
+    const reconcileImpl = () => new Promise(() => {
+      Promise.resolve().then(() => timer.fire());
+    });
+    const outcome = await run({
+      mode: 'on', reconcileImpl, setTimer: timer.setTimer, clearTimer: timer.clearTimer,
+    });
+    expectAllowed(outcome);
+    expect(timer.ms).toBe(REVALIDATE_TIMEOUT_MS);
+    expect(outcome.log).toHaveBeenCalledWith('entitlement.check_failed', expect.objectContaining({
+      code: 'entitlement_gate_reconcile_timeout', rowState: 'missing',
+    }));
+    expect(outcome.report).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'entitlement_gate_reconcile_timeout' }),
+      expect.anything(),
+    );
+  });
+
+  it('late reconcile completion keeps its side effect; a late rejection is handled', async () => {
+    const unhandled = [];
+    const onUnhandled = (reason) => unhandled.push(reason);
+    process.on('unhandledRejection', onUnhandled);
+    try {
+      const timer = manualTimer();
+      const writes = [];
+      let finishLate;
+      const reconcileImpl = () => new Promise((resolve) => {
+        finishLate = () => { writes.push('projection updated'); resolve({ ok: true, active: true }); };
+        Promise.resolve().then(() => timer.fire());
+      });
+      expectAllowed(await run({
+        mode: 'on', reconcileImpl, setTimer: timer.setTimer, clearTimer: timer.clearTimer,
+      }));
+      expect(writes).toEqual([]);
+      finishLate();
+      await Promise.resolve();
+      expect(writes).toEqual(['projection updated']);
+
+      const rejectTimer = manualTimer();
+      let rejectLate;
+      const rejectingReconcile = () => new Promise((_resolve, reject) => {
+        rejectLate = reject;
+        Promise.resolve().then(() => rejectTimer.fire());
+      });
+      expectAllowed(await run({
+        mode: 'on', reconcileImpl: rejectingReconcile,
+        setTimer: rejectTimer.setTimer, clearTimer: rejectTimer.clearTimer,
+      }));
+      rejectLate(new Error('late'));
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(unhandled).toEqual([]);
+    } finally {
+      process.off('unhandledRejection', onUnhandled);
+    }
+  });
+
+  it('clears the reconcile timer when an active result arrives first', async () => {
+    const timer = manualTimer();
+    const outcome = await run({
+      mode: 'on', reconcileResult: { ok: true, active: true, accessExpiresAt: iso(DAY_MS) },
+      setTimer: timer.setTimer, clearTimer: timer.clearTimer,
+    });
+    expectAllowed(outcome);
+    expect(timer.ms).toBe(REVALIDATE_TIMEOUT_MS);
+    expect(timer.clearTimer).toHaveBeenCalledWith('reconcile-timer');
   });
 });
 

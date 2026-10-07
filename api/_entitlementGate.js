@@ -246,13 +246,13 @@ export async function enforceEntitlement(req, res, {
   }
 
   if (action === 'reconcile') {
-    let result;
-    try {
-      // 'app_sync' is one of the two sources the table's CHECK allows.
-      result = await reconcile(admin, userId, { source: 'app_sync' });
-    } catch {
+    // 'app_sync' is one of the two sources the table's CHECK allows.
+    const outcome = await reconcileWithTimeout(reconcile, admin, userId, { setTimer, clearTimer });
+    if (outcome.timedOut) return failOpen('entitlement_gate_reconcile_timeout', { rowState });
+    if (outcome.threw) {
       return failOpen('entitlement_gate_reconcile_threw', { rowState });
     }
+    const { result } = outcome;
     if (!result || result.ok !== true) {
       const code = result?.skipped
         ? 'entitlement_gate_reconcile_skipped'
