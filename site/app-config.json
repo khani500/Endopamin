@@ -1,9 +1,9 @@
 {
   "minVersion": {
-    "enforce": false,
+    "enforce": true,
     "rejectMissing": false,
-    "ios": { "version": null, "build": null },
-    "android": { "versionCode": null }
+    "ios": { "version": "1.0.3", "build": null },
+    "android": { "versionCode": 12 }
   },
   "storeUrls": {
     "ios": "https://apps.apple.com/app/id6784407758",

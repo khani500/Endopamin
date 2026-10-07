@@ -52,21 +52,21 @@ const enforcingConfig = {
 };
 
 describe('committed site/app-config.json', () => {
-  it('ships with enforcement off and no minimums', () => {
+  it('ships with enforcement on and the 1.0.3 minimums', () => {
     const config = readAppConfig();
     expect(config).toEqual({
       minVersion: {
-        enforce: false,
+        enforce: true,
         rejectMissing: false,
-        ios: { version: null, build: null },
-        android: { versionCode: null },
+        ios: { version: '1.0.3', build: null },
+        android: { versionCode: 12 },
       },
       storeUrls: {
         ios: 'https://apps.apple.com/app/id6784407758',
         android: 'https://play.google.com/store/apps/details?id=com.endopamin.app',
       },
     });
-    expect(evaluateMinVersion(config.minVersion, null)).toEqual({ decision: 'allow', reason: 'off' });
+    expect(evaluateMinVersion(config.minVersion, null)).toEqual({ decision: 'allow', reason: 'missing' });
   });
 });
 
@@ -169,11 +169,19 @@ describe('createMinimumVersionGuard', () => {
 });
 
 describe('enforceMinimumVersion (committed config)', () => {
-  it('lets every request through, with or without headers', async () => {
-    for (const headers of [{}, versionHeaders('ios', '0.0.1', '1'), versionHeaders('android', '0', '1')]) {
+  it('allows missing headers and blocks builds below the minimum', async () => {
+    for (const [headers, expectedBlocked] of [
+      [{}, false],
+      [versionHeaders('ios', '0.0.1', '1'), true],
+      [versionHeaders('android', '0', '1'), true],
+    ]) {
       const res = mockRes();
-      await expect(enforceMinimumVersion(reqWith(headers), res)).resolves.toBe(false);
-      expect(res.status).not.toHaveBeenCalled();
+      await expect(enforceMinimumVersion(reqWith(headers), res)).resolves.toBe(expectedBlocked);
+      if (expectedBlocked) {
+        expect(res.statusCode).toBe(426);
+      } else {
+        expect(res.status).not.toHaveBeenCalled();
+      }
     }
   });
 });
