@@ -30,7 +30,7 @@ BEGIN
      OR fn.proowner <> 'postgres'::regrole
      OR pg_get_function_result(rpc_oid) IS DISTINCT FROM
         'TABLE(workout_plan_id uuid, nutrition_plan_id uuid, replayed boolean)'
-     OR md5(fn.prosrc) NOT IN ('8a558cb77f1e686e1018f0f66dabd1ea', '7632a294335351a5159c935d19d4032b') THEN
+     OR md5(fn.prosrc) NOT IN ('8a558cb77f1e686e1018f0f66dabd1ea', 'f00f384319e83de791594d3e91547e1f') THEN
     RAISE EXCEPTION 'migration D precondition failed: RPC differs from migration C or D';
   END IF;
 END
@@ -310,4 +310,3 @@ END
 $check$;
 
 COMMIT;
-

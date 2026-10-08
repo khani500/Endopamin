@@ -47,7 +47,7 @@ BEGIN
      OR NOT fn.prosecdef OR fn.provolatile <> 'v' OR fn.lanname <> 'plpgsql'
      OR fn.proconfig IS DISTINCT FROM ARRAY['search_path=public, pg_temp']
      OR fn.proowner <> 'postgres'::regrole
-     OR md5(fn.prosrc) IS DISTINCT FROM '7632a294335351a5159c935d19d4032b' THEN
+     OR md5(fn.prosrc) IS DISTINCT FROM 'f00f384319e83de791594d3e91547e1f' THEN
     RAISE EXCEPTION 'VERIFY FAIL a: RPC contract or migration D body differs';
   END IF;
   RAISE NOTICE 'VERIFY PASS a: one eleven-argument RPC, migration D body and contract';
@@ -194,4 +194,3 @@ END
 $verify$;
 
 ROLLBACK;
-
