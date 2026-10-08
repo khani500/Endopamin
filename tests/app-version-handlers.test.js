@@ -81,7 +81,7 @@ const guardedHandlers = [
   { name: 'replace-plans', method: 'GET', query: {}, passStatus: 405 },
   { name: 'save-profile', method: 'GET', query: {}, passStatus: 405 },
   { name: 'tts', method: 'GET', query: {}, passStatus: 405 },
-  { name: 'usda-search', method: 'GET', query: { query: 'a' }, passStatus: 400 },
+  { name: 'usda-search', method: 'GET', query: { query: 'a' }, passStatus: 400, passCode: 'invalid_query' },
 ];
 
 // A fresh module graph per call, so the guard reads the config set by the test.
@@ -104,11 +104,13 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe.each(guardedHandlers)('$name minimum version guard', ({ name, method, query, passStatus }) => {
+describe.each(guardedHandlers)('$name minimum version guard', ({
+  name, method, query, passStatus, passCode,
+}) => {
   it('with the committed config and no headers, behaves as before', async () => {
     const res = await call(name, { method, query });
     expect(res.statusCode).toBe(passStatus);
-    expect(res.body?.code).toBeUndefined();
+    expect(res.body?.code).toBe(passCode);
   });
 
   it('returns 426 when the app is below the minimum and enforcement is on', async () => {

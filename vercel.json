@@ -10,6 +10,9 @@
   "functions": {
     "api/gemini.js": {
       "maxDuration": 30
+    },
+    "api/usda-search.js": {
+      "maxDuration": 15
     }
   }
 }
