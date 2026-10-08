@@ -134,6 +134,8 @@ const endpoints = [
     handler: replacePlans,
     body: () => ({
       clientAttemptId: '11111111-1111-4111-8111-111111111111',
+      operation: 'initial_setup',
+      expectedSafetyFingerprint: `v1:${'a'.repeat(64)}`,
       coachId: 'aria',
       planType: 'weekly',
       weekStart: NOW.toISOString().slice(0, 10),

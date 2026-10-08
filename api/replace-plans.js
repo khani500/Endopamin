@@ -115,8 +115,8 @@ function isPlainObject(v) {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
 
-function badRequest(field, message) {
-  return { error: { status: 400, field, message } };
+function badRequest(field, message, code) {
+  return { error: { status: 400, field, message, ...(code ? { code } : {}) } };
 }
 
 // A structure refusal names the rule and the field path only, never content.
@@ -356,34 +356,17 @@ export function validatePlanRequest(body, now = new Date()) {
     planSchemaVersion = body.planSchemaVersion;
   }
 
-  // TEMPORARY legacy compatibility: an absent token is accepted so app builds
-  // that do not send one can still save (their plan is stored unverified).
-  // Make the token mandatory once the new app build has shipped.
-  let expectedSafetyFingerprint = null;
-  if ('expectedSafetyFingerprint' in body) {
-    if (typeof body.expectedSafetyFingerprint !== 'string'
-        || !SAFETY_FINGERPRINT_RE.test(body.expectedSafetyFingerprint)) {
-      return badRequest('expectedSafetyFingerprint', 'Must match ^v1:[0-9a-f]{64}$');
-    }
-    expectedSafetyFingerprint = body.expectedSafetyFingerprint;
+  // Required on fresh saves and replays. Validate intent before the token.
+  if (typeof body.operation !== 'string' || !PLAN_OPERATIONS.has(body.operation)) {
+    return badRequest('operation', `Must be one of: ${[...PLAN_OPERATIONS].join(', ')}`, 'invalid_operation');
   }
+  const operation = body.operation;
 
-  // TEMPORARY legacy compatibility: an absent operation is accepted so app
-  // builds that do not send one can still save (the RPC skips its gate).
-  // Make the operation mandatory once the new app build has shipped and the
-  // minimum version is enforced.
-  let operation = null;
-  if (body.operation !== undefined && body.operation !== null) {
-    if (typeof body.operation !== 'string' || !PLAN_OPERATIONS.has(body.operation)) {
-      return badRequest('operation', `Must be one of: ${[...PLAN_OPERATIONS].join(', ')}`);
-    }
-    operation = body.operation;
+  if (typeof body.expectedSafetyFingerprint !== 'string'
+      || !SAFETY_FINGERPRINT_RE.test(body.expectedSafetyFingerprint)) {
+    return badRequest('expectedSafetyFingerprint', 'Must match ^v1:[0-9a-f]{64}$', 'invalid_safety_fingerprint');
   }
-  // Without a token the regenerated plan would be stored unverified, which
-  // would authorize another regeneration. The RPC refuses it too (45415).
-  if (operation === 'safety_regeneration' && expectedSafetyFingerprint === null) {
-    return badRequest('expectedSafetyFingerprint', 'Required when operation is safety_regeneration');
-  }
+  const expectedSafetyFingerprint = body.expectedSafetyFingerprint;
 
   const workout = validateWorkoutPlan(body.workoutPlan);
   if (workout.error) return workout;
@@ -478,6 +461,12 @@ export function mapRpcError(errorOrCode) {
       code: 'invalid_operation',
       error: 'Unknown operation',
       field: 'operation',
+    };
+    case '45416': return {
+      status: 400,
+      code: 'invalid_safety_fingerprint',
+      error: 'Invalid safety fingerprint',
+      field: 'expectedSafetyFingerprint',
     };
     case '45409': return { status: 409, error: 'Idempotency key reused with a different request shape' };
     case '45410': return { status: 409, error: 'Idempotency key already used by another write path' };
@@ -780,6 +769,7 @@ export async function handleRequest(req, res, requestId, deps = {}) {
     return res.status(validated.error.status).json({
       error: validated.error.message,
       field: validated.error.field,
+      ...(validated.error.code ? { code: validated.error.code } : {}),
       requestId,
     });
   }
@@ -845,8 +835,8 @@ export async function handleRequest(req, res, requestId, deps = {}) {
   // (20261002120000_plan_operation_cooldown.sql), which is applied. This
   // endpoint must never be deployed against the migration A catalog: there
   // this named argument matches no signature and every save fails.
-  // p_expected_safety_fingerprint and p_operation are always sent; each is
-  // null when the client sent none (temporary legacy compatibility).
+  // p_expected_safety_fingerprint and p_operation are required and validated
+  // before reaching the RPC, including on replay requests.
   const rpcArgs = {
     p_user_id: userId,
     p_client_attempt_id: input.clientAttemptId,

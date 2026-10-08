@@ -74,6 +74,8 @@ function body(overrides = {}) {
     weekStart: '2026-09-14',
     weekNumber: 1,
     activateOn: null,
+    operation: 'initial_setup',
+    expectedSafetyFingerprint: VALID_TOKEN,
     workoutPlan: workoutPlan || { days: days(exercise) },
     ...rest,
   };
@@ -628,7 +630,7 @@ describe('handleRequest S1b telemetry', () => {
       userId: 'user-1',
       attemptId: ATTEMPT_ID,
       planSchemaVersion: PLAN_SCHEMA_VERSION,
-      operation: 'legacy',
+      operation: 'initial_setup',
     });
     expect(admin.calls.rpc[0].args.p_workout_plan_data).toEqual({
       coachId: 'aria',
@@ -661,7 +663,7 @@ describe('handleRequest S1c contract-version telemetry', () => {
     expect(reportMessage.mock.calls[0][0]).toBe(PLAN_SAVE_OK_EVENT);
     expect(reportMessage.mock.calls[0][0]).toBe('replace-plans ok');
     expect(reportMessage.mock.calls[0][1]).toBe('info');
-    expect(reportMessage.mock.calls[0][2]).toEqual({ planSchemaVersion: 1, operation: 'legacy' });
+    expect(reportMessage.mock.calls[0][2]).toEqual({ planSchemaVersion: 1, operation: 'initial_setup' });
     expect(reportMessage.mock.calls[0][2]).not.toHaveProperty('userId');
     expect(reportMessage.mock.calls[0][2]).not.toHaveProperty('attemptId');
     expect(reportMessage.mock.calls[0][2]).not.toHaveProperty('requestId');
@@ -679,7 +681,7 @@ describe('handleRequest S1c contract-version telemetry', () => {
     expect(reportMessage.mock.calls[0][1]).toBe('info');
     expect(reportMessage.mock.calls[0][2]).toEqual({
       planSchemaVersion: PLAN_SCHEMA_VERSION_ABSENT,
-      operation: 'legacy',
+      operation: 'initial_setup',
     });
     expect(reportMessage.mock.calls[0][2].planSchemaVersion).toBe('legacy');
   });
@@ -767,7 +769,7 @@ describe('handleRequest S1c contract-version telemetry', () => {
     expect(reportMessage.mock.calls[0][1]).toBe('warning');
     expect(reportMessage.mock.calls[1][0]).toBe(PLAN_SAVE_OK_EVENT);
     expect(reportMessage.mock.calls[1][1]).toBe('info');
-    expect(reportMessage.mock.calls[1][2]).toEqual({ planSchemaVersion: 1, operation: 'legacy' });
+    expect(reportMessage.mock.calls[1][2]).toEqual({ planSchemaVersion: 1, operation: 'initial_setup' });
     expect(reportMessage.mock.calls[0][0]).not.toBe(reportMessage.mock.calls[1][0]);
   });
 });
@@ -880,10 +882,10 @@ describe('mapRpcError', () => {
 });
 
 describe('validatePlanRequest expectedSafetyFingerprint', () => {
-  it('is optional and defaults to null', () => {
-    const result = validate();
-    expect(result.error).toBeUndefined();
-    expect(result.value.expectedSafetyFingerprint).toBeNull();
+  it('requires the fingerprint', () => {
+    const result = validate({ expectedSafetyFingerprint: undefined });
+    expectFieldError(result, 'expectedSafetyFingerprint');
+    expect(result.error.code).toBe('invalid_safety_fingerprint');
   });
 
   it('accepts a v1 fingerprint unchanged', () => {
@@ -909,13 +911,11 @@ describe('validatePlanRequest expectedSafetyFingerprint', () => {
 });
 
 describe('handleRequest safety fingerprint token', () => {
-  it('passes p_expected_safety_fingerprint null when the token is absent', async () => {
-    const { res, admin } = await postReplace(body());
-
-    expect(res.statusCode).toBe(200);
-    const args = admin.calls.rpc[0].args;
-    expect(args).toHaveProperty('p_expected_safety_fingerprint');
-    expect(args.p_expected_safety_fingerprint).toBeNull();
+  it.each([['missing', undefined], ['null', null]])('rejects a %s fingerprint before the RPC', async (_label, expectedSafetyFingerprint) => {
+    const { res, admin } = await postReplace(body({ expectedSafetyFingerprint }));
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toMatchObject({ code: 'invalid_safety_fingerprint', field: 'expectedSafetyFingerprint', requestId: 'abcd1234' });
+    expect(admin.calls.rpc).toHaveLength(0);
   });
 
   it('forwards a valid token unchanged', async () => {
@@ -931,6 +931,7 @@ describe('handleRequest safety fingerprint token', () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.body.field).toBe('expectedSafetyFingerprint');
+    expect(res.body.code).toBe('invalid_safety_fingerprint');
     expect(admin.calls.rpc).toHaveLength(0);
   });
 
@@ -990,10 +991,10 @@ describe('validatePlanRequest operation', () => {
     },
   );
 
-  it.each([['absent', undefined], ['null', null]])('treats %s as legacy null', (_label, operation) => {
-    const result = validate(operation === undefined ? {} : { operation });
-    expect(result.error).toBeUndefined();
-    expect(result.value.operation).toBeNull();
+  it.each([['absent', undefined], ['null', null]])('rejects %s operation', (_label, operation) => {
+    const result = validate({ operation });
+    expectFieldError(result, 'operation');
+    expect(result.error.code).toBe('invalid_operation');
   });
 
   it.each([
@@ -1006,15 +1007,39 @@ describe('validatePlanRequest operation', () => {
   });
 
   it('rejects safety_regeneration without a token with 400 on expectedSafetyFingerprint', () => {
-    expectFieldError(validate({ operation: 'safety_regeneration' }), 'expectedSafetyFingerprint');
+    expectFieldError(validate({ operation: 'safety_regeneration', expectedSafetyFingerprint: undefined }), 'expectedSafetyFingerprint');
   });
 });
 
 describe('handleRequest operation', () => {
-  it('sends p_operation null for a legacy body and the declared value otherwise', async () => {
-    const legacy = await postReplace(body());
-    expect(legacy.res.statusCode).toBe(200);
-    expect(legacy.admin.calls.rpc[0].args).toHaveProperty('p_operation', null);
+  it('checks operation first when both required fields are missing', async () => {
+    const payload = body();
+    delete payload.operation;
+    delete payload.expectedSafetyFingerprint;
+    const { res, admin } = await postReplace(payload);
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toMatchObject({ code: 'invalid_operation', field: 'operation' });
+    expect(admin.calls.rpc).toHaveLength(0);
+  });
+
+  it('maps RPC 45416 to 400 invalid_safety_fingerprint without reconciliation', async () => {
+    const { res, admin } = await postReplace(body(), {
+      rpcError: { code: '45416', message: 'plan_safety_fingerprint_invalid' },
+    });
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toEqual({
+      error: 'Invalid safety fingerprint', code: 'invalid_safety_fingerprint',
+      field: 'expectedSafetyFingerprint', requestId: 'abcd1234',
+    });
+    expect(admin.calls.rpc).toHaveLength(1);
+    expect(reconcileReads(admin)).toHaveLength(0);
+  });
+
+  it('rejects a missing operation and forwards the declared value otherwise', async () => {
+    const legacy = await postReplace(body({ operation: undefined }));
+    expect(legacy.res.statusCode).toBe(400);
+    expect(legacy.res.body).toMatchObject({ code: 'invalid_operation', field: 'operation', requestId: 'abcd1234' });
+    expect(legacy.admin.calls.rpc).toHaveLength(0);
     vi.restoreAllMocks();
 
     const declared = await postReplace(body({
@@ -1033,6 +1058,7 @@ describe('handleRequest operation', () => {
     const { res, admin } = await postReplace(body({ operation: 'weekly_rollover' }));
     expect(res.statusCode).toBe(400);
     expect(res.body.field).toBe('operation');
+    expect(res.body.code).toBe('invalid_operation');
     expect(admin.calls.rpc).toHaveLength(0);
   });
 
@@ -1165,9 +1191,11 @@ describe('handleRequest replay operation check', () => {
     expect(warn.mock.calls.some(([event]) => event === 'replace-plans replay operation read failed')).toBe(true);
   });
 
-  it('skips the read for a legacy replay and for a fresh save', async () => {
-    const legacy = await postReplace(body(), { rpcData: REPLAYED });
-    expect(legacy.res.body).toEqual(REPLAY_RESPONSE);
+  it('rejects an operation-less replay and skips the operation read for a fresh save', async () => {
+    const legacy = await postReplace(body({ operation: undefined }), { rpcData: REPLAYED, attemptRow: { id: 'wp-1' } });
+    expect(legacy.res.statusCode).toBe(400);
+    expect(legacy.res.body).toMatchObject({ code: 'invalid_operation', field: 'operation' });
+    expect(legacy.admin.calls.rpc).toHaveLength(0);
     expect(operationReads(legacy.admin)).toHaveLength(0);
     vi.restoreAllMocks();
 
