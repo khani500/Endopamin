@@ -3568,7 +3568,7 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.9,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": "fam.split_squat",
+  "primaryFamilyId": "fam.lunge_lateral",
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
@@ -9886,7 +9886,8 @@ export const EXERCISE_REGISTRY = [
    "forearms"
   ],
   "equipment": [
-   "barbell"
+   "barbell",
+   "bands"
   ],
   "mechanic": "isolation",
   "force": "pull",
@@ -11969,7 +11970,7 @@ export const EXERCISE_REGISTRY = [
    "triceps"
   ],
   "equipment": [
-   "pullup_bar"
+   "bodyweight"
   ],
   "mechanic": "compound",
   "force": "push",
@@ -12015,6 +12016,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "equipment_vocabulary_gap"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -13828,7 +13834,7 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.9,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": "fam.lunge_forward",
+  "primaryFamilyId": "fam.lunge_reverse",
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
@@ -21692,7 +21698,7 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.85,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": "fam.deadlift_conventional",
+  "primaryFamilyId": "fam.deadlift_romanian",
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
@@ -22156,10 +22162,15 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.9,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": "fam.lunge_forward",
+  "primaryFamilyId": null,
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "context_restricted_selection"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -33228,7 +33239,8 @@ export const EXERCISE_REGISTRY = [
    "shoulders"
   ],
   "equipment": [
-   "barbell"
+   "barbell",
+   "bands"
   ],
   "mechanic": "compound",
   "force": "push",
@@ -33274,6 +33286,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "context_restricted_selection"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -34192,7 +34209,7 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.9,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": "fam.bench_press",
+  "primaryFamilyId": "fam.close_grip_bench",
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
@@ -39585,7 +39602,7 @@ export const EXERCISE_REGISTRY = [
    "confidence": 1,
    "reviewStatus": "approved"
   },
-  "primaryFamilyId": "fam.sled_row",
+  "primaryFamilyId": "fam.rear_delt_fly",
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
