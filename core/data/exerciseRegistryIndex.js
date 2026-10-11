@@ -4134,12 +4134,10 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "triceps"
+   "chest"
   ],
   "secondaryMuscles": [
-   "chest",
-   "forearms",
-   "lats",
+   "triceps",
    "shoulders"
   ],
   "equipment": [
@@ -24906,12 +24904,11 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "hamstrings"
+   "quadriceps",
+   "glutes"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "quadriceps"
+   "hamstrings"
   ],
   "equipment": [
    "kettlebell"
@@ -25382,10 +25379,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "triceps"
   ],
-  "secondaryMuscles": [
-   "chest",
-   "shoulders"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "dumbbell",
    "bench"
@@ -33227,13 +33221,10 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "triceps"
+   "chest"
   ],
   "secondaryMuscles": [
-   "chest",
-   "forearms",
-   "lats",
-   "middle back",
+   "triceps",
    "shoulders"
   ],
   "equipment": [
@@ -40543,9 +40534,7 @@ export const EXERCISE_REGISTRY = [
   "intentTags": [],
   "isolation": true,
   "classifierVersion": "3.0",
-  "primaryMuscles": [
-   "calves"
-  ],
+  "primaryMuscles": [],
   "secondaryMuscles": [],
   "equipment": [
    "machine"
@@ -40729,12 +40718,11 @@ export const EXERCISE_REGISTRY = [
   "isolation": true,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "traps"
+   "shoulders"
   ],
   "secondaryMuscles": [
-   "biceps",
-   "middle back",
-   "shoulders"
+   "traps",
+   "biceps"
   ],
   "equipment": [
    "machine"
@@ -42586,9 +42574,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "triceps"
   ],
-  "secondaryMuscles": [
-   "shoulders"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "dumbbell"
   ],
@@ -43392,11 +43378,11 @@ export const EXERCISE_REGISTRY = [
   "isolation": true,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "traps"
+   "shoulders"
   ],
   "secondaryMuscles": [
-   "biceps",
-   "shoulders"
+   "traps",
+   "biceps"
   ],
   "equipment": [
    "dumbbell"
@@ -44015,10 +44001,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "triceps"
   ],
-  "secondaryMuscles": [
-   "chest",
-   "shoulders"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "cable"
   ],
@@ -44283,10 +44266,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "triceps"
   ],
-  "secondaryMuscles": [
-   "chest",
-   "shoulders"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "dumbbell"
   ],
@@ -44338,9 +44318,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "triceps"
   ],
-  "secondaryMuscles": [
-   "shoulders"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "barbell"
   ],
@@ -47848,10 +47826,11 @@ export const EXERCISE_REGISTRY = [
   "isolation": true,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "traps"
+   "shoulders"
   ],
   "secondaryMuscles": [
-   "shoulders"
+   "traps",
+   "biceps"
   ],
   "equipment": [
    "bands"
