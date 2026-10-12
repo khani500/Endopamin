@@ -1893,8 +1893,7 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes"
+   "calves"
   ],
   "equipment": [
    "exercise_ball"
@@ -1948,9 +1947,8 @@ export const EXERCISE_REGISTRY = [
    "lats"
   ],
   "secondaryMuscles": [
-   "abdominals",
-   "forearms",
-   "middle back"
+   "middle back",
+   "biceps"
   ],
   "equipment": [
    "bands",
@@ -2002,8 +2000,7 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "secondaryMuscles": [
-   "glutes",
-   "lower back"
+   "glutes"
   ],
   "equipment": [
    "bands"
@@ -2578,17 +2575,11 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "lower back"
+   "hamstrings",
+   "glutes"
   ],
   "secondaryMuscles": [
-   "calves",
-   "forearms",
-   "glutes",
-   "hamstrings",
-   "lats",
-   "middle back",
-   "quadriceps",
-   "traps"
+   "quadriceps"
   ],
   "equipment": [
    "barbell"
@@ -2721,7 +2712,6 @@ export const EXERCISE_REGISTRY = [
    "glutes"
   ],
   "secondaryMuscles": [
-   "calves",
    "hamstrings"
   ],
   "equipment": [
@@ -2851,9 +2841,8 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "forearms",
-   "hamstrings"
+   "glutes",
+   "adductors"
   ],
   "equipment": [
    "barbell"
@@ -2919,7 +2908,6 @@ export const EXERCISE_REGISTRY = [
    "glutes"
   ],
   "secondaryMuscles": [
-   "calves",
    "hamstrings"
   ],
   "equipment": [
@@ -3103,9 +3091,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "barbell"
@@ -3215,10 +3201,7 @@ export const EXERCISE_REGISTRY = [
    "abdominals"
   ],
   "secondaryMuscles": [
-   "glutes",
-   "hamstrings",
-   "lats",
-   "shoulders"
+   "lats"
   ],
   "equipment": [
    "barbell"
@@ -3320,7 +3303,6 @@ export const EXERCISE_REGISTRY = [
    "shoulders"
   ],
   "secondaryMuscles": [
-   "chest",
    "triceps"
   ],
   "equipment": [
@@ -3531,9 +3513,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "hamstrings",
-   "lower back"
+   "glutes"
   ],
   "equipment": [
    "barbell"
@@ -3592,10 +3572,8 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
    "glutes",
-   "hamstrings",
-   "lower back"
+   "adductors"
   ],
   "equipment": [
    "barbell"
@@ -3789,9 +3767,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "barbell"
@@ -4673,7 +4649,6 @@ export const EXERCISE_REGISTRY = [
    "shoulders"
   ],
   "secondaryMuscles": [
-   "lower back",
    "middle back",
    "traps"
   ],
@@ -5379,7 +5354,7 @@ export const EXERCISE_REGISTRY = [
   ],
   "secondaryMuscles": [
    "glutes",
-   "hamstrings"
+   "adductors"
   ],
   "equipment": [
    "bodyweight"
@@ -5445,9 +5420,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "bodyweight"
@@ -6460,13 +6433,11 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "quadriceps"
+   "hamstrings",
+   "glutes"
   ],
   "secondaryMuscles": [
-   "forearms",
-   "glutes",
-   "hamstrings",
-   "lower back"
+   "quadriceps"
   ],
   "equipment": [
    "cable"
@@ -6529,7 +6500,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "cable"
   ],
@@ -9068,7 +9041,6 @@ export const EXERCISE_REGISTRY = [
   ],
   "secondaryMuscles": [
    "biceps",
-   "forearms",
    "middle back"
   ],
   "equipment": [
@@ -11776,12 +11748,10 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "lower back"
+   "hamstrings",
+   "glutes"
   ],
   "secondaryMuscles": [
-   "forearms",
-   "glutes",
-   "hamstrings",
    "middle back",
    "quadriceps",
    "traps"
@@ -12281,8 +12251,6 @@ export const EXERCISE_REGISTRY = [
    "shoulders"
   ],
   "secondaryMuscles": [
-   "calves",
-   "quadriceps",
    "triceps"
   ],
   "equipment": [
@@ -13080,7 +13048,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "chest"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -13145,7 +13115,6 @@ export const EXERCISE_REGISTRY = [
   ],
   "secondaryMuscles": [
    "biceps",
-   "forearms",
    "lats",
    "shoulders"
   ],
@@ -13250,9 +13219,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "dumbbell"
@@ -13691,7 +13658,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -13799,9 +13768,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "dumbbell"
@@ -14326,9 +14293,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "dumbbell"
@@ -14536,7 +14501,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "barbell"
   ],
@@ -14588,9 +14555,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "triceps"
   ],
-  "secondaryMuscles": [
-   "forearms"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "barbell"
   ],
@@ -15479,7 +15444,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "chest"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
   "equipment": [
    "cable"
   ],
@@ -15638,7 +15605,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -16867,9 +16836,8 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "abdominals",
    "glutes",
-   "hamstrings"
+   "adductors"
   ],
   "equipment": [
    "barbell"
@@ -16933,8 +16901,8 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes"
+   "glutes",
+   "adductors"
   ],
   "equipment": [
    "kettlebell"
@@ -17151,8 +17119,7 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes"
+   "calves"
   ],
   "equipment": [
    "machine"
@@ -17254,10 +17221,8 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
    "glutes",
-   "hamstrings",
-   "shoulders"
+   "adductors"
   ],
   "equipment": [
    "kettlebell"
@@ -17324,9 +17289,7 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "secondaryMuscles": [
-   "abdominals",
-   "glutes",
-   "lower back"
+   "glutes"
   ],
   "equipment": [
    "barbell"
@@ -17393,9 +17356,7 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "secondaryMuscles": [
-   "abdominals",
-   "glutes",
-   "lower back"
+   "glutes"
   ],
   "equipment": [
    "barbell"
@@ -17604,9 +17565,8 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
    "glutes",
-   "hamstrings"
+   "adductors"
   ],
   "equipment": [
    "machine"
@@ -17670,7 +17630,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "dumbbell"
   ],
@@ -18229,9 +18191,7 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "secondaryMuscles": [
-   "abdominals",
-   "glutes",
-   "lower back"
+   "glutes"
   ],
   "equipment": [
    "barbell"
@@ -19272,9 +19232,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "triceps"
   ],
-  "secondaryMuscles": [
-   "forearms"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "barbell"
   ],
@@ -19569,7 +19527,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -19819,7 +19779,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -19872,7 +19834,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -21656,12 +21620,10 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "hamstrings"
+   "hamstrings",
+   "glutes"
   ],
-  "secondaryMuscles": [
-   "glutes",
-   "lower back"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "kettlebell"
   ],
@@ -23709,9 +23671,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "machine"
@@ -24925,9 +24885,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps",
    "glutes"
   ],
-  "secondaryMuscles": [
-   "hamstrings"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "kettlebell"
   ],
@@ -25092,7 +25050,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "cable"
   ],
@@ -25194,7 +25154,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "cable"
   ],
@@ -25709,7 +25671,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "hamstrings"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "calves"
+  ],
   "equipment": [
    "machine"
   ],
@@ -25980,7 +25944,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -26199,7 +26165,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "machine"
   ],
@@ -26251,7 +26219,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "machine"
   ],
@@ -27044,9 +27014,8 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
    "glutes",
-   "hamstrings"
+   "adductors"
   ],
   "equipment": [
    "machine"
@@ -27110,9 +27079,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "machine"
@@ -27710,7 +27677,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "chest"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -28230,8 +28199,6 @@ export const EXERCISE_REGISTRY = [
    "shoulders"
   ],
   "secondaryMuscles": [
-   "calves",
-   "quadriceps",
    "triceps"
   ],
   "equipment": [
@@ -30109,11 +30076,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "abdominals"
   ],
-  "secondaryMuscles": [
-   "chest",
-   "shoulders",
-   "triceps"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "cable"
   ],
@@ -30162,11 +30125,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "abdominals"
   ],
-  "secondaryMuscles": [
-   "chest",
-   "shoulders",
-   "triceps"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "cable"
   ],
@@ -31724,7 +31683,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "barbell"
   ],
@@ -32114,7 +32075,6 @@ export const EXERCISE_REGISTRY = [
    "chest"
   ],
   "secondaryMuscles": [
-   "abdominals",
    "shoulders",
    "triceps"
   ],
@@ -33811,7 +33771,10 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "shoulders"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "middle back",
+   "traps"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -33864,7 +33827,10 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "shoulders"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "middle back",
+   "traps"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -34017,12 +33983,10 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
+   "glutes",
    "hamstrings"
   ],
-  "secondaryMuscles": [
-   "calves",
-   "glutes"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "machine"
   ],
@@ -34645,9 +34609,7 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "lower back"
+   "glutes"
   ],
   "equipment": [
    "barbell"
@@ -35180,9 +35142,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "abdominals"
   ],
-  "secondaryMuscles": [
-   "lower back"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "bodyweight"
   ],
@@ -36053,7 +36013,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "barbell"
   ],
@@ -36105,7 +36067,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -36158,7 +36122,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -36564,10 +36530,10 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "lower back"
+   "glutes"
   ],
   "secondaryMuscles": [
-   "glutes"
+   "hamstrings"
   ],
   "equipment": [
    "barbell"
@@ -36780,7 +36746,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "hamstrings"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "calves"
+  ],
   "equipment": [
    "machine"
   ],
@@ -38348,7 +38316,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "chest"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
   "equipment": [
    "cable"
   ],
@@ -40506,9 +40476,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "machine"
@@ -40627,10 +40595,8 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
    "glutes",
-   "hamstrings",
-   "lower back"
+   "adductors"
   ],
   "equipment": [
    "machine"
@@ -40695,8 +40661,7 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "secondaryMuscles": [
-   "glutes",
-   "lower back"
+   "glutes"
   ],
   "equipment": [
    "machine"
@@ -40815,9 +40780,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "machine"
@@ -41572,7 +41535,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "barbell"
   ],
@@ -41950,8 +41915,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "dumbbell"
@@ -42717,7 +42681,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "cable"
   ],
@@ -43766,7 +43732,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "dumbbell"
   ],
@@ -43866,7 +43834,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "hamstrings"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "calves"
+  ],
   "equipment": [
    "machine"
   ],
@@ -44200,7 +44170,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "cable"
   ],
@@ -44252,7 +44224,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "dumbbell",
    "bench"
@@ -45065,8 +45039,7 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "secondaryMuscles": [
-   "glutes",
-   "lower back"
+   "glutes"
   ],
   "equipment": [
    "barbell"
@@ -45130,8 +45103,7 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "secondaryMuscles": [
-   "glutes",
-   "lower back"
+   "glutes"
   ],
   "equipment": [
    "dumbbell"
@@ -45571,16 +45543,12 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "hamstrings"
+   "hamstrings",
+   "glutes"
   ],
   "secondaryMuscles": [
    "adductors",
-   "forearms",
-   "glutes",
-   "lower back",
-   "middle back",
-   "quadriceps",
-   "traps"
+   "quadriceps"
   ],
   "equipment": [
    "barbell"
@@ -45644,16 +45612,12 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "hamstrings"
+   "hamstrings",
+   "glutes"
   ],
   "secondaryMuscles": [
    "adductors",
-   "forearms",
-   "glutes",
-   "lower back",
-   "middle back",
-   "quadriceps",
-   "traps"
+   "quadriceps"
   ],
   "equipment": [
    "barbell"
@@ -46239,11 +46203,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "abductors",
-   "adductors",
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "suspension"
@@ -46866,10 +46826,10 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "quadriceps"
+   "quadriceps",
+   "glutes"
   ],
   "secondaryMuscles": [
-   "glutes",
    "hamstrings"
   ],
   "equipment": [
@@ -49053,7 +49013,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "biceps"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "forearms"
+  ],
   "equipment": [
    "barbell"
   ],
@@ -49106,10 +49068,8 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
    "glutes",
-   "hamstrings",
-   "lower back"
+   "adductors"
   ],
   "equipment": [
    "barbell"
@@ -49979,11 +49939,10 @@ export const EXERCISE_REGISTRY = [
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
-   "hamstrings",
-   "glutes"
+   "hamstrings"
   ],
   "secondaryMuscles": [
-   "lower back"
+   "glutes"
   ],
   "equipment": [
    "dumbbell"
@@ -50517,7 +50476,9 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "chest"
   ],
-  "secondaryMuscles": [],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
   "equipment": [
    "machine"
   ],
@@ -51065,8 +51026,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "bodyweight"
@@ -51128,8 +51088,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "dumbbell"
@@ -53009,10 +52968,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "abdominals"
   ],
-  "secondaryMuscles": [
-   "glutes",
-   "lower back"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "bodyweight"
   ],
@@ -53065,9 +53021,7 @@ export const EXERCISE_REGISTRY = [
   "primaryMuscles": [
    "abdominals"
   ],
-  "secondaryMuscles": [
-   "abductors"
-  ],
+  "secondaryMuscles": [],
   "equipment": [
    "bodyweight"
   ],
