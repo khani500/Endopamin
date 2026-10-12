@@ -52,6 +52,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "context_restricted_selection"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -4206,7 +4211,8 @@ export const EXERCISE_REGISTRY = [
    "triceps"
   ],
   "equipment": [
-   "bands"
+   "bands",
+   "bench"
   ],
   "mechanic": "compound",
   "force": "push",
@@ -7262,7 +7268,8 @@ export const EXERCISE_REGISTRY = [
   ],
   "secondaryMuscles": [],
   "equipment": [
-   "cable"
+   "cable",
+   "exercise_ball"
   ],
   "mechanic": "compound",
   "force": "pull",
@@ -25683,6 +25690,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "equipment_vocabulary_gap"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -39201,6 +39213,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "context_restricted_selection"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -40590,6 +40607,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "equipment_vocabulary_gap"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {

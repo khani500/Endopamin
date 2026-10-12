@@ -5,8 +5,8 @@
  "files": [
   {
    "path": "data/exerciseRegistryIndex.js",
-   "sha256": "049c303de789ea321c1f4f6c002d54a6e869c1e72e34de87c9fb5af70ca49756",
-   "bytes": 1185088
+   "sha256": "e733b4643b5c01a923c144f0188256bc7a3ef876e449db0bb5d29f2e13e54c13",
+   "bytes": 1185628
   },
   {
    "path": "lib/plan/capabilityMap.js",
@@ -39,5 +39,5 @@
    "bytes": 6147
   }
  ],
- "coreHash": "6bf5b49fd23925f6d0c6043ab1f397c6d114ae3e4e9afd8d7fe25634f1276e17"
+ "coreHash": "4309e416df6d4648243efca572ef0f5ad5b9a4b4d21a37a5cc8e55fca30e3c5f"
 }
