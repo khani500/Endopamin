@@ -1963,7 +1963,7 @@ export const EXERCISE_REGISTRY = [
    "rest": "75s"
   },
   "setting": "gym",
-  "minSkillTier": "intermediate",
+  "minSkillTier": "beginner",
   "requiresSupervision": false,
   "contraindicationRules": [],
   "secondaryPatterns": [],
@@ -50983,7 +50983,7 @@ export const EXERCISE_REGISTRY = [
    "reps": "10-12",
    "rest": "75s"
   },
-  "minSkillTier": "intermediate",
+  "minSkillTier": "beginner",
   "requiresSupervision": false,
   "contraindicationRules": [
    {
