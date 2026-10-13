@@ -2189,7 +2189,7 @@ export const EXERCISE_REGISTRY = [
   "id": "fx_band_pull_apart",
   "name": "Band Pull Apart",
   "tier": "verified",
-  "primaryPattern": "horizontal_pull",
+  "primaryPattern": "shoulder_iso",
   "exerciseType": "resistance",
   "intentTags": [],
   "isolation": true,
@@ -2214,7 +2214,13 @@ export const EXERCISE_REGISTRY = [
   },
   "minSkillTier": "beginner",
   "requiresSupervision": false,
-  "contraindicationRules": [],
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "shoulder_iso loads the shoulder directly"
+   }
+  ],
   "secondaryPatterns": [],
   "laterality": "bilateral",
   "stabilityDemand": "moderate",
@@ -2226,13 +2232,13 @@ export const EXERCISE_REGISTRY = [
   ],
   "classification": {
    "confidence": 0.9,
-   "reviewStatus": "migrated"
+   "reviewStatus": "approved"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.rear_delt_fly",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
-  "hasCues": false
+  "resolverDefaultEligible": true,
+  "hasCues": true
  },
  {
   "id": "fx_band_skull_crusher",
