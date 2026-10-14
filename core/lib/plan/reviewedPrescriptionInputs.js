@@ -8,14 +8,14 @@ const deepFreeze = (value) => {
 export const REVIEWED_PRESCRIPTION_INPUTS_VERSION = "reviewed-prescription-inputs.v1";
 export const REVIEWED_PRESCRIPTION_INPUTS_SOURCES = deepFreeze([
   {
-    "file": "audit/role_mapping_decisions_v10_2026-10-13.json",
-    "sha256": "732fee7a92152d0b57f36252600c408e5e75e1986583640979d33204183a1176",
-    "decisionVersion": "rm-decisions-2026-10-13a"
+    "file": "audit/role_mapping_decisions_v11_2026-10-14.json",
+    "sha256": "9add89428f683b4c636ffa276ede013a464446f44e86ce689b8e1074fd28a5a2",
+    "decisionVersion": "rm-decisions-2026-10-14"
   },
   {
-    "file": "audit/measure_laterality_decisions_v2_2026-10-13.json",
-    "sha256": "3d32388c93068f24edb04fb2c54eafbeb9609572938b591cd509cc45aeef109f",
-    "decisionVersion": "ml-decisions-2026-10-13"
+    "file": "audit/measure_laterality_decisions_v3_2026-10-14.json",
+    "sha256": "4aa5c41acca9252c702bb4aa590c7d968c089b11c50bf8974c9cc677e493da1b",
+    "decisionVersion": "ml-decisions-2026-10-14"
   }
 ]);
 export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
@@ -202,12 +202,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "not_applicable",
     "laterality": "bilateral",
-    "mechanic": "undetermined",
+    "mechanic": "isolation",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -8413,12 +8413,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "not_applicable",
     "laterality": "bilateral",
-    "mechanic": "undetermined",
+    "mechanic": "compound",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -10317,12 +10317,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "not_applicable",
     "laterality": "bilateral",
-    "mechanic": "undetermined",
+    "mechanic": "isolation",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -14058,12 +14058,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "not_applicable",
     "laterality": "bilateral",
-    "mechanic": "undetermined",
+    "mechanic": "isolation",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -15844,12 +15844,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "not_applicable",
     "laterality": "bilateral",
-    "mechanic": "undetermined",
+    "mechanic": "compound",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -16852,12 +16852,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "not_applicable",
     "laterality": "bilateral",
-    "mechanic": "undetermined",
+    "mechanic": "isolation",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -18375,12 +18375,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "not_applicable",
     "laterality": "bilateral",
-    "mechanic": "undetermined",
+    "mechanic": "isolation",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -18857,12 +18857,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "not_applicable",
     "laterality": "bilateral",
-    "mechanic": "undetermined",
+    "mechanic": "isolation",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -22066,12 +22066,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "per_side",
     "laterality": "alternating",
-    "mechanic": "undetermined",
+    "mechanic": "compound",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -22214,12 +22214,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "not_applicable",
     "laterality": "bilateral",
-    "mechanic": "undetermined",
+    "mechanic": "compound",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -23600,12 +23600,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "duration",
     "countBasis": "total",
     "laterality": "alternating",
-    "mechanic": "undetermined",
+    "mechanic": "compound",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -23860,12 +23860,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "not_applicable",
     "laterality": "bilateral",
-    "mechanic": "undetermined",
+    "mechanic": "isolation",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -24374,12 +24374,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "per_side",
     "laterality": "unilateral",
-    "mechanic": "undetermined",
+    "mechanic": "isolation",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
@@ -24410,12 +24410,12 @@ export const REVIEWED_PRESCRIPTION_INPUTS = deepFreeze({
     "measure": "reps",
     "countBasis": "per_side",
     "laterality": "unilateral",
-    "mechanic": "undetermined",
+    "mechanic": "isolation",
     "reviewStatus": {
       "measure": "approved",
       "countBasis": "approved",
       "laterality": "approved",
-      "mechanic": "open"
+      "mechanic": "approved"
     },
     "blockedByDataDefect": false,
     "eligibility": [
