@@ -174,6 +174,61 @@ export function getEligibleExercisePool(req = {}) {
   return { pool, rejected, inScope, universe, scope };
 }
 
+/** Report why the authoritative reviewed-scope gate rejected a record. */
+function slotScopeRejectionReason(ex, req) {
+  if (ex.classification?.reviewStatus === 'hold_pending_media') return 'hold_pending_media';
+  if (ex.primaryPattern === null) return 'unreviewed_pattern';
+  if (ex.primaryFamilyId === null) return 'unreviewed_family';
+  if (ex.isHybrid && !req.allowHybrid) return 'hybrid_not_allowed';
+  if (ex.resolverDefaultEligible === false && !req.allowHybrid) return 'resolver_default_ineligible';
+  if (req.familyId && ex.primaryFamilyId !== req.familyId) return 'family_not_requested';
+  return 'unreviewed_scope';
+}
+
+/** Track C pre-selection hook. Pass-through only; no injury clearance is granted. */
+function contraindicationPreSelectionForSlot(record) {
+  return record;
+}
+
+/**
+ * Unranked hard discovery for an authored slot kind, across the entire catalog.
+ * req.slotKind is context for the caller, never an eligibility grant or a pattern filter.
+ * The caller supplies canonical availableEquipment tokens including validated extras;
+ * raw saved buckets/extras must first go through resolveEquipmentCapability.
+ * All existing non-injury hard gates and reviewed-scope policies are preserved. The
+ * legacy primaryPattern equality filter is intentionally absent. Names, mechanic,
+ * muscle credit and slot intent do not qualify a record; Step 2d must intersect this
+ * pool with resolvePrescription for the exact authored slot kind before selection.
+ * Track C is not implemented: bypass the legacy injury/name path on this new API only
+ * and report the limitation. No scoring, relaxation, truncation or prescription lookup.
+ * @returns {{pool: Array, rejected: object, rejections: Array, injuryEnforcement: object}}
+ */
+export function getHardEligibleExercisePoolForSlot(req = {}) {
+  const base = { ...req, injuries: [] };
+  const pool = [];
+  const rejected = {};
+  const rejections = [];
+  for (const ex of EXERCISE_REGISTRY) {
+    const reason = isPlanPolicyExcluded(ex) ? 'plan_policy_excluded'
+      : !inReviewedScope(ex, base) ? slotScopeRejectionReason(ex, base)
+      : rejectionReason(ex, base);
+    if (reason) {
+      rejected[reason] = (rejected[reason] || 0) + 1;
+      rejections.push({ exerciseId: ex.id, reason });
+      continue;
+    }
+    pool.push(contraindicationPreSelectionForSlot(ex));
+  }
+  return {
+    pool, rejected, rejections,
+    injuryEnforcement: {
+      status: 'not_implemented',
+      reason: 'injury_enforcement_not_implemented',
+      message: 'injury enforcement not implemented',
+    },
+  };
+}
+
 /**
  * Order a pool by soft preference. Never removes anything.
  *
