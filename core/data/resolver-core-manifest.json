@@ -44,10 +44,15 @@
    "bytes": 755
   },
   {
+   "path": "lib/plan/slotEligibility.js",
+   "sha256": "331077ee66ae52af26a489438c4be5ba510fda89bfa4b1ff2df200836bca293d",
+   "bytes": 5410
+  },
+  {
    "path": "lib/plan/slotPin.js",
    "sha256": "4ae9c1c0c0aa3cc72f2e73789359d189cf54dd80c6d180563cf948aa6799b1fa",
    "bytes": 6147
   }
  ],
- "coreHash": "d21a231b98b92f233561c7bf1888a51803d363f922c464bcb6b7cc144aa2f1e0"
+ "coreHash": "5882364bbbbe5fcc32162557e836a91e653d992883733d2e3c31bd7cc2368b54"
 }
