@@ -62,7 +62,7 @@ function baseRow(role, measure, goal, tierIndex) {
 
 function approvedException(value, role, goal, tier, mode) {
   if (!value || value.role !== role || !Array.isArray(value.ruleIds) || value.ruleIds.length === 0
-      || !value.ruleIds.every((id) => ['E1', 'E2', 'E3', 'E5', 'E6'].includes(id))) return null;
+      || !value.ruleIds.every((id) => ['E1', 'E2', 'E3', 'E5', 'E6', 'E7'].includes(id))) return null;
   const numbers = value.valuesByGoalAndTier?.[goal]?.[tier]?.[mode];
   if (!numbers) return null;
   const result = {
@@ -77,6 +77,9 @@ function approvedException(value, role, goal, tier, mode) {
       || result.restSeconds.min !== result.restSeconds.max)) return null;
   if (value.ruleIds.some((id) => id === 'E3' || id === 'E5')
       && (typeof numbers.techniqueStop !== 'string' || !numbers.techniqueStop || numbers.rirIsSupplementary !== true)) return null;
+  if (value.ruleIds.includes('E7') && (numbers.endpoint !== 'rir_or_ceiling'
+      || numbers.ceiling !== 20 || numbers.repsMax !== 20 || numbers.effortTargetMayBeUnmet !== true
+      || numbers.repRangeIsCeiling !== true || numbers.stopBeforeRepsMinAllowed !== true)) return null;
   return { ranges: result, numbers, ruleIds: value.ruleIds };
 }
 
@@ -118,7 +121,10 @@ export function resolvePrescription(input) {
   const provenance = [];
   const approved = [];
   for (const [dependencyIndex, dependency] of entry.dependencies.entries()) {
-    if (dependency.type !== 'SECTION8_EXCEPTION') return fail('DEPENDENCY_UNRESOLVED_' + dependency.type);
+    const e7 = dependency.type === 'RESISTANCE_ADJUSTMENT'
+      && dependency.approvedValue?.ruleIds?.length === 1 && dependency.approvedValue.ruleIds[0] === 'E7';
+    if (dependency.type !== 'SECTION8_EXCEPTION' && !e7) return fail('DEPENDENCY_UNRESOLVED_' + dependency.type);
+    if (dependency.type === 'SECTION8_EXCEPTION' && dependency.approvedValue?.ruleIds?.includes('E7')) return fail('EXCEPTION_VALUE_MISSING_OR_INVALID');
     if (dependency.applicability !== 'applies') return fail('EXCEPTION_APPLICABILITY_UNRESOLVED');
     if (dependency.status !== 'resolved_by_value') return fail('EXCEPTION_VALUE_UNAPPROVED');
     const exception = approvedException(dependency.approvedValue, role, goal, tier, mode);
@@ -162,6 +168,9 @@ export function resolvePrescription(input) {
     effort: row.targetRir === null ? 'technique_stop' : approved.some((exception) => exception.numbers.rirIsSupplementary === true) ? 'rir_supplementary' : 'target_rir',
     repRangeIsCeiling: approved.some((exception) => exception.numbers.repRangeIsCeiling === true),
     stopBeforeRepsMinAllowed: approved.some((exception) => exception.numbers.stopBeforeRepsMinAllowed === true),
+    ...(approved.some((exception) => exception.ruleIds.includes('E7')) ? {
+      endpoint: 'rir_or_ceiling', ceiling: 20, effortTargetMayBeUnmet: true,
+    } : {}),
     techniqueStops, finishCues,
     exceptionProvenance: [...provenance, ...entry.exceptionDecisions.map((decision) => ({ ...decision }))],
     sources: REVIEWED_PRESCRIPTION_INPUTS_SOURCES.map((source) => ({ ...source })),
