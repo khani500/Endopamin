@@ -55515,7 +55515,7 @@ export const EXERCISE_REGISTRY = [
    "reps": "8-10",
    "rest": "75s"
   },
-  "minSkillTier": "beginner",
+  "minSkillTier": "intermediate",
   "requiresSupervision": false,
   "contraindicationRules": [
    {
@@ -55545,7 +55545,7 @@ export const EXERCISE_REGISTRY = [
   ],
   "classification": {
    "confidence": 1,
-   "reviewStatus": "hold_pending_media"
+   "reviewStatus": "approved"
   },
   "primaryFamilyId": "fam.deadlift_romanian",
   "componentFamilyIds": [],
