@@ -6,7 +6,7 @@
 
 export const SCHEMA_VERSION = "5.4";
 export const PLAN_POLICY_REASON_CODES = ["equipment_vocabulary_gap","alternative_setup_unmodeled","equipment_setup_ambiguous","household_object_dependency","partner_dependency","context_restricted_selection"];
-export const REGISTRY_TOTAL = 977;
+export const REGISTRY_TOTAL = 981;
 export const EXERCISE_REGISTRY = [
  {
   "id": "fx_3_4_sit_up",
@@ -55772,6 +55772,244 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "hasCues": true
+ },
+ {
+  "id": "fx_dumbbell_goblet_squat",
+  "name": "Goblet Squat with Dumbbell",
+  "tier": "verified",
+  "primaryPattern": "squat",
+  "exerciseType": "resistance",
+  "intentTags": [],
+  "isolation": false,
+  "classifierVersion": "3.0",
+  "primaryMuscles": [
+   "quadriceps"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "adductors"
+  ],
+  "equipment": [
+   "dumbbell"
+  ],
+  "mechanic": "compound",
+  "force": "push",
+  "skillTier": "beginner",
+  "defaultPrescription": {
+   "sets": 3,
+   "reps": "10-12",
+   "rest": "60s"
+  },
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "knee",
+    "action": "exclude",
+    "reason": "squat loads the knee directly"
+   },
+   {
+    "region": "hip",
+    "action": "exclude",
+    "reason": "squat loads the hip directly"
+   },
+   {
+    "region": "lower back",
+    "action": "exclude",
+    "reason": "squat loads the lower back directly"
+   }
+  ],
+  "secondaryPatterns": [],
+  "laterality": "bilateral",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "coreFunctions": [],
+  "regionTags": [
+   "quadriceps"
+  ],
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "primaryFamilyId": "fam.goblet_squat",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "resolverDefaultEligible": false,
+  "hasCues": true
+ },
+ {
+  "id": "fx_bodyweight_split_squat",
+  "name": "Bodyweight Split Squat",
+  "tier": "verified",
+  "primaryPattern": "lunge",
+  "exerciseType": "resistance",
+  "intentTags": [],
+  "isolation": false,
+  "classifierVersion": "3.0",
+  "primaryMuscles": [
+   "quadriceps"
+  ],
+  "secondaryMuscles": [
+   "glutes"
+  ],
+  "equipment": [
+   "bodyweight"
+  ],
+  "mechanic": "compound",
+  "force": "push",
+  "skillTier": "beginner",
+  "defaultPrescription": {
+   "sets": 3,
+   "reps": "10-12",
+   "rest": "60s"
+  },
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "knee",
+    "action": "exclude",
+    "reason": "lunge loads the knee directly"
+   },
+   {
+    "region": "hip",
+    "action": "exclude",
+    "reason": "lunge loads the hip directly"
+   }
+  ],
+  "secondaryPatterns": [],
+  "laterality": "unilateral",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "coreFunctions": [],
+  "regionTags": [
+   "quadriceps"
+  ],
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "primaryFamilyId": "fam.split_squat",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "resolverDefaultEligible": false,
+  "hasCues": true
+ },
+ {
+  "id": "fx_half_kneeling_single_arm_band_pulldown",
+  "name": "Half-Kneeling One-Arm Band Pulldown",
+  "tier": "verified",
+  "primaryPattern": "vertical_pull",
+  "exerciseType": "resistance",
+  "intentTags": [],
+  "isolation": false,
+  "classifierVersion": "3.0",
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "biceps",
+   "middle back"
+  ],
+  "equipment": [
+   "bands",
+   "door_anchor"
+  ],
+  "mechanic": "compound",
+  "force": "pull",
+  "skillTier": "beginner",
+  "defaultPrescription": {
+   "sets": 3,
+   "reps": "10-12",
+   "rest": "60s"
+  },
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "secondaryPatterns": [],
+  "laterality": "unilateral",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "coreFunctions": [],
+  "regionTags": [
+   "lats"
+  ],
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "primaryFamilyId": "fam.lat_pulldown",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "resolverDefaultEligible": false,
+  "hasCues": true
+ },
+ {
+  "id": "fx_single_leg_glute_bridge_straight_leg",
+  "name": "Single-Leg Glute Bridge with Leg Extended",
+  "tier": "verified",
+  "primaryPattern": "hinge",
+  "exerciseType": "resistance",
+  "intentTags": [],
+  "isolation": true,
+  "classifierVersion": "3.0",
+  "primaryMuscles": [
+   "glutes"
+  ],
+  "secondaryMuscles": [
+   "hamstrings"
+  ],
+  "equipment": [
+   "bodyweight"
+  ],
+  "mechanic": "isolation",
+  "force": "push (same as `fx_single_leg_glute_bridge`)",
+  "skillTier": "beginner",
+  "defaultPrescription": {
+   "sets": 3,
+   "reps": "10-12",
+   "rest": "45s"
+  },
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "lower back",
+    "action": "exclude",
+    "reason": "hinge loads the lower back directly"
+   },
+   {
+    "region": "back",
+    "action": "exclude",
+    "reason": "hinge loads the back directly"
+   },
+   {
+    "region": "hip",
+    "action": "exclude",
+    "reason": "hinge loads the hip directly"
+   }
+  ],
+  "secondaryPatterns": [],
+  "laterality": "unilateral",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "coreFunctions": [],
+  "regionTags": [
+   "glutes"
+  ],
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "primaryFamilyId": "fam.glute_bridge",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "resolverDefaultEligible": false,
   "hasCues": true
  }
 ];
