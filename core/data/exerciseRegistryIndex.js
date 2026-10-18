@@ -19728,7 +19728,8 @@ export const EXERCISE_REGISTRY = [
    "triceps"
   ],
   "equipment": [
-   "dumbbell"
+   "dumbbell",
+   "bench"
   ],
   "mechanic": "compound",
   "force": "push",
@@ -19771,7 +19772,7 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.85,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.bench_press",
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
@@ -42362,7 +42363,7 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.95,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.bodyweight_squat",
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
