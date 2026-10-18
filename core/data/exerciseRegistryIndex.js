@@ -2917,7 +2917,8 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "equipment": [
-   "barbell"
+   "barbell",
+   "bench"
   ],
   "mechanic": "compound",
   "force": "push",
@@ -3210,7 +3211,8 @@ export const EXERCISE_REGISTRY = [
    "lats"
   ],
   "equipment": [
-   "barbell"
+   "barbell",
+   "bench"
   ],
   "mechanic": "compound",
   "force": "pull",
@@ -3312,7 +3314,8 @@ export const EXERCISE_REGISTRY = [
    "triceps"
   ],
   "equipment": [
-   "barbell"
+   "barbell",
+   "bench"
   ],
   "mechanic": "compound",
   "force": "push",
@@ -36542,7 +36545,8 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "equipment": [
-   "barbell"
+   "barbell",
+   "bench"
   ],
   "mechanic": "compound",
   "force": "pull",
@@ -40789,7 +40793,8 @@ export const EXERCISE_REGISTRY = [
    "glutes"
   ],
   "equipment": [
-   "machine"
+   "machine",
+   "bench"
   ],
   "mechanic": "compound",
   "force": "push",
@@ -52475,13 +52480,13 @@ export const EXERCISE_REGISTRY = [
   "mechanic": null,
   "force": null,
   "setting": "home",
-  "skillTier": "beginner",
+  "skillTier": "intermediate",
   "defaultPrescription": {
    "sets": "3",
    "reps": "6-10 each",
    "rest": "75s"
   },
-  "minSkillTier": "beginner",
+  "minSkillTier": "intermediate",
   "requiresSupervision": false,
   "contraindicationRules": [
    {
