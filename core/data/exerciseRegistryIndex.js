@@ -14305,7 +14305,8 @@ export const EXERCISE_REGISTRY = [
    "glutes"
   ],
   "equipment": [
-   "dumbbell"
+   "dumbbell",
+   "bench"
   ],
   "mechanic": "compound",
   "force": "push",
@@ -41929,7 +41930,8 @@ export const EXERCISE_REGISTRY = [
    "glutes"
   ],
   "equipment": [
-   "dumbbell"
+   "dumbbell",
+   "bench"
   ],
   "mechanic": "compound",
   "force": "push",
