@@ -6,7 +6,7 @@
 
 export const SCHEMA_VERSION = "5.5";
 export const PLAN_POLICY_REASON_CODES = ["equipment_vocabulary_gap","alternative_setup_unmodeled","equipment_setup_ambiguous","household_object_dependency","partner_dependency","context_restricted_selection","superseded_by_canonical"];
-export const REGISTRY_TOTAL = 981;
+export const REGISTRY_TOTAL = 982;
 export const EXERCISE_REGISTRY = [
  {
   "id": "fx_3_4_sit_up",
@@ -56477,6 +56477,61 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": false,
   "displayName": "Single-Leg Glute Bridge",
+  "hasCues": true
+ },
+ {
+  "id": "fx_single_arm_band_biceps_curl",
+  "name": "Single-Arm Band Biceps Curl",
+  "tier": "verified",
+  "primaryPattern": "arms_pull",
+  "exerciseType": "resistance",
+  "intentTags": [],
+  "isolation": true,
+  "classifierVersion": "3.0",
+  "primaryMuscles": [
+   "biceps"
+  ],
+  "secondaryMuscles": [
+   "forearms"
+  ],
+  "equipment": [
+   "bands"
+  ],
+  "mechanic": "isolation",
+  "force": "pull",
+  "skillTier": "beginner",
+  "defaultPrescription": {
+   "sets": 3,
+   "reps": "10-15",
+   "rest": "60s"
+  },
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "arms_pull loads the elbow directly"
+   }
+  ],
+  "secondaryPatterns": [],
+  "laterality": "unilateral",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "coreFunctions": [],
+  "regionTags": [
+   "biceps"
+  ],
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "primaryFamilyId": "fam.biceps_curl",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "resolverDefaultEligible": true,
+  "displayName": "Single-Arm Band Curl",
   "hasCues": true
  }
 ];
