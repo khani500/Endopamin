@@ -14726,7 +14726,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
-  "displayName": "EZ-Bar Skull Crusher",
+  "displayName": "Barbell Skull Crusher",
   "hasCues": false
  },
  {
@@ -19438,7 +19438,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
-  "displayName": "Incline Barbell Triceps Extension",
+  "displayName": "Incline EZ-Bar Triceps Extension",
   "hasCues": false
  },
  {
