@@ -57,6 +57,7 @@ export const EXERCISE_REGISTRY = [
    "reasonCode": "context_restricted_selection"
   },
   "catalogVisibility": "hidden",
+  "displayName": "3/4 Sit-Up",
   "hasCues": false
  },
  {
@@ -152,6 +153,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Machine Crunch",
   "hasCues": false
  },
  {
@@ -500,6 +507,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Alternating Hammer Curl",
   "hasCues": true
  },
  {
@@ -601,6 +609,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Alternating Incline Dumbbell Curl",
   "hasCues": false
  },
  {
@@ -725,6 +734,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Alternating Cable Shoulder Press",
   "hasCues": false
  },
  {
@@ -1932,6 +1947,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Stability Ball Leg Curl",
   "hasCues": false
  },
  {
@@ -1983,6 +1999,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Band-Assisted Pull-Up",
   "hasCues": true
  },
  {
@@ -2049,6 +2066,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Band Good Morning",
   "hasCues": false
  },
  {
@@ -2238,6 +2256,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Band Pull-Apart",
   "hasCues": true
  },
  {
@@ -2462,6 +2481,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Bench Press",
   "hasCues": false
  },
  {
@@ -2517,6 +2537,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Curl",
   "hasCues": true
  },
  {
@@ -2634,6 +2655,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Deadlift",
   "hasCues": false
  },
  {
@@ -2767,6 +2789,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Glute Bridge",
   "hasCues": false
  },
  {
@@ -2897,6 +2920,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Hack Squat",
   "hasCues": false
  },
  {
@@ -2964,6 +2988,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Hip Thrust",
   "hasCues": false
  },
  {
@@ -3029,6 +3054,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Barbell Bench Press",
   "hasCues": false
  },
  {
@@ -3143,6 +3169,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Lunge",
   "hasCues": true
  },
  {
@@ -3193,6 +3220,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Rear Delt Row",
   "hasCues": false
  },
  {
@@ -3244,6 +3272,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Rollout (Knees on Bench)",
   "hasCues": false
  },
  {
@@ -3352,6 +3381,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Barbell Overhead Press",
   "hasCues": true
  },
  {
@@ -3566,6 +3596,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Lateral Lunge",
   "hasCues": false
  },
  {
@@ -3632,6 +3663,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Back Squat",
   "hasCues": true
  },
  {
@@ -3820,6 +3852,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Barbell Walking Lunge",
   "hasCues": false
  },
  {
@@ -4177,6 +4215,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Powerlifting Bench Press",
   "hasCues": false
  },
  {
@@ -4243,6 +4287,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Band Bench Press",
   "hasCues": false
  },
  {
@@ -4590,6 +4635,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Bent-Over Barbell Row",
   "hasCues": true
  },
  {
@@ -4643,6 +4689,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Head-Supported Dumbbell Rear Delt Fly",
   "hasCues": false
  },
  {
@@ -4698,6 +4745,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Bent-Over One-Arm Cable Lateral Raise",
   "hasCues": false
  },
  {
@@ -4848,6 +4896,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Bent-Over Dumbbell Row",
   "hasCues": false
  },
  {
@@ -4897,6 +4951,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Bent-Over Dumbbell Row",
   "hasCues": false
  },
  {
@@ -5414,6 +5469,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "intermediate",
+  "displayName": "Bodyweight Squat",
   "hasCues": true
  },
  {
@@ -5474,6 +5530,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Bodyweight Walking Lunge",
   "hasCues": true
  },
  {
@@ -6193,6 +6250,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "intermediate",
+  "displayName": "Glute Bridge",
   "hasCues": false
  },
  {
@@ -6320,6 +6378,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Cable Chest Press",
   "hasCues": false
  },
  {
@@ -6384,6 +6443,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Cable Crossover",
   "hasCues": false
  },
  {
@@ -6430,6 +6490,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Cable Crunch",
   "hasCues": false
  },
  {
@@ -6495,6 +6556,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Cable Deadlift",
   "hasCues": false
  },
  {
@@ -6549,6 +6611,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Cable Rope Hammer Curl",
   "hasCues": false
  },
  {
@@ -6710,6 +6773,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Cable Triceps Extension",
   "hasCues": false
  },
  {
@@ -6928,6 +6992,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Lying Cable Triceps Extension",
   "hasCues": false
  },
  {
@@ -6980,6 +7045,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Reverse-Grip Triceps Pushdown",
   "hasCues": false
  },
  {
@@ -7034,6 +7100,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Cable Preacher Curl",
   "hasCues": false
  },
  {
@@ -7086,6 +7153,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "High-Cable Rear Delt Fly",
   "hasCues": false
  },
  {
@@ -7132,6 +7200,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Cable Reverse Crunch",
   "hasCues": false
  },
  {
@@ -7185,6 +7254,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Overhead Cable Rope Triceps Extension",
   "hasCues": true
  },
  {
@@ -7289,6 +7359,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Stability Ball Cable Russian Twist",
   "hasCues": false
  },
  {
@@ -7335,6 +7406,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Cable Crunch",
   "hasCues": false
  },
  {
@@ -7391,6 +7463,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Cable Lateral Raise",
   "hasCues": true
  },
  {
@@ -7445,6 +7518,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Standing Cable Shoulder Press",
   "hasCues": false
  },
  {
@@ -7653,6 +7727,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Calf Press",
   "hasCues": false
  },
  {
@@ -7819,6 +7894,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Band Calf Raise",
   "hasCues": false
  },
  {
@@ -9084,6 +9160,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Chin-Up",
   "hasCues": true
  },
  {
@@ -9791,6 +9868,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Close-Grip Barbell Bench Press",
   "hasCues": false
  },
  {
@@ -9911,6 +9989,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Banded Close-Grip EZ-Bar Curl",
   "hasCues": false
  },
  {
@@ -10030,6 +10109,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Close-Grip EZ-Bar Curl",
   "hasCues": false
  },
  {
@@ -10080,6 +10160,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Close-Grip Lat Pulldown",
   "hasCues": false
  },
  {
@@ -10200,6 +10286,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Close-Grip Barbell Curl",
   "hasCues": false
  },
  {
@@ -10368,6 +10455,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Concentration Curl",
   "hasCues": false
  },
  {
@@ -10414,6 +10502,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Cross-Body Crunch",
   "hasCues": false
  },
  {
@@ -10468,6 +10557,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Cross-Body Hammer Curl",
   "hasCues": false
  },
  {
@@ -10694,6 +10784,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Long-Arm Crunch",
   "hasCues": false
  },
  {
@@ -10740,6 +10831,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Feet-on-Stability-Ball Crunch",
   "hasCues": false
  },
  {
@@ -10786,6 +10883,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Crunch",
   "hasCues": false
  },
  {
@@ -10946,6 +11044,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
+  "displayName": "Dead Bug",
   "hasCues": true
  },
  {
@@ -11812,6 +11911,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Deficit Deadlift",
   "hasCues": false
  },
  {
@@ -12007,6 +12112,7 @@ export const EXERCISE_REGISTRY = [
    "reasonCode": "equipment_vocabulary_gap"
   },
   "catalogVisibility": "hidden",
+  "displayName": "Chest Dip",
   "hasCues": false
  },
  {
@@ -12299,6 +12405,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Double Kettlebell Push Press",
   "hasCues": false
  },
  {
@@ -12597,6 +12704,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Drag Curl",
   "hasCues": false
  },
  {
@@ -12718,6 +12826,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Alternating Dumbbell Curl",
   "hasCues": false
  },
  {
@@ -12785,6 +12894,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Bench Press",
   "hasCues": true
  },
  {
@@ -12851,6 +12961,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Neutral-Grip Dumbbell Bench Press",
   "hasCues": false
  },
  {
@@ -12906,6 +13017,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Curl",
   "hasCues": true
  },
  {
@@ -13108,6 +13220,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Fly",
   "hasCues": false
  },
  {
@@ -13159,6 +13272,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Dumbbell Row",
   "hasCues": false
  },
  {
@@ -13272,6 +13386,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Lunge",
   "hasCues": false
  },
  {
@@ -13546,6 +13661,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Dumbbell Shoulder Press",
   "hasCues": false
  },
  {
@@ -13653,6 +13769,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Dumbbell Upright Row",
   "hasCues": false
  },
  {
@@ -13708,6 +13825,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Dumbbell Spider Curl",
   "hasCues": false
  },
  {
@@ -13821,6 +13939,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Reverse Lunge",
   "hasCues": false
  },
  {
@@ -13996,6 +14115,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated One-Leg Dumbbell Calf Raise",
   "hasCues": false
  },
  {
@@ -14348,6 +14468,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Step-Up",
   "hasCues": true
  },
  {
@@ -14401,6 +14522,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Overhand-Grip Lying Dumbbell Triceps Extension",
   "hasCues": false
  },
  {
@@ -14551,6 +14673,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "EZ-Bar Curl",
   "hasCues": false
  },
  {
@@ -14603,6 +14726,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "EZ-Bar Skull Crusher",
   "hasCues": false
  },
  {
@@ -14952,6 +15076,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Stability Ball Crunch",
   "hasCues": false
  },
  {
@@ -15268,6 +15393,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Face Pull",
   "hasCues": true
  },
  {
@@ -15504,6 +15630,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Flat Bench Cable Fly",
   "hasCues": false
  },
  {
@@ -15656,6 +15783,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Offset-Grip Incline Dumbbell Curl",
   "hasCues": false
  },
  {
@@ -16244,6 +16372,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Frog Crunch",
   "hasCues": false
  },
  {
@@ -16499,6 +16628,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Cable Front Raise",
   "hasCues": false
  },
  {
@@ -16621,6 +16751,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Alternating Dumbbell Front Raise",
   "hasCues": false
  },
  {
@@ -16772,6 +16903,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Plate Front Raise",
   "hasCues": false
  },
  {
@@ -16896,6 +17028,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Clean-Grip Barbell Front Squat",
   "hasCues": false
  },
  {
@@ -16961,6 +17094,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Double Kettlebell Front Squat",
   "hasCues": false
  },
  {
@@ -17063,6 +17197,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Crossed-Handle Cable Lat Pulldown",
   "hasCues": false
  },
  {
@@ -17168,6 +17308,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Glute-Ham Raise",
   "hasCues": false
  },
  {
@@ -17282,6 +17423,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Kettlebell Goblet Squat",
   "hasCues": true
  },
  {
@@ -17349,6 +17491,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Good Morning",
   "hasCues": true
  },
  {
@@ -17415,6 +17558,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Good Morning off Pins",
   "hasCues": false
  },
  {
@@ -17626,6 +17775,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Machine Hack Squat",
   "hasCues": true
  },
  {
@@ -17680,6 +17830,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Hammer Curl",
   "hasCues": false
  },
  {
@@ -17746,6 +17897,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Neutral-Grip Incline Dumbbell Bench Press",
   "hasCues": false
  },
  {
@@ -18250,6 +18402,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Hanging Bar Good Morning",
   "hasCues": false
  },
  {
@@ -19280,6 +19438,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Barbell Triceps Extension",
   "hasCues": false
  },
  {
@@ -19458,6 +19617,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Cable Fly",
   "hasCues": false
  },
  {
@@ -19578,6 +19738,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Dumbbell Curl",
   "hasCues": false
  },
  {
@@ -19643,6 +19804,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Dumbbell Fly",
   "hasCues": false
  },
  {
@@ -19776,6 +19938,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Incline Dumbbell Press",
   "hasCues": true
  },
  {
@@ -19831,6 +19994,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Hammer Curl",
   "hasCues": false
  },
  {
@@ -19886,6 +20050,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Dumbbell Outward Curl",
   "hasCues": false
  },
  {
@@ -21009,6 +21174,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Jackknife Sit-Up",
   "hasCues": false
  },
  {
@@ -21055,6 +21221,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Janda Sit-Up",
   "hasCues": false
  },
  {
@@ -21427,6 +21599,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Kettlebell Arnold Press",
   "hasCues": false
  },
  {
@@ -21682,6 +21855,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Single-Leg Kettlebell Romanian Deadlift",
   "hasCues": false
  },
  {
@@ -22151,6 +22330,7 @@ export const EXERCISE_REGISTRY = [
    "reasonCode": "context_restricted_selection"
   },
   "catalogVisibility": "hidden",
+  "displayName": "Kettlebell Turkish Get-Up",
   "hasCues": false
  },
  {
@@ -22642,6 +22822,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Kneeling Cable Crunch with Alternating Twist",
   "hasCues": false
  },
  {
@@ -22694,6 +22880,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Kneeling Cable Triceps Extension",
   "hasCues": false
  },
  {
@@ -23402,6 +23589,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Band Lateral Raise",
   "hasCues": false
  },
  {
@@ -23619,6 +23807,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Leg Extension",
   "hasCues": true
  },
  {
@@ -23732,6 +23921,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Leg Press",
   "hasCues": true
  },
  {
@@ -23909,6 +24099,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Machine Deadlift",
   "hasCues": false
  },
  {
@@ -23974,6 +24165,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Decline Machine Chest Press",
   "hasCues": false
  },
  {
@@ -24022,6 +24214,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Machine High Row",
   "hasCues": false
  },
  {
@@ -24087,6 +24280,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Machine Chest Press",
   "hasCues": false
  },
  {
@@ -24136,6 +24330,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Machine Row",
   "hasCues": false
  },
  {
@@ -24191,6 +24386,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Plate-Loaded Machine Shoulder Press",
   "hasCues": true
  },
  {
@@ -24673,6 +24869,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Low Cable Crossover",
   "hasCues": false
  },
  {
@@ -24725,6 +24922,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Lying Low-Cable Rope Triceps Extension",
   "hasCues": false
  },
  {
@@ -24939,6 +25137,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Kettlebell Lunge Pass-Through",
   "hasCues": false
  },
  {
@@ -25101,6 +25300,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Lying Cable Curl",
   "hasCues": false
  },
  {
@@ -25205,6 +25405,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Lying High-Cable Curl",
   "hasCues": false
  },
  {
@@ -25257,6 +25458,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Lying Overhead Barbell Triceps Extension",
   "hasCues": false
  },
  {
@@ -25309,6 +25511,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Lying Barbell Triceps Extension to Chin",
   "hasCues": false
  },
  {
@@ -25409,6 +25612,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Lying Dumbbell Triceps Extension",
   "hasCues": false
  },
  {
@@ -25668,6 +25872,7 @@ export const EXERCISE_REGISTRY = [
    "reasonCode": "equipment_vocabulary_gap"
   },
   "catalogVisibility": "hidden",
+  "displayName": "Barbell Spider Curl",
   "hasCues": false
  },
  {
@@ -25722,6 +25927,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Lying Leg Curl",
   "hasCues": false
  },
  {
@@ -25841,6 +26047,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Prone One-Arm Dumbbell Lateral Raise",
   "hasCues": false
  },
  {
@@ -25996,6 +26203,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Lying Dumbbell Curl",
   "hasCues": false
  },
  {
@@ -26045,6 +26253,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Chest-Supported T-Bar Row",
   "hasCues": false
  },
  {
@@ -26162,6 +26371,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Machine Chest Press",
   "hasCues": false
  },
  {
@@ -26216,6 +26426,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Machine Biceps Curl",
   "hasCues": false
  },
  {
@@ -26270,6 +26481,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Machine Preacher Curl",
   "hasCues": false
  },
  {
@@ -26324,6 +26536,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Machine Shoulder Press",
   "hasCues": false
  },
  {
@@ -26376,6 +26589,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Machine Triceps Extension",
   "hasCues": false
  },
  {
@@ -27075,6 +27289,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Narrow-Stance Machine Hack Squat",
   "hasCues": false
  },
  {
@@ -27139,6 +27354,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Narrow-Stance Leg Press",
   "hasCues": false
  },
  {
@@ -27461,6 +27682,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Oblique Crunch",
   "hasCues": false
  },
  {
@@ -27674,6 +27896,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Dumbbell Row",
   "hasCues": false
  },
  {
@@ -27739,6 +27962,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Dumbbell Fly",
   "hasCues": false
  },
  {
@@ -27838,6 +28062,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Side-Lying Incline Dumbbell Lateral Raise",
   "hasCues": false
  },
  {
@@ -28141,6 +28366,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Kettlebell Side Press",
   "hasCues": false
  },
  {
@@ -28249,6 +28475,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Kettlebell Push Press",
   "hasCues": false
  },
  {
@@ -28917,6 +29144,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Lean-Away One-Arm Dumbbell Lateral Raise",
   "hasCues": false
  },
  {
@@ -29128,6 +29356,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Dumbbell Bench Press",
   "hasCues": false
  },
  {
@@ -29300,6 +29529,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Lat Pulldown",
   "hasCues": true
  },
  {
@@ -30122,6 +30352,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Pallof Press",
   "hasCues": true
  },
  {
@@ -30170,6 +30401,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Pallof Press with Rotation",
   "hasCues": false
  },
  {
@@ -30646,6 +30878,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Stability Ball Hip Thrust",
   "hasCues": false
  },
  {
@@ -30813,6 +31046,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
+  "displayName": "Plank",
   "hasCues": true
  },
  {
@@ -31734,6 +31968,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "EZ-Bar Preacher Curl",
   "hasCues": false
  },
  {
@@ -32071,6 +32306,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Pull-Up",
   "hasCues": false
  },
  {
@@ -32137,6 +32373,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Wide-Grip Push-Up",
   "hasCues": true
  },
  {
@@ -32192,6 +32429,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Close-Grip Push-Up",
   "hasCues": false
  },
  {
@@ -32327,6 +32565,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Stability Ball Decline Push-Up",
   "hasCues": false
  },
  {
@@ -32495,6 +32734,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Push-Up to Side Plank",
   "hasCues": false
  },
  {
@@ -32560,6 +32800,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Push-Up",
   "hasCues": false
  },
  {
@@ -33274,6 +33515,7 @@ export const EXERCISE_REGISTRY = [
    "reasonCode": "context_restricted_selection"
   },
   "catalogVisibility": "hidden",
+  "displayName": "Reverse Band Bench Press",
   "hasCues": false
  },
  {
@@ -33614,6 +33856,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Reverse Barbell Curl",
   "hasCues": false
  },
  {
@@ -33668,6 +33911,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Reverse EZ-Bar Preacher Curl",
   "hasCues": false
  },
  {
@@ -33722,6 +33966,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Reverse Cable Curl",
   "hasCues": false
  },
  {
@@ -33768,6 +34013,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Reverse Crunch",
   "hasCues": false
  },
  {
@@ -33824,6 +34070,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Dumbbell Rear Delt Fly",
   "hasCues": false
  },
  {
@@ -33880,6 +34127,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline Dumbbell Rear Delt Fly with External Rotation",
   "hasCues": false
  },
  {
@@ -33982,6 +34230,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Reverse-Grip Triceps Pushdown",
   "hasCues": false
  },
  {
@@ -34045,6 +34294,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Reverse Hyperextension",
   "hasCues": false
  },
  {
@@ -34145,6 +34395,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Reverse Plate Curl",
   "hasCues": false
  },
  {
@@ -34200,6 +34451,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Reverse-Grip Bench Press",
   "hasCues": false
  },
  {
@@ -34555,6 +34807,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Rocking Barbell Calf Raise",
   "hasCues": false
  },
  {
@@ -34670,6 +34923,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Romanian Deadlift",
   "hasCues": true
  },
  {
@@ -35193,6 +35447,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Russian Twist",
   "hasCues": false
  },
  {
@@ -35317,6 +35572,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Scapular Pull-Up",
   "hasCues": false
  },
  {
@@ -35647,6 +35903,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated One-Arm Dumbbell Kickback",
   "hasCues": false
  },
  {
@@ -35700,6 +35957,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Bent-Over Dumbbell Rear Delt Fly",
   "hasCues": false
  },
  {
@@ -35753,6 +36011,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Two-Arm Dumbbell Kickback",
   "hasCues": false
  },
  {
@@ -35854,6 +36113,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Cable Row",
   "hasCues": true
  },
  {
@@ -35908,6 +36168,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Cable Shoulder Press",
   "hasCues": false
  },
  {
@@ -35960,6 +36221,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Calf Raise",
   "hasCues": false
  },
  {
@@ -36064,6 +36326,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Close-Grip Barbell Concentration Curl",
   "hasCues": false
  },
  {
@@ -36119,6 +36382,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Dumbbell Curl",
   "hasCues": false
  },
  {
@@ -36174,6 +36438,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Dumbbell Outward Curl",
   "hasCues": false
  },
  {
@@ -36594,6 +36859,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Good Morning",
   "hasCues": false
  },
  {
@@ -36798,6 +37064,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Leg Curl",
   "hasCues": false
  },
  {
@@ -37204,6 +37471,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Dumbbell Lateral Raise",
   "hasCues": false
  },
  {
@@ -37515,6 +37783,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Band Shoulder Press",
   "hasCues": false
  },
  {
@@ -37877,6 +38146,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Lateral Raise",
   "hasCues": true
  },
  {
@@ -38378,6 +38648,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Alternating Cable Crossover",
   "hasCues": false
  },
  {
@@ -38498,6 +38774,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Push-Up",
   "hasCues": false
  },
  {
@@ -38826,6 +39103,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Single-Leg Leg Extension",
   "hasCues": false
  },
  {
@@ -39082,6 +39360,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Single-Leg Glute Bridge (Knee to Chest)",
   "hasCues": true
  },
  {
@@ -39200,6 +39479,7 @@ export const EXERCISE_REGISTRY = [
    "reasonCode": "context_restricted_selection"
   },
   "catalogVisibility": "hidden",
+  "displayName": "Sit-Up",
   "hasCues": false
  },
  {
@@ -39605,6 +39885,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Sled Rear Delt Fly",
   "hasCues": false
  },
  {
@@ -39654,6 +39935,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Sled Row",
   "hasCues": false
  },
  {
@@ -39887,6 +40169,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Smith Machine Bench Press",
   "hasCues": false
  },
  {
@@ -39937,6 +40220,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Smith Machine Bent-Over Row",
   "hasCues": false
  },
  {
@@ -39989,6 +40273,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Smith Machine Calf Raise",
   "hasCues": false
  },
  {
@@ -40054,6 +40339,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Smith Machine Close-Grip Bench Press",
   "hasCues": false
  },
  {
@@ -40298,6 +40584,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Smith Machine Incline Bench Press",
   "hasCues": false
  },
  {
@@ -40419,6 +40706,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Smith Machine Upright Row",
   "hasCues": false
  },
  {
@@ -40473,6 +40761,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Smith Machine Shoulder Press",
   "hasCues": false
  },
  {
@@ -40537,6 +40826,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Smith Machine Pistol Squat",
   "hasCues": false
  },
  {
@@ -40592,6 +40887,7 @@ export const EXERCISE_REGISTRY = [
    "reasonCode": "equipment_vocabulary_gap"
   },
   "catalogVisibility": "hidden",
+  "displayName": "Smith Machine Toe Raise",
   "hasCues": false
  },
  {
@@ -40658,6 +40954,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Smith Machine Squat",
   "hasCues": true
  },
  {
@@ -40722,6 +41019,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Smith Machine Stiff-Legged Deadlift",
   "hasCues": false
  },
  {
@@ -40777,6 +41080,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Smith Machine Upright Row",
   "hasCues": false
  },
  {
@@ -40837,6 +41141,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Smith Machine Bulgarian Split Squat",
   "hasCues": false
  },
  {
@@ -41588,6 +41893,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Preacher-Bench Spider Curl",
   "hasCues": false
  },
  {
@@ -41973,6 +42279,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Bulgarian Split Squat",
   "hasCues": false
  },
  {
@@ -42367,6 +42674,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Band Squat",
   "hasCues": false
  },
  {
@@ -42523,6 +42831,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Calf Raise",
   "hasCues": false
  },
  {
@@ -42629,6 +42938,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Dumbbell Kickback",
   "hasCues": false
  },
  {
@@ -42681,6 +42991,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Two-Arm Dumbbell Kickback",
   "hasCues": false
  },
  {
@@ -42735,6 +43046,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Cable Curl",
   "hasCues": false
  },
  {
@@ -42904,6 +43216,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Standing Cable Chest Press",
   "hasCues": false
  },
  {
@@ -43014,6 +43332,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Standing Cable Wood Chop",
   "hasCues": false
  },
  {
@@ -43067,6 +43386,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Standing Machine Calf Raise",
   "hasCues": true
  },
  {
@@ -43121,6 +43441,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Standing Dumbbell Concentration Curl",
   "hasCues": false
  },
  {
@@ -43173,6 +43494,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Calf Raise",
   "hasCues": false
  },
  {
@@ -43281,6 +43603,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Reverse Dumbbell Curl",
   "hasCues": false
  },
  {
@@ -43385,6 +43708,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Overhead Dumbbell Triceps Extension",
   "hasCues": false
  },
  {
@@ -43440,6 +43764,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Upright Row",
   "hasCues": false
  },
  {
@@ -43539,6 +43864,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Barbell Front Raise to Overhead",
   "hasCues": false
  },
  {
@@ -43786,6 +44112,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Outward Curl",
   "hasCues": false
  },
  {
@@ -43888,6 +44215,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Standing Leg Curl",
   "hasCues": false
  },
  {
@@ -44062,6 +44390,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Overhead Cable Triceps Extension",
   "hasCues": false
  },
  {
@@ -44116,6 +44445,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Standing Barbell Military Press",
   "hasCues": false
  },
  {
@@ -44224,6 +44554,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Cable Curl",
   "hasCues": false
  },
  {
@@ -44279,6 +44610,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Incline-Bench One-Arm Dumbbell Curl",
   "hasCues": false
  },
  {
@@ -44331,6 +44663,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "One-Arm Overhead Dumbbell Triceps Extension",
   "hasCues": false
  },
  {
@@ -44383,6 +44716,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Overhead Barbell Triceps Extension",
   "hasCues": false
  },
  {
@@ -44644,6 +44978,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Standing Rope Crunch",
   "hasCues": false
  },
  {
@@ -45102,6 +45437,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Stiff-Legged Barbell Deadlift",
   "hasCues": false
  },
  {
@@ -45166,6 +45502,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Stiff-Legged Dumbbell Deadlift",
   "hasCues": false
  },
  {
@@ -45612,6 +45949,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Sumo Deadlift",
   "hasCues": true
  },
  {
@@ -45680,6 +46018,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Banded Sumo Deadlift",
   "hasCues": false
  },
  {
@@ -46107,6 +46451,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
+  "displayName": "Suspension Push-Up",
   "hasCues": false
  },
  {
@@ -46153,6 +46503,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Suspension Knee Tuck",
   "hasCues": false
  },
  {
@@ -46261,6 +46612,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Suspension Bulgarian Split Squat",
   "hasCues": false
  },
  {
@@ -46376,6 +46728,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "V-Handle T-Bar Row",
   "hasCues": false
  },
  {
@@ -46894,6 +47247,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Trap Bar Deadlift",
   "hasCues": true
  },
  {
@@ -47099,6 +47453,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Triceps Pushdown",
   "hasCues": false
  },
  {
@@ -47151,6 +47506,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Rope Triceps Pushdown",
   "hasCues": false
  },
  {
@@ -47203,6 +47559,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "V-Bar Triceps Pushdown",
   "hasCues": false
  },
  {
@@ -47298,6 +47655,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Tuck Crunch",
   "hasCues": false
  },
  {
@@ -47632,6 +47990,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Close-Grip Underhand Lat Pulldown",
   "hasCues": false
  },
  {
@@ -47882,6 +48241,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Band Upright Row",
   "hasCues": false
  },
  {
@@ -47982,6 +48342,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "V-Bar Lat Pulldown",
   "hasCues": false
  },
  {
@@ -48373,6 +48734,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Medicine Ball Crunch",
   "hasCues": false
  },
  {
@@ -48732,6 +49094,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Wide-Grip Barbell Bench Press",
   "hasCues": false
  },
  {
@@ -48902,6 +49265,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Wide-Grip Lat Pulldown",
   "hasCues": false
  },
  {
@@ -49067,6 +49431,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Wide-Grip Barbell Curl",
   "hasCues": false
  },
  {
@@ -49132,6 +49497,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Wide-Stance Barbell Back Squat",
   "hasCues": false
  },
  {
@@ -49689,6 +50055,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Zottman Curl",
   "hasCues": false
  },
  {
@@ -50008,6 +50375,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Romanian Deadlift",
   "hasCues": true
  },
  {
@@ -50145,6 +50513,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Single-Leg Romanian Deadlift",
   "hasCues": true
  },
  {
@@ -50212,6 +50581,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Kettlebell Swing",
   "hasCues": true
  },
  {
@@ -50541,6 +50911,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Pec Deck Fly",
   "hasCues": true
  },
  {
@@ -51025,6 +51396,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Overhead Press",
   "hasCues": true
  },
  {
@@ -51087,6 +51459,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Bodyweight Reverse Lunge",
   "hasCues": true
  },
  {
@@ -51149,6 +51522,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Walking Lunge",
   "hasCues": true
  },
  {
@@ -51212,6 +51586,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Curtsy Lunge",
   "hasCues": true
  },
  {
@@ -52255,6 +52630,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "beginner",
+  "displayName": "Wall Push-Up",
   "hasCues": true
  },
  {
@@ -52323,6 +52699,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "beginner",
+  "displayName": "Knee Push-Up",
   "hasCues": true
  },
  {
@@ -52459,6 +52836,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Diamond Push-Up",
   "hasCues": true
  },
  {
@@ -52527,6 +52905,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Archer Push-Up",
   "hasCues": true
  },
  {
@@ -52593,6 +52972,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Pike Push-Up",
   "hasCues": true
  },
  {
@@ -52905,6 +53285,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Lateral Lunge",
   "hasCues": true
  },
  {
@@ -53021,6 +53402,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
+  "displayName": "Bird Dog",
   "hasCues": true
  },
  {
@@ -53072,6 +53454,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
+  "displayName": "Side Plank",
   "hasCues": true
  },
  {
@@ -53124,6 +53507,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
+  "displayName": "Plank with Shoulder Tap",
   "hasCues": true
  },
  {
@@ -53174,6 +53558,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
+  "displayName": "Side Plank with Hip Dip",
   "hasCues": true
  },
  {
@@ -53222,6 +53607,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Mountain Climber",
   "hasCues": true
  },
  {
@@ -53269,6 +53655,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Cross-Body Mountain Climber",
   "hasCues": true
  },
  {
@@ -53411,6 +53798,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Bicycle Crunch",
   "hasCues": true
  },
  {
@@ -55284,6 +55672,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Seated Band Row",
   "hasCues": true
  },
  {
@@ -55336,6 +55725,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Bodyweight Calf Raise",
   "hasCues": true
  },
  {
@@ -55390,6 +55780,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Band Curl",
   "hasCues": true
  },
  {
@@ -55446,6 +55837,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Standing Band Low-to-High Wood Chop",
   "hasCues": true
  },
  {
@@ -55560,6 +55952,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "beginner",
+  "displayName": "Bodyweight Single-Leg Romanian Deadlift",
   "hasCues": true
  },
  {
@@ -55837,6 +56230,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Dumbbell Goblet Squat",
   "hasCues": true
  },
  {
@@ -55896,6 +56290,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Bodyweight Split Squat",
   "hasCues": true
  },
  {
@@ -55946,6 +56341,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "displayName": "Half-Kneeling One-Arm Band Pulldown",
   "hasCues": true
  },
  {
@@ -56010,6 +56406,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Single-Leg Glute Bridge",
   "hasCues": true
  }
 ];
