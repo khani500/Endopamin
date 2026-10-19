@@ -55836,7 +55836,7 @@ export const EXERCISE_REGISTRY = [
   "primaryFamilyId": "fam.goblet_squat",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "hasCues": true
  },
  {
@@ -55895,7 +55895,7 @@ export const EXERCISE_REGISTRY = [
   "primaryFamilyId": "fam.split_squat",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "hasCues": true
  },
  {
@@ -55945,7 +55945,7 @@ export const EXERCISE_REGISTRY = [
   "primaryFamilyId": "fam.lat_pulldown",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "hasCues": true
  },
  {
