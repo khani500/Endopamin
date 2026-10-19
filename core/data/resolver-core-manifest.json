@@ -5,8 +5,8 @@
  "files": [
   {
    "path": "data/exerciseRegistryIndex.js",
-   "sha256": "776eaf6a078477b8ce8f6e5166f27693d4de94f748bcac709cb00070fd3cee5d",
-   "bytes": 1205384
+   "sha256": "006bcca971f9fae9fa9122df5f636b5d58c8a8ece3c70a158fd0e0867963c403",
+   "bytes": 1207120
   },
   {
    "path": "lib/plan/capabilityMap.js",
@@ -35,8 +35,8 @@
   },
   {
    "path": "lib/plan/reviewedPrescriptionInputs.js",
-   "sha256": "cb558c8422d82f0df365e905cf145390845b79dcd6387aaeab4ae383ca886215",
-   "bytes": 47328
+   "sha256": "709e8161c0ee2fa5410f1263800b97e7dd12c31d68e544ba689175822b3e7bd7",
+   "bytes": 47331
   },
   {
    "path": "lib/plan/roleTypePolicy.js",
@@ -54,5 +54,5 @@
    "bytes": 6147
   }
  ],
- "coreHash": "0c1e99cbf8f37048036dc30512373927672333255556b01bfcdf60f41aa279b7"
+ "coreHash": "7d343e4b310d2f2d8353d6cca74fc994e98f0024dc0464fae229fbffe761295e"
 }

@@ -6993,6 +6993,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Lying Cable Triceps Extension",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -9990,6 +9995,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Banded Close-Grip EZ-Bar Curl",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -15784,6 +15794,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Offset-Grip Incline Dumbbell Curl",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -24923,6 +24938,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Lying Low-Cable Rope Triceps Extension",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -25301,6 +25321,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Lying Cable Curl",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -25512,6 +25537,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Lying Barbell Triceps Extension to Chin",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -26204,6 +26234,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Lying Dumbbell Curl",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -26427,6 +26462,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Machine Biceps Curl",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -34396,6 +34436,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Reverse Plate Curl",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -34808,6 +34853,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Rocking Barbell Calf Raise",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -40274,6 +40324,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Smith Machine Calf Raise",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -40707,6 +40762,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Smith Machine Upright Row",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -41894,6 +41954,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Preacher-Bench Spider Curl",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
@@ -44216,6 +44281,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Standing Leg Curl",
+  "planPolicy": {
+   "status": "excluded",
+   "reasonCode": "superseded_by_canonical"
+  },
+  "catalogVisibility": "hidden",
   "hasCues": false
  },
  {
