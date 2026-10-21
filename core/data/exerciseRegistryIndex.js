@@ -14700,7 +14700,8 @@ export const EXERCISE_REGISTRY = [
   ],
   "secondaryMuscles": [],
   "equipment": [
-   "barbell"
+   "barbell",
+   "bench"
   ],
   "mechanic": "isolation",
   "force": "push",
@@ -29184,7 +29185,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
-  "displayName": "Lean-Away One-Arm Dumbbell Lateral Raise",
+  "displayName": "Bench-Supported One-Arm Dumbbell Lateral Raise",
   "hasCues": false
  },
  {
