@@ -11,6 +11,9 @@
     "api/gemini.js": {
       "maxDuration": 30
     },
+    "api/exercise-media.js": {
+      "maxDuration": 15
+    },
     "api/usda-search.js": {
       "maxDuration": 15
     }

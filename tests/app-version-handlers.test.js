@@ -77,6 +77,7 @@ function fakeRes() {
 // one-letter query (400). Reaching that check proves the guard let it through.
 const guardedHandlers = [
   { name: 'entitlement-sync', method: 'GET', query: {}, passStatus: 405 },
+  { name: 'exercise-media', method: 'GET', query: {}, passStatus: 405, passCode: 'method_not_allowed' },
   { name: 'gemini', method: 'GET', query: {}, passStatus: 405 },
   { name: 'replace-plans', method: 'GET', query: {}, passStatus: 405 },
   { name: 'save-profile', method: 'GET', query: {}, passStatus: 405 },

@@ -8,6 +8,7 @@ import {
   parseCli,
   pathsForExternalMediaId,
   validateManifest,
+  withOperationTimeout,
 } from '../../scripts/media/exerciseMedia.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -41,4 +42,11 @@ test('classifies an existing object as identical or mismatch by full sha256', ()
   const local = Buffer.from('GIF89a-local');
   assert.equal(existingObjectDecision(local, Buffer.from(local)), 'skipped_identical');
   assert.equal(existingObjectDecision(local, Buffer.from('GIF89a-other')), 'mismatch');
+});
+
+test('rejects a request promise that never settles instead of allowing a silent exit', async () => {
+  await assert.rejects(
+    withOperationTimeout(new Promise(() => {}), 5, 'test request'),
+    /test request timed out after 5 ms/,
+  );
 });

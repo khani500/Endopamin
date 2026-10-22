@@ -12,6 +12,7 @@ export const LIMITS = {
   'replace-plans': { ipPerMinute: 30, userPerMinute: 5 },
   'save-profile': { ipPerMinute: 60, userPerMinute: 10 },
   'entitlement-sync': { ipPerMinute: 30, userPerMinute: 6 },
+  'exercise-media': { ipPerMinute: 120, userPerMinute: 30 },
   'usda-search': { ipPerMinute: 120, userPerMinute: 30 },
 };
 

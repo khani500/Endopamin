@@ -6,6 +6,7 @@
  * prints keys, or writes credentials to its JSON reports.
  */
 import { createHash, randomUUID } from 'node:crypto';
+import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -18,6 +19,7 @@ const BUCKET = 'exercise-media';
 const SMOKE_OBJECT = 'V1/exercisedb/0025/0025-360.gif';
 const CONCURRENCY = 4;
 const RETRIES = 2;
+const OPERATION_TIMEOUT_MS = 30_000;
 const MANIFEST_KEYS = ['manifestVersion', 'mediaVersion', 'recordCount', 'media', 'sha256'];
 const MEDIA_KEYS = ['provider', 'externalMediaId', 'mediaVersion', 'animationPath', 'thumbnailPath'];
 const EXERCISE_ID = /^[a-z][a-z0-9_]*$/;
@@ -153,11 +155,23 @@ function message(error) {
   return error instanceof Error ? error.message : String(error);
 }
 
+export async function withOperationTimeout(operation, timeoutMs = OPERATION_TIMEOUT_MS, label = 'operation') {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs} ms`)), timeoutMs);
+  });
+  try {
+    return await Promise.race([Promise.resolve(operation), timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function retry(label, operation, retries = RETRIES) {
   let lastError;
   for (let attempt = 0; attempt <= retries; attempt += 1) {
     try {
-      return await operation();
+      return await withOperationTimeout(Promise.resolve().then(operation), OPERATION_TIMEOUT_MS, label);
     } catch (error) {
       lastError = error;
       if (attempt < retries) await sleep(250 * (2 ** attempt));
@@ -175,13 +189,13 @@ async function dataOrThrow(label, operation) {
 }
 
 async function dataOnce(label, operation) {
-  const result = await operation();
+  const result = await withOperationTimeout(Promise.resolve().then(operation), OPERATION_TIMEOUT_MS, label);
   if (result.error) throw new Error(`${label}: ${result.error.message}`);
   return result.data;
 }
 
 async function bytesFromBlob(blob) {
-  return Buffer.from(await blob.arrayBuffer());
+  return Buffer.from(await withOperationTimeout(blob.arrayBuffer(), OPERATION_TIMEOUT_MS, 'blob read'));
 }
 
 async function concurrent(items, limit, worker) {
@@ -203,7 +217,7 @@ async function loadManifest() {
   return validateManifest(parsed);
 }
 
-async function runSmoke() {
+async function runSmoke(report) {
   const env = requiredEnv(['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']);
   const admin = client(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
   const token = randomUUID();
@@ -226,29 +240,37 @@ async function runSmoke() {
     const inserted = await dataOnce('smoke INSERT', () => admin.from('exercise_media').insert(row).select('id,license_source').single());
     insertedId = inserted.id;
     if (!insertedId) throw new Error('smoke INSERT returned no id');
+    report.counts.passed += 1;
 
     const selected = await dataOrThrow('smoke SELECT', () => admin.from('exercise_media').select('id,external_media_id,active').eq('id', insertedId).single());
     if (selected.external_media_id !== token || selected.active !== false) throw new Error('smoke SELECT returned unexpected data');
+    report.counts.passed += 1;
 
     const updated = await dataOnce('smoke UPDATE', () => admin.from('exercise_media')
       .update({ license_source: 'd3-service-role-smoke-updated' }).eq('id', insertedId).select('id,license_source').single());
     if (updated.license_source !== 'd3-service-role-smoke-updated') throw new Error('smoke UPDATE did not persist');
+    report.counts.passed += 1;
 
     const deleted = await dataOnce('smoke DELETE', () => admin.from('exercise_media').delete().eq('id', insertedId).select('id').single());
     if (deleted.id !== insertedId) throw new Error('smoke DELETE returned the wrong row');
     insertedId = null;
+    report.counts.passed += 1;
 
     const storage = admin.storage.from(BUCKET);
     const listed = await dataOrThrow('smoke storage list', () => storage.list('V1/exercisedb/0025', { limit: 100 }));
     if (!listed.some((entry) => entry.name === '0025-360.gif')) throw new Error(`smoke object is absent: ${SMOKE_OBJECT}`);
+    report.counts.passed += 1;
     const signed = await dataOrThrow('smoke signed URL', () => storage.createSignedUrl(SMOKE_OBJECT, 60));
     if (!signed?.signedUrl) throw new Error('smoke signed URL response was empty');
+    report.counts.passed += 1;
     const downloaded = await retry('smoke signed download', async () => {
       const response = await fetch(signed.signedUrl);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return Buffer.from(await response.arrayBuffer());
     });
     if (downloaded.length === 0 || !hasGifMagic(downloaded)) throw new Error('smoke signed download is empty or not GIF');
+    report.totalBytes = downloaded.length;
+    report.counts.passed += 1;
   } catch (error) {
     primaryError = error;
   } finally {
@@ -266,7 +288,6 @@ async function runSmoke() {
   if (primaryError && cleanupError) throw new Error(`${message(primaryError)}; cleanup also failed: ${message(cleanupError)}`);
   if (primaryError) throw primaryError;
   if (cleanupError) throw cleanupError;
-  console.log('SMOKE_OK: service-role table CRUD and private storage list/sign/download passed');
 }
 
 async function firstPublicAvatar(storage) {
@@ -285,22 +306,42 @@ async function firstPublicAvatar(storage) {
   return null;
 }
 
-async function runClientCheck() {
+async function runClientCheck(report) {
   const env = requiredEnv(['SUPABASE_URL', 'SUPABASE_ANON_KEY']);
   const anon = client(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
 
-  const tableResult = await anon.from('exercise_media').select('canonical_exercise_id').limit(1);
+  const tableResult = await withOperationTimeout(
+    anon.from('exercise_media').select('canonical_exercise_id').limit(1),
+    OPERATION_TIMEOUT_MS,
+    'anonymous exercise_media SELECT',
+  );
   if (!tableResult.error) throw new Error('anonymous exercise_media SELECT unexpectedly succeeded');
+  report.counts.passed += 1;
 
   const mediaStorage = anon.storage.from(BUCKET);
-  const listResult = await mediaStorage.list('V1/exercisedb/0025', { limit: 100 });
+  const listResult = await withOperationTimeout(
+    mediaStorage.list('V1/exercisedb/0025', { limit: 100 }),
+    OPERATION_TIMEOUT_MS,
+    'anonymous exercise-media list',
+  );
   if (!listResult.error && listResult.data?.some((entry) => entry.name === '0025-360.gif')) {
     throw new Error('anonymous exercise-media list exposed the known object');
   }
-  const signResult = await mediaStorage.createSignedUrl(SMOKE_OBJECT, 60);
+  report.counts.passed += 1;
+  const signResult = await withOperationTimeout(
+    mediaStorage.createSignedUrl(SMOKE_OBJECT, 60),
+    OPERATION_TIMEOUT_MS,
+    'anonymous exercise-media sign',
+  );
   if (!signResult.error || signResult.data?.signedUrl) throw new Error('anonymous exercise-media signing unexpectedly succeeded');
-  const downloadResult = await mediaStorage.download(SMOKE_OBJECT);
+  report.counts.passed += 1;
+  const downloadResult = await withOperationTimeout(
+    mediaStorage.download(SMOKE_OBJECT),
+    OPERATION_TIMEOUT_MS,
+    'anonymous exercise-media download',
+  );
   if (!downloadResult.error || downloadResult.data) throw new Error('anonymous exercise-media download unexpectedly succeeded');
+  report.counts.passed += 1;
 
   const avatarStorage = anon.storage.from('avatars');
   const avatarPath = await firstPublicAvatar(avatarStorage);
@@ -308,8 +349,9 @@ async function runClientCheck() {
   const avatar = await dataOrThrow('anonymous avatar download', () => avatarStorage.download(avatarPath));
   const avatarBytes = await bytesFromBlob(avatar);
   if (avatarBytes.length === 0) throw new Error('anonymous avatar download was empty');
+  report.totalBytes = avatarBytes.length;
+  report.counts.passed += 1;
 
-  console.log('CLIENT_CHECK_OK: anon table/list/sign/download denial and public avatar read passed');
   console.log('MANUAL_REQUIRED: sign in as the dedicated test user; confirm authenticated exercise_media and exercise-media list/sign/download are denied, then confirm that user can upload and update only its own avatar.');
 }
 
@@ -461,79 +503,170 @@ async function verifyUploadedObjects(storage, records, report) {
   });
 }
 
-async function writeReport(report) {
-  const output = {
-    ...report,
-    nonUploadedIds: [...report.nonUploadedIds].sort(codeUnitCompare),
-  };
-  const stamp = new Date().toISOString().replaceAll(':', '-');
-  const reportPath = path.join(os.tmpdir(), `exercise-media-${report.mode}-${stamp}-${process.pid}.json`);
-  await fs.writeFile(reportPath, `${JSON.stringify(output, null, 2)}\n`, { flag: 'wx', mode: 0o600 });
-  console.log(`counts: ${JSON.stringify(report.counts)}`);
-  console.log(`total bytes: ${report.totalBytes}`);
-  console.log(`report: ${reportPath}`);
-  return reportPath;
+function countsFor(mode) {
+  if (mode === 'smoke' || mode === 'client-check') return { passed: 0, failed: 0 };
+  return { uploaded: 0, would_upload: 0, skipped_identical: 0, mismatch: 0, missing_local: 0, failed: 0 };
 }
 
-async function runTransfer({ mode, source }) {
-  const report = {
+function inferredMode(argv) {
+  const match = argv.find((arg) => ['--smoke', '--client-check', '--dry-run', '--upload'].includes(arg));
+  return match ? match.slice(2) : 'dry-run';
+}
+
+function createReport(mode, source = null) {
+  const stamp = new Date().toISOString().replaceAll(':', '-');
+  return {
     mode,
     source,
     manifestSha256: null,
     recordCount: null,
-    counts: { uploaded: 0, would_upload: 0, skipped_identical: 0, mismatch: 0, missing_local: 0, failed: 0 },
+    counts: countsFor(mode),
     nonUploadedIds: new Set(),
     totalBytes: 0,
     errors: [],
+    status: 'running',
+    reportPath: path.join(os.tmpdir(), `exercise-media-${mode}-${stamp}-${process.pid}.json`),
+    finalized: false,
   };
-  let fatal = null;
-  try {
-    const manifest = await loadManifest();
-    report.manifestSha256 = manifest.sha256;
-    report.recordCount = manifest.recordCount;
-    const records = await inspectLocalFiles(manifest, source, report);
-    if (report.counts.missing_local > 0 || report.counts.failed > 0 || records.some((record) => record.objects.length !== 2)) {
-      throw new Error('local preflight failed; no upload attempted');
-    }
-
-    const env = requiredEnv(['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']);
-    const admin = client(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
-    await verifySeededRows(admin, manifest);
-    const storage = admin.storage.from(BUCKET);
-    await inspectRemoteObjects(storage, records, report);
-    if (report.counts.failed > 0) throw new Error('remote preflight failed; no upload attempted');
-
-    const absentCount = records.flatMap((record) => record.objects).filter((object) => object.status === 'absent').length;
-    if (mode === 'dry-run') {
-      report.counts.would_upload = absentCount;
-      for (const record of records) {
-        if (record.objects.some((object) => object.status === 'absent')) report.nonUploadedIds.add(record.exerciseId);
-      }
-    } else {
-      await uploadAbsentObjects(storage, records, report);
-      await verifyUploadedObjects(storage, records, report);
-    }
-    if (report.counts.mismatch > 0 || report.counts.failed > 0) throw new Error('one or more objects remain mismatched or failed');
-  } catch (error) {
-    fatal = error;
-    report.errors.push(message(error));
-  } finally {
-    await writeReport(report);
-  }
-  if (fatal) throw fatal;
-  console.log(mode === 'dry-run' ? 'DRY_RUN_OK' : 'UPLOAD_OK');
 }
 
-async function main() {
-  const options = parseCli(process.argv.slice(2));
-  if (options.mode === 'smoke') await runSmoke();
-  else if (options.mode === 'client-check') await runClientCheck();
-  else await runTransfer(options);
+function serializableReport(report) {
+  return {
+    mode: report.mode,
+    source: report.source,
+    manifestSha256: report.manifestSha256,
+    recordCount: report.recordCount,
+    counts: report.counts,
+    nonUploadedIds: [...report.nonUploadedIds].sort(codeUnitCompare),
+    totalBytes: report.totalBytes,
+    errors: report.errors,
+    status: report.status,
+  };
+}
+
+function recordFailure(report, error) {
+  const detail = message(error);
+  if (!report.errors.includes(detail)) report.errors.push(detail);
+  report.counts.failed = Math.max(1, report.counts.failed || 0);
+  report.status = 'failed';
+}
+
+function statusLabel(mode) {
+  return mode.replaceAll('-', '_').toUpperCase();
+}
+
+function printFinal(report, ok, error = null) {
+  console.log(`counts: ${JSON.stringify(report.counts)}`);
+  console.log(`total bytes: ${report.totalBytes}`);
+  console.log(`report: ${report.reportPath}`);
+  const line = ok ? `${statusLabel(report.mode)}_OK` : `${statusLabel(report.mode)}_FAILED: ${message(error)}`;
+  (ok ? console.log : console.error)(line);
+}
+
+async function finalizeReport(report, ok, error = null) {
+  if (report.finalized) return;
+  if (!ok) recordFailure(report, error);
+  else report.status = 'ok';
+  try {
+    await fs.writeFile(report.reportPath, `${JSON.stringify(serializableReport(report), null, 2)}\n`, {
+      flag: 'wx',
+      mode: 0o600,
+    });
+  } catch (writeError) {
+    ok = false;
+    error = new Error(`${message(error || 'run completed')}; report write failed: ${message(writeError)}`);
+    recordFailure(report, error);
+  }
+  report.finalized = true;
+  printFinal(report, ok, error);
+}
+
+function finalizeReportSync(report, error) {
+  if (report.finalized) return;
+  recordFailure(report, error);
+  try {
+    fsSync.writeFileSync(report.reportPath, `${JSON.stringify(serializableReport(report), null, 2)}\n`, {
+      flag: 'wx',
+      mode: 0o600,
+    });
+  } catch (writeError) {
+    recordFailure(report, new Error(`report write failed: ${message(writeError)}`));
+  }
+  report.finalized = true;
+  printFinal(report, false, error);
+}
+
+async function runTransfer({ mode, source }, report) {
+  const manifest = await loadManifest();
+  report.manifestSha256 = manifest.sha256;
+  report.recordCount = manifest.recordCount;
+  const records = await inspectLocalFiles(manifest, source, report);
+  if (report.counts.missing_local > 0 || report.counts.failed > 0 || records.some((record) => record.objects.length !== 2)) {
+    throw new Error('local preflight failed; no upload attempted');
+  }
+
+  const env = requiredEnv(['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']);
+  const admin = client(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+  await verifySeededRows(admin, manifest);
+  const storage = admin.storage.from(BUCKET);
+  await inspectRemoteObjects(storage, records, report);
+  if (report.counts.failed > 0) throw new Error('remote preflight failed; no upload attempted');
+
+  const absentCount = records.flatMap((record) => record.objects).filter((object) => object.status === 'absent').length;
+  if (mode === 'dry-run') {
+    report.counts.would_upload = absentCount;
+    for (const record of records) {
+      if (record.objects.some((object) => object.status === 'absent')) report.nonUploadedIds.add(record.exerciseId);
+    }
+  } else {
+    await uploadAbsentObjects(storage, records, report);
+    await verifyUploadedObjects(storage, records, report);
+  }
+  if (report.counts.mismatch > 0 || report.counts.failed > 0) {
+    throw new Error('one or more objects remain mismatched or failed');
+  }
+}
+
+let activeReport = null;
+
+async function execute(argv) {
+  const report = createReport(inferredMode(argv));
+  activeReport = report;
+  try {
+    const options = parseCli(argv);
+    report.mode = options.mode;
+    report.source = options.source;
+    report.counts = countsFor(options.mode);
+    if (options.mode === 'smoke') await runSmoke(report);
+    else if (options.mode === 'client-check') await runClientCheck(report);
+    else await runTransfer(options, report);
+    await finalizeReport(report, true);
+  } catch (error) {
+    await finalizeReport(report, false, error);
+    process.exitCode = 1;
+  }
+}
+
+function fatalExit(origin, error) {
+  const report = activeReport ?? createReport(inferredMode(process.argv.slice(2)));
+  finalizeReportSync(report, new Error(`${origin}: ${message(error)}`));
+  process.exit(1);
+}
+
+function installLifecycleGuards() {
+  process.once('unhandledRejection', (error) => fatalExit('unhandled rejection', error));
+  process.once('uncaughtException', (error) => fatalExit('uncaught error', error));
+  process.once('SIGINT', () => fatalExit('signal', 'SIGINT'));
+  process.once('SIGTERM', () => fatalExit('signal', 'SIGTERM'));
+  process.once('beforeExit', () => {
+    if (activeReport && !activeReport.finalized) {
+      finalizeReportSync(activeReport, new Error('event loop ended before the active operation settled'));
+      process.exitCode = 1;
+    }
+  });
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  main().catch((error) => {
-    console.error(`exercise media ${process.argv.slice(2).find((arg) => arg.startsWith('--')) || 'dry-run'} failed: ${message(error)}`);
-    process.exitCode = 1;
-  });
+  installLifecycleGuards();
+  void execute(process.argv.slice(2));
 }
