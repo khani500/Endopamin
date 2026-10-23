@@ -165,6 +165,15 @@ export function getEligibleExercisePool(req = {}) {
   };
 
   const rejected = {};
+  // Keep reviewed scope out of rejection diagnostics, except for the explicit
+  // plan-selection allowlist. Step 7 callers must be able to distinguish a
+  // library-only record from an athlete or equipment rejection.
+  for (const ex of universe) {
+    if (!inReviewedScope(ex, base)
+      && slotScopeRejectionReason(ex, base) === 'plan_eligibility_not_eligible') {
+      rejected.plan_eligibility_not_eligible = (rejected.plan_eligibility_not_eligible || 0) + 1;
+    }
+  }
   const pool = [];
   for (const ex of inScope) {
     const why = rejectionReason(ex, base);
@@ -181,6 +190,7 @@ function slotScopeRejectionReason(ex, req) {
   if (ex.primaryFamilyId === null) return 'unreviewed_family';
   if (ex.isHybrid && !req.allowHybrid) return 'hybrid_not_allowed';
   if (ex.resolverDefaultEligible === false && !req.allowHybrid) return 'resolver_default_ineligible';
+  if (ex.planEligibility !== 'eligible') return 'plan_eligibility_not_eligible';
   if (req.familyId && ex.primaryFamilyId !== req.familyId) return 'family_not_requested';
   return 'unreviewed_scope';
 }
@@ -334,6 +344,7 @@ function inReviewedScope(ex, req) {
   if (ex.classification?.reviewStatus === 'hold_pending_media') return false;
   if (ex.isHybrid && !req.allowHybrid) return false;
   if (ex.resolverDefaultEligible === false && !req.allowHybrid) return false;
+  if (ex.planEligibility !== 'eligible') return false;
   if (req.familyId && ex.primaryFamilyId !== req.familyId) return false;
   return true;
 }
@@ -356,7 +367,7 @@ function diagnoseGap(pattern, req, rejected) {
   const inScope = universe.filter((e) => inReviewedScope(e, req));
   if (!inScope.length) {
     return { status: 'gap', gapReason: 'policy_scope_gap', requestedPattern: pattern, rejectionBreakdown: rejected,
-      message: `"${pattern}" exists in the catalog but every record is outside the reviewed families or held for review.`,
+      message: `"${pattern}" exists in the catalog but every record is outside the reviewed families, held for review, or not eligible for plan selection.`,
       resolution: 'review the relevant families' };
   }
   const tierOk = inScope.filter((e) => (TIER[e.minSkillTier] || 2) <= (TIER[req.athleteTier || 'intermediate'] || 2));

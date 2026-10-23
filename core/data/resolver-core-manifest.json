@@ -1,6 +1,6 @@
 {
  "manifestSchema": 1,
- "resolverContractVersion": 1,
+ "resolverContractVersion": 2,
  "hashAlgorithm": "sha256",
  "files": [
   {
@@ -20,8 +20,8 @@
   },
   {
    "path": "lib/plan/exerciseResolver.v2.js",
-   "sha256": "f3056d2f723901953c45c8f307ece9c3b63a3e92055f1084c1690bf29d50406d",
-   "bytes": 19326
+   "sha256": "7255ec7b5305f59a07f012c5967329a17407b9735484fe61981f4566fd0903da",
+   "bytes": 19973
   },
   {
    "path": "lib/plan/musclePatternPolicy.js",
@@ -54,5 +54,5 @@
    "bytes": 6147
   }
  ],
- "coreHash": "179841e9b78c43bdced092934307705d6c0604779e6f20721da162cc4eacf52d"
+ "coreHash": "51750c89900ae660dd22c897a03e02b06186ff0a1b868e92b159ca5a99db1765"
 }
