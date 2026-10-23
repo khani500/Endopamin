@@ -508,6 +508,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Alternating Hammer Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0313",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand with a dumbbell at each side and palms facing inward.",
+   "Keep the upper arms beside your torso and curl one weight toward its shoulder.",
+   "Lower it with control as you begin curling the other arm.",
+   "Continue alternating without rotating the palms forward or swinging your torso."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -610,6 +627,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Alternating Incline Dumbbell Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0318",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Recline on an incline bench with feet planted and a dumbbell hanging at each side.",
+   "Turn the palms forward and keep the upper arms beside your torso, clear of the bench.",
+   "Curl one weight toward its shoulder without moving the upper arm.",
+   "Lower slowly, then curl the other weight.",
+   "Continue alternating while keeping your back supported."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -1654,6 +1690,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -1948,6 +1985,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Stability Ball Leg Curl",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -2000,6 +2038,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Band-Assisted Pull-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "band",
+   "pullup_bar"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0970",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "band",
+  "libraryInstructions": [
+   "Secure the assistance band to the pull-up bar and position its lower loop beneath your lower thighs.",
+   "Grip the bar with your palms facing away from you and lift your feet clear of the floor.",
+   "Pull your elbows down to bring your chin toward bar height without swinging.",
+   "Lower slowly until your arms extend while the band continues to support your legs."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -2067,6 +2123,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Band Good Morning",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -2257,6 +2314,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Band Pull-Apart",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -2365,6 +2423,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -2416,6 +2475,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -2482,6 +2542,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0025",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Lie on a flat bench beneath the racked bar with your feet firmly on the floor.",
+   "Grip the bar with your palms facing away from you and your hands slightly wider than your shoulders.",
+   "Lift it clear of the rack and steady it above your chest with your shoulder blades supported on the bench.",
+   "Bend your elbows to lower the bar toward your chest without bouncing it.",
+   "Press the bar upward until your arms are straight, then return it securely to the rack when finished."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -2538,6 +2617,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0031",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand tall holding a barbell with your palms facing forward and your hands about shoulder-width apart.",
+   "Keep your upper arms close to your sides and let the bar hang in front of your thighs.",
+   "Curl the bar toward your shoulders without swinging your body or moving your elbows far forward.",
+   "Lower it slowly until your arms are nearly straight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -2590,6 +2686,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -2656,6 +2753,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Deadlift",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0032",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand close to the bar with your feet about hip-width apart and the bar over the middle of your feet.",
+   "Bend your hips and knees and grip the bar just outside your legs with your arms straight.",
+   "Tighten your abdomen and push through the floor, raising your hips and shoulders together while keeping the bar close.",
+   "Stand tall without leaning backward, then push your hips back and bend your knees to lower the bar to the floor."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -2790,6 +2904,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Glute Bridge",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1409",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Lie on your back with your knees bent and feet flat on the floor.",
+   "Position a light barbell securely across your hip crease before placing your hands on the floor beside you. Keep your hands on the bar instead if it will not stay stable.",
+   "Gently tighten your abdomen and press through your feet to lift your hips until your torso and thighs form a line.",
+   "Lower your hips under control without overextending your lower back."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -2855,6 +2986,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -2921,6 +3053,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Hack Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0046",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand just in front of a barbell on the floor with your feet about hip-width apart.",
+   "Bend your knees and hips to grip the bar behind your legs with your arms straight.",
+   "Push through your feet to stand, letting the bar travel close behind your calves and thighs.",
+   "Bend your knees and hips to lower the bar back toward the floor without rounding forward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -2989,6 +3138,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Hip Thrust",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0058",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Sit in front of a stable flat bench with your upper back against its edge and your knees bent.",
+   "Position a barbell across your hip crease and hold it steady with both hands.",
+   "Keep your feet flat and press through them to lift your hips until your torso and thighs form a line, with your upper back supported on the bench.",
+   "Lower your hips slowly in front of the bench without sliding your shoulders off it."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -3055,6 +3222,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Barbell Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0047",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Lie back on an incline bench beneath the rack with your feet planted.",
+   "Grip the bar slightly wider than your shoulders with your palms facing away.",
+   "Unrack it and lower it toward your upper chest, keeping your shoulder blades supported.",
+   "Press upward until your arms are straight, then rack the bar after the set."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -3170,6 +3355,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Lunge",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0054",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Hold a barbell across your upper back and stand tall with your feet about hip-width apart.",
+   "Take a controlled step forward and bend both knees, lowering the back knee toward the floor.",
+   "Keep the front foot planted and your torso steady as you lower.",
+   "Push through the front foot to return to the start. Complete the set with the same leg, then switch legs."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -3221,6 +3423,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Rear Delt Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0076",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Hold a barbell with a palms-back grip wider than shoulder width.",
+   "Bend your knees slightly, push your hips back and lean forward until your torso is nearly horizontal.",
+   "Pull the bar toward your upper chest while lifting your elbows out to the sides.",
+   "Lower the bar under control without changing your torso angle."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -3273,6 +3492,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Rollout (Knees on Bench)",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0083",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Kneel near the end of a stable flat bench with a barbell and round plates on the floor in front of it.",
+   "Grip the bar with both hands and hold your abdomen firm.",
+   "Roll the bar forward along the floor as your body lengthens from your knees, stopping before your lower back sags.",
+   "Draw the bar back toward the bench with control."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -3325,6 +3562,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -3382,6 +3620,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Barbell Overhead Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0091",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Sit on a flat bench with your feet apart and firmly on the floor.",
+   "Hold the bar at the front of your shoulders with a palms-forward grip just wider than shoulder width.",
+   "Press it overhead while keeping your abdomen firm and avoiding a backward lean.",
+   "Lower it slowly to the front of your shoulders."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -3434,6 +3690,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -3489,6 +3746,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -3597,6 +3855,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Lateral Lunge",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0097",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand in a wide stance with a barbell across your upper back and both feet planted.",
+   "Shift your hips toward one side and bend that knee, keeping the other leg straight.",
+   "Lower through a controlled range with the bar level and your chest lifted.",
+   "Push through the bent leg to return to the upright wide stance, then work the other side."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -3664,6 +3939,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Back Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1436",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Set the bar on the muscular upper back just below your neck and grip it firmly.",
+   "Stand with your feet about shoulder-width apart.",
+   "Lower into a squat while keeping your chest lifted, heels down and knees aligned with your feet.",
+   "Press through both feet to stand."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -3731,6 +4023,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -3793,6 +4086,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -3971,6 +4265,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -4288,6 +4583,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Band Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "band",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1254",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "band",
+  "libraryInstructions": [
+   "Secure the band beneath a stable flat bench so both ends rise beside your chest.",
+   "Lie on the bench with your feet planted and hold one handle in each hand.",
+   "Press both hands upward over your chest until your arms extend.",
+   "Lower your hands slowly to chest level while keeping your wrists aligned with your forearms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -4356,6 +4669,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -4481,6 +4795,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -4538,6 +4853,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -4636,6 +4952,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Bent-Over Barbell Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0027",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Hold a barbell with a palms-back grip just wider than your shoulders.",
+   "Bend your knees slightly, push your hips backward and lean forward while keeping your back shape steady.",
+   "Pull the bar toward your upper abdomen by driving your elbows behind you.",
+   "Lower the bar until your arms are straight while keeping the same torso angle."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -4690,6 +5023,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Head-Supported Dumbbell Rear Delt Fly",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0379",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Set an incline bench at a height that lets you hinge forward and rest your forehead lightly against its padded top.",
+   "Plant your feet, bend your knees slightly, and hold the dumbbells below your shoulders.",
+   "Keep a small elbow bend and lift your arms out to the sides without pressing heavily through your head.",
+   "Lower the weights slowly while keeping your torso steady."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -4746,6 +5097,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Bent-Over One-Arm Cable Lateral Raise",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -4952,6 +5304,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Bent-Over Dumbbell Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0293",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand holding a dumbbell in each hand with palms toward your body.",
+   "Bend your knees slightly and hinge at your hips until your torso leans forward.",
+   "Let the weights hang below your shoulders, keeping your back steady.",
+   "Pull your elbows back to bring the dumbbells toward the sides of your lower chest.",
+   "Lower slowly until your arms extend without rounding your back."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -5353,6 +5723,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -5470,6 +5841,23 @@ export const EXERCISE_REGISTRY = [
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "intermediate",
   "displayName": "Bodyweight Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "3119",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Stand with feet about shoulder-width apart and arms extended forward.",
+   "Bend your hips and knees to sit down between your feet.",
+   "Keep your heels planted and knees following your toes.",
+   "Press through both feet to stand, keeping your arms forward for balance."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -5531,6 +5919,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Bodyweight Walking Lunge",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1460",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Stand with your feet shoulder-width apart.",
+   "Take a step forward with your right leg, lowering your body into a lunge position.",
+   "Keep your torso controlled and guide the front knee in the same direction as your toes.",
+   "Push off with your right foot and bring your left foot forward, stepping into a lunge position with your left leg.",
+   "Continue alternating legs and walking forward, maintaining a controlled and steady pace."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -5577,6 +5983,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -5758,6 +6165,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -6251,6 +6659,23 @@ export const EXERCISE_REGISTRY = [
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "intermediate",
   "displayName": "Glute Bridge",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "3013",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your back with knees bent and feet flat, about hip-width apart.",
+   "Place your arms beside you and gently tighten your abdomen.",
+   "Press through your feet and lift your hips until your trunk and thighs form a line.",
+   "Lower your hips to the floor with control, keeping your knees aligned with your feet."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -6379,6 +6804,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Cable Chest Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "2144",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Sit at a cable chest press station with your back against the pad and your feet on the floor.",
+   "Hold a handle in each hand beside your chest, with your elbows bent and pointing out and slightly down.",
+   "Keep your back against the pad and press both handles forward until your arms are nearly straight.",
+   "Bend your elbows slowly to return the handles beside your chest.",
+   "Keep your wrists straight and control the return before pressing again."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -6444,6 +6887,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Cable Crossover",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0227",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Set both cable pulleys above shoulder height and hold a handle in each hand.",
+   "Stand between the pulleys with your feet apart and lean forward slightly from your hips.",
+   "Open your arms upward and out to the sides with a small bend in your elbows.",
+   "Bring your arms down and forward in an arc until your hands meet in front of your hips.",
+   "Reverse the arc slowly, keeping the same elbow bend and avoiding a backward swing of your torso."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -6491,6 +6952,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Cable Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0175",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Attach a rope to a high pulley and kneel facing the machine.",
+   "Hold the rope ends beside your head and keep both knees planted.",
+   "Curl your rib cage toward your pelvis, bringing your elbows downward without pulling mainly with your arms.",
+   "Uncurl slowly to the starting position while keeping the rope at your head."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -6557,6 +7035,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Cable Deadlift",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0157",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand between two low cable pulleys with a handle in each hand at your sides.",
+   "Bend your hips and knees to lower while keeping your arms straight and chest lifted.",
+   "Push through both feet to extend your knees and hips until you stand upright.",
+   "Lower again with control, keeping the handles close to your sides."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -6612,6 +7107,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Cable Rope Hammer Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0165",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Attach a rope to a low cable pulley and stand facing it.",
+   "Hold one rope end in each hand with your palms facing each other and arms extended.",
+   "Bend your elbows to curl the rope upward without moving your upper arms forward.",
+   "Lower slowly until your elbows are nearly straight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -6669,6 +7181,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -6721,6 +7234,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -6774,6 +7288,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Cable Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0173",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Place an incline bench facing away from a low cable pulley with a bar attached.",
+   "Recline with your feet planted and hold the bar above your head using a comfortable two-hand grip.",
+   "Keep your upper arms steady as you bend your elbows to lower the bar behind your head.",
+   "Straighten your elbows to raise the bar again without lifting your back from the pad."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -7051,6 +7583,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Reverse-Grip Triceps Pushdown",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0231",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Attach a single handle to a high pulley and stand facing the cable.",
+   "Hold the handle in one hand with your palm facing up, elbow bent and tucked beside your ribs.",
+   "Straighten your elbow to move the handle downward toward your thigh without moving your upper arm forward or back.",
+   "Let your elbow bend slowly as the handle rises to the starting position.",
+   "Keep your wrist steady, finish the repetitions, and switch arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -7106,6 +7656,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Cable Preacher Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable",
+   "preacher_bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0195",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Sit at a preacher bench facing a low cable pulley and rest your upper arms on the pad.",
+   "Hold the cable bar with palms facing upward and begin with elbows nearly straight.",
+   "Curl the bar toward your shoulders while keeping your upper arms on the pad.",
+   "Lower the bar slowly without forcing the elbows straight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -7159,6 +7727,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "High-Cable Rear Delt Fly",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0225",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand facing two high cable pulleys. Hold the left handle in your right hand and the right handle in your left so the cables cross.",
+   "Reach your hands forward at about shoulder height with a slight bend in your elbows.",
+   "Pull your arms out to the sides and slightly down, bringing your shoulder blades toward each other.",
+   "Stop when your arms are roughly in line with your torso.",
+   "Return slowly to the crossed position without changing your elbow bend."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -7206,6 +7792,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Cable Reverse Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0873",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Secure the low cable attachment around your feet and lie on your back with your feet toward the pulley.",
+   "Place your hands on the floor beside you and bend your hips and knees so your legs are raised.",
+   "Curl your pelvis upward to bring your bent knees toward your chest, keeping your upper back on the floor.",
+   "Lower your pelvis slowly and return the legs to the starting position without letting the cable pull you abruptly."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -7260,6 +7863,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Overhead Cable Rope Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0194",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Attach a rope to a low pulley and stand facing away from it.",
+   "Hold one rope end in each hand behind your head, with your elbows pointing upward.",
+   "Gently tighten your abdomen and straighten your elbows to raise your hands overhead.",
+   "Bend the elbows slowly to lower the rope behind your head without leaning backward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -7365,6 +7985,26 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Stability Ball Cable Russian Twist",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable",
+   "stability_ball"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0211",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Position a stability ball beside a high cable pulley. Hold the handle with both hands and carefully lower your upper back onto the ball.",
+   "Plant your feet apart on the floor, bend your knees, and lift your hips so your trunk is supported between your shoulders and feet.",
+   "Extend your arms above your chest with a slight bend in your elbows.",
+   "Turn your shoulders and arms away from the pulley, keeping your hips steady and your feet planted.",
+   "Return slowly toward the pulley without letting the cable pull you off balance.",
+   "After completing one side, reposition the ball and repeat facing the other direction."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -7412,6 +8052,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Cable Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0212",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Place a flat bench in front of a high pulley with a rope attached. Sit facing away from the pulley with your feet planted.",
+   "Hold the rope ends beside your head and keep your hips on the bench.",
+   "Gently tighten your abdomen, then curl your upper body forward to bring your chest toward your thighs.",
+   "Keep your hands beside your head instead of pulling the rope down with your arms.",
+   "Raise your chest slowly to the starting position without leaning backward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -7469,6 +8127,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Cable Lateral Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0215",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Place a flat bench between two low cable pulleys. Sit with your feet planted and hold the opposite cable handle in each hand.",
+   "Lean forward from your hips until your chest is close to your thighs. Let your hands hang below your shoulders.",
+   "With a slight bend in your elbows, open your arms out to the sides until they are roughly in line with your shoulders.",
+   "Lower the handles slowly beneath your chest.",
+   "Keep the forward lean and elbow bend steady throughout the movement."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -7524,6 +8201,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Standing Cable Shoulder Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0219",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand between two low cable pulleys and hold a handle in each hand.",
+   "Bring the handles beside your shoulders with your elbows bent and pointing out. Plant your feet about hip-width apart.",
+   "Gently tighten your abdomen and press both handles overhead until your arms are nearly straight.",
+   "Lower the handles slowly to shoulder height.",
+   "Keep your torso upright and avoid leaning backward as you press."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -7576,6 +8271,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -7628,6 +8324,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -7680,6 +8377,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -7733,6 +8431,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Calf Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "2289",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit against the backrest and place the balls of your feet on the footplate with your heels free to move.",
+   "Set the seat distance so your knees stay slightly bent, then hold the side handles.",
+   "Push through the balls of your feet to point your toes away and move the footplate.",
+   "Let your ankles bend back slowly while keeping the knee angle nearly unchanged."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -7795,6 +8510,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -7847,6 +8563,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -7900,6 +8617,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Band Calf Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "band"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1369",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "band",
+  "libraryInstructions": [
+   "Stand on the middle of a band with your feet about hip-width apart.",
+   "Hold the band ends at your sides with your arms straight and your body tall.",
+   "Keep your knees nearly straight and raise both heels as high as you can control.",
+   "Lower your heels slowly to the floor."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -8111,6 +8845,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -9166,6 +9901,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Chin-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1326",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Grip a secure overhead bar with your palms facing you and your hands about shoulder-width apart.",
+   "Let your body hang with your arms extended and your feet off the floor.",
+   "Pull your elbows down toward your sides to raise your chest toward the bar until your chin clears it.",
+   "Lower yourself slowly until your arms are extended again.",
+   "Keep your body steady and avoid swinging your legs to start the next pull."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -9419,6 +10173,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -9546,6 +10301,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -9808,6 +10564,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -9874,6 +10631,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Close-Grip Barbell Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0030",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Lie on a flat bench with your feet planted and take a palms-away grip around shoulder width or slightly narrower.",
+   "Unrack the bar and hold it above your chest with your wrists stacked over your forearms.",
+   "Lower it toward your chest, keeping your elbows closer to your sides than in a wide-grip press.",
+   "Press the bar back up without bouncing, then return it to the rack after the set."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -10120,6 +10895,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Close-Grip EZ-Bar Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "ez_bar"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0446",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "ez barbell",
+  "libraryInstructions": [
+   "Stand upright holding the inner angled grips of an EZ bar with palms up.",
+   "Keep the upper arms beside your torso and curl the bar toward your shoulders.",
+   "Pause briefly without leaning backward.",
+   "Lower slowly until the elbows are extended."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -10242,6 +11034,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -10297,6 +11090,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Close-Grip Barbell Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0106",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand holding a barbell with your palms forward and hands closer than shoulder width.",
+   "Let the bar hang in front of your thighs with your upper arms beside your torso.",
+   "Curl the bar upward without swinging your body or pushing your elbows far forward.",
+   "Lower it slowly until your arms are nearly straight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -10466,6 +11276,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Concentration Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0297",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Sit on a flat bench with your feet apart and a dumbbell in one hand.",
+   "Lean forward and brace the back of your upper arm against the inside of your thigh.",
+   "With your palm facing upward, bend the elbow to curl the weight toward your shoulder.",
+   "Lower slowly until the elbow is nearly straight, keeping the upper arm supported.",
+   "Complete the set, then change arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -10513,6 +11342,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Cross-Body Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0262",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your back with your knees bent and your feet on the floor. Rest your hands lightly behind your head.",
+   "Lift one knee toward your chest as you curl the opposite shoulder off the floor and turn toward that knee.",
+   "Keep your hands light so you are not pulling on your neck. Your elbow does not need to touch the knee.",
+   "Lower your shoulder and foot slowly back to the floor.",
+   "Repeat on the other side, keeping each lift controlled."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -10568,6 +11415,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Cross-Body Hammer Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0298",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand with a dumbbell at each side and palms facing inward.",
+   "Bend one elbow to bring that dumbbell across your chest toward the opposite shoulder.",
+   "Keep your torso still and the other arm down.",
+   "Lower the weight slowly, then repeat with the other arm.",
+   "Continue alternating sides."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -10795,6 +11660,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Long-Arm Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0267",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your back with your knees bent and your feet planted.",
+   "Reach both arms overhead along the floor beside your ears, keeping your elbows nearly straight.",
+   "Gently tighten your abdomen and curl your shoulders upward, keeping your arms in line with your upper body.",
+   "Keep your lower back on the floor and avoid swinging your arms to lift yourself.",
+   "Lower your shoulders and arms slowly to the starting position."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -10894,6 +11777,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0274",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your back with your knees bent and feet flat on the floor.",
+   "Rest your hands lightly behind your head with your elbows open.",
+   "Gently tighten your abdomen and curl your shoulders off the floor, bringing your ribs toward your pelvis.",
+   "Keep your lower back down and avoid pulling your head forward with your hands.",
+   "Lower your shoulders slowly back to the floor."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -11055,6 +11956,24 @@ export const EXERCISE_REGISTRY = [
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
   "displayName": "Dead Bug",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0276",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your back and lift your knees above your hips with both knees bent. Reach both arms toward the ceiling.",
+   "Gently tighten your abdomen and lift your head and shoulders slightly, keeping your lower back supported by the floor.",
+   "Keep both arms raised as you slowly straighten and lower one leg toward the floor.",
+   "Stop before your lower back arches, then bring that knee back above your hip.",
+   "Complete the repetitions, then switch legs while maintaining the same arm and trunk position."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -11126,6 +12045,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -11197,6 +12117,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -11263,6 +12184,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -11318,6 +12240,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -11615,6 +12538,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -12235,6 +13159,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -12416,6 +13341,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Double Kettlebell Push Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0528",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "kettlebell",
+  "libraryInstructions": [
+   "Hold a kettlebell at each shoulder with feet about shoulder-width apart.",
+   "Bend both knees slightly while keeping your torso upright.",
+   "Drive through your feet and straighten your legs as you press both weights overhead.",
+   "Finish with arms straight and legs extended.",
+   "Lower the kettlebells to the shoulders with control."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -12715,6 +13658,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Drag Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0038",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand holding a barbell in front of your thighs with your palms facing forward.",
+   "Bend your elbows and slide them backward, drawing the bar upward close to your body.",
+   "Stop when you can no longer raise the bar without lifting your elbows forward or shrugging.",
+   "Lower the bar along the same close path and let your elbows return beside your torso."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -12837,6 +13797,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Alternating Dumbbell Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0285",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand with a dumbbell in each hand and your arms beside your body, palms facing inward.",
+   "Bend one elbow to raise that dumbbell toward your shoulder, turning the palm upward as it rises.",
+   "Lower the dumbbell slowly while beginning the curl with the opposite arm.",
+   "Continue alternating the rising and lowering arms without swinging your torso.",
+   "Keep your elbows beside your ribs and your wrists in line with your forearms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -12905,6 +13883,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0289",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Lie on your back on a flat bench with your feet planted.",
+   "Hold a dumbbell in each hand above your chest, palms facing toward your feet.",
+   "Bend your elbows to lower the dumbbells to either side of your chest, keeping the forearms under the weights.",
+   "Press the dumbbells upward until your arms are extended.",
+   "Lower with control for the next repetition."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -12972,6 +13969,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Neutral-Grip Dumbbell Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0340",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Lie on your back on a flat bench with feet planted and dumbbells above your chest.",
+   "Keep the palms facing each other and bend your elbows to lower the weights beside your chest.",
+   "Press both weights upward until the arms are extended.",
+   "Return slowly to chest level."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -13028,6 +14043,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0294",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand upright with a dumbbell in each hand, arms beside your body and palms forward.",
+   "Keep your upper arms still as you bend both elbows.",
+   "Curl the weights toward your shoulders without leaning backward.",
+   "Lower with control until your elbows are nearly straight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -13231,6 +14263,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Fly",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0308",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Lie on a flat bench with your feet planted and a dumbbell in each hand.",
+   "Hold the weights above your chest with palms facing each other and elbows slightly bent.",
+   "Open your arms outward in a wide arc while keeping the elbow bend steady.",
+   "Stop within a comfortable shoulder range, then bring the dumbbells together over your chest."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -13283,6 +14333,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Dumbbell Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0327",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Rest your chest on an incline bench with feet planted and a dumbbell hanging from each hand.",
+   "Bend your elbows and pull the weights toward the sides of your chest.",
+   "Keep your chest on the pad as the shoulder blades move together.",
+   "Lower slowly until your arms hang beneath your shoulders again."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -13397,6 +14465,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Lunge",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0336",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand holding a dumbbell beside each hip with your feet together.",
+   "Step forward with one leg and bend both knees to lower into a lunge.",
+   "Keep your torso upright and the front foot planted.",
+   "Push through the front foot to return to standing.",
+   "Complete the set, then change the lead leg."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -13672,6 +14758,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Dumbbell Shoulder Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0360",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand with a dumbbell beside one shoulder, palm forward, and your free hand on your hip.",
+   "Press the weight overhead without leaning to the side or arching your back.",
+   "Lower it slowly to shoulder height.",
+   "Complete the set and change arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -13724,6 +14827,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -13780,6 +14884,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Dumbbell Upright Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0363",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand holding one dumbbell in front of your thigh with the palm toward your body.",
+   "Lift your elbow out to the side to draw the weight toward your upper torso.",
+   "Stop within a comfortable range, with the elbow no higher than shoulder level.",
+   "Lower slowly to the start.",
+   "Complete the set and change arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -13836,6 +14958,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Dumbbell Spider Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0374",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Rest your chest on an incline bench with feet planted.",
+   "Let both arms hang below your shoulders, palms facing forward.",
+   "Curl the weights toward your shoulders while keeping the upper arms still.",
+   "Lower slowly to the hanging position without swinging."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -13950,6 +15090,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Reverse Lunge",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0381",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand upright holding a dumbbell in each hand at your sides.",
+   "Step one foot backward and bend both knees to lower into a lunge.",
+   "Keep the front foot planted and the front knee aligned with its toes.",
+   "Push through the front foot to return to standing.",
+   "Complete the repetitions, then switch legs."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -14072,6 +15230,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -14126,6 +15285,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated One-Leg Dumbbell Calf Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0400",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Sit on a flat bench with the ball of one foot on a stable raised block and the other foot on the floor.",
+   "Rest a dumbbell across the working thigh near the knee and hold it securely.",
+   "Raise that heel while keeping the forefoot on the block.",
+   "Lower the heel slowly through a comfortable range.",
+   "Complete the set and change legs."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -14237,6 +15415,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -14479,6 +15658,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Step-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0431",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand facing a stable bench with a dumbbell beside each hip.",
+   "Place one foot fully on the bench.",
+   "Push through that foot to rise until the lead leg is straight and the other leg comes up beside it.",
+   "Lower the trailing foot back to the floor with control, keeping the lead foot on the bench.",
+   "Complete the set, then step down and change the lead leg."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -14533,6 +15731,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Overhand-Grip Lying Dumbbell Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0373",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Lie on your back on a flat bench with feet planted.",
+   "Hold a dumbbell in each hand above your upper chest with palms facing toward your feet.",
+   "Keep the upper arms raised and bend the elbows to lower the weights beside your forehead.",
+   "Straighten the elbows to return the weights above you.",
+   "Move slowly and keep the dumbbells clear of your face."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -14684,6 +15901,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "EZ-Bar Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "ez_bar"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0447",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "ez barbell",
+  "libraryInstructions": [
+   "Stand upright holding the angled grips of an EZ bar with palms up.",
+   "Keep your upper arms beside your torso and curl the bar toward your shoulders.",
+   "Pause briefly without swinging your body.",
+   "Lower slowly until the elbows are extended."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -14738,6 +15972,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Skull Crusher",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0060",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Lie on a flat bench and plant your feet on the floor.",
+   "Hold a barbell above your upper chest with a close palms-away grip and straight arms.",
+   "Keep the upper arms nearly still while you bend your elbows, lowering the bar just above your forehead.",
+   "Straighten your arms slowly without swinging the bar or letting it contact your head."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -14942,6 +16194,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -14991,6 +16244,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -15088,6 +16342,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Stability Ball Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "stability_ball"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0271",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "stability ball",
+  "libraryInstructions": [
+   "Sit on a stability ball, then walk your feet forward until your lower back rests on the ball.",
+   "Plant your feet apart with your knees bent and cross your arms over your chest.",
+   "Curl your ribs toward your pelvis to lift your shoulders, keeping your hips and the ball steady.",
+   "Lower your upper back slowly over the ball through a comfortable range.",
+   "Continue without pushing through your feet to roll the ball forward and back."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -15405,6 +16677,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Face Pull",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0233",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Attach a rope to a pulley around upper-chest height. Face it and hold a rope end in each hand.",
+   "Step back with your arms extended and your knees slightly bent.",
+   "Pull the rope toward your face, separating your hands and moving your elbows outward and back.",
+   "Keep your shoulders down and your torso steady as your hands reach either side of your face.",
+   "Extend your arms slowly to return the rope."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -15471,6 +16761,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -15577,6 +16868,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -15642,6 +16934,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Flat Bench Cable Fly",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0185",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Place a flat bench between two low pulleys and hold one handle in each hand.",
+   "Lie on your back with feet planted and handles above your chest, palms facing each other.",
+   "Open your arms out to the sides only as far as you can control without changing the elbow bend.",
+   "Sweep the handles together above your chest."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -15855,6 +17165,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -16389,6 +17700,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Frog Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "2429",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your back with the soles of your feet together and knees opened outward.",
+   "Place your hands lightly beside your head without pulling on your neck.",
+   "Curl your shoulders off the floor while lifting your feet and drawing your bent legs toward your torso.",
+   "Keep the feet together as the chest and knees move closer.",
+   "Lower your upper body and legs with control."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -16456,6 +17785,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -16522,6 +17852,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -16592,6 +17923,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -16645,6 +17977,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Cable Front Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0161",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand facing away from a low cable pulley with its handle in one hand beside your thigh.",
+   "Keep your torso upright and your free arm relaxed.",
+   "Raise the working arm forward to about shoulder height without swinging or bending the elbow farther.",
+   "Lower slowly and repeat with the other arm."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -16768,6 +18117,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Alternating Dumbbell Front Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0310",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand holding a dumbbell in each hand in front of your thighs, palms toward you.",
+   "Keep a small bend in your elbows and lift both arms forward to shoulder height.",
+   "Keep your torso upright rather than swinging backward.",
+   "Lower both dumbbells slowly to your thighs."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -16920,6 +18286,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Plate Front Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "weight_plate"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0834",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "weighted",
+  "libraryInstructions": [
+   "Stand upright and hold the sides of one weight plate with both hands in front of your thighs.",
+   "Keep your elbows slightly bent and your abdomen firm.",
+   "Raise the plate forward to about shoulder height without leaning backward.",
+   "Pause briefly, then lower it slowly to the thighs.",
+   "Repeat without swinging the weight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -17045,6 +18429,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Clean-Grip Barbell Front Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0029",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Rest the bar on the fronts of your shoulders, with your fingers under the bar and elbows pointing forward.",
+   "Set your feet about shoulder-width apart and gently tighten your abdomen.",
+   "Bend your knees and hips to lower between your feet, keeping your heels planted and elbows lifted.",
+   "Push through both feet to stand."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -17111,6 +18512,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Double Kettlebell Front Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0533",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "kettlebell",
+  "libraryInstructions": [
+   "Hold one kettlebell at each shoulder with elbows close to your torso.",
+   "Stand with feet about shoulder-width apart and toes turned slightly outward.",
+   "Bend your hips and knees to squat down, keeping your heels planted and chest lifted.",
+   "Push through your feet to return upright.",
+   "Keep the bells supported at the shoulders throughout."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -17325,6 +18744,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Glute-Ham Raise",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -17440,6 +18860,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Kettlebell Goblet Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0534",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "kettlebell",
+  "libraryInstructions": [
+   "Hold a kettlebell by the sides of its handle close to your chest.",
+   "Stand with feet about shoulder-width apart and toes slightly outward.",
+   "Bend your knees and hips to lower between your legs while keeping your feet planted.",
+   "Keep your knees aligned with your toes and stop at a controlled depth.",
+   "Push through both feet to stand upright."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -17508,6 +18946,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Good Morning",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0044",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand with a barbell across your upper back and your feet about hip-width apart.",
+   "Keep a slight bend in your knees and tighten your abdomen.",
+   "Push your hips backward as you lower your torso, keeping your back shape steady and the bar secure.",
+   "Stop at a range you can control, then bring your hips forward to stand without leaning backward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -17792,6 +19247,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Machine Hack Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "sled"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0743",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "sled machine",
+  "libraryInstructions": [
+   "Stand on the hack-squat platform with back and shoulders against the pads.",
+   "Set your feet about shoulder-width apart and release the stops.",
+   "Bend your hips and knees to lower, keeping your heels planted.",
+   "Extend both legs to return to standing.",
+   "Secure the carriage before leaving."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -17847,6 +19320,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Hammer Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0312",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand holding dumbbells beside your thighs with palms facing inward.",
+   "Keep your upper arms still and bend both elbows to raise the weights toward your shoulders.",
+   "Keep the palms facing each other throughout the lift.",
+   "Lower both weights slowly to your sides."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -17914,6 +19404,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Neutral-Grip Incline Dumbbell Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0321",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Lie back on an incline bench with feet planted and a dumbbell beside each shoulder.",
+   "Turn your palms toward each other and keep your forearms beneath the weights.",
+   "Press the dumbbells above your upper chest until your arms extend.",
+   "Lower them slowly to shoulder level without lifting your back."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -18062,6 +19570,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -18471,6 +19980,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -18708,6 +20218,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -19191,6 +20702,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -19455,6 +20967,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline EZ-Bar Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "ez_bar"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0449",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "ez barbell",
+  "libraryInstructions": [
+   "Lie back on an incline bench with feet planted.",
+   "Hold the angled grips of an EZ bar and raise it above your shoulders.",
+   "Keep the upper arms raised as you bend the elbows to lower the bar behind your head.",
+   "Straighten the elbows to return the bar above you without arching your back."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -19569,6 +21099,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -19634,6 +21165,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Cable Fly",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0171",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Place an incline bench between two low pulleys and recline with your feet planted.",
+   "Hold one handle in each hand and bring them above your upper chest.",
+   "Open your arms outward through a comfortable range without changing your elbow bend.",
+   "Bring the handles together above your chest along the same arc."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -19755,6 +21304,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Dumbbell Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0315",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Recline on an incline bench with feet planted and a dumbbell hanging beside each hip.",
+   "Turn your palms forward and keep your upper arms beside your torso.",
+   "Bend both elbows to curl the weights toward your shoulders.",
+   "Lower slowly until the elbows are nearly straight, keeping your back on the pad."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -19821,6 +21388,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Dumbbell Fly",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0316",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Lie back on an incline bench with feet planted and a dumbbell in each hand.",
+   "Hold the weights above your chest with a small bend in the elbows.",
+   "Open your arms outward in an arc without changing the elbow bend.",
+   "Stop within a comfortable shoulder range, then bring the dumbbells back together above your chest."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -19887,6 +21472,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -20011,6 +21597,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Hammer Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0320",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Recline on an incline bench with your feet planted and a dumbbell hanging beside each hip.",
+   "Keep your palms facing your torso and your upper arms still.",
+   "Bend both elbows to curl the dumbbells toward your shoulders.",
+   "Lower slowly, keeping your back on the pad."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -20067,6 +21671,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Dumbbell Outward Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0322",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Recline on an incline bench with feet planted and a dumbbell in each hand.",
+   "Let the upper arms hang beside the bench and turn the palms outward and forward.",
+   "Curl both dumbbells toward the outer sides of your shoulders while keeping the upper arms still.",
+   "Lower with control until the elbows are extended without locking them forcefully."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -20742,6 +22364,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -21191,6 +22814,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Jackknife Sit-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0507",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your back with legs extended and arms reaching overhead.",
+   "Raise your torso and legs together while reaching your hands toward your feet.",
+   "Balance briefly on your hips without jerking your neck forward.",
+   "Lower your upper body and legs with control."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -21616,6 +23256,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Kettlebell Arnold Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0523",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "kettlebell",
+  "libraryInstructions": [
+   "Stand holding a kettlebell at one shoulder with your palm toward your face.",
+   "Press upward while moving the elbow outward and turning your palm forward.",
+   "Extend your arm overhead without leaning backward.",
+   "Lower with control, reversing the rotation toward the starting grip.",
+   "Complete the set, then change arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -22897,6 +24555,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Kneeling Cable Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0176",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Kneel facing away from a high pulley with a flat bench in front of you.",
+   "Hold the cable bar and lean forward to rest your upper arms on the bench, starting with your elbows bent.",
+   "Keep your upper arms supported as you straighten the elbows to reach the bar forward.",
+   "Bend your elbows slowly to bring the bar back toward your head."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -23483,6 +25159,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -23606,6 +25283,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Band Lateral Raise",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -23824,6 +25502,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Leg Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0585",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit against the back pad with your knees aligned with the machine pivot.",
+   "Place the roller across the front of your lower legs just above the ankles and hold the side handles.",
+   "Straighten both knees to lift the roller, keeping your hips in the seat.",
+   "Bend your knees slowly to lower the roller to the starting position."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -23938,6 +25633,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Leg Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "sled"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0739",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "sled machine",
+  "libraryInstructions": [
+   "Sit against the machine pads with your feet about shoulder-width apart on the platform.",
+   "Grip the handles, press the sled away and release its stops while supporting the load.",
+   "Bend your hips and knees to lower the sled without lifting your pelvis from the pad.",
+   "Press through both feet until your legs are nearly straight.",
+   "Secure the stops before leaving the machine."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -24050,6 +25763,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -24116,6 +25830,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Machine Deadlift",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0578",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Stand between the machine handles with your feet about hip-width apart.",
+   "Bend at your hips and knees to grip the handles beside your legs.",
+   "Keep your back steady and push through your feet to stand, extending your hips and knees together.",
+   "Finish upright without leaning backward.",
+   "Bend your hips and knees to lower the levers under control."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -24182,6 +25914,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Decline Machine Chest Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1300",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit in the machine with your back supported and feet on the floor.",
+   "Take the handles beside your lower chest and keep your shoulders against the pad.",
+   "Press forward and slightly downward along the machine path until your arms are long.",
+   "Return slowly until the handles reach the starting position."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -24231,6 +25980,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Machine High Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0581",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit facing the machine with your chest on the support pad and feet on the supports.",
+   "Take the overhead-forward handles with palms facing down.",
+   "Pull your elbows down and back to bring the handles toward your ribs, keeping your chest on the pad.",
+   "Let the handles travel forward and upward slowly as your arms lengthen."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -24297,6 +26063,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Machine Chest Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1479",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit against the angled back pad with both feet on the machine supports.",
+   "Grip the handles beside your upper chest and keep your shoulders supported.",
+   "Press the handles upward and forward until your arms are long.",
+   "Bend your elbows slowly to return without lifting your back from the pad."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -24347,6 +26130,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Machine Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0588",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit facing the machine with your chest against its support and feet planted.",
+   "Hold the close handles with palms facing each other and arms reaching forward.",
+   "Pull your elbows back beside your ribs to bring the handles toward your abdomen.",
+   "Return slowly as your arms lengthen, keeping your chest on the pad."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -24403,6 +26203,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Plate-Loaded Machine Shoulder Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0587",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit with your back against the pad and both feet planted.",
+   "Take the handles at shoulder height with palms facing forward.",
+   "Press both handles upward while keeping your torso supported.",
+   "Lower the handles slowly back to shoulder height without letting the plates drop."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -24457,6 +26274,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -24886,6 +26704,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Low Cable Crossover",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1270",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand between two cable pulleys around shoulder height and hold a handle in each hand.",
+   "Open your arms out to the sides with a slight bend in your elbows and your feet planted.",
+   "Bring your arms upward and inward until your hands meet above the front of your head.",
+   "Lower your arms slowly out to the sides along the same arc.",
+   "Keep the elbow bend steady and avoid arching your back as your hands rise."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -25159,6 +26995,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Kettlebell Lunge Pass-Through",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0536",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "kettlebell",
+  "libraryInstructions": [
+   "Stand holding one kettlebell at your side.",
+   "Step forward with the leg opposite the loaded hand and bend both knees into a lunge.",
+   "Pass the kettlebell beneath the front thigh to your other hand.",
+   "Push through the front foot to return to standing with the bell now on the other side.",
+   "Repeat with the opposite leg and continue alternating."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -25220,6 +27074,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -25377,6 +27232,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -25432,6 +27288,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Lying High-Cable Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0182",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Place a flat bench beneath a high pulley and lie on your back with your feet planted.",
+   "Take a close palms-up grip on the bar and extend your arms above your chest toward the pulley.",
+   "Keep your upper arms raised as you bend your elbows to bring the bar toward your forehead.",
+   "Straighten your elbows slowly to return the bar upward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -25485,6 +27359,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Lying Overhead Barbell Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1720",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Lie on a flat bench with your feet planted and hold a barbell above your chest with your palms facing away.",
+   "Bend your elbows to guide the bar behind the top of your head, allowing the upper arms to angle back slightly.",
+   "Stop within a comfortable elbow and shoulder range without letting the bar strike the bench.",
+   "Straighten your elbows and return the bar above your upper chest."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -25644,6 +27536,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Lying Dumbbell Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0351",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Lie on your back on a flat bench with feet planted.",
+   "Hold dumbbells above your upper chest with palms facing each other.",
+   "Keep the upper arms raised and bend the elbows to lower the weights beside your forehead.",
+   "Straighten your elbows to raise the dumbbells again.",
+   "Keep the movement controlled and the weights clear of your head."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -25959,6 +27870,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Lying Leg Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0586",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Lie face down with your knees near the edge of the support pad and the roller behind your lower legs, just above the heels.",
+   "Hold the handles and keep your hips against the pad.",
+   "Bend both knees to curl your heels toward your buttocks without lifting your hips.",
+   "Lower the roller slowly until your legs are nearly straight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -26079,6 +28007,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Prone One-Arm Dumbbell Lateral Raise",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -26179,6 +28108,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -26290,6 +28220,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Chest-Supported T-Bar Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0606",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Stand on the footplates and lean your chest onto the machine pad.",
+   "Grip the handles with your palms facing down and let your arms lengthen.",
+   "Pull the handles toward your ribs, drawing your elbows back.",
+   "Lower the lever slowly without lifting your chest from the pad."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -26408,6 +28355,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Machine Chest Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0577",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit with your back against the pad and your feet planted.",
+   "Adjust the seat so the handles are near chest height and take the forward-facing handles.",
+   "Press the handles away from your chest while keeping your back supported.",
+   "Bend your elbows slowly to bring the handles back without letting the weight drop."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -26523,6 +28487,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Machine Preacher Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1614",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit with your chest against the front edge of the preacher pad and your upper arms resting on it.",
+   "Hold the machine bar with palms facing up.",
+   "Bend your elbows to curl the bar toward your shoulders without lifting your upper arms.",
+   "Lower the lever slowly until your elbows are nearly straight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -26578,6 +28559,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Machine Shoulder Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "2318",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit against the machine backrest with both feet on its supports.",
+   "Hold the handles beside your shoulders and keep your elbows beneath your hands.",
+   "Press both handles upward along the lever path without lifting your back from the pad.",
+   "Return the handles slowly to shoulder height."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -26631,6 +28629,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Machine Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0607",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit facing the machine arm pad and rest your upper arms on it.",
+   "Hold the handles with your elbows bent and aligned with the machine pivot.",
+   "Straighten your elbows to move the handles down and forward.",
+   "Bend your elbows slowly to return while keeping your upper arms on the pad."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -26865,6 +28880,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -26965,6 +28981,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -27022,6 +29039,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -27074,6 +29092,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -27331,6 +29350,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Narrow-Stance Machine Hack Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "sled"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0741",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "sled machine",
+  "libraryInstructions": [
+   "Set your shoulders beneath the pads and back against the hack-squat carriage.",
+   "Place your feet close together on the platform and release the stops.",
+   "Bend your knees and hips to lower while keeping your heels planted.",
+   "Push through both feet to stand without locking the knees forcefully.",
+   "Reengage the stops to finish."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -27677,6 +29714,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -27724,6 +29762,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Oblique Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0635",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your side with your legs extended and stacked.",
+   "Place your top hand lightly behind your head and use the lower arm for support.",
+   "Lift your shoulder and upper torso sideways toward your hip without pulling on your neck.",
+   "Lower slowly and finish the repetitions before changing sides."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -27938,6 +29993,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Dumbbell Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0292",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Place one hand and the same-side knee on a flat bench, with the other foot planted.",
+   "Hold a dumbbell in the free hand and let it hang below your shoulder.",
+   "Pull the weight toward your hip, keeping the elbow close to your torso and your back steady.",
+   "Lower it slowly without twisting your body.",
+   "Finish the set, then change sides."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -28004,6 +30078,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Dumbbell Fly",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1285",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Lie on your back on a flat bench with feet planted and one dumbbell above your chest.",
+   "Keep the palm facing inward and the elbow slightly bent.",
+   "Lower the arm outward in an arc without rolling your torso.",
+   "Bring the weight back above your chest, keeping the elbow bend steady.",
+   "Complete the set before changing arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -28104,6 +30197,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Side-Lying Incline Dumbbell Lateral Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0323",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Lie on your side against an incline bench with your feet planted for support.",
+   "Hold a dumbbell in the upper hand with that arm beside your body.",
+   "Keep a slight elbow bend as you lift the arm outward until it points nearly straight upward.",
+   "Lower slowly along the same arc without rolling your torso.",
+   "Complete the set, then change sides."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -28408,6 +30520,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Kettlebell Side Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0547",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "kettlebell",
+  "libraryInstructions": [
+   "Stand with one kettlebell at each shoulder.",
+   "Press one bell overhead while leaning your torso slightly toward the opposite side and looking toward the raised weight.",
+   "Keep the other bell at its shoulder and both feet planted.",
+   "Return your torso upright as you lower the bell to shoulder height.",
+   "Complete the repetitions, then change arms, keeping the side lean controlled and avoiding a backward arch."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -28517,6 +30647,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Kettlebell Push Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0540",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "kettlebell",
+  "libraryInstructions": [
+   "Stand with a kettlebell at one shoulder and elbow below the handle.",
+   "Bend your knees slightly while keeping your torso upright.",
+   "Extend your legs firmly and continue the drive by pressing the kettlebell overhead.",
+   "Finish with the arm and legs straight.",
+   "Lower the bell to the shoulder with control, then repeat and change sides."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -28824,6 +30972,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -29132,6 +31281,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -29186,6 +31336,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Bench-Supported One-Arm Dumbbell Lateral Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0356",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand beside a raised bench backrest and hold it with your free hand.",
+   "Hold a dumbbell beside your opposite thigh with the elbow slightly bent.",
+   "Lift the weight out to the side to about shoulder height, keeping your torso steady.",
+   "Lower it slowly to your side.",
+   "Complete the set and change arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -29331,6 +31500,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -29398,6 +31568,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Dumbbell Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0343",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Lie on your back on a flat bench with both feet planted.",
+   "Hold a dumbbell beside one side of your chest, palm facing toward your feet.",
+   "Press the weight above your chest without turning your torso.",
+   "Lower slowly until it is beside your chest again.",
+   "Complete the set, then switch arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -29571,6 +31760,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Lat Pulldown",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0007",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Sit on a flat bench beneath a high cable handle with your feet planted.",
+   "Hold the handle in one hand with that arm extended overhead, and keep the other hand resting beside you.",
+   "Pull your working elbow down toward your side while keeping your torso steady.",
+   "Let the handle rise slowly until your arm extends again.",
+   "Complete your repetitions and switch arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -29624,6 +31832,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -29677,6 +31886,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -29893,6 +32103,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -30062,6 +32273,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -30394,6 +32606,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Pallof Press",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -30443,6 +32656,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Pallof Press with Rotation",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -30496,6 +32710,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -30548,6 +32763,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -30600,6 +32816,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -30653,6 +32870,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -30920,6 +33138,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Stability Ball Hip Thrust",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -31088,6 +33307,7 @@ export const EXERCISE_REGISTRY = [
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
   "displayName": "Plank",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -31378,6 +33598,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -31445,6 +33666,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -32010,6 +34232,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "EZ-Bar Preacher Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "ez_bar",
+   "preacher_bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1627",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "ez barbell",
+  "libraryInstructions": [
+   "Sit at a preacher bench with both upper arms resting on the pad.",
+   "Hold the inner angled grips of the EZ bar with palms up.",
+   "Curl the bar toward your shoulders without lifting your upper arms.",
+   "Lower slowly without forcing your elbows straight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -32119,6 +34359,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -32348,6 +34589,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Pull-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0652",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Hang from a pull-up bar with your palms facing away from you and arms straight.",
+   "Gently tighten your abdomen and draw your shoulders down away from your ears.",
+   "Bend your elbows to pull your body up until your chin clears the bar.",
+   "Lower slowly to straight arms without swinging."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -32415,6 +34674,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Wide-Grip Push-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1311",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Place your hands wider than shoulder width and extend your legs behind you onto your toes.",
+   "Hold a straight line from your head to your heels with your abdomen firm.",
+   "Bend your elbows diagonally outward to lower your chest between your hands.",
+   "Press through your palms to straighten your arms.",
+   "Repeat without letting your hips sag."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -32471,6 +34748,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Close-Grip Push-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0259",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Place your hands close together beneath the middle of your chest and extend your legs behind you onto your toes.",
+   "Hold a straight line from your head to your heels and gently tighten your abdomen.",
+   "Bend your elbows back close to your sides to lower your chest toward your hands.",
+   "Press through your palms to straighten your arms without letting your hips sag.",
+   "Keep your hands planted as you continue the controlled lowering and pressing motion."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -32607,6 +34902,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Stability Ball Decline Push-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "stability_ball"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0656",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "stability ball",
+  "libraryInstructions": [
+   "Place your lower legs on a stability ball and your hands on the floor.",
+   "Gently tighten your abdomen to hold a straight plank.",
+   "Bend your elbows to lower your chest toward the floor.",
+   "Press back up while keeping the ball steady beneath your legs."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -32665,6 +34977,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -32723,6 +35036,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -32776,6 +35090,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Push-Up to Side Plank",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0664",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Start on your hands and toes with your body straight.",
+   "Gently tighten your abdomen and bend your elbows to lower your chest.",
+   "Press back up, shift your weight onto one hand and turn your body to the side.",
+   "Reach your free arm toward the ceiling while keeping your hips lifted.",
+   "Return that hand to the floor and repeat the sequence.",
+   "Finish the repetitions, then turn to the other side."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -32842,6 +35175,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Push-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0662",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Place your hands slightly wider than shoulder-width on the floor and extend your legs behind you, balancing on your toes.",
+   "Gently tighten your abdomen to keep your body straight from head to heels.",
+   "Bend your elbows to lower your chest just above the floor.",
+   "Press through your hands to straighten your arms while keeping your hips aligned."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -32907,6 +35257,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -33700,6 +36051,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -33843,6 +36195,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -33898,6 +36251,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Reverse Barbell Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0080",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand holding a barbell in front of your thighs with your palms facing your body.",
+   "Keep your upper arms beside your torso and wrists in line with your forearms.",
+   "Bend both elbows to raise the bar toward your shoulders without swinging your back.",
+   "Lower slowly until your arms are nearly straight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -33953,6 +36323,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Reverse EZ-Bar Preacher Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "ez_bar",
+   "preacher_bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0452",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "ez barbell",
+  "libraryInstructions": [
+   "Sit at a preacher bench with both upper arms on the pad.",
+   "Hold the angled grips of an EZ bar with palms facing down.",
+   "Curl the bar upward without lifting your upper arms.",
+   "Lower slowly without forcing your elbows straight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -34008,6 +36396,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Reverse Cable Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0206",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand facing a low pulley and hold its bar with a palms-down grip.",
+   "Begin with arms nearly straight and elbows close to your sides.",
+   "Bend the elbows to lift the bar toward your chest without swinging your upper arms.",
+   "Lower the bar slowly while keeping wrists aligned with your forearms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -34055,6 +36460,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Reverse Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0872",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your back with your arms along your sides.",
+   "Bend your knees and lift your feet until your thighs point upward.",
+   "Tighten your abdomen and curl your pelvis off the floor, bringing your knees toward your chest.",
+   "Lower your hips slowly to the floor while keeping your knees bent."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -34112,6 +36534,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Dumbbell Rear Delt Fly",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0326",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Rest your chest on an incline bench with feet planted and dumbbells hanging below the shoulders.",
+   "Keep a slight bend in the elbows and palms facing inward.",
+   "Raise both arms outward until they are roughly in line with your torso.",
+   "Lower the weights slowly without lifting your chest from the pad."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -34169,6 +36609,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline Dumbbell Rear Delt Fly with External Rotation",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0386",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Rest your chest on an incline bench with feet planted and dumbbells hanging below your shoulders.",
+   "Begin with the dumbbells held horizontally end to end in front of the bench and keep a comfortable bend in your elbows.",
+   "Lift your upper arms out to the sides and rotate the arms so the thumb sides of your hands point upward near the top.",
+   "Lower slowly, reversing the rotation to return to the starting grip."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -34272,6 +36730,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Reverse-Grip Triceps Pushdown",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0207",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand facing a high pulley and take a palms-up grip on the bar.",
+   "Bring your upper arms beside your torso with the elbows bent.",
+   "Straighten both elbows to lower the bar toward your thighs without moving your shoulders.",
+   "Bend the elbows slowly to return."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -34336,6 +36811,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Reverse Hyperextension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0593",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Lie face down with your abdomen and hips on the support pad and your legs hanging below its edge.",
+   "Secure the lower legs in the machine attachment and hold the front handles with forearms supported.",
+   "Lift both legs backward through the hips until they approach the line of your torso.",
+   "Lower them slowly without swinging the load or lifting your abdomen from the pad."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -34498,6 +36990,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Reverse-Grip Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "2187",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Lie on a flat bench with your feet planted and grip the racked bar around shoulder width with your palms toward your head.",
+   "Unrack the bar with a secure grip and hold it above your chest.",
+   "Lower toward your chest with your elbows close to your body, keeping the bar from rolling in your hands.",
+   "Press upward and rack the bar securely after the set."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -34614,6 +37124,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -34679,6 +37190,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -34909,6 +37421,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -34975,6 +37488,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Romanian Deadlift",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0085",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand holding a barbell against the fronts of your thighs with your feet about hip-width apart.",
+   "Keep a small knee bend and push your hips backward as you lower the bar close to your legs.",
+   "Stop when you can no longer push your hips back without rounding your back or bending your knees further.",
+   "Press through your feet and bring your hips forward to stand tall."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -35044,6 +37574,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -35141,6 +37672,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -35242,6 +37774,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -35499,6 +38032,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Russian Twist",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0687",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Sit with knees bent and both feet resting on the floor.",
+   "Lean your torso back slightly and clasp your hands near your chest.",
+   "Rotate your shoulders and hands to one side while keeping your hips steady.",
+   "Turn through the center to the opposite side with control."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -35624,6 +38174,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Scapular Pull-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0688",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Hang from a bar with your palms facing away and elbows straight.",
+   "Draw your shoulder blades down to lift your body a short distance.",
+   "Keep your arms straight and avoid swinging.",
+   "Release slowly back to the full hang."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -35849,6 +38417,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -35955,6 +38524,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated One-Arm Dumbbell Kickback",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0398",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Sit on a flat bench with feet planted and lean forward, resting your free hand on your thigh.",
+   "Hold one dumbbell with the upper arm beside your torso and elbow bent.",
+   "Keep the upper arm still as you straighten the elbow behind you.",
+   "Bend the elbow slowly to return the weight beneath it.",
+   "Complete the set and change arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -36009,6 +38597,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Bent-Over Dumbbell Rear Delt Fly",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0378",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Sit on the end of a flat bench with feet planted and lean forward from your hips.",
+   "Hold the dumbbells beneath your thighs with palms facing each other.",
+   "Keep your elbows bent as you lift both upper arms out to the sides.",
+   "Lower slowly without lifting or swinging your torso."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -36063,6 +38669,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Two-Arm Dumbbell Kickback",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1737",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Sit on a flat bench with feet planted and lean forward from your hips.",
+   "Hold the dumbbells with upper arms beside your torso and elbows bent.",
+   "Keep the upper arms still as you straighten both elbows behind you.",
+   "Bend the elbows slowly to return the weights beneath them."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -36165,6 +38789,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Cable Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0180",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Sit on the cable-row bench and place your feet on the supports with your knees slightly bent.",
+   "Grip the close handle with your palms facing each other and extend your arms.",
+   "Keep your torso lifted as you pull the handle toward your abdomen, bringing your elbows backward beside your ribs.",
+   "Extend your arms slowly without collapsing your chest."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -36220,6 +38861,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Cable Shoulder Press",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -36273,6 +38915,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Calf Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0594",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit with the balls of your feet on the raised foot support and your heels hanging free.",
+   "Position the thigh pad over your legs just above the knees and hold the handles.",
+   "Raise your heels to lift the padded lever, keeping your knees bent.",
+   "Lower your heels slowly below the support level through a comfortable range."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -36378,6 +39037,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Close-Grip Barbell Concentration Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0089",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Sit near the end of a flat bench with your feet wide apart and lean forward.",
+   "Hold a barbell with your palms up and hands close together, resting your upper arms against your inner thighs.",
+   "Keep your arms braced and bend your elbows to curl the bar upward.",
+   "Lower it slowly without lifting your torso or swinging the bar."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -36434,6 +39111,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Dumbbell Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0391",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Sit upright on a flat bench with feet planted and dumbbells at your sides.",
+   "Turn your palms forward and keep your upper arms beside your torso.",
+   "Curl both weights toward your shoulders.",
+   "Lower them slowly without swinging your body."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -36490,6 +39185,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Dumbbell Outward Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0393",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Sit with your back against an upright bench and feet planted.",
+   "Hold dumbbells at your sides, turning your palms forward and slightly outward.",
+   "Keep your upper arms beside your torso and curl the weights upward along the outward arm path.",
+   "Lower slowly without pulling the elbows inward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -36543,6 +39256,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -36596,6 +39310,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -36911,6 +39626,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Good Morning",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0090",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Sit on a stable flat bench with your feet apart and planted, holding a barbell across your upper back.",
+   "Tighten your abdomen and keep the bar securely in place.",
+   "Lean your torso forward from the hips through a comfortable range while keeping your hips on the bench.",
+   "Raise your torso back upright without rocking or leaning backward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -37116,6 +39849,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Leg Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0599",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit against the backrest with the moving roller behind your lower legs just above the heels.",
+   "Secure the upper pad across your thighs and hold the handles.",
+   "Bend your knees to pull your heels downward and back beneath the seat, keeping your thighs still.",
+   "Let your legs straighten slowly as the roller returns forward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -37215,6 +39965,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -37268,6 +40019,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -37417,6 +40169,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -37469,6 +40222,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -37523,6 +40277,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Dumbbell Lateral Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0396",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Sit upright on a flat bench with your feet planted and a dumbbell beside each hip.",
+   "Keep your elbows slightly bent and lift both arms out to the sides.",
+   "Stop around shoulder height without shrugging or rocking your torso.",
+   "Lower slowly to your sides."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -37627,6 +40399,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -37835,6 +40608,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Band Shoulder Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "band"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0997",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "band",
+  "libraryInstructions": [
+   "Stand with one foot forward and secure the middle of the band beneath that foot.",
+   "Hold one handle beside each shoulder with your elbows bent and your palms facing forward.",
+   "Tighten your abdomen and press both hands overhead without leaning back.",
+   "Lower the handles to shoulder height with control."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -38029,6 +40819,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -38198,6 +40989,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Lateral Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0334",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand holding a dumbbell beside each thigh with palms inward.",
+   "Keep a small bend in your elbows and your torso steady.",
+   "Raise both arms out to the sides to about shoulder height.",
+   "Lower the weights slowly without shrugging or swinging."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -38826,6 +41634,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Push-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0725",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Set one palm on the floor beneath your shoulder and spread your feet for balance.",
+   "Place the nonworking hand behind your lower back.",
+   "Gently tighten your abdomen and bend the supporting elbow to lower your chest.",
+   "Press back up without letting your hips sag or twist excessively.",
+   "Complete the set and switch arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -39155,6 +41981,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Single-Leg Leg Extension",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -39412,6 +42239,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Single-Leg Glute Bridge (Knee to Chest)",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -39698,6 +42526,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -39760,6 +42589,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -39818,6 +42648,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -39884,6 +42715,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -39937,6 +42769,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Sled Rear Delt Fly",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -39987,6 +42820,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Sled Row",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -40047,6 +42881,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -40155,6 +42990,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -40221,6 +43057,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Smith Machine Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "smith_machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0748",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "smith machine",
+  "libraryInstructions": [
+   "Position a flat bench so the Smith bar lowers toward the middle of your chest.",
+   "Lie back with feet planted and grip the bar slightly wider than shoulder-width.",
+   "Unhook the bar and lower it toward your chest with controlled elbows.",
+   "Press along the rails until your arms straighten.",
+   "Rehook the bar securely after the set."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -40272,6 +43127,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Smith Machine Bent-Over Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "smith_machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1359",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "smith machine",
+  "libraryInstructions": [
+   "Grip the Smith bar with your palms facing your legs and unhook it.",
+   "Bend your knees slightly, push your hips back and lean forward while keeping your back in its natural shape.",
+   "Pull the bar toward your lower ribs by driving your elbows backward.",
+   "Lower slowly until your arms lengthen, keeping your torso steady.",
+   "Stand and rehook the bar to finish."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -40396,6 +43269,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Smith Machine Close-Grip Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "smith_machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0751",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "smith machine",
+  "libraryInstructions": [
+   "Lie on a flat bench beneath the Smith bar with both feet planted.",
+   "Grip the bar about shoulder-width or slightly closer and unhook it.",
+   "Lower toward your chest through a controlled, comfortable range.",
+   "Press the bar up along its rails and rehook it when finished."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -40641,6 +43532,26 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Smith Machine Incline Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "smith_machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0757",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "smith machine",
+  "libraryInstructions": [
+   "Secure an incline bench beneath the Smith bar and set the safety stops.",
+   "Lie back with your head and back on the pad and feet planted on the floor.",
+   "Hold the bar just wider than shoulder width, palms toward your feet, and release the hooks.",
+   "Bend your elbows to lower the bar toward your upper chest.",
+   "Press the bar upward until your arms are extended without lifting your hips.",
+   "Repeat with control, then rehook the bar."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -40707,6 +43618,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -40823,6 +43735,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Smith Machine Shoulder Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "smith_machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0765",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "smith machine",
+  "libraryInstructions": [
+   "Sit on an upright bench under the Smith bar with your back supported and feet on the floor.",
+   "Grip the bar just wider than shoulder width with your palms forward and release the hooks.",
+   "Lower the bar in front of your face toward shoulder level, keeping your forearms beneath it.",
+   "Press overhead until your arms extend without lifting your back from the pad.",
+   "Lower slowly for the next repetition and rehook the bar when finished."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -41016,6 +43947,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Smith Machine Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "smith_machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0770",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "smith machine",
+  "libraryInstructions": [
+   "Set the Smith bar near shoulder height and adjust the safety stops below your planned squat depth.",
+   "Step under the bar so it rests on your upper back and hold it outside your shoulders.",
+   "Release the hooks and plant your feet about shoulder width apart, toes slightly out.",
+   "Bend your hips and knees to lower while keeping your heels down and abdomen firm.",
+   "Drive through both feet to stand tall without forcefully locking your knees.",
+   "Repeat and secure the hooks before stepping away."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -41142,6 +44092,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Smith Machine Upright Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "smith_machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0775",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "smith machine",
+  "libraryInstructions": [
+   "Stand with your feet planted and hold the Smith bar in front of your thighs with your palms facing your thighs.",
+   "Keep your torso upright as you lift the bar close to your body, moving your elbows outward and upward.",
+   "Stop at a comfortable height without shrugging your head forward or forcing the wrists.",
+   "Lower the bar slowly until your arms extend.",
+   "Repeat with the same controlled path."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -41203,6 +44171,26 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Smith Machine Bulgarian Split Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "smith_machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0768",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "smith machine",
+  "libraryInstructions": [
+   "Place a bench behind you inside the Smith machine and set the bar across your upper back.",
+   "Grip the bar, release the hooks and place the top of one foot on the bench behind you.",
+   "Keep your front foot planted far enough forward to lower into a split squat.",
+   "Bend the front knee and hip as your rear knee moves toward the floor.",
+   "Push through your front foot to rise without moving the bench-supported rear foot.",
+   "Complete the set and repeat with the other leg in front."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -41416,6 +44404,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -41541,6 +44530,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -42346,6 +45336,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Bulgarian Split Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0410",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand facing away from a flat bench with a dumbbell in each hand.",
+   "Place the top of one foot behind you on the bench and keep the front foot planted.",
+   "Bend the front knee and hip to lower your body, keeping the knee aligned with your toes.",
+   "Push through the front foot to return upright without hopping.",
+   "Complete the set and change legs."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -42898,6 +45907,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Calf Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0111",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand with a barbell across your upper back and both feet flat on the floor.",
+   "Keep your knees nearly straight and hold the bar steady.",
+   "Press through the balls of your feet to lift your heels.",
+   "Lower your heels back to the floor under control."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -43005,6 +46031,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Dumbbell Kickback",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1740",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand with knees slightly bent and lean forward from your hips, resting your free hand on your thigh for support.",
+   "Hold one dumbbell with the upper arm beside your torso and elbow bent.",
+   "Straighten the elbow behind you without moving the upper arm.",
+   "Bend it slowly to return the weight beneath the elbow.",
+   "Complete the set and change arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -43058,6 +46102,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Two-Arm Dumbbell Kickback",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1741",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand with knees slightly bent, push your hips back and lean your torso forward.",
+   "Hold the dumbbells with upper arms beside your torso and elbows bent.",
+   "Straighten both elbows without swinging the upper arms.",
+   "Bend the elbows slowly to return the weights beneath them."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -43113,6 +46174,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Cable Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0868",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand facing a low cable pulley and hold its bar with your palms up at about shoulder width.",
+   "Start with the bar in front of your thighs and elbows nearly straight.",
+   "Curl the bar toward your chest without swinging your torso.",
+   "Lower slowly until your arms extend again."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -43399,6 +46477,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Standing Cable Wood Chop",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0862",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand sideways to a high cable pulley with your feet apart. Hold the handle in both hands near the shoulder closest to the pulley.",
+   "Keep your arms slightly bent and draw the handle diagonally down across your body toward the opposite hip.",
+   "Turn your chest and hips with the movement, allowing the foot nearest the pulley to pivot.",
+   "Return slowly along the same diagonal as your body turns back toward the pulley.",
+   "Complete one side, then turn around and repeat in the opposite direction."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -43453,6 +46549,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Standing Machine Calf Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0605",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Place the balls of your feet on the raised platform with your heels free to move.",
+   "Position your shoulders beneath the pads, hold the handles and stand with your knees nearly straight.",
+   "Raise your heels by pressing through the balls of your feet.",
+   "Lower your heels slowly through a comfortable range while keeping your torso upright."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -43508,6 +46621,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Standing Dumbbell Concentration Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0421",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand with feet apart and lean forward from your hips, keeping your back steady.",
+   "Rest the free hand on a thigh and let the working arm hang beneath your torso, palm forward.",
+   "Curl the dumbbell toward your shoulder without moving the upper arm.",
+   "Lower it slowly to the hanging position.",
+   "Complete the set and change arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -43561,6 +46692,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Calf Raise",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -43670,6 +46802,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Reverse Dumbbell Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0429",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand with dumbbells in front of your thighs and palms facing backward.",
+   "Keep the upper arms still and curl both weights upward with palms down.",
+   "Pause briefly near shoulder level without leaning back.",
+   "Lower slowly until the elbows are extended."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -43775,6 +46924,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Overhead Dumbbell Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0430",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand upright and hold one dumbbell securely with both hands overhead.",
+   "Keep the upper arms raised as you bend both elbows to lower the weight behind your head.",
+   "Straighten the elbows to return it overhead.",
+   "Keep the torso steady and lower the weight carefully when finished."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -43831,6 +46997,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Upright Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0437",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand holding dumbbells in front of your thighs with palms toward your body.",
+   "Lead with your elbows to lift the weights close to your torso.",
+   "Stop within a comfortable range with elbows around shoulder height.",
+   "Lower slowly without swinging."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -43931,6 +47114,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Barbell Front Raise to Overhead",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0107",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand with your feet about hip-width apart and hold a light barbell in front of your thighs with your palms facing back.",
+   "Keep a small, steady elbow bend and gently tighten your abdomen.",
+   "Raise the bar forward and continue overhead only as far as you can without leaning backward.",
+   "Lower along the same arc with control."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -44179,6 +47379,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Outward Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "2321",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand upright with dumbbells at your sides.",
+   "Turn the palms forward and slightly outward while keeping the upper arms beside your torso.",
+   "Curl the weights upward along the outward arm path.",
+   "Lower slowly without swinging or pulling the elbows inward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -44462,6 +47679,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Overhead Cable Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0149",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand facing away from a low cable pulley and hold its handle in one hand behind your head.",
+   "Point the working elbow upward and use your other hand to support that upper arm.",
+   "Keep the upper arm steady as you straighten the elbow to raise the handle overhead.",
+   "Bend the elbow slowly to lower the handle behind your head, then switch arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -44517,6 +47751,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Standing Barbell Military Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1457",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand with your feet apart and hold the bar at the front of your shoulders with your hands wider than shoulder width.",
+   "Gently tighten your abdomen and keep your wrists above your forearms.",
+   "Press upward until your arms are straight, without using a knee dip to drive the bar.",
+   "Lower with control to the front of your shoulders."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -44626,6 +47877,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Cable Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0190",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand facing a low cable pulley and hold its handle in one hand with your palm forward.",
+   "Keep your elbow beside your torso and your wrist steady.",
+   "Curl the handle toward your shoulder without leaning backward.",
+   "Lower slowly and repeat with the other arm."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -44682,6 +47950,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Incline-Bench One-Arm Dumbbell Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bench",
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0422",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand behind an incline bench and rest the back of one upper arm on its raised pad.",
+   "Hold a dumbbell with the palm up and steady yourself with the free hand on the bench.",
+   "Curl the weight toward your shoulder without lifting the upper arm.",
+   "Lower slowly without forcing the elbow straight.",
+   "Complete the set and switch arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -44735,6 +48022,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "One-Arm Overhead Dumbbell Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0423",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand upright with one dumbbell held overhead, palm facing inward.",
+   "Keep your upper arm raised and bend the elbow to lower the weight behind your head.",
+   "Straighten the elbow to bring the weight overhead again.",
+   "Keep your torso steady throughout.",
+   "Complete the set and change arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -44788,6 +48093,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Overhead Barbell Triceps Extension",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0109",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand with your feet apart and hold a barbell overhead using a comfortable close grip.",
+   "Keep your upper arms near your head and gently tighten your abdomen.",
+   "Bend the elbows to lower the bar behind your head without moving your torso.",
+   "Straighten your elbows to lift the bar overhead again."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -44948,6 +48270,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -45050,6 +48373,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Standing Rope Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0874",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Attach a rope to a high pulley. Stand facing away from the machine with your feet planted and your knees slightly bent.",
+   "Hold the rope ends beside your head with your elbows bent.",
+   "Curl your upper body forward, bringing your ribs toward your pelvis and your chest toward your thighs.",
+   "Keep your hands beside your head and avoid turning the movement into an arm pull.",
+   "Return slowly to an upright position without arching backward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -45509,6 +48850,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Stiff-Legged Barbell Deadlift",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0116",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Stand holding a barbell in front of your thighs with your feet about hip-width apart.",
+   "Keep your knees nearly straight without forcing them backward.",
+   "Move your hips back and lower the bar close to your legs, stopping at a range you can control.",
+   "Extend your hips to return upright without pulling the bar away from your body."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -45574,6 +48932,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Stiff-Legged Dumbbell Deadlift",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0432",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand holding dumbbells in front of your thighs with knees slightly softened.",
+   "Keep that small knee bend as you push your hips backward and lower the weights close to your legs.",
+   "Stop before your back rounds or the hamstring stretch becomes uncomfortable.",
+   "Extend your hips to stand upright without leaning backward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -45639,6 +49014,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -45743,6 +49119,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -45795,6 +49172,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -45844,6 +49222,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -46021,6 +49400,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Sumo Deadlift",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0117",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Take a wide stance over the bar with your toes turned outward.",
+   "Bend your hips and knees and grip the bar with both hands between your legs.",
+   "Gently tighten your abdomen and push through your feet to stand, keeping the bar close.",
+   "Move your hips back and bend your knees to return the bar to the floor under control."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -46168,6 +49564,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -46575,6 +49972,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Suspension Knee Tuck",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight",
+   "suspension"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0807",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Set the suspension straps low and place both feet in the foot cradles.",
+   "Put your palms on the floor beneath your shoulders and straighten your arms into a plank.",
+   "Tighten your abdomen, bend both knees and draw them toward your chest as your hips rise slightly.",
+   "Extend your legs back to the plank slowly without letting your back sag.",
+   "Repeat while keeping your shoulders supported over your hands."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -46684,6 +50100,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Suspension Bulgarian Split Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight",
+   "suspension"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0809",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Stand facing away from the suspension anchor and place one foot in a low foot cradle behind you.",
+   "Plant the other foot in front and find your balance with an upright torso.",
+   "Bend the front knee and hip as the suspended rear foot moves backward and your rear knee lowers.",
+   "Push through the front foot to return to standing without pulling yourself up with the rear leg.",
+   "Complete the set, then change legs."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -46800,6 +50235,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "V-Handle T-Bar Row",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "landmine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "3200",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Secure the bar in its pivot and place the V-bar handle beneath the loaded end.",
+   "Straddle the bar, bend your knees and lean forward from your hips to take both handles with palms facing each other.",
+   "Hold your torso still as you draw your elbows back and pull the handle toward your abdomen.",
+   "Lower the weight under control without rounding your back."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -46974,6 +50427,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -47034,6 +50488,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -47319,6 +50774,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Trap Bar Deadlift",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "trap_bar"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0811",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "trap bar",
+  "libraryInstructions": [
+   "Stand inside the trap bar with your feet about hip width apart.",
+   "Bend your hips and knees to grip the handles beside your legs, palms facing inward.",
+   "Tighten your abdomen and keep your back steady as you push through the floor.",
+   "Stand by extending your hips and knees together, keeping your arms straight.",
+   "Bend at the hips and knees to lower the bar to the floor, then reset for the next repetition."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -47472,6 +50945,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -47525,6 +50999,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Triceps Pushdown",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0201",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Stand facing a high cable pulley and take a palms-down grip on its bar.",
+   "Bring your elbows beside your torso and start with them bent.",
+   "Straighten both elbows to press the bar toward your thighs without swinging your shoulders.",
+   "Bend the elbows slowly to return the bar upward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -47578,6 +51069,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Rope Triceps Pushdown",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0200",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Attach a rope to a high pulley and stand facing it.",
+   "Hold one rope end in each hand with palms facing each other and elbows bent beside your body.",
+   "Straighten your elbows to lower your hands toward the outside of your thighs.",
+   "Bend the elbows slowly to return while keeping your upper arms still."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -47631,6 +51139,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "V-Bar Triceps Pushdown",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0241",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Attach a V-bar to a high pulley and stand facing the cable.",
+   "Hold the angled grips from above with your elbows bent and close to your sides.",
+   "Straighten both elbows to press the bar down toward your thighs.",
+   "Bend your elbows slowly to let the bar rise without moving your upper arms forward.",
+   "Keep your wrists steady and avoid leaning your body weight onto the bar."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -47727,6 +51253,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Tuck Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0871",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your back and raise your legs with both hips and knees bent, keeping your feet off the floor.",
+   "Cross your hands over your chest and keep your neck relaxed.",
+   "Tighten your abdomen to curl your head and shoulder blades upward toward your knees.",
+   "Lower your shoulders under control while keeping the legs bent and elevated.",
+   "Repeat without extending the legs or pulling your head forward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -47962,6 +51506,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -48062,6 +51607,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Close-Grip Underhand Lat Pulldown",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0245",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Sit at a lat pulldown station with your feet on the floor and your thighs secured beneath the pad.",
+   "Hold the bar with your palms facing you and your hands about shoulder-width apart.",
+   "Sit tall with a slight backward lean and pull the bar toward your upper chest, driving your elbows down beside your body.",
+   "Raise the bar slowly until your arms are extended overhead.",
+   "Keep your torso steady and avoid swinging backward to move the weight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -48209,6 +51772,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -48313,6 +51877,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Band Upright Row",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -48414,6 +51979,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "V-Bar Lat Pulldown",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "2616",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Sit at the high-pulley station with your thighs secured beneath the pads and feet planted.",
+   "Grip the V-bar with your palms facing each other and arms extended overhead.",
+   "Keep your chest lifted and pull the handle toward your upper chest with your elbows close to your sides.",
+   "Let the handle rise slowly without swinging your torso."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -48537,6 +52119,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -48653,6 +52236,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -48806,6 +52390,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Medicine Ball Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "medicine_ball"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "4253",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "medicine ball",
+  "libraryInstructions": [
+   "Lie on your back with your knees bent and feet flat on the floor.",
+   "Hold a medicine ball close to your chest with both hands.",
+   "Gently tighten your abdomen and curl your shoulders and upper back from the floor.",
+   "Keep the ball close without pushing it forward or pulling your neck.",
+   "Lower your upper back slowly and repeat."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -48922,6 +52524,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -49034,6 +52637,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -49166,6 +52770,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Wide-Grip Barbell Bench Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0122",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Lie on a flat bench with your feet planted and grip the bar wider than shoulder width.",
+   "Lift the bar from the rack and hold it above your chest with straight arms.",
+   "Bend your elbows to lower the bar toward your chest without bouncing.",
+   "Press it upward until your arms are straight, keeping your hips on the bench."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -49231,6 +52853,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -49286,6 +52909,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -49337,6 +52961,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Wide-Grip Lat Pulldown",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0150",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "cable",
+  "libraryInstructions": [
+   "Sit facing the high pulley with your feet planted and thighs held beneath the support pads.",
+   "Grip the wide bar with your palms facing forward and hands wider than shoulder width.",
+   "Keep your chest lifted and pull the bar toward your upper chest by bringing your elbows down.",
+   "Let the bar rise slowly until your arms extend, keeping your torso controlled."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -49448,6 +53089,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -49503,6 +53145,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Wide-Grip Barbell Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1629",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Hold a barbell in front of your thighs with a wide grip and palms facing forward.",
+   "Keep your elbows near your sides and your wrists steady.",
+   "Curl the bar toward your chest without leaning backward.",
+   "Lower it slowly until your arms are nearly straight."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -49569,6 +53228,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Wide-Stance Barbell Back Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0124",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "barbell",
+  "libraryInstructions": [
+   "Hold the bar across your upper back and set your feet wide with your toes turned slightly outward.",
+   "Tighten your abdomen and bend your hips and knees, allowing your knees to follow your toes.",
+   "Lower through a controlled range while keeping both feet planted.",
+   "Push through your feet to stand upright."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -49887,6 +53563,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -50127,6 +53804,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Zottman Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0439",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand with dumbbells at your sides and palms forward.",
+   "Curl both weights toward your shoulders without moving your upper arms.",
+   "Rotate the forearms at the top until your palms face down.",
+   "Lower slowly with palms down.",
+   "Turn the palms forward again at the bottom before repeating."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": false
  },
  {
@@ -50249,6 +53944,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -50447,6 +54143,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Romanian Deadlift",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1459",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand holding dumbbells in front of your thighs with feet about hip-width apart.",
+   "Soften your knees and push your hips backward, keeping the weights close to your legs.",
+   "Lower only as far as you can maintain a steady back and feel tension in the hamstrings.",
+   "Drive your hips forward to stand tall without leaning backward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -50518,6 +54231,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -50585,6 +54299,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Single-Leg Romanian Deadlift",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1757",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand holding a dumbbell in each hand and shift your weight onto one leg.",
+   "Keep a small bend in that knee and lean forward from your hip while the free leg extends behind you.",
+   "Lower the dumbbells beneath your shoulders without twisting your hips or rounding your back.",
+   "Drive through the standing leg to return upright.",
+   "Complete the set and switch legs."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -50653,6 +54385,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Kettlebell Swing",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0549",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "kettlebell",
+  "libraryInstructions": [
+   "Stand with feet apart and hold the kettlebell handle in both hands.",
+   "Bend your knees slightly and push your hips back, letting the bell swing between your legs.",
+   "Drive your hips forward to stand tall and let the bell float up toward chest height.",
+   "Keep your arms relaxed enough that the hips supply the lift.",
+   "Guide the bell back between your legs as you push your hips back for the next swing.",
+   "Finish by controlling the bell down rather than abruptly stopping it in front of you."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -50720,6 +54471,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -50917,6 +54669,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -50983,6 +54736,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Pec Deck Fly",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0596",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "leverage machine",
+  "libraryInstructions": [
+   "Sit with your back against the pad and adjust the handles to about chest height.",
+   "Hold the handles with a small bend in your elbows and open your arms to a comfortable width.",
+   "Bring the handles together in front of your chest while keeping that elbow bend.",
+   "Open the arms slowly to return without lifting your back from the pad."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -51145,6 +54915,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -51300,6 +55071,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -51352,6 +55124,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -51468,6 +55241,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Overhead Press",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0426",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand with feet planted and a dumbbell beside each shoulder, palms forward.",
+   "Press both weights overhead while keeping your torso upright.",
+   "Extend your arms without leaning backward.",
+   "Lower the dumbbells slowly to shoulder height."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -51531,6 +55321,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Bodyweight Reverse Lunge",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -51594,6 +55385,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Walking Lunge",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -51658,6 +55450,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Curtsy Lunge",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "3769",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Stand with your feet about hip-width apart and your hands in front of your chest.",
+   "Step one foot diagonally behind the other, placing the toes on the floor.",
+   "Bend both knees to lower your body while keeping most of your weight over the front foot.",
+   "Press through the front foot to stand and bring the rear foot back beside it.",
+   "Repeat to the other side, using a small enough cross-behind step to keep the front knee controlled."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -51711,6 +55521,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -51765,6 +55576,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -51818,6 +55630,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -51877,6 +55690,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -52320,6 +56134,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "intermediate",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -52571,6 +56386,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -52632,6 +56448,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -52702,6 +56519,24 @@ export const EXERCISE_REGISTRY = [
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "beginner",
   "displayName": "Wall Push-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0658",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Face a wall and place your hands at shoulder height, slightly wider than your shoulders.",
+   "Step back with your feet hip-width apart so your body leans toward the wall.",
+   "Gently tighten your abdomen to keep a straight line from head to heels.",
+   "Bend your elbows to bring your chest toward the wall.",
+   "Press through your hands to straighten your arms."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -52771,6 +56606,24 @@ export const EXERCISE_REGISTRY = [
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "beginner",
   "displayName": "Knee Push-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "3211",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Place your hands slightly wider than shoulder-width and keep both knees on the floor.",
+   "Move your hips forward until your body forms a straight line from knees to head.",
+   "Bend your elbows to lower your chest toward the floor.",
+   "Press through your palms to straighten your arms.",
+   "Keep your knees down and your hips aligned throughout."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -52840,6 +56693,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -52908,6 +56762,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Diamond Push-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0283",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Place your hands beneath the middle of your chest, bringing your thumbs and index fingers together to form a diamond.",
+   "Extend your legs behind you onto your toes and keep your body straight from head to heels.",
+   "Bend your elbows back beside your body to lower your chest toward your hands.",
+   "Press through your palms to straighten your arms without letting your hips sag.",
+   "Keep your neck in line with your torso and control the return."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -52977,6 +56849,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Archer Push-Up",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "3294",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Set your hands wide on the floor and extend your legs behind you in a straight-arm plank.",
+   "Keep both palms planted and tighten your abdomen.",
+   "Shift toward one hand as you bend that elbow and lower your chest, keeping the other arm nearly straight.",
+   "Press through the bent arm to return to the center.",
+   "Repeat toward the opposite hand."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -53044,6 +56934,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Pike Push-Up",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -53357,6 +57248,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Lateral Lunge",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -53420,6 +57312,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -53474,6 +57367,7 @@ export const EXERCISE_REGISTRY = [
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
   "displayName": "Bird Dog",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -53526,6 +57420,7 @@ export const EXERCISE_REGISTRY = [
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
   "displayName": "Side Plank",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -53579,6 +57474,23 @@ export const EXERCISE_REGISTRY = [
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
   "displayName": "Plank with Shoulder Tap",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "3699",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Place your hands beneath your shoulders, extend your legs and balance on your toes with your body straight.",
+   "Gently tighten your abdomen and lift one hand to touch the opposite shoulder.",
+   "Set that hand down before lifting the other hand to tap the other shoulder.",
+   "Continue alternating while keeping your hips level and torso steady."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -53630,6 +57542,23 @@ export const EXERCISE_REGISTRY = [
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "none",
   "displayName": "Side Plank with Hip Dip",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0705",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your side with legs stacked and your lower forearm beneath the shoulder.",
+   "Gently tighten your abdomen and lift your hips until your body forms a straight line.",
+   "Lower your hips slowly toward the floor.",
+   "Repeat, then switch sides."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -53679,6 +57608,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Mountain Climber",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0630",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Set your hands beneath your shoulders in a high plank.",
+   "Bring one knee toward your chest while the other leg stays extended.",
+   "Switch legs in a controlled running action.",
+   "Keep your hips steady and breathe continuously as you alternate."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -53727,6 +57673,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Cross-Body Mountain Climber",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "2466",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Start in a high plank with your palms under your shoulders and legs extended.",
+   "Gently tighten your abdomen and bring one knee diagonally toward the opposite elbow.",
+   "Return that foot to the starting position without dropping your hips.",
+   "Bring the other knee across and continue alternating at a controlled pace."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -53870,6 +57833,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Bicycle Crunch",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0003",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Lie on your back, lift your bent knees above your hips, and rest your fingertips lightly behind your head.",
+   "Lift your shoulders and turn your right shoulder toward your left knee while extending your right leg.",
+   "Switch sides, bringing your left shoulder toward your right knee as your left leg extends.",
+   "Continue alternating smoothly without pulling on your head or letting the extended leg drag on the floor."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -55129,6 +59109,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -55744,6 +59725,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Seated Band Row",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -55797,6 +59779,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Bodyweight Calf Raise",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1373",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Stand tall with your feet about hip-width apart and arms by your sides.",
+   "Keep your knees nearly straight and your weight spread across the balls of your feet.",
+   "Lift both heels as high as you can while remaining balanced.",
+   "Lower your heels slowly to the floor."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -55852,6 +59851,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Band Curl",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -55909,6 +59909,7 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Standing Band Low-to-High Wood Chop",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -56024,6 +60025,7 @@ export const EXERCISE_REGISTRY = [
   "resolverDefaultEligible": true,
   "maxPrimaryVolumeTier": "beginner",
   "displayName": "Bodyweight Single-Leg Romanian Deadlift",
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -56302,6 +60304,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Dumbbell Goblet Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "1760",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "dumbbell",
+  "libraryInstructions": [
+   "Stand holding one dumbbell vertically against your chest with both hands.",
+   "Keep your chest lifted as you bend your knees and hips into a squat.",
+   "Lower within a comfortable range while keeping your heels on the floor and knees aligned with your toes.",
+   "Push through your feet to return to standing."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -56362,6 +60381,24 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Bodyweight Split Squat",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "2368",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "body weight",
+  "libraryInstructions": [
+   "Set a split stance with one foot forward and one behind, keeping enough sideways space to balance.",
+   "Keep both feet in place as you bend the knees and lower your rear knee toward the floor.",
+   "Maintain a controlled torso and keep the front heel planted.",
+   "Push through your front foot to return to the top of the split stance.",
+   "Repeat, then change which foot is forward."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -56413,6 +60450,25 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Half-Kneeling One-Arm Band Pulldown",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0983",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "band",
+  "libraryInstructions": [
+   "Fix the band to a high anchor and kneel on one knee facing it, with the other foot planted ahead.",
+   "Reach one arm upward to hold the handle and lean slightly toward the anchor.",
+   "Pull your elbow down beside your torso without twisting your hips.",
+   "Extend the arm slowly toward the anchor again.",
+   "Finish your repetitions, then change the working arm and kneeling side."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  },
  {
@@ -56533,6 +60589,23 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "displayName": "Single-Arm Band Curl",
+  "planEligibility": "eligible",
+  "libraryEquipment": [
+   "band"
+  ],
+  "vendorProvider": "exercisedb",
+  "vendorMediaId": "0968",
+  "vendorSourceFile": "exerciseData_starter_101426.json",
+  "vendorPackVersion": "exerciseData_starter_101426",
+  "vendorPackDate": "2026-10-17",
+  "vendorEquipmentRaw": "band",
+  "libraryInstructions": [
+   "Stand on the middle of the band and hold one end in each hand with your palms facing forward.",
+   "Keep one hand beside your thigh and curl the other toward your shoulder without moving its upper arm.",
+   "Lower the working hand slowly until its elbow is nearly straight.",
+   "Finish the repetitions, then switch arms while keeping your torso steady."
+  ],
+  "libraryInstructionsSource": "vendor_pack",
   "hasCues": true
  }
 ];
