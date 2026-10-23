@@ -4,7 +4,7 @@
  * Detail-only fields live in exercise_details.json, served from Supabase.
  */
 
-export const SCHEMA_VERSION = "5.6";
+export const SCHEMA_VERSION = "5.7";
 export const PLAN_POLICY_REASON_CODES = ["equipment_vocabulary_gap","alternative_setup_unmodeled","equipment_setup_ambiguous","household_object_dependency","partner_dependency","context_restricted_selection","superseded_by_canonical"];
 export const REGISTRY_TOTAL = 982;
 export const EXERCISE_REGISTRY = [
@@ -3869,9 +3869,10 @@ export const EXERCISE_REGISTRY = [
    "Stand in a wide stance with a barbell across your upper back and both feet planted.",
    "Shift your hips toward one side and bend that knee, keeping the other leg straight.",
    "Lower through a controlled range with the bar level and your chest lifted.",
-   "Push through the bent leg to return to the upright wide stance, then work the other side."
+   "Push through the bent leg to return to the upright wide stance.",
+   "Complete all reps on one side, then switch."
   ],
-  "libraryInstructionsSource": "vendor_pack",
+  "libraryInstructionsSource": "endopamin_reviewed",
   "hasCues": false
  },
  {
@@ -5852,12 +5853,13 @@ export const EXERCISE_REGISTRY = [
   "vendorPackDate": "2026-10-17",
   "vendorEquipmentRaw": "body weight",
   "libraryInstructions": [
-   "Stand with feet about shoulder-width apart and arms extended forward.",
-   "Bend your hips and knees to sit down between your feet.",
-   "Keep your heels planted and knees following your toes.",
-   "Press through both feet to stand, keeping your arms forward for balance."
+   "Stand with your feet about shoulder-width apart.",
+   "Raise your arms to shoulder height.",
+   "Bend your hips and knees to sit down, reaching your arms forward for balance.",
+   "Keep your heels down, chest up and knees in line with your toes.",
+   "Press through your feet to stand back up."
   ],
-  "libraryInstructionsSource": "vendor_pack",
+  "libraryInstructionsSource": "endopamin_reviewed",
   "hasCues": true
  },
  {
@@ -8054,6 +8056,7 @@ export const EXERCISE_REGISTRY = [
   "displayName": "Seated Cable Crunch",
   "planEligibility": "eligible",
   "libraryEquipment": [
+   "bench",
    "cable"
   ],
   "vendorProvider": "exercisedb",
@@ -11967,13 +11970,14 @@ export const EXERCISE_REGISTRY = [
   "vendorPackDate": "2026-10-17",
   "vendorEquipmentRaw": "body weight",
   "libraryInstructions": [
-   "Lie on your back and lift your knees above your hips with both knees bent. Reach both arms toward the ceiling.",
-   "Gently tighten your abdomen and lift your head and shoulders slightly, keeping your lower back supported by the floor.",
-   "Keep both arms raised as you slowly straighten and lower one leg toward the floor.",
-   "Stop before your lower back arches, then bring that knee back above your hip.",
-   "Complete the repetitions, then switch legs while maintaining the same arm and trunk position."
+   "Lie on your back with your arms reaching straight up toward the ceiling.",
+   "Lift your legs so your hips and knees bend to about 90 degrees.",
+   "Press your lower back gently into the floor.",
+   "Keep your arms still as you slowly straighten one leg toward the floor.",
+   "Stop before your lower back arches, then bring that knee back over your hip.",
+   "Complete all reps on one side, then switch."
   ],
-  "libraryInstructionsSource": "vendor_pack",
+  "libraryInstructionsSource": "endopamin_reviewed",
   "hasCues": true
  },
  {
@@ -15288,7 +15292,8 @@ export const EXERCISE_REGISTRY = [
   "planEligibility": "eligible",
   "libraryEquipment": [
    "bench",
-   "dumbbell"
+   "dumbbell",
+   "step_platform"
   ],
   "vendorProvider": "exercisedb",
   "vendorMediaId": "0400",
@@ -17991,9 +17996,10 @@ export const EXERCISE_REGISTRY = [
    "Stand facing away from a low cable pulley with its handle in one hand beside your thigh.",
    "Keep your torso upright and your free arm relaxed.",
    "Raise the working arm forward to about shoulder height without swinging or bending the elbow farther.",
-   "Lower slowly and repeat with the other arm."
+   "Lower the handle slowly back beside your thigh.",
+   "Complete all reps on one side, then switch."
   ],
-  "libraryInstructionsSource": "vendor_pack",
+  "libraryInstructionsSource": "endopamin_reviewed",
   "hasCues": false
  },
  {
@@ -26703,7 +26709,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
-  "displayName": "Low Cable Crossover",
+  "displayName": "Mid-Height Cable Crossover",
   "planEligibility": "eligible",
   "libraryEquipment": [
    "cable"
@@ -26994,7 +27000,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
-  "displayName": "Kettlebell Lunge Pass-Through",
+  "displayName": "Kettlebell Lunge with Under-Thigh Reach",
   "planEligibility": "eligible",
   "libraryEquipment": [
    "kettlebell"
@@ -27006,13 +27012,13 @@ export const EXERCISE_REGISTRY = [
   "vendorPackDate": "2026-10-17",
   "vendorEquipmentRaw": "kettlebell",
   "libraryInstructions": [
-   "Stand holding one kettlebell at your side.",
-   "Step forward with the leg opposite the loaded hand and bend both knees into a lunge.",
-   "Pass the kettlebell beneath the front thigh to your other hand.",
-   "Push through the front foot to return to standing with the bell now on the other side.",
-   "Repeat with the opposite leg and continue alternating."
+   "Stand tall holding a kettlebell in one hand at your side.",
+   "Step forward into a lunge and lower your back knee toward the floor.",
+   "Reach the kettlebell under your front thigh, then bring it back to the same side without changing hands.",
+   "Push through your front foot to return to standing with the kettlebell at your side.",
+   "Step forward with the other leg and continue alternating legs."
   ],
-  "libraryInstructionsSource": "vendor_pack",
+  "libraryInstructionsSource": "endopamin_reviewed",
   "hasCues": false
  },
  {
@@ -28219,7 +28225,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
-  "displayName": "Chest-Supported T-Bar Row",
+  "displayName": "Standing Lever T-Bar Row",
   "planEligibility": "eligible",
   "libraryEquipment": [
    "machine"
@@ -28231,12 +28237,13 @@ export const EXERCISE_REGISTRY = [
   "vendorPackDate": "2026-10-17",
   "vendorEquipmentRaw": "leverage machine",
   "libraryInstructions": [
-   "Stand on the footplates and lean your chest onto the machine pad.",
-   "Grip the handles with your palms facing down and let your arms lengthen.",
-   "Pull the handles toward your ribs, drawing your elbows back.",
-   "Lower the lever slowly without lifting your chest from the pad."
+   "Stand on the footplates of a lever T-bar row machine.",
+   "Bend your knees slightly and hinge forward at the hips with your back flat.",
+   "Grip the handles and let your arms hang straight down.",
+   "Pull the handles toward your torso, drawing your elbows back.",
+   "Lower the handles slowly until your arms are straight, keeping your back flat."
   ],
-  "libraryInstructionsSource": "vendor_pack",
+  "libraryInstructionsSource": "endopamin_reviewed",
   "hasCues": false
  },
  {
@@ -47693,9 +47700,10 @@ export const EXERCISE_REGISTRY = [
    "Stand facing away from a low cable pulley and hold its handle in one hand behind your head.",
    "Point the working elbow upward and use your other hand to support that upper arm.",
    "Keep the upper arm steady as you straighten the elbow to raise the handle overhead.",
-   "Bend the elbow slowly to lower the handle behind your head, then switch arms."
+   "Bend the elbow slowly to lower the handle behind your head.",
+   "Complete all reps on one side, then switch."
   ],
-  "libraryInstructionsSource": "vendor_pack",
+  "libraryInstructionsSource": "endopamin_reviewed",
   "hasCues": false
  },
  {
@@ -47891,9 +47899,10 @@ export const EXERCISE_REGISTRY = [
    "Stand facing a low cable pulley and hold its handle in one hand with your palm forward.",
    "Keep your elbow beside your torso and your wrist steady.",
    "Curl the handle toward your shoulder without leaning backward.",
-   "Lower slowly and repeat with the other arm."
+   "Lower the handle slowly until your arm is straight.",
+   "Complete all reps on one side, then switch."
   ],
-  "libraryInstructionsSource": "vendor_pack",
+  "libraryInstructionsSource": "endopamin_reviewed",
   "hasCues": false
  },
  {
@@ -51606,9 +51615,10 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
-  "displayName": "Close-Grip Underhand Lat Pulldown",
+  "displayName": "Wide-Grip Underhand Lat Pulldown",
   "planEligibility": "eligible",
   "libraryEquipment": [
+   "bench",
    "cable"
   ],
   "vendorProvider": "exercisedb",
@@ -51618,13 +51628,13 @@ export const EXERCISE_REGISTRY = [
   "vendorPackDate": "2026-10-17",
   "vendorEquipmentRaw": "cable",
   "libraryInstructions": [
-   "Sit at a lat pulldown station with your feet on the floor and your thighs secured beneath the pad.",
-   "Hold the bar with your palms facing you and your hands about shoulder-width apart.",
-   "Sit tall with a slight backward lean and pull the bar toward your upper chest, driving your elbows down beside your body.",
-   "Raise the bar slowly until your arms are extended overhead.",
+   "Sit on a flat bench facing a high cable pulley with a long bar attached, feet flat on the floor.",
+   "Hold the bar with your palms facing you and your hands wider than your shoulders.",
+   "Pull the bar down toward your upper chest, driving your elbows down beside your body.",
+   "Raise the bar slowly until your arms are straight overhead.",
    "Keep your torso steady and avoid swinging backward to move the weight."
   ],
-  "libraryInstructionsSource": "vendor_pack",
+  "libraryInstructionsSource": "endopamin_reviewed",
   "hasCues": false
  },
  {
