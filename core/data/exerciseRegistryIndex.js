@@ -8122,11 +8122,11 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.9,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": "fam.lateral_raise",
+  "primaryFamilyId": "fam.rear_delt_fly",
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
-  "displayName": "Seated Cable Lateral Raise",
+  "displayName": "Seated Cable Rear Delt Fly",
   "planEligibility": "eligible",
   "libraryEquipment": [
    "bench",
