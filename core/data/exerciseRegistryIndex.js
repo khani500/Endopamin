@@ -18116,7 +18116,7 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
-  "displayName": "Alternating Dumbbell Front Raise",
+  "displayName": "Dumbbell Front Raise",
   "planEligibility": "eligible",
   "libraryEquipment": [
    "dumbbell"
