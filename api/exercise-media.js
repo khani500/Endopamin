@@ -1,5 +1,6 @@
 import { exerciseMediaBatchHandler } from './_exerciseMediaBatch.js';
 import { exerciseMediaHandler } from './_exerciseMediaSingle.js';
+import { exerciseInstructionsHandler } from './_exerciseInstructions.js';
 
 export { exerciseMediaBatchHandler, handleExerciseMediaBatch, parseBatchBody } from './_exerciseMediaBatch.js';
 export { exerciseMediaHandler, handleExerciseMedia } from './_exerciseMediaSingle.js';
@@ -10,6 +11,7 @@ export async function exerciseMediaDispatcher(req, res, deps = {}) {
   const route = req.query?.__route;
   if (route === undefined) return exerciseMediaHandler(req, res, deps);
   if (route === 'batch') return exerciseMediaBatchHandler(req, res, deps);
+  if (route === 'instructions') return exerciseInstructionsHandler(req, res, deps);
   return res.status(404).json({ error: 'Not found', code: 'not_found' });
 }
 

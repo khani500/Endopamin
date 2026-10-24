@@ -22,6 +22,10 @@
     {
       "source": "/api/exercise-media-batch",
       "destination": "/api/exercise-media?__route=batch"
+    },
+    {
+      "source": "/api/exercise-instructions",
+      "destination": "/api/exercise-media?__route=instructions"
     }
   ]
 }

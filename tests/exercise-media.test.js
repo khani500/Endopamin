@@ -56,7 +56,9 @@ function admin({ auth = true, row = ITEM, signError = false } = {}) {
         ? { data: { user: { id: 'user-1' } }, error: null }
         : { data: { user: null }, error: { message: 'bad token' } })),
     },
-    from: vi.fn(() => chain({
+    from: vi.fn((table) => table === 'app_config' ? chain({
+      data: { vendor_content_enabled: true, library_enabled: false }, error: null,
+    }) : chain({
       data: row ? {
         canonical_exercise_id: EXERCISE_ID,
         media_version: row.mediaVersion,

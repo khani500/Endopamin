@@ -30,12 +30,9 @@ export async function getAppConfig(admin, { now = Date.now } = {}) {
   }
   if (result?.error || !result?.data) return closedConfig();
 
-  // Selected non-null database columns are boolean in production. The fallback
-  // keeps pre-existing endpoint unit doubles compatible when they return a row
-  // without modeling the newly added columns.
   cachedConfig = Object.freeze({
-    vendorContentEnabled: result.data.vendor_content_enabled ?? true,
-    libraryEnabled: result.data.library_enabled ?? true,
+    vendorContentEnabled: result.data.vendor_content_enabled === true,
+    libraryEnabled: result.data.library_enabled === true,
   });
   cachedAt = currentTime;
   return cachedConfig;

@@ -22,7 +22,7 @@ export const RESPONSES = Object.freeze({
 
 const codeUnitCompare = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 
-function canonical(value) {
+export function canonical(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') return JSON.stringify(value);
   if (typeof value === 'number' && Number.isFinite(value)) return JSON.stringify(value);
   if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
