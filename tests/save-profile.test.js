@@ -16,6 +16,7 @@ import {
   EQUIPMENT_EXTRAS_MESSAGES,
   EQUIPMENT_EXTRAS_REASONS,
   EQUIPMENT_REASONS,
+  MY_EQUIPMENT_MESSAGES,
 } from '../src/lib/profileValidation.js';
 import {
   HEALTH_CONDITIONS_STORED,
@@ -78,16 +79,19 @@ function fakeRes() {
 function fakeAdmin({ profile, userId = 'user-1' } = {}) {
   const updates = [];
   const tables = [];
+  const selections = [];
   return {
     updates,
     tables,
+    selections,
     auth: {
       getUser: async () => ({ data: { user: { id: userId } }, error: null }),
     },
     from(table) {
       tables.push(table);
       return {
-        select() {
+        select(columns) {
+          selections.push(columns);
           return {
             eq() {
               return {
@@ -915,6 +919,67 @@ describe('handleRequest', () => {
     expect(res.body.fields.equipment).toBe(EQUIPMENT_REASONS.object);
     expect(res.body.reasonCodes).toEqual({ equipment: 'equipment_object_not_allowed' });
     expect(admin.updates).toHaveLength(0);
+  });
+});
+
+describe('Library-only my equipment', () => {
+  it.each([
+    ['not_array', null, 'gym'],
+    ['invalid_element', [42], 'gym'],
+    ['unknown_token', ['bands'], 'gym'],
+    ['duplicate_token', ['band', 'band'], 'gym'],
+    ['bodyweight_not_allowed', ['bodyweight'], 'gym'],
+    ['not_home_equipment', ['barbell'], 'home'],
+    ['door_anchor_requires_band', ['door_anchor'], 'home'],
+  ])('returns the existing 422 envelope for %s without writing', async (code, value, context) => {
+    const name = `my_equipment_${context}`;
+    const { res, admin } = await postSave(fields({ [name]: { value, intent: 'confirmed' } }));
+    expect(res.statusCode).toBe(422);
+    expect(res.body).toEqual({
+      error: 'Profile validation failed', requestId: 'abcd1234',
+      fields: { [name]: MY_EQUIPMENT_MESSAGES[code] }, reasonCodes: { [name]: code },
+    });
+    expect(admin.updates).toHaveLength(0);
+    expect(admin.selections).toEqual(['id']);
+  });
+
+  it.each(['home', 'gym'])('confirms %s [] without touching its sibling or provenance', async (context) => {
+    const name = `my_equipment_${context}`;
+    const profile = { id: 'user-1', my_equipment_home: ['bench'], my_equipment_gym: ['barbell'] };
+    Object.defineProperty(profile, 'field_provenance', {
+      get() { throw new Error('Equipment-only saves must not read provenance'); },
+    });
+    const { res, admin } = await postSave(fields({ [name]: { value: [], intent: 'confirmed' } }), { profile });
+    expect(res.statusCode).toBe(200);
+    expect(admin.updates).toEqual([{ table: 'profiles', patch: { [name]: [] } }]);
+    expect(admin.selections).toEqual(['id']);
+    expect(res.body.values).toEqual({ [name]: [] });
+    expect(res.body.written).toEqual({ [name]: { state: 'confirmed' } });
+  });
+
+  it.each(['home', 'gym'])('clears %s to NULL and returns only that value', async (context) => {
+    const name = `my_equipment_${context}`;
+    const { res, admin } = await postSave(fields({ [name]: { intent: 'cleared' } }));
+    expect(res.statusCode).toBe(200);
+    expect(admin.updates).toEqual([{ table: 'profiles', patch: { [name]: null } }]);
+    expect(admin.selections).toEqual(['id']);
+    expect(res.body.values).toEqual({ [name]: null });
+    expect(res.body.written).toEqual({ [name]: { state: 'cleared' } });
+  });
+
+  it('keeps ordinary-field provenance behavior in mixed saves and limits returned values', async () => {
+    const prior = { goal: { state: 'confirmed', ...STAMP } };
+    const { res, admin } = await postSave(fields({
+      age: { value: 28, intent: 'confirmed' },
+      my_equipment_home: { value: ['band', 'door_anchor'], intent: 'confirmed' },
+      my_equipment_gym: { intent: 'cleared' },
+    }), { profile: { field_provenance: prior } });
+    expect(res.statusCode).toBe(200);
+    expect(admin.updates[0].patch.field_provenance).toEqual({
+      ...prior, age: { state: 'confirmed', at: expect.any(String), source: 'save-profile' },
+    });
+    expect(res.body.values).toEqual({ my_equipment_home: ['band', 'door_anchor'], my_equipment_gym: null });
+    expect(prior).toEqual({ goal: { state: 'confirmed', ...STAMP } });
   });
 });
 

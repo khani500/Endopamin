@@ -316,6 +316,49 @@ export function validateEquipmentExtras(value) {
   return ok(value);
 }
 
+// Library-only selections. Bodyweight is implied and is never stored.
+export const MY_EQUIPMENT_GYM_TOKENS = Object.freeze([
+  'barbell', 'ez_bar', 'trap_bar', 'dumbbell', 'kettlebell', 'cable',
+  'smith_machine', 'machine', 'sled', 'band', 'stability_ball', 'medicine_ball',
+  'weight_plate', 'bench', 'preacher_bench', 'pullup_bar', 'suspension',
+  'landmine', 'door_anchor', 'step_platform',
+]);
+export const MY_EQUIPMENT_HOME_TOKENS = Object.freeze([
+  'dumbbell', 'band', 'pullup_bar', 'door_anchor', 'stability_ball', 'kettlebell',
+  'suspension', 'medicine_ball', 'step_platform', 'bench', 'weight_plate',
+]);
+const MY_EQUIPMENT_VOCABULARY = new Set([...MY_EQUIPMENT_GYM_TOKENS, 'bodyweight']);
+const MY_EQUIPMENT_HOME_SET = new Set(MY_EQUIPMENT_HOME_TOKENS);
+
+export const MY_EQUIPMENT_MESSAGES = Object.freeze({
+  not_array: 'Please choose your equipment from the list.',
+  invalid_element: 'Please choose each equipment option from the list.',
+  unknown_token: "That equipment option isn't available. Please choose from the list.",
+  duplicate_token: 'Please select each equipment option only once.',
+  bodyweight_not_allowed: 'Bodyweight is always included. You do not need to select it.',
+  not_home_equipment: 'That equipment option is only available for Gym.',
+  door_anchor_requires_band: 'Door anchor requires a resistance band. Please select Resistance band too.',
+});
+
+export function validateMyEquipment(value, context) {
+  if (context !== 'home' && context !== 'gym') {
+    throw new TypeError('My equipment context must be home or gym.');
+  }
+  const reject = (code) => invalid(MY_EQUIPMENT_MESSAGES[code], code);
+  if (!Array.isArray(value)) return reject('not_array');
+  if ([...value].some((token) => typeof token !== 'string')) return reject('invalid_element');
+  if (value.some((token) => !MY_EQUIPMENT_VOCABULARY.has(token))) return reject('unknown_token');
+  if (new Set(value).size !== value.length) return reject('duplicate_token');
+  if (value.includes('bodyweight')) return reject('bodyweight_not_allowed');
+  if (context === 'home' && value.some((token) => !MY_EQUIPMENT_HOME_SET.has(token))) {
+    return reject('not_home_equipment');
+  }
+  if (value.includes('door_anchor') && !value.includes('band')) {
+    return reject('door_anchor_requires_band');
+  }
+  return ok(value);
+}
+
 // public.profiles.health_conditions is text, nullable, no default.
 // Encoding: canonical compact JSON array of tokens in HEALTH_CONDITION_TOKENS
 // order, e.g. ["none"], ["prefer_not_to_answer"], ["pregnancy","pregnancy_routine"].

@@ -17,6 +17,7 @@ import {
   validateHeight,
   validateHeightUnit,
   validateJobType,
+  validateMyEquipment,
   validateSessionDuration,
   validateTargetWeight,
   validateWeight,
@@ -58,6 +59,8 @@ export const CLEARABLE_FIELDS = Object.freeze([
   'target_weight',
   'priority_muscle',
   'equipment_extras',
+  'my_equipment_home',
+  'my_equipment_gym',
 ]);
 
 const CLEARABLE = new Set(CLEARABLE_FIELDS);
@@ -78,6 +81,8 @@ const WRITABLE_FIELDS = Object.freeze([
   'equipment',
   'equipment_extras',
   'injuries',
+  'my_equipment_home',
+  'my_equipment_gym',
   'health_conditions',
   'priority_muscle',
   'gender',
@@ -87,6 +92,7 @@ const WRITABLE_FIELDS = Object.freeze([
 ]);
 
 const WRITABLE = new Set(WRITABLE_FIELDS);
+const MY_EQUIPMENT_FIELDS = new Set(['my_equipment_home', 'my_equipment_gym']);
 const INTENTS = new Set(['confirmed', 'cleared']);
 
 const GENDERS = new Set(['male', 'female']);
@@ -220,6 +226,8 @@ function validateConfirmed(field, value, ctx) {
     case 'session_duration': return validateSessionDuration(value);
     case 'equipment': return validateEquipment(value);
     case 'equipment_extras': return validateEquipmentExtras(value);
+    case 'my_equipment_home': return validateMyEquipment(value, 'home');
+    case 'my_equipment_gym': return validateMyEquipment(value, 'gym');
     case 'injuries': return validateInjuries(value);
     case 'health_conditions': return validateHealthConditions(value);
     case 'priority_muscle': return validateText(value, 'priority_muscle');
@@ -270,19 +278,20 @@ export function planProfileWrite(body, { existing = {}, now = new Date() } = {})
     }
   }
 
-  const ctx = overlayContext(fields, existing);
+  const needsProvenance = Object.keys(fields).some((name) => !MY_EQUIPMENT_FIELDS.has(name));
+  const ctx = needsProvenance ? overlayContext(fields, existing) : {};
   const reasons = {};
   const reasonCodes = {};
   const patch = {};
   const written = {};
-  const provenance = priorProvenance(existing);
+  const provenance = needsProvenance ? priorProvenance(existing) : null;
 
   for (const name of Object.keys(fields)) {
     const entry = fields[name];
     if (entry.intent === 'cleared') {
       patch[name] = null;
       written[name] = { state: 'cleared' };
-      provenance[name] = stamp('cleared', now);
+      if (!MY_EQUIPMENT_FIELDS.has(name)) provenance[name] = stamp('cleared', now);
       continue;
     }
 
@@ -297,18 +306,18 @@ export function planProfileWrite(body, { existing = {}, now = new Date() } = {})
     if (result.value === null && CLEARABLE.has(name)) {
       patch[name] = null;
       written[name] = { state: 'cleared' };
-      provenance[name] = stamp('cleared', now);
+      if (!MY_EQUIPMENT_FIELDS.has(name)) provenance[name] = stamp('cleared', now);
       continue;
     }
     patch[name] = result.value;
     written[name] = { state: 'confirmed' };
-    provenance[name] = stamp('confirmed', now);
+    if (!MY_EQUIPMENT_FIELDS.has(name)) provenance[name] = stamp('confirmed', now);
   }
 
   if (Object.keys(reasons).length > 0) return validationError(reasons, reasonCodes);
   if (Object.keys(written).length === 0) return { value: { patch: null, written: {} } };
 
-  patch.field_provenance = provenance;
+  if (needsProvenance) patch.field_provenance = provenance;
   return { value: { patch, written } };
 }
 
@@ -353,9 +362,12 @@ export async function handleRequest(req, res, requestId, deps = {}) {
 
   if (!(await checkUserMinuteLimit(res, { endpoint: 'save-profile', userId, requestId }))) return;
 
+  const myEquipmentOnly = isPlainObject(req.body?.fields)
+    && Object.keys(req.body.fields).length > 0
+    && Object.keys(req.body.fields).every((name) => MY_EQUIPMENT_FIELDS.has(name));
   const { data: profile, error: profileErr } = await admin
     .from('profiles')
-    .select('field_provenance, height_unit, weight_unit, weight, goal, target_weight')
+    .select(myEquipmentOnly ? 'id' : 'field_provenance, height_unit, weight_unit, weight, goal, target_weight')
     .eq('id', userId)
     .maybeSingle();
 
@@ -390,7 +402,7 @@ export async function handleRequest(req, res, requestId, deps = {}) {
   }
 
   if (!planned.value.patch) {
-    return res.status(200).json({ written: {}, requestId });
+    return res.status(200).json({ written: {}, values: {}, requestId });
   }
 
   const { error: updateErr } = await admin
@@ -413,6 +425,9 @@ export async function handleRequest(req, res, requestId, deps = {}) {
 
   return res.status(200).json({
     written: planned.value.written,
+    values: Object.fromEntries(
+      Object.entries(planned.value.patch).filter(([name]) => MY_EQUIPMENT_FIELDS.has(name)),
+    ),
     requestId,
   });
 }

@@ -5,6 +5,8 @@ import {
   EQUIPMENT_REASONS,
   EQUIPMENT_REASON_CODES,
   EQUIPMENT_TOKENS,
+  MY_EQUIPMENT_GYM_TOKENS,
+  MY_EQUIPMENT_HOME_TOKENS,
   MIN_AGE,
   PROFILE_ENUMS,
   TARGET_GOAL_INCONSISTENT,
@@ -22,6 +24,7 @@ import {
   validateHeight,
   validateHeightUnit,
   validateJobType,
+  validateMyEquipment,
   validateSessionDuration,
   validateTargetGoalConsistency,
   validateTargetWeight,
@@ -499,6 +502,33 @@ describe('validateEquipment', () => {
     expect(new Set(codes).size).toBe(cases.length);
     for (const reason of reasons) {
       expect(Object.values(EQUIPMENT_REASON_CODES)).not.toContain(reason);
+    }
+  });
+});
+
+describe('validateMyEquipment', () => {
+  it('accepts each complete vocabulary, keeps caller order, and preserves empty arrays', () => {
+    expect(MY_EQUIPMENT_GYM_TOKENS).toHaveLength(20);
+    expect(MY_EQUIPMENT_HOME_TOKENS).toHaveLength(11);
+    expectValid(validateMyEquipment([...MY_EQUIPMENT_GYM_TOKENS], 'gym'), [...MY_EQUIPMENT_GYM_TOKENS]);
+    expectValid(validateMyEquipment([...MY_EQUIPMENT_HOME_TOKENS], 'home'), [...MY_EQUIPMENT_HOME_TOKENS]);
+    for (const context of ['home', 'gym']) {
+      expectValid(validateMyEquipment([], context), []);
+      expectValid(validateMyEquipment(['door_anchor', 'band'], context), ['door_anchor', 'band']);
+    }
+  });
+
+  it('returns the first failure across every adjacent validation rule', () => {
+    const cases = [
+      [null, 'not_array'],
+      [['unknown', null], 'invalid_element'],
+      [['unknown', 'band', 'band'], 'unknown_token'],
+      [['bodyweight', 'bodyweight'], 'duplicate_token'],
+      [['bodyweight', 'barbell', 'door_anchor'], 'bodyweight_not_allowed'],
+      [['barbell', 'door_anchor'], 'not_home_equipment'],
+    ];
+    for (const [value, code] of cases) {
+      expect(validateMyEquipment(value, 'home').code).toBe(code);
     }
   });
 });
