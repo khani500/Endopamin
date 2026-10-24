@@ -17,5 +17,11 @@
     "api/usda-search.js": {
       "maxDuration": 15
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/exercise-media-batch",
+      "destination": "/api/exercise-media?__route=batch"
+    }
+  ]
 }
