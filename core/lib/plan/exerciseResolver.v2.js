@@ -146,28 +146,28 @@ function score(ex, req) {
 export function getEligibleExercisePool(req = {}) {
   const base = { ...req, injuries: normalizeInjuries(req.injuries) };
   const pattern = req.movementPattern;
+  const plannerCatalog = EXERCISE_REGISTRY.filter((e) => e.planEligibility !== 'library_only');
 
   // Scope is not a rejection. The long tail is deliberately out of the candidate pool while its
   // families are unreviewed; counting it as a rejection buried the real reasons under a 1400-count
   // catch-all. It is reported as a metric instead.
-  const patternUniverse = EXERCISE_REGISTRY.filter((e) => e.primaryPattern === pattern);
+  const patternUniverse = plannerCatalog.filter((e) => e.primaryPattern === pattern);
   const policyExcluded = patternUniverse.filter(isPlanPolicyExcluded);
   const universe = patternUniverse.filter((e) => !isPlanPolicyExcluded(e));
   const inScope = universe.filter((e) => inReviewedScope(e, base));
   const scope = {
-    totalCatalog: EXERCISE_REGISTRY.length,
-    reviewedCatalog: EXERCISE_REGISTRY.filter((e) => e.primaryFamilyId !== null).length,
-    longTailExcluded: EXERCISE_REGISTRY.filter((e) => e.primaryFamilyId === null).length,
-    planPolicyExcluded: EXERCISE_REGISTRY.filter(isPlanPolicyExcluded).length,
+    totalCatalog: plannerCatalog.length,
+    reviewedCatalog: plannerCatalog.filter((e) => e.primaryFamilyId !== null).length,
+    longTailExcluded: plannerCatalog.filter((e) => e.primaryFamilyId === null).length,
+    planPolicyExcluded: plannerCatalog.filter(isPlanPolicyExcluded).length,
     patternPolicyExcluded: policyExcluded.length,
     patternUniverse: universe.length,
     patternInScope: inScope.length,
   };
 
   const rejected = {};
-  // Keep reviewed scope out of rejection diagnostics, except for the explicit
-  // plan-selection allowlist. Step 7 callers must be able to distinguish a
-  // library-only record from an athlete or equipment rejection.
+  // Catalog-only records are outside this discovery universe.
+  // Preserve existing plan-eligibility diagnostics for other ineligible records.
   for (const ex of universe) {
     if (!inReviewedScope(ex, base)
       && slotScopeRejectionReason(ex, base) === 'plan_eligibility_not_eligible') {
@@ -201,7 +201,8 @@ function contraindicationPreSelectionForSlot(record) {
 }
 
 /**
- * Unranked hard discovery for an authored slot kind, across the entire catalog.
+ * Unranked hard discovery for an authored slot kind, across the planner catalog
+ * (every record except catalog-only library_only Library additions).
  * req.slotKind is context for the caller, never an eligibility grant or a pattern filter.
  * The caller supplies canonical availableEquipment tokens including validated extras;
  * raw saved buckets/extras must first go through resolveEquipmentCapability.
@@ -219,6 +220,7 @@ export function getHardEligibleExercisePoolForSlot(req = {}) {
   const rejected = {};
   const rejections = [];
   for (const ex of EXERCISE_REGISTRY) {
+    if (ex.planEligibility === 'library_only') continue;
     const reason = isPlanPolicyExcluded(ex) ? 'plan_policy_excluded'
       : !inReviewedScope(ex, base) ? slotScopeRejectionReason(ex, base)
       : rejectionReason(ex, base);
@@ -359,7 +361,10 @@ function inReviewedScope(ex, req) {
  *   equipment_gap           only equipment stood in the way
  */
 function diagnoseGap(pattern, req, rejected) {
-  const universe = EXERCISE_REGISTRY.filter((e) => e.primaryPattern === pattern && !isPlanPolicyExcluded(e));
+  const universe = EXERCISE_REGISTRY.filter((e) =>
+    e.planEligibility !== 'library_only'
+    && e.primaryPattern === pattern
+    && !isPlanPolicyExcluded(e));
   if (!universe.length) {
     return { status: 'gap', gapReason: 'catalog_coverage_gap', requestedPattern: pattern, rejectionBreakdown: rejected,
       message: `No record in the catalog carries the pattern "${pattern}".`, resolution: 'extend the catalog' };
@@ -420,12 +425,17 @@ export function toCandidateList(result) {
   }));
 }
 
-/** Weekly hard sets per muscle. Secondary muscles count half. Mobility never counts. */
+/**
+ * Weekly hard sets per muscle. Secondary muscles count half. Mobility never counts.
+ * Catalog-only library_only records contribute no planner volume: they are skipped
+ * exactly like an unknown id.
+ */
 export function weeklyHardSets(prescriptions = []) {
   const out = {};
   for (const p of prescriptions) {
     const ex = EXERCISE_REGISTRY.find((e) => e.id === p.exerciseId);
-    if (!ex || ex.exerciseType === 'mobility' || ex.primaryPattern === null) continue;
+    if (!ex || ex.planEligibility === 'library_only'
+      || ex.exerciseType === 'mobility' || ex.primaryPattern === null) continue;
     const sets = Number(p.workingSets ?? p.sets ?? 0) * (p.hardSetEquivalent ?? 1);
     for (const m of ex.primaryMuscles || []) out[m] = (out[m] || 0) + sets;
     for (const m of ex.secondaryMuscles || []) out[m] = (out[m] || 0) + sets * 0.5;
