@@ -230,9 +230,9 @@ describe('exercise-media request gates', () => {
     }
   });
 
-  it('loads and validates the committed 220-record manifest', () => {
+  it('loads and validates the committed 517-record manifest', () => {
     const manifest = readMediaManifest();
-    expect(manifest.recordCount).toBe(220);
-    expect(Object.keys(manifest.media)).toHaveLength(220);
+    expect(manifest.recordCount).toBe(517);
+    expect(Object.keys(manifest.media)).toHaveLength(517);
   });
 });

@@ -1,6 +1,6 @@
 {
   "artifactVersion": 1,
-  "recordCount": 220,
+  "recordCount": 517,
   "entries": {
     "fx_alternate_hammer_curl": {
       "instructions": [
@@ -23,12 +23,272 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_alternating_dumbbell_front_raise": {
+      "instructions": [
+        "Stand upright holding dumbbells in front of your thighs with palms facing backward.",
+        "Keep a slight elbow bend and raise one weight forward to shoulder height, palm down.",
+        "Lower it slowly without leaning back.",
+        "Repeat with the other arm and continue alternating."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_alternating_incline_dumbbell_press": {
+      "instructions": [
+        "Lie back on an incline bench with feet planted and a dumbbell beside each shoulder.",
+        "Press one dumbbell upward while the other remains near your chest.",
+        "Lower the raised weight with control, then press with the opposite arm.",
+        "Continue alternating while keeping your back on the bench."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_alternating_machine_leg_press": {
+      "instructions": [
+        "Adjust the seat and sit with your back supported, placing one foot on each platform.",
+        "Hold the handles and keep both feet centered on their platforms.",
+        "Press one platform away until that leg is nearly straight.",
+        "Bend the knee slowly to return, then press with the other leg.",
+        "Continue alternating while keeping your pelvis against the seat."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_alternating_machine_row": {
+      "instructions": [
+        "Adjust the seat so your chest rests against the pad and both feet are supported.",
+        "Hold the close handles with palms facing each other.",
+        "Pull one handle toward your ribs, keeping the elbow close to your torso.",
+        "Return it slowly while keeping your chest on the pad.",
+        "Repeat with the other arm and continue alternating."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_alternating_neutral_grip_dumbbell_press": {
+      "instructions": [
+        "Stand with feet planted and dumbbells in front of your shoulders, palms facing each other and elbows pointing forward.",
+        "Press one dumbbell overhead while keeping your torso upright.",
+        "Lower it to shoulder height, then press with the other arm.",
+        "Continue alternating without leaning backward."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_alternating_renegade_row": {
+      "instructions": [
+        "Place two stable kettlebells on the floor and grip the handles in a high plank.",
+        "Set your feet wide enough to keep your hips steady.",
+        "Pull one kettlebell toward your lower ribs with the elbow close to your side.",
+        "Return it firmly to the floor under control.",
+        "Keep your chest and pelvis facing the floor, finish the repetitions and change arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_arm_pad_machine_crunch": {
+      "instructions": [
+        "Sit upright with your feet on the supports and take the handles beside your head.",
+        "Keep the moving pads in firm contact with your upper body as you hold the handles.",
+        "Gently tighten your abdomen and curl your chest toward your pelvis without pulling with your arms.",
+        "Return slowly to the upright starting position without reclining far backward."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_arnold_dumbbell_press": {
+      "instructions": [
+        "Sit with your back supported and feet planted, holding dumbbells in front of your shoulders with palms toward you.",
+        "Move your elbows outward as you begin pressing upward.",
+        "Continue overhead, turning your palms forward as your arms extend.",
+        "Lower along the same path, bringing your elbows forward and palms toward you again."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_around_the_worlds": {
+      "instructions": [
+        "Lie on your back on a flat bench with feet planted and a dumbbell in each hand.",
+        "Start with the weights near your hips and a slight bend in your elbows.",
+        "Sweep both arms outward and around toward the space behind your head, keeping the elbow bend steady.",
+        "Reverse the arc to bring the dumbbells back toward your hips.",
+        "Use a controlled range that keeps your shoulders comfortable and your back supported."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_assisted_bodyweight_squat": {
+      "instructions": [
+        "Stand facing the back of a stable incline bench and hold the top of its backrest with both hands.",
+        "Bend your hips and knees to lower into a squat.",
+        "Keep your feet flat and use the support to steady your balance.",
+        "Push through both feet to stand while keeping your grip light."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_back_flyes_with_bands": {
+      "instructions": [
+        "Fix the band at chest height and stand facing the anchor.",
+        "Hold a handle in each hand with your arms extended forward and elbows softly bent.",
+        "Open your arms out to the sides while drawing your shoulder blades together.",
+        "Return your hands forward slowly without shrugging or leaning back."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_band_assisted_pull_up": {
       "instructions": [
         "Secure the assistance band to the pull-up bar and position its lower loop beneath your lower thighs.",
         "Grip the bar with your palms facing away from you and lift your feet clear of the floor.",
         "Pull your elbows down to bring your chin toward bar height without swinging.",
         "Lower slowly until your arms extend while the band continues to support your legs."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_band_bicycle_crunch": {
+      "instructions": [
+        "Attach the bands to a low anchor beyond your feet and secure the foot attachments.",
+        "Lie on your back with your fingertips behind your head and lift your shoulders slightly.",
+        "Bend one knee toward your chest while turning the opposite shoulder toward it and extending the other leg.",
+        "Switch the leg and shoulder positions in a controlled pedaling motion.",
+        "Keep your lower back steady and avoid pulling on your neck."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_band_front_raise": {
+      "instructions": [
+        "Stand on the middle of the band and hold one handle in each hand in front of your thighs.",
+        "Keep your palms facing your thighs and your elbows slightly bent.",
+        "Raise both arms forward toward shoulder height without swinging your body.",
+        "Lower your hands slowly to your thighs."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_band_overhead_pallof_press": {
+      "instructions": [
+        "Anchor a band to one side at about chest height and stand sideways to it with your feet apart.",
+        "Hold the band with both hands in front of your chest and gently tighten your abdomen.",
+        "Press your hands upward until your arms are overhead, keeping your hips and chest facing forward.",
+        "Bring your hands back to your chest with control.",
+        "Complete all reps facing one direction, then turn to face the other way."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_band_pallof_press": {
+      "instructions": [
+        "Anchor the band at chest height and stand sideways to it with your feet apart.",
+        "Hold the handle in both hands at the middle of your chest and step far enough away to create tension.",
+        "Tighten your abdomen and press your hands straight forward without turning toward the anchor.",
+        "Pause briefly, then bring your hands back to your chest under control.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_band_pull_through": {
+      "instructions": [
+        "Secure the band to a low anchor and stand facing away from it.",
+        "Reach between your legs and hold the band with both hands, then step forward to create tension.",
+        "With soft knees, push your hips back and let your hands travel between your thighs.",
+        "Press through your feet and straighten your hips to stand tall.",
+        "Push your hips backward again slowly without rounding your back or leaning backward at the top."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_band_rear_delt_row": {
+      "instructions": [
+        "Anchor a band high in front of you and hold a handle in each hand.",
+        "Stand tall with your arms reaching forward and upward toward the anchor.",
+        "Pull your elbows out and back, bringing the handles toward your upper chest without shrugging.",
+        "Reach toward the anchor again with control."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_band_shrug": {
+      "instructions": [
+        "Stand on the middle of a resistance band with your feet about hip-width apart.",
+        "Hold the ends at your sides with your arms straight.",
+        "Lift your shoulders toward your ears without bending your elbows or rolling the shoulders.",
+        "Lower your shoulders slowly."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_band_squat_to_row": {
+      "instructions": [
+        "Anchor a band in front of you around chest height and hold a handle in each hand.",
+        "Step back until the band is taut, then squat with your arms reaching toward the anchor.",
+        "Stand up and pull the handles toward the sides of your ribs, drawing your elbows back.",
+        "Extend your arms toward the anchor as you lower into the next squat."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_band_stiff_leg_deadlift": {
+      "instructions": [
+        "Stand on the middle of a band and hold a handle in each hand beside your legs.",
+        "Keep a small, steady bend in your knees and lower your torso forward, letting your hands travel down close to your legs.",
+        "Lower only as far as you can control without bouncing or pulling yourself deeper.",
+        "Drive your hips forward and raise your torso to standing, keeping your arms long."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_band_v_up": {
+      "instructions": [
+        "Anchor a band low beyond your feet and fasten it securely around both ankles.",
+        "Lie on your back with your legs extended and your arms reaching overhead.",
+        "Raise your legs and upper body together, reaching your hands toward your feet as you balance on your hips.",
+        "Lower your torso, arms and legs slowly toward the starting position."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_band_y_raise": {
+      "instructions": [
+        "Secure the band low in front of you and hold a handle in each hand with your arms down.",
+        "Stand tall with your knees relaxed and your abdomen gently tightened.",
+        "Keep a slight bend in your elbows and raise your arms forward and outward into a Y shape overhead.",
+        "Lower your hands slowly toward your thighs without leaning your torso backward."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_banded_lateral_walk": {
+      "instructions": [
+        "Place a loop band around your ankles and stand with your feet apart.",
+        "Bend your knees and hips slightly into an athletic stance.",
+        "Step sideways with one foot, then bring the other foot after it without allowing the band to go slack.",
+        "Keep your knees pointing with your toes and your hips at a steady height.",
+        "Continue for several steps, then reverse direction."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_bar_muscle_up": {
+      "instructions": [
+        "Hang from a fixed horizontal bar with your palms facing away from you.",
+        "Use a coordinated pull and controlled body swing to bring your chest high toward the bar.",
+        "Move your shoulders and wrists over the bar as your elbows turn behind you.",
+        "Press down on the bar to straighten your arms above it.",
+        "Bend your arms and lower through the transition to a controlled hang."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_barbell_ab_rollout_on_knees": {
+      "instructions": [
+        "Kneel on the floor and grip a barbell fitted with round plates that can roll freely.",
+        "Place the bar under your shoulders and gently tighten your abdomen.",
+        "Roll it forward, letting your hips and arms extend only as far as you can prevent your lower back from sagging.",
+        "Pull the bar back toward your knees while keeping your torso controlled."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -60,6 +320,16 @@
         "Bend your hips and knees and grip the bar just outside your legs with your arms straight.",
         "Tighten your abdomen and push through the floor, raising your hips and shoulders together while keeping the bar close.",
         "Stand tall without leaning backward, then push your hips back and bend your knees to lower the bar to the floor."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_barbell_front_raise": {
+      "instructions": [
+        "Stand holding a barbell in front of your thighs with your palms facing your body.",
+        "Keep a small, fixed bend in your elbows and gently tighten your abdomen.",
+        "Raise the bar forward until your arms reach about shoulder height without swinging or leaning back.",
+        "Lower the bar slowly to your thighs."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -124,6 +394,17 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_barbell_reverse_lunge": {
+      "instructions": [
+        "Stand on the floor with a barbell across your upper back and your feet about hip-width apart.",
+        "Step one foot backward and land on the ball of that foot.",
+        "Bend both knees to lower your back knee toward the floor, keeping your front foot flat and your torso upright.",
+        "Push through your front foot to return to standing.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_barbell_rollout_from_bench": {
       "instructions": [
         "Kneel near the end of a stable flat bench with a barbell and round plates on the floor in front of it.",
@@ -144,12 +425,43 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_barbell_shrug": {
+      "instructions": [
+        "Stand holding a barbell in front of your thighs with your palms facing back.",
+        "Keep your elbows straight and your torso upright.",
+        "Lift your shoulders toward your ears without rolling them or bending your arms.",
+        "Lower your shoulders slowly."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_barbell_side_bend": {
+      "instructions": [
+        "Stand with your feet apart and rest a light barbell across your upper back, holding it with both hands.",
+        "Keep your hips facing forward and knees relaxed.",
+        "Bend your torso to one side through a comfortable range without turning your chest.",
+        "Return upright under control. Complete the repetitions, then repeat on the other side."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_barbell_side_split_squat": {
       "instructions": [
         "Stand in a wide stance with a barbell across your upper back and both feet planted.",
         "Shift your hips toward one side and bend that knee, keeping the other leg straight.",
         "Lower through a controlled range with the bar level and your chest lifted.",
         "Push through the bent leg to return to the upright wide stance.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_barbell_single_leg_romanian_deadlift": {
+      "instructions": [
+        "Stand holding a barbell in front of your thighs and shift your weight onto one foot.",
+        "Keep a small bend in that knee and lift the other foot clear of the floor.",
+        "Push your hips back as your torso lowers and your free leg reaches behind you, keeping the bar close to the standing leg.",
+        "Return to standing with control.",
         "Complete all reps on one side, then switch."
       ],
       "instructionsSource": "endopamin_reviewed",
@@ -165,12 +477,82 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_barbell_squat_to_a_bench": {
+      "instructions": [
+        "Position a stable flat bench behind you and hold the bar across your upper back, below the neck.",
+        "Grip the bar firmly and stand in front of the bench.",
+        "Bend your hips and knees to sit lightly on the bench with your feet planted.",
+        "Gently tighten your abdomen and press through both feet to stand without rocking."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_barbell_step_calf_raise": {
+      "instructions": [
+        "Take a barbell across your upper back and step onto a stable low platform with your forefeet supported and heels free.",
+        "Stand tall with your knees nearly straight.",
+        "Raise your heels by pressing through the balls of your feet.",
+        "Lower the heels slowly below the step edge within a comfortable range."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_bench_dips": {
+      "instructions": [
+        "Sit at the edge of a stable flat bench and grip the edge beside your hips.",
+        "Move your hips just in front of the bench and extend your legs with your heels on the floor.",
+        "Bend your elbows to lower your body close to the bench through a comfortable range.",
+        "Straighten your arms to raise your hips again without changing your foot position."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_bench_press_with_bands": {
       "instructions": [
         "Secure the band beneath a stable flat bench so both ends rise beside your chest.",
         "Lie on the bench with your feet planted and hold one handle in each hand.",
         "Press both hands upward over your chest until your arms extend.",
         "Lower your hands slowly to chest level while keeping your wrists aligned with your forearms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_bench_supported_side_plank": {
+      "instructions": [
+        "Place one forearm across a stable flat bench with the elbow below your shoulder.",
+        "Extend both legs to the side and stack your feet on the floor.",
+        "Lift your hips so your shoulders, hips and feet form a straight line and hold while breathing normally.",
+        "Lower with control and repeat on the other side."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_bent_arm_barbell_pullover": {
+      "instructions": [
+        "Lie on a flat bench with your knees bent and both feet resting on the bench.",
+        "Hold a barbell above your chest with your palms facing away and a small bend in the elbows.",
+        "Keep that elbow angle as you lower the bar behind your head within a comfortable range.",
+        "Bring the bar back above your chest without lifting your ribs or hips from the bench."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_bent_knee_bench_dip": {
+      "instructions": [
+        "Sit on the edge of a stable flat bench with your hands beside your hips.",
+        "Slide your hips just off the edge, keeping your knees bent and feet flat on the floor.",
+        "Bend your elbows to lower your hips through a comfortable range close to the bench.",
+        "Press through your palms to straighten your arms and rise."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_bent_knee_windshield_wiper": {
+      "instructions": [
+        "Lie on your back with your arms extended out to the sides.",
+        "Lift both feet and bend your hips and knees so your knees are above your hips.",
+        "Keep your knees together as you lower both legs toward one side through a comfortable range.",
+        "Bring the knees back through the center and lower them toward the other side without forcing floor contact."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -185,6 +567,26 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_bent_over_cable_rear_delt_fly": {
+      "instructions": [
+        "Stand between two low pulleys and hold the opposite-side handle in each hand.",
+        "Bend your knees slightly, push your hips back and lean forward, letting your arms hang beneath your shoulders.",
+        "Keep a small steady bend in your elbows as you raise both arms outward to about torso level.",
+        "Lower the handles slowly beneath your chest without lifting your torso."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_bent_over_dumbbell_rear_delt_fly": {
+      "instructions": [
+        "Stand with knees slightly bent and hinge forward, keeping your back steady.",
+        "Let the dumbbells hang beneath your shoulders with palms facing each other.",
+        "Keep a small elbow bend and lift both arms out to the sides.",
+        "Lower slowly without raising your torso."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_bent_over_dumbbell_rear_delt_raise_with_head_on_bench": {
       "instructions": [
         "Set an incline bench at a height that lets you hinge forward and rest your forehead lightly against its padded top.",
@@ -195,6 +597,17 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_bent_over_one_arm_cable_row": {
+      "instructions": [
+        "Face a low pulley with one foot forward and hold its handle in the opposite hand.",
+        "Push your hips back and lean forward, resting your free hand on your front thigh.",
+        "Pull the handle toward your lower ribs with your elbow close to your side and your torso steady.",
+        "Extend your working arm slowly.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_bent_over_two_dumbbell_row_with_palms_in": {
       "instructions": [
         "Stand holding a dumbbell in each hand with palms toward your body.",
@@ -202,6 +615,17 @@
         "Let the weights hang below your shoulders, keeping your back steady.",
         "Pull your elbows back to bring the dumbbells toward the sides of your lower chest.",
         "Lower slowly until your arms extend without rounding your back."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_bodyweight_forward_lunge": {
+      "instructions": [
+        "Stand upright with your hands on your hips.",
+        "Step forward with one foot and bend both knees to lower your body.",
+        "Keep your front foot planted and your front knee tracking with your toes.",
+        "Push through the front foot to return to standing.",
+        "Repeat with the other leg and continue alternating."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -228,6 +652,16 @@
       "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
+    "fx_bodyweight_step_calf_raise": {
+      "instructions": [
+        "Stand with the balls of both feet on a sturdy step and your heels beyond its edge.",
+        "Use a railing or wall for balance if needed.",
+        "Keep your knees nearly straight and lift your heels through a controlled range.",
+        "Lower your heels slowly below the edge, then repeat."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_bodyweight_walking_lunge": {
       "instructions": [
         "Stand with your feet shoulder-width apart.",
@@ -245,6 +679,26 @@
         "Place your arms beside you and gently tighten your abdomen.",
         "Press through your feet and lift your hips until your trunk and thighs form a line.",
         "Lower your hips to the floor with control, keeping your knees aligned with your feet."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_butterfly_crunch": {
+      "instructions": [
+        "Lie on your back with the soles of your feet together and knees open to the sides.",
+        "Cross your arms over your chest.",
+        "Curl your shoulders and upper back off the floor without moving your feet.",
+        "Lower slowly until your upper back rests on the floor again."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_cable_bar_front_raise": {
+      "instructions": [
+        "Stand facing away from a low pulley and hold its bar in front of your thighs with your palms facing back.",
+        "Keep your feet planted and elbows nearly straight.",
+        "Raise the bar forward to shoulder height without leaning backward.",
+        "Lower it slowly along the same arc."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -291,6 +745,26 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_cable_drag_curl": {
+      "instructions": [
+        "Stand facing a low pulley and take a palms-up grip on its straight bar.",
+        "Begin with your arms extended and the bar close to your thighs.",
+        "Bend your elbows and draw them backward as you slide the bar upward close to your torso.",
+        "Lower the bar slowly while allowing the elbows to return beside your body."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_cable_flat_bench_press": {
+      "instructions": [
+        "Place a flat bench between two low cable pulleys and hold one handle in each hand.",
+        "Lie back with your feet planted and bring the handles beside your chest with elbows bent.",
+        "Press both handles above your chest until your arms are straight.",
+        "Lower the handles slowly to chest level while keeping your back and hips supported."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_cable_hammer_curls_rope_attachment": {
       "instructions": [
         "Attach a rope to a low cable pulley and stand facing it.",
@@ -301,12 +775,55 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_cable_hip_adduction": {
+      "instructions": [
+        "Attach an ankle strap to a low pulley and stand sideways with your working leg closest to the machine.",
+        "Hold the machine lightly for balance and lift your strapped foot clear of the floor.",
+        "Keep your working knee nearly straight as you draw that leg inward across the front of your standing leg.",
+        "Return slowly outward.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_cable_incline_bench_press": {
+      "instructions": [
+        "Place an incline bench between two low cable pulleys and hold one handle in each hand.",
+        "Recline against the bench with your feet planted and handles beside your upper chest.",
+        "Press upward and inward until your arms are straight above your chest.",
+        "Lower slowly while keeping your back and hips against the bench."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_cable_incline_triceps_extension": {
       "instructions": [
         "Place an incline bench facing away from a low cable pulley with a bar attached.",
         "Recline with your feet planted and hold the bar above your head using a comfortable two-hand grip.",
         "Keep your upper arms steady as you bend your elbows to lower the bar behind your head.",
         "Straighten your elbows to raise the bar again without lifting your back from the pad."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_cable_internal_rotation": {
+      "instructions": [
+        "Sit on the floor beside a cable pulley set near elbow height, with your legs extended, and hold the handle in the hand nearest it.",
+        "Bend that elbow to a right angle and keep it tucked beside your waist, with your forearm pointing toward the cable.",
+        "Rotate at the shoulder to bring your hand across the front of your abdomen, keeping your elbow in place.",
+        "Return your forearm slowly toward the pulley without turning your torso.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_cable_kayak_row": {
+      "instructions": [
+        "Attach a straight bar to a high pulley. Stand facing it with your feet apart and hold the bar with both hands.",
+        "Reach the bar forward and upward with your elbows slightly bent.",
+        "Pull the bar down toward one hip while turning your shoulders slightly toward that side.",
+        "Return the bar slowly to the raised position.",
+        "Sweep the bar toward the other hip, then continue alternating sides with your feet planted."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -408,6 +925,38 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_cable_shrugs": {
+      "instructions": [
+        "Attach a short bar to a low pulley and stand facing it with your feet about hip-width apart.",
+        "Hold the bar in front of your thighs with your palms facing your body and your arms straight.",
+        "Raise your shoulders toward your ears without bending your elbows or rolling your shoulders.",
+        "Lower your shoulders slowly and let them settle before repeating."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_cable_side_bend": {
+      "instructions": [
+        "Stand sideways beside a low cable pulley. Hold the handle in the hand nearest the pulley and let that arm hang beside your thigh.",
+        "Plant your feet about shoulder-width apart and keep your chest facing forward.",
+        "Bend sideways away from the pulley, moving your ribs toward the opposite hip without turning your torso.",
+        "Return slowly toward the pulley through a comfortable range.",
+        "Finish the repetitions, then turn around and repeat on the other side."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_cable_wrist_curl": {
+      "instructions": [
+        "Attach a short bar to a low pulley and sit on a flat bench facing the cable.",
+        "Hold the bar with your palms facing up. Lean forward and rest your forearms on your thighs with your wrists just beyond your knees.",
+        "Keep your forearms supported and bend your wrists to raise the bar toward you.",
+        "Lower the bar slowly by letting your wrists extend through a comfortable range.",
+        "Keep a secure grip and avoid lifting your elbows from your thighs."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_calf_press": {
       "instructions": [
         "Sit against the backrest and place the balls of your feet on the footplate with your heels free to move.",
@@ -424,6 +973,57 @@
         "Hold the band ends at your sides with your arms straight and your body tall.",
         "Keep your knees nearly straight and raise both heels as high as you can control.",
         "Lower your heels slowly to the floor."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_chest_height_cable_fly": {
+      "instructions": [
+        "Set two cable pulleys around chest height and stand between them with one foot forward.",
+        "Hold a handle in each hand with arms open and elbows slightly bent.",
+        "Sweep both handles together in front of your chest without changing the elbow bend.",
+        "Open your arms slowly back to the starting position."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_chest_supported_barbell_row": {
+      "instructions": [
+        "Lie face down along an incline bench with your chest against the pad and your feet braced on the floor.",
+        "Hold a barbell below you with your palms facing back and arms extended.",
+        "Pull the bar toward your lower chest, driving your elbows back while keeping your chest on the pad.",
+        "Lower the bar slowly until your arms extend again."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_chest_supported_cable_row": {
+      "instructions": [
+        "Place an incline bench facing the pulley and sit with your chest against the angled pad and feet planted.",
+        "Grip the bar with both palms down and extend your arms toward the cable.",
+        "Pull the bar toward your lower chest, moving your elbows backward close to your sides.",
+        "Extend your arms slowly while maintaining chest contact with the pad."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_chest_supported_underhand_barbell_row": {
+      "instructions": [
+        "Lie face down against an incline bench with your feet braced on the floor.",
+        "Hold the bar below your shoulders using an underhand grip with your palms facing forward.",
+        "Keep your chest on the pad and draw your elbows back to pull the bar toward your upper abdomen.",
+        "Lower slowly until your arms are straight again."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_chest_tap_plyo_push_up": {
+      "instructions": [
+        "Start in a push-up position with your hands slightly wider than your shoulders and your body in a straight line from head to heels.",
+        "Bend your elbows to lower your chest toward the floor.",
+        "Press forcefully through both hands so they leave the floor together.",
+        "Briefly bring both hands to your chest, then return them beneath your shoulders before landing.",
+        "Land with your elbows slightly bent to absorb the impact and regain control before the next repetition."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -449,12 +1049,54 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_close_grip_dumbbell_bench_press": {
+      "instructions": [
+        "Lie on your back on a flat bench with feet planted and a dumbbell in each hand.",
+        "Hold the weights close together above your chest, palms facing each other.",
+        "Bend your elbows to lower the weights toward your chest, keeping your upper arms close to your torso.",
+        "Press both dumbbells upward until your arms are extended.",
+        "Lower with control without bouncing the weights against your body."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_close_grip_ez_bar_curl": {
       "instructions": [
         "Stand upright holding the inner angled grips of an EZ bar with palms up.",
         "Keep the upper arms beside your torso and curl the bar toward your shoulders.",
         "Pause briefly without leaning backward.",
         "Lower slowly until the elbows are extended."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_close_grip_knee_push_up": {
+      "instructions": [
+        "Place your hands close together beneath your chest and rest both knees on the floor behind you.",
+        "Move your knees back enough to form a straight line from your head through your hips to your knees.",
+        "Bend your elbows back beside your ribs and lower your chest toward your hands.",
+        "Press through your palms to straighten your arms while keeping your hips in line with your torso.",
+        "Keep your knees on the floor and control the next descent."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_close_grip_machine_chest_press": {
+      "instructions": [
+        "Adjust the seat so the handles are level with your chest and sit against the back pad.",
+        "Hold the close handles with your elbows bent beside your torso.",
+        "Press forward until your arms are nearly straight.",
+        "Return the handles slowly without lifting your back from the pad."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_close_grip_pull_up": {
+      "instructions": [
+        "Grip an overhead pull-up bar with your hands close together and palms facing away from you.",
+        "Let your arms extend while keeping your feet clear and your torso steady.",
+        "Pull upward by bringing your elbows down, lifting as high as you can without swinging.",
+        "Lower slowly to extended arms."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -469,6 +1111,27 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_close_grip_wall_push_up": {
+      "instructions": [
+        "Face a wall and place your hands close together at chest height.",
+        "Step back enough to lean toward the wall with a straight body.",
+        "Bend your elbows close to your sides to bring your chest toward the wall.",
+        "Press away until your arms straighten."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_cocoons": {
+      "instructions": [
+        "Lie on your back with your legs extended and your arms reaching overhead.",
+        "Gently tighten your abdomen and lift your shoulders as you bend your knees toward your chest.",
+        "Bring your arms forward around your knees to form a compact tuck without pulling hard on your legs.",
+        "Uncurl slowly, reaching your arms overhead and extending your legs again.",
+        "Keep the return controlled and shorten the reach if your lower back starts to arch."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_concentration_curls": {
       "instructions": [
         "Sit on a flat bench with your feet apart and a dumbbell in one hand.",
@@ -478,6 +1141,17 @@
         "Complete the set, then change arms."
       ],
       "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_crab_toe_touch": {
+      "instructions": [
+        "Sit with your knees bent and your feet flat, and place your hands on the floor behind your hips.",
+        "Press through your hands and feet to lift your hips into a low reverse tabletop.",
+        "Raise one leg and reach the opposite hand toward its toes, turning your chest slightly.",
+        "Return that hand and foot to the floor with control.",
+        "Switch the reaching hand and raised leg on the next rep and continue alternating."
+      ],
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_cross_body_crunch": {
@@ -524,6 +1198,28 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_cuban_press": {
+      "instructions": [
+        "Hold light dumbbells at your sides with your knees relaxed.",
+        "Lift your elbows outward until the upper arms are around shoulder height and the weights hang below them.",
+        "Rotate your shoulders to bring the weights above your elbows without changing the elbow bend.",
+        "Press overhead, then lower back to the bent-elbow position.",
+        "Reverse the shoulder rotation and lower the arms to your sides."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_curl_up_with_one_leg_extended": {
+      "instructions": [
+        "Lie on your back with one leg straight and the other knee bent, foot flat on the floor.",
+        "Slide both hands beneath your lower back without pressing your back flat.",
+        "Gently tighten your abdomen and lift your head and shoulders a small distance, keeping your neck in line with your chest.",
+        "Lower slowly without changing the position of your lower back.",
+        "After finishing the repetitions, switch which knee is bent."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_dead_bug": {
       "instructions": [
         "Lie on your back with your arms reaching straight up toward the ceiling.",
@@ -534,6 +1230,38 @@
         "Complete all reps on one side, then switch."
       ],
       "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_decline_crunch": {
+      "instructions": [
+        "Secure your feet in a decline bench and lie back with your knees bent and your head at the lower end.",
+        "Rest your hands lightly behind your head with your elbows open.",
+        "Curl your ribs toward your pelvis to lift your shoulders from the pad.",
+        "Keep your lower back on the bench and avoid pulling your neck forward.",
+        "Lower your shoulders slowly to the pad."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_deep_dumbbell_push_up": {
+      "instructions": [
+        "Place two stable dumbbells on the floor just wider than your shoulders and check that they will not roll or slide.",
+        "Grip the handles with your palms facing each other and extend your legs behind you onto your toes.",
+        "Keep your body straight and bend your elbows to lower your chest between the dumbbells.",
+        "Go only as low as you can control comfortably through your shoulders.",
+        "Press through the handles to straighten your arms while the dumbbells remain still."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dip_machine": {
+      "instructions": [
+        "Sit upright on the machine with both feet flat on the floor.",
+        "Hold the handles beside your hips and begin with your elbows bent.",
+        "Press the handles downward until your arms are nearly straight, keeping your body seated.",
+        "Let the handles rise slowly while your elbows bend back to the starting position."
+      ],
+      "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
     "fx_double_kettlebell_push_press": {
@@ -557,6 +1285,38 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_dual_cable_front_raise": {
+      "instructions": [
+        "Stand between two low pulleys with a handle in each hand and your arms down beside you.",
+        "Keep a small steady bend in your elbows and gently tighten your abdomen.",
+        "Lift the handles forward and inward until your hands are in front of your shoulders.",
+        "Lower slowly to the open starting position beside your hips."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dual_cable_lateral_raise": {
+      "instructions": [
+        "Stand between two low pulleys and hold the opposite-side handle in each hand so the cables cross in front of you.",
+        "Keep your torso upright and elbows slightly bent.",
+        "Lift both arms outward to about shoulder height without shrugging or leaning.",
+        "Lower the handles slowly back in front of your hips."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dual_cable_tuck_crunch": {
+      "instructions": [
+        "Set up two low cable pulleys facing each other, with ankle straps on one cable and a rope on the other.",
+        "Fasten the ankle straps and lie on your back between the pulleys, with your feet toward the ankle cable. Hold the rope ends beside your head.",
+        "Start with your legs extended close to the floor and your upper back lowered.",
+        "Bend your knees toward your chest as you curl your shoulders and pelvis off the floor, bringing your ribs and knees closer together.",
+        "Keep the rope beside your head without pulling on your neck.",
+        "Lower your shoulders and pelvis slowly as you extend your legs toward the opposite pulley. Stop the leg extension before your lower back arches away from the floor."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_dumbbell_alternate_bicep_curl": {
       "instructions": [
         "Stand with a dumbbell in each hand and your arms beside your body, palms facing inward.",
@@ -564,6 +1324,17 @@
         "Lower the dumbbell slowly while beginning the curl with the opposite arm.",
         "Continue alternating the rising and lowering arms without swinging your torso.",
         "Keep your elbows beside your ribs and your wrists in line with your forearms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dumbbell_around_the_world_raise": {
+      "instructions": [
+        "Stand upright with dumbbells in front of your thighs.",
+        "Keep a small elbow bend and sweep both arms outward to shoulder height.",
+        "Continue the arc overhead while turning the hands to bring the dumbbells above you.",
+        "Lower the weights slowly in front of your body to the starting position.",
+        "Keep your torso still and use a comfortable shoulder range."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -599,6 +1370,16 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_dumbbell_deadlift": {
+      "instructions": [
+        "Stand holding a dumbbell in each hand in front of your thighs, palms toward you.",
+        "Bend your hips and knees to lower the weights toward the floor, keeping them close to your legs.",
+        "Keep your back steady as you push through your feet and extend your knees and hips.",
+        "Stand upright without leaning backward, then lower into the next repetition."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_dumbbell_flyes": {
       "instructions": [
         "Lie on a flat bench with your feet planted and a dumbbell in each hand.",
@@ -629,6 +1410,17 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_dumbbell_low_to_high_wood_chop": {
+      "instructions": [
+        "Stand with your feet apart and a dumbbell in each hand.",
+        "Bend your knees slightly and turn your torso so both dumbbells are lowered beside one hip.",
+        "Straighten upward and rotate toward the front as you sweep both dumbbells diagonally up to about shoulder height.",
+        "Keep your elbows softly bent and move your trunk and arms together without jerking your lower back.",
+        "Reverse the path to the starting hip and repeat, then perform the movement from the other side."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_dumbbell_lunges": {
       "instructions": [
         "Stand holding a dumbbell beside each hip with your feet together.",
@@ -636,6 +1428,17 @@
         "Keep your torso upright and the front foot planted.",
         "Push through the front foot to return to standing.",
         "Complete the set, then change the lead leg."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dumbbell_lying_leg_curl": {
+      "instructions": [
+        "Lie face down on a flat bench with your knees near its end and hold the bench for stability.",
+        "Secure a light fixed dumbbell between your feet before lifting it, keeping the feet pressed together throughout.",
+        "Bend both knees to curl the dumbbell toward your hips without lifting your thighs from the bench.",
+        "Lower slowly until the legs are nearly straight.",
+        "Set the dumbbell down under control before releasing it."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -661,12 +1464,34 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_dumbbell_plank_rotation": {
+      "instructions": [
+        "Start in a high plank with one palm under its shoulder, both feet on the floor, and a dumbbell in the other hand.",
+        "Keep the supporting arm straight as you lift the dumbbell out to the side and rotate your chest toward that side.",
+        "Finish with the dumbbell above the shoulder and hips held off the floor.",
+        "Reverse the movement slowly to face the floor again.",
+        "Complete the set and change sides."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_dumbbell_prone_incline_curl": {
       "instructions": [
         "Rest your chest on an incline bench with feet planted.",
         "Let both arms hang below your shoulders, palms facing forward.",
         "Curl the weights toward your shoulders while keeping the upper arms still.",
         "Lower slowly to the hanging position without swinging."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dumbbell_push_press": {
+      "instructions": [
+        "Stand with dumbbells at shoulder level and feet planted.",
+        "Bend your knees in a short dip while keeping your torso upright.",
+        "Drive through your legs and press both dumbbells overhead in one movement.",
+        "Stand tall with the weights steady, then lower them under control to shoulder level.",
+        "Reset before repeating."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -682,6 +1507,27 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_dumbbell_scaption": {
+      "instructions": [
+        "Stand holding light dumbbells beside your thighs.",
+        "Keep a slight bend in your elbows and turn your hands so your thumbs point upward.",
+        "Raise both arms outward and slightly forward to about shoulder height without shrugging.",
+        "Lower along the same path with control."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dumbbell_scott_press": {
+      "instructions": [
+        "Stand with dumbbells in front of your face, palms toward you and elbows bent.",
+        "Move your elbows outward as you raise the dumbbells above head level.",
+        "Keep a bend in the elbows instead of straightening the arms fully.",
+        "Reverse the path, bringing the elbows forward and the weights in front of your face.",
+        "Keep your torso upright throughout."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_dumbbell_seated_one_leg_calf_raise": {
       "instructions": [
         "Sit on a flat bench with the ball of one foot on a stable raised block and the other foot on the floor.",
@@ -689,6 +1535,47 @@
         "Raise that heel while keeping the forefoot on the block.",
         "Lower the heel slowly through a comfortable range.",
         "Complete the set and change legs."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dumbbell_shrug": {
+      "instructions": [
+        "Stand upright with a dumbbell at each side and palms facing inward.",
+        "Keep your elbows straight and lift your shoulders toward your ears.",
+        "Pause briefly without rolling your shoulders.",
+        "Lower them slowly to the starting position."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dumbbell_side_bend": {
+      "instructions": [
+        "Stand with a dumbbell in one hand at your side and the free hand lightly behind your head.",
+        "Bend sideways away from the dumbbell through a comfortable range, letting the weight rise slightly.",
+        "Keep your hips facing forward and avoid twisting.",
+        "Return slowly to upright, allowing the dumbbell to lower.",
+        "Complete the set and switch sides."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dumbbell_squat": {
+      "instructions": [
+        "Stand with feet about shoulder-width apart and a dumbbell beside each hip.",
+        "Bend your knees and hips to lower into a squat, keeping your feet planted.",
+        "Lower within a comfortable range while keeping your chest lifted and knees aligned with your toes.",
+        "Push through your feet to return to standing."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dumbbell_squat_to_a_bench": {
+      "instructions": [
+        "Stand in front of a bench facing away from it, holding a dumbbell in each hand at your sides.",
+        "Bend your knees and hips to lower toward the bench, keeping your feet planted and knees aligned with your toes.",
+        "Lightly touch the bench with your hips without dropping onto it.",
+        "Push through your feet to stand upright, keeping the dumbbells beside you."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -715,6 +1602,37 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_dumbbell_w_press": {
+      "instructions": [
+        "Stand with a dumbbell in front of each shoulder, palms facing inward and elbows bent.",
+        "Press the weights upward and outward so your arms open into a wide overhead position.",
+        "Keep your torso upright and stop within a comfortable shoulder range.",
+        "Lower along the same path, bringing the elbows forward beside your torso."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_dumbbell_waiter_curl": {
+      "instructions": [
+        "Stand upright and hold one dumbbell vertically with both palms supporting the underside of its upper end.",
+        "Keep the upper arms beside your torso and the dumbbell in front of you.",
+        "Bend both elbows to lift the dumbbell toward your chest.",
+        "Lower it slowly without leaning backward or letting the weight slip."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_elbow_to_knee": {
+      "instructions": [
+        "Lie on your back with one foot flat and the other ankle resting across that thigh.",
+        "Place your hands lightly behind your head without pulling on your neck.",
+        "Curl and rotate your upper body to bring the opposite shoulder toward the raised knee.",
+        "Lower your shoulders with control while keeping your legs in position.",
+        "Finish the repetitions and switch the crossed leg."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_exercise_ball_crunch": {
       "instructions": [
         "Sit on a stability ball, then walk your feet forward until your lower back rests on the ball.",
@@ -724,6 +1642,27 @@
         "Continue without pushing through your feet to roll the ball forward and back."
       ],
       "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_exercise_ball_pull_in": {
+      "instructions": [
+        "Start in a high plank with hands on the floor and lower shins on a stability ball.",
+        "Gently tighten your abdomen and keep your shoulders over your hands.",
+        "Bend both knees to roll the ball toward your torso.",
+        "Extend your legs slowly to return to the plank without sagging at the hips."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_external_rotation_with_cable": {
+      "instructions": [
+        "Stand sideways to a cable set at about elbow height and hold the handle in the hand farther from the pulley.",
+        "Bend that elbow to a right angle and tuck it beside your waist, with your forearm across your abdomen.",
+        "Rotate your forearm outward away from the pulley without moving your elbow away from your body.",
+        "Return slowly across your abdomen while keeping your chest facing forward.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_ez_bar_curl": {
@@ -757,6 +1696,27 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_farmer_s_walk": {
+      "instructions": [
+        "Stand upright holding a dumbbell in each hand with palms facing inward.",
+        "Keep the weights beside you and walk forward with controlled steps.",
+        "Maintain a steady torso without letting the weights swing.",
+        "Stop walking, then bend your hips and knees to set the weights down under control."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_feet_elevated_glute_bridge": {
+      "instructions": [
+        "Lie on your back in front of a bench and place both heels on its top with knees bent.",
+        "Keep your upper back and arms on the floor.",
+        "Press your heels into the bench to lift your hips until your torso and thighs align.",
+        "Pause without arching your lower back.",
+        "Lower your hips toward the floor with control."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_flat_bench_cable_flyes": {
       "instructions": [
         "Place a flat bench between two low pulleys and hold one handle in each hand.",
@@ -767,6 +1727,49 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_flat_bench_leg_pull_in": {
+      "instructions": [
+        "Lie on your back along a flat bench and place your palms on the pad beside your hips.",
+        "Lift both legs with knees bent and draw them toward your torso.",
+        "Extend your legs outward over the end of the bench while keeping your back controlled against the pad.",
+        "Bend your knees to draw them back in, allowing a small pelvic curl at the top.",
+        "Keep the movement smooth without swinging."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_floor_glute_ham_raise": {
+      "instructions": [
+        "Kneel on the floor in front of a bench with your ankles secured under it and your arms crossed over your chest.",
+        "Gently tighten your abdomen and keep your hips in line with your shoulders and knees.",
+        "Lean forward from your knees, lowering your body as one unit.",
+        "Catch yourself with your hands in a push-up position.",
+        "Push off the floor with your hands and use your hamstrings to return to upright kneeling."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_forearm_plank_pike": {
+      "instructions": [
+        "Start in a forearm plank with your elbows below your shoulders and toes on the floor.",
+        "Keep your forearms planted and lift your hips toward the ceiling, keeping your legs nearly straight.",
+        "Pause briefly at a height you can control without shifting your elbows.",
+        "Lower your hips slowly until your body returns to a straight plank."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_forward_lunge_with_rotation": {
+      "instructions": [
+        "Stand tall with your arms at your sides.",
+        "Step forward and bend both knees into a lunge, bringing your hands in front of your torso.",
+        "Rotate your upper body toward your front leg while keeping that knee in line with your foot.",
+        "Turn back to face forward and push off your front foot to stand.",
+        "Lunge with the other leg on the next rep and continue alternating."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_frog_sit_ups": {
       "instructions": [
         "Lie on your back with the soles of your feet together and knees opened outward.",
@@ -774,6 +1777,16 @@
         "Curl your shoulders off the floor while lifting your feet and drawing your bent legs toward your torso.",
         "Keep the feet together as the chest and knees move closer.",
         "Lower your upper body and legs with control."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_front_barbell_squat_to_a_bench": {
+      "instructions": [
+        "Set a stable flat bench behind you and hold the bar across the fronts of your shoulders.",
+        "Cross your arms over the bar to steady it, keep your elbows lifted and stand with your feet about shoulder-width apart in front of the bench.",
+        "Bend your hips and knees until you sit lightly on the bench, keeping tension through your legs and torso.",
+        "Push through both feet to stand without rocking backward on the bench."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -831,6 +1844,28 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_glute_bridge_march": {
+      "instructions": [
+        "Lie on your back with knees bent, feet planted and arms at your sides.",
+        "Press through your feet to lift your hips into a bridge.",
+        "Keep your hips raised as you lift one foot and draw that knee toward your torso.",
+        "Put the foot down gently and repeat with the other leg.",
+        "Continue alternating without letting your pelvis drop or rotate."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_glute_bridge_with_reach": {
+      "instructions": [
+        "Lie on your back with your knees bent, your feet flat and your hands resting on your chest.",
+        "Tighten your abdomen and press through your feet to lift your hips.",
+        "As your hips rise, reach one arm overhead and across toward the opposite side, letting your upper body turn slightly.",
+        "Return your arm to your chest as you lower your hips.",
+        "Reach with the other arm on the next rep and continue alternating."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_goblet_squat": {
       "instructions": [
         "Hold a kettlebell by the sides of its handle close to your chest.",
@@ -852,6 +1887,17 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_gorilla_chin_crunch": {
+      "instructions": [
+        "Hang from a bar with palms facing toward you and knees slightly bent.",
+        "Pull upward by bending your elbows while drawing your knees toward your chest.",
+        "Bring your chin toward bar height as your knees rise.",
+        "Lower your torso and legs together with control.",
+        "Return to the hanging position without swinging into the next repetition."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_hack_squat": {
       "instructions": [
         "Stand on the hack-squat platform with back and shoulders against the pads.",
@@ -861,6 +1907,27 @@
         "Secure the carriage before leaving."
       ],
       "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_half_kneeling_cable_face_pull": {
+      "instructions": [
+        "Attach a rope to a high pulley and face it with one knee on the floor and the opposite foot forward.",
+        "Hold one rope end in each hand and extend your arms toward the pulley.",
+        "Pull the rope toward your face, spreading the ends so your hands finish beside your head and elbows point outward.",
+        "Extend your arms slowly, then change the forward leg between sets."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_half_kneeling_one_arm_cable_triceps_extension": {
+      "instructions": [
+        "Attach a single handle to a high cable pulley and kneel with one foot forward and the other knee on the floor.",
+        "Rest your working upper arm against the inside of your raised knee and hold the handle with your elbow bent.",
+        "Keep that support as you straighten your elbow and press the handle down.",
+        "Let your elbow bend slowly.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_half_kneeling_single_arm_band_pulldown": {
@@ -894,6 +1961,60 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_hanging_knee_raise": {
+      "instructions": [
+        "Hang from a bar with palms facing away and arms extended.",
+        "Bend your knees and raise them toward your chest.",
+        "Curl your pelvis upward slightly at the top rather than only lifting your thighs.",
+        "Lower your pelvis and legs slowly until you return to a steady hang."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_hanging_oblique_knee_raise": {
+      "instructions": [
+        "Hang from a bar with arms extended and palms facing away.",
+        "Bend your knees and lift them toward one side of your chest, turning your pelvis slightly.",
+        "Lower with control to a steady hang.",
+        "Raise your knees toward the other side.",
+        "Continue alternating without swinging."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_high_cable_rope_curl": {
+      "instructions": [
+        "Attach a rope to a high pulley and stand facing the machine.",
+        "Hold one rope end in each hand and reach your arms upward toward the pulley, keeping your palms facing each other.",
+        "Keep your upper arms raised and bend your elbows to bring the rope ends toward your forehead.",
+        "Straighten your elbows slowly to return your hands toward the pulley.",
+        "Keep your torso still and avoid pulling the rope down toward your waist."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_hip_extension_with_bands": {
+      "instructions": [
+        "Secure a band to a low anchor in front of you and attach the other end around one ankle.",
+        "Face the anchor, stand on the other leg and lean forward from your hips with your arms extended ahead.",
+        "Keep your torso still and move the attached leg backward from the hip.",
+        "Return that foot forward slowly without letting the band pull you off balance.",
+        "Complete your repetitions, then switch ankles."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_inchworm_push_up": {
+      "instructions": [
+        "Stand with feet about hip-width apart, bend forward and place your hands on the floor.",
+        "Walk your hands forward until your body is straight in a high plank.",
+        "Bend your elbows to perform a controlled push-up, then press back up.",
+        "Walk your hands toward your feet, allowing your hips to rise.",
+        "Stand upright to finish the repetition."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_incline_barbell_triceps_extension": {
       "instructions": [
         "Lie back on an incline bench with feet planted.",
@@ -914,6 +2035,16 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_incline_close_grip_barbell_bench_press": {
+      "instructions": [
+        "Lie on an incline bench and take a palms-away grip around shoulder width or slightly narrower.",
+        "Unrack the bar and hold it over your upper chest with your wrists supported over your forearms.",
+        "Bend your elbows close to your sides to lower the bar toward your upper chest.",
+        "Press it back up smoothly and return it to the rack when finished."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_incline_dumbbell_curl": {
       "instructions": [
         "Recline on an incline bench with feet planted and a dumbbell hanging beside each hip.",
@@ -924,12 +2055,44 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_incline_dumbbell_fly_with_twist": {
+      "instructions": [
+        "Lie back on an incline bench with feet planted and a dumbbell in each hand.",
+        "Hold the weights above your chest with palms toward your feet and elbows slightly bent.",
+        "Open your arms in a wide arc, turning the palms upward as you lower the weights.",
+        "Stop within a comfortable shoulder range without increasing the elbow bend.",
+        "Bring the dumbbells together above your chest while turning the palms toward your feet again."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_incline_dumbbell_flyes": {
       "instructions": [
         "Lie back on an incline bench with feet planted and a dumbbell in each hand.",
         "Hold the weights above your chest with a small bend in the elbows.",
         "Open your arms outward in an arc without changing the elbow bend.",
         "Stop within a comfortable shoulder range, then bring the dumbbells back together above your chest."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_incline_dumbbell_rear_delt_row": {
+      "instructions": [
+        "Rest your chest against an incline bench with feet planted and dumbbells hanging below you.",
+        "Pull the weights toward your upper ribs while moving the elbows outward.",
+        "Keep your chest on the pad as your shoulder blades move together.",
+        "Lower the weights slowly until the arms hang beneath the shoulders."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_incline_dumbbell_y_raise": {
+      "instructions": [
+        "Lie with your chest on an incline bench and feet planted.",
+        "Let light dumbbells hang below your shoulders with palms facing inward.",
+        "Raise the arms diagonally forward and outward to form a Y, keeping the elbows nearly straight.",
+        "Stop around the line of your torso and lower the weights slowly.",
+        "Keep your neck relaxed and chest on the pad."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -954,6 +2117,38 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_incline_low_to_high_dumbbell_fly": {
+      "instructions": [
+        "Sit back against a steep incline bench with feet planted and a dumbbell in each hand.",
+        "Let your arms extend down and slightly outward beside the bench, palms angled forward.",
+        "Keep a soft elbow bend and raise the weights forward and inward in a wide arc.",
+        "Bring the dumbbells close together above your upper chest and face without striking them.",
+        "Lower along the same path with control."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_incline_push_up": {
+      "instructions": [
+        "Place your hands on a stable low step slightly wider than shoulder-width.",
+        "Extend your legs behind you and form a straight line from head to heels.",
+        "Bend your elbows to lower your chest toward the step.",
+        "Press through your palms to straighten your arms.",
+        "Keep your hips from dropping or lifting ahead of your chest."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_isometric_chest_squeezes": {
+      "instructions": [
+        "Stand upright with your arms at your sides.",
+        "Raise your arms in front of your chest and press your palms firmly together.",
+        "Keep your shoulders relaxed and hold the pressure while breathing normally.",
+        "Release the pressure and lower your arms to your sides."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_jackknife_sit_up": {
       "instructions": [
         "Lie on your back with legs extended and arms reaching overhead.",
@@ -975,12 +2170,132 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_kettlebell_figure_8": {
+      "instructions": [
+        "Stand with feet wider than hip-width and hold a kettlebell in one hand.",
+        "Bend your knees and lean forward from your hips while keeping your back steady.",
+        "Pass the bell between your legs and receive it behind one thigh with the other hand.",
+        "Bring it around the outside of that leg and pass it between the legs again to the first hand.",
+        "Continue a smooth figure-eight path while keeping your feet planted."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_kettlebell_sumo_high_pull": {
+      "instructions": [
+        "Stand with feet wider than shoulder-width and toes angled outward.",
+        "Hold one kettlebell with both hands between your legs and bend your knees and hips.",
+        "Drive upward through your legs, then pull the bell toward your upper chest.",
+        "Let your elbows rise outward above your hands while keeping the bell close.",
+        "Lower the bell and bend your hips and knees to reset."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_kettlebell_windmill": {
+      "instructions": [
+        "Stand with a kettlebell overhead in one straight arm and your feet turned slightly away from that side.",
+        "Shift your hips back toward the loaded side and lower your torso toward the opposite leg.",
+        "Slide your free hand down toward that foot while keeping the loaded arm vertical.",
+        "Keep your eyes on the bell and stop at a controlled depth.",
+        "Return upright by driving through your hips.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_kneeling_band_hip_thrust": {
+      "instructions": [
+        "Secure a resistance band to a low anchor and position it around your hips.",
+        "Kneel facing away from the anchor with your knees planted.",
+        "Sit your hips back toward your heels while keeping your trunk controlled.",
+        "Squeeze your glutes to extend your hips into tall kneeling against the band.",
+        "Return slowly without lifting your knees."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_kneeling_band_twisting_crunch": {
+      "instructions": [
+        "Secure the band high behind you and kneel facing away from the anchor.",
+        "Hold the handles beside your head with your elbows bent.",
+        "Curl your chest down toward your thighs while turning one shoulder toward the opposite knee.",
+        "Return upward slowly without pulling mainly with your arms.",
+        "Finish the repetitions, then repeat the diagonal crunch toward the other side."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_kneeling_bodyweight_triceps_extension": {
+      "instructions": [
+        "Kneel and place your palms on the floor in front of you with your arms extended.",
+        "Keep your knees down and gently tighten your abdomen.",
+        "Bend both elbows to lower your forearms toward the floor, keeping your hands in place.",
+        "Press through your palms to straighten both elbows and raise your upper body."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_kneeling_cable_high_row": {
+      "instructions": [
+        "Attach a close-grip handle to a high cable pulley and kneel facing it.",
+        "Hold the handles with your palms facing each other and extend your arms toward the pulley.",
+        "Keep your torso steady as you pull toward your upper chest, bringing your elbows down beside your ribs.",
+        "Let your arms extend slowly back toward the high pulley."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_kneeling_cable_triceps_extension": {
       "instructions": [
         "Kneel facing away from a high pulley with a flat bench in front of you.",
         "Hold the cable bar and lean forward to rest your upper arms on the bench, starting with your elbows bent.",
         "Keep your upper arms supported as you straighten the elbows to reach the bar forward.",
         "Bend your elbows slowly to bring the bar back toward your head."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_kneeling_plank_shoulder_tap": {
+      "instructions": [
+        "Place your knees and forearms on the floor with elbows beneath your shoulders.",
+        "Keep a straight line from shoulders through hips to knees.",
+        "Lift one hand and forearm to touch the opposite shoulder while the other forearm stays down.",
+        "Return that forearm to the floor and tap with the other hand.",
+        "Continue alternating without twisting your hips."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_kneeling_single_arm_high_pulley_row": {
+      "instructions": [
+        "Kneel facing a high cable pulley and take its handle in one hand.",
+        "Reach upward toward the cable with your working arm extended.",
+        "Keep your torso steady as you bend your elbow and pull the handle toward the side of your chest.",
+        "Extend your arm slowly back toward the pulley.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_kneeling_single_leg_machine_curl": {
+      "instructions": [
+        "Place one knee on the support pad and lean forward with your forearms resting on the front pad.",
+        "Position the back of the working ankle beneath the moving roller.",
+        "Bend the working knee to bring your heel toward your buttocks, keeping the thigh and pelvis steady.",
+        "Lower the roller slowly until the working leg is nearly straight.",
+        "Switch the supported and working legs to train the other side."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_l_sit_hold": {
+      "instructions": [
+        "Sit with legs straight and together, placing your palms beside your hips.",
+        "Press down through your hands to lift your hips clear of the floor.",
+        "Keep your knees straight and raise your heels so the legs stay horizontal in front of you.",
+        "Hold with your shoulders pressed down and elbows straight.",
+        "Lower your hips and heels with control."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1002,6 +2317,27 @@
         "Bend your hips and knees to lower the sled without lifting your pelvis from the pad.",
         "Press through both feet until your legs are nearly straight.",
         "Secure the stops before leaving the machine."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_leg_press_to_calf_press": {
+      "instructions": [
+        "Sit against the leg-press backrest with the balls of both feet securely on the lower footplate and your heels free.",
+        "Hold the side handles and extend your knees and hips to press the seat away from the plate.",
+        "With your knees nearly straight, push through the balls of your feet to extend your ankles.",
+        "Let your ankles bend back under control, then bend your knees and hips to return to the start.",
+        "Repeat the leg-press and calf-press phases as one sequence without forcefully locking your knees."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_leverage_chest_press": {
+      "instructions": [
+        "Sit on the machine with your back against its pad and your feet firmly planted.",
+        "Take the handles beside your chest with palms facing forward.",
+        "Press both handles forward until your arms are long, keeping your shoulders against the pad.",
+        "Return the handles slowly to the starting position."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1067,6 +2403,16 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_leverage_shrug": {
+      "instructions": [
+        "Stand between the lever handles with feet planted and arms by your sides.",
+        "Grip the handles and stand tall, keeping your elbows straight but relaxed.",
+        "Raise both shoulders toward your ears without bending your arms or knees.",
+        "Lower your shoulders slowly back to the starting position."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_low_cable_crossover": {
       "instructions": [
         "Stand between two cable pulleys around shoulder height and hold a handle in each hand.",
@@ -1078,6 +2424,29 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_low_push_up_side_shift": {
+      "instructions": [
+        "Start in a wide-hand push-up position with your legs extended and your feet on the floor.",
+        "Bend your elbows to lower your chest close to the floor between your hands.",
+        "Stay low and shift your torso toward one hand while the other arm straightens.",
+        "Shift across toward the other hand without pressing back up or raising your hips.",
+        "Keep shifting side to side in the low position, then press up to finish."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_low_to_high_cable_wood_chop": {
+      "instructions": [
+        "Stand sideways to a low cable pulley with your feet about shoulder-width apart.",
+        "Hold the handle in both hands near the hip closest to the pulley.",
+        "Lift your hands diagonally across your body to above the opposite shoulder, turning your chest with the movement.",
+        "Keep a slight bend in your elbows and avoid leaning backward to finish the lift.",
+        "Lower your hands slowly along the same diagonal.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_lunge_pass_through": {
       "instructions": [
         "Stand tall holding a kettlebell in one hand at your side.",
@@ -1087,6 +2456,27 @@
         "Step forward with the other leg and continue alternating legs."
       ],
       "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_lying_cable_rear_delt_fly": {
+      "instructions": [
+        "Place a flat bench between two high cable pulleys. Take the left handle in your right hand and the right handle in your left.",
+        "Lie on your back with your head supported and your feet on the floor. Hold your arms above your chest so the cables cross.",
+        "Keep a slight bend in your elbows and lower your arms out to the sides until they are roughly level with your torso.",
+        "Bring your hands back above your chest slowly as the cables draw them inward.",
+        "Keep your back on the bench and avoid lowering your arms beyond a comfortable shoulder range."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_lying_cable_rope_pullover": {
+      "instructions": [
+        "Place a flat bench with its head end toward a low cable pulley and attach a rope.",
+        "Lie on your back with feet planted and hold the rope ends above your chest.",
+        "Keep a small steady elbow bend as you let your arms travel behind your head through a comfortable range.",
+        "Pull the rope forward over your chest without bending your elbows into a triceps extension."
+      ],
+      "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
     "fx_lying_close_grip_bar_curl_on_high_pulley": {
@@ -1130,6 +2520,16 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_lying_rear_delt_raise": {
+      "instructions": [
+        "Lie face down on a flat bench with feet planted and a dumbbell in each hand.",
+        "Let your arms hang beneath the shoulders with palms facing each other and elbows slightly bent.",
+        "Raise both arms outward until they are roughly in line with your torso.",
+        "Lower slowly without lifting your chest from the bench."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_lying_t_bar_row": {
       "instructions": [
         "Stand on the footplates of a lever T-bar row machine.",
@@ -1139,6 +2539,38 @@
         "Lower the handles slowly until your arms are straight, keeping your back flat."
       ],
       "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_machine_assisted_chest_dip": {
+      "instructions": [
+        "Select the machine assistance and grip both dip handles.",
+        "Place both knees on the moving pad and support yourself with straight arms.",
+        "Lean slightly forward and bend your elbows to lower your chest between the handles.",
+        "Stop at a comfortable depth, then press through the handles to raise your body.",
+        "Keep your knees on the pad as it travels with you."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_machine_assisted_pull_up": {
+      "instructions": [
+        "Select the assistance level and hold the overhead handles with palms facing away from you.",
+        "Place both knees on the moving assistance pad and let your arms lengthen.",
+        "Draw your elbows down and pull your upper chest toward the handles without swinging.",
+        "Lower slowly until your arms are long again, keeping both knees on the pad."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_machine_back_extension": {
+      "instructions": [
+        "Sit on the machine with your lower legs against its support pads and the moving pad against your upper back.",
+        "Adjust the machine so your hips stay supported as your torso moves.",
+        "Lean forward under control through a comfortable range.",
+        "Press your upper back into the pad to bring your torso upright, without throwing your head back.",
+        "Return forward slowly while keeping your hips in the seat."
+      ],
+      "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
     "fx_machine_bench_press": {
@@ -1151,12 +2583,32 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_machine_lateral_raise": {
+      "instructions": [
+        "Sit upright with your back supported and your upper arms against the side pads.",
+        "Hold the handles with elbows bent and feet planted.",
+        "Lift your elbows outward to raise the pads until your upper arms approach shoulder height.",
+        "Lower the pads slowly, keeping your elbows bent and torso still."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_machine_preacher_curls": {
       "instructions": [
         "Sit with your chest against the front edge of the preacher pad and your upper arms resting on it.",
         "Hold the machine bar with palms facing up.",
         "Bend your elbows to curl the bar toward your shoulders without lifting your upper arms.",
         "Lower the lever slowly until your elbows are nearly straight."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_machine_pullover": {
+      "instructions": [
+        "Sit with your back against the pad and your feet planted on the floor.",
+        "Reach overhead to hold the lever handles and rest your upper arms against the arm pads with your elbows bent.",
+        "Pull the lever in an arc from above your head down toward your abdomen while keeping your torso supported.",
+        "Allow the handles to travel back overhead slowly without arching your lower back."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1181,6 +2633,39 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_middle_back_shrug": {
+      "instructions": [
+        "Rest your chest against an incline bench with your feet on the floor.",
+        "Let a dumbbell hang from each hand with your arms straight.",
+        "Draw your shoulder blades together and slightly upward without bending your elbows.",
+        "Release slowly so the weights return to the starting position.",
+        "Keep your chest on the pad throughout."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_mixed_grip_chin": {
+      "instructions": [
+        "Grip a pull-up bar with one palm facing you and the other facing away.",
+        "Hang with your arms extended and gently tighten your abdomen.",
+        "Pull until your chin clears the bar without kicking.",
+        "Lower under control to the hang.",
+        "Reverse your hand positions for the next set."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_modified_hindu_push_up": {
+      "instructions": [
+        "Begin in a high plank with your hands and toes on the floor and your body in a straight line.",
+        "Bend your elbows to lower your chest close to the floor.",
+        "Press through your hands as you straighten your arms and send your hips up and back into an inverted V.",
+        "Shift your body forward with your arms straight until you return to the high plank.",
+        "Lower your chest again and repeat the sequence with control."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_narrow_stance_hack_squats": {
       "instructions": [
         "Set your shoulders beneath the pads and back against the hack-squat carriage.",
@@ -1188,6 +2673,36 @@
         "Bend your knees and hips to lower while keeping your heels planted.",
         "Push through both feet to stand without locking the knees forcefully.",
         "Reengage the stops to finish."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_neutral_grip_dumbbell_upright_row": {
+      "instructions": [
+        "Stand upright holding the dumbbells beside your thighs with palms facing inward.",
+        "Bend and lift both elbows out to the sides, drawing the weights upward close to your ribs.",
+        "Stop with the elbows around shoulder height and keep your torso still.",
+        "Lower slowly until your arms return beside you."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_neutral_grip_pull_up": {
+      "instructions": [
+        "Grip the parallel pull-up handles with your palms facing each other and hang with your arms long.",
+        "Tighten your abdomen and draw your shoulders down away from your ears.",
+        "Bend your elbows to pull your upper chest toward the handles, keeping your legs quiet.",
+        "Lower yourself steadily until your arms are long again, then repeat without swinging."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_oblique_crunches": {
+      "instructions": [
+        "Lie on the floor with your lower legs resting on a bench and knees bent.",
+        "Place one hand lightly behind your head and rest the other arm beside you on the floor.",
+        "Curl the shoulder of the raised arm toward the opposite knee with a small torso turn.",
+        "Lower slowly and finish the repetitions before changing sides."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1202,6 +2717,105 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_offset_dumbbell_forward_lunge": {
+      "instructions": [
+        "Stand holding one dumbbell at your side.",
+        "Step forward with the leg opposite the loaded hand.",
+        "Bend both knees to lower into a lunge, keeping your torso steady and front foot planted.",
+        "Push through the front foot to return to standing.",
+        "Complete the set, then switch the dumbbell to the other hand and lunge with the other leg."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_offset_medicine_ball_push_up": {
+      "instructions": [
+        "Place one hand on a stable medicine ball and the other on the floor.",
+        "Step back into a plank with feet apart.",
+        "Lower your chest between your hands by bending both elbows.",
+        "Press back up while keeping your shoulders and hips controlled.",
+        "Switch the ball to the other hand after the set."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_band_front_raise": {
+      "instructions": [
+        "Secure the band to a low anchor behind you and stand facing away from it.",
+        "Hold the handle beside your thigh with your palm facing back and a slight bend in your elbow.",
+        "Raise your arm forward to about shoulder height without leaning back.",
+        "Lower the handle slowly.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_one_arm_band_high_curl": {
+      "instructions": [
+        "Anchor the band around shoulder height and stand with the anchor beside your working side.",
+        "Hold the handle in one hand and extend that arm out to the side with your palm facing up.",
+        "Keep the upper arm steady as you bend your elbow and bring your hand toward the side of your head.",
+        "Extend your elbow slowly to return the handle toward the anchor.",
+        "Complete the repetitions, then turn around to work the other arm."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_band_row": {
+      "instructions": [
+        "Secure the band to a low anchor in front of you and hold its handle in one hand.",
+        "Set a staggered stance, bend your knees slightly and lean your torso a little forward.",
+        "Pull your elbow back toward your hip while keeping your shoulders level.",
+        "Extend the arm toward the anchor slowly.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_one_arm_bent_over_cable_fly": {
+      "instructions": [
+        "Stand with a shoulder-height pulley beside and slightly behind your working arm.",
+        "Hold the handle, bend your hips and knees, and rest your free hand on your front thigh.",
+        "Keep a small, steady elbow bend as you bring the handle forward and diagonally across your body.",
+        "Open your arm slowly back toward the pulley.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_one_arm_cable_kickback": {
+      "instructions": [
+        "Face a low cable pulley and hold its handle in one hand.",
+        "Take a staggered stance and lean forward from your hips, resting your free hand on your front thigh.",
+        "Keep your working upper arm beside your torso and straighten that elbow to move the handle back.",
+        "Bend your elbow slowly without dropping your upper arm.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_one_arm_cable_reverse_curl": {
+      "instructions": [
+        "Stand facing a low pulley and take its handle in one hand with your palm facing down.",
+        "Begin with your arm nearly straight and your working elbow beside your torso.",
+        "Bend your elbow to lift the handle toward the front of your shoulder.",
+        "Lower slowly without bending your wrist.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_one_arm_cable_row_with_rotation": {
+      "instructions": [
+        "Face a cable pulley set in front of your torso. Hold the handle in one hand and step back into a wide staggered stance.",
+        "Bend your knees and lean forward from your hips, reaching the working arm toward the pulley.",
+        "Pull the handle toward the side of your chest, drawing your elbow back as that shoulder turns upward slightly.",
+        "Keep your hips steady and your lower back from rounding.",
+        "Reach forward slowly and let your chest turn back toward the floor. Finish one arm before switching sides."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_one_arm_dumbbell_bench_press": {
       "instructions": [
         "Lie on your back on a flat bench with both feet planted.",
@@ -1209,6 +2823,38 @@
         "Press the weight above your chest without turning your torso.",
         "Lower slowly until it is beside your chest again.",
         "Complete the set, then switch arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_dumbbell_curl": {
+      "instructions": [
+        "Stand upright holding a dumbbell beside one thigh with the palm forward.",
+        "Keep your upper arm still as you curl the weight toward your shoulder.",
+        "Lower it slowly until the elbow is extended.",
+        "Complete the set and change arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_dumbbell_preacher_curl": {
+      "instructions": [
+        "Sit at a preacher bench with one upper arm resting on the pad and your free hand on your thigh.",
+        "Hold a dumbbell with the palm up.",
+        "Curl the weight toward your shoulder without lifting the upper arm.",
+        "Lower slowly without forcing the elbow straight.",
+        "Complete the set and change arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_dumbbell_rear_delt_row": {
+      "instructions": [
+        "Place one hand and the same-side knee on a flat bench, keeping the other foot planted.",
+        "Hold a dumbbell below your opposite shoulder.",
+        "Bend the working elbow and lift it out to the side to row the weight toward your upper ribs.",
+        "Lower slowly without rotating your torso.",
+        "Complete the set and change sides."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1235,6 +2881,49 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_one_arm_high_pulley_cable_side_bends": {
+      "instructions": [
+        "Stand beside a high cable pulley with your feet about hip-width apart.",
+        "Hold the handle in the hand nearest the pulley and keep it beside your head with your elbow bent.",
+        "Bend sideways to bring that elbow and the same-side hip closer together, keeping your hips steady.",
+        "Return slowly to an upright position without pulling the handle with your arm.",
+        "Complete one side, then turn around to work the other side."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_incline_bench_cable_press": {
+      "instructions": [
+        "Place an incline bench beside a low cable pulley and take the handle in one hand.",
+        "Recline against the pad with your feet planted and the handle beside your upper chest.",
+        "Press upward until your arm is straight above your chest, keeping your torso facing up.",
+        "Lower the handle slowly.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_one_arm_incline_dumbbell_fly": {
+      "instructions": [
+        "Lie back on an incline bench with feet planted and one dumbbell above your chest.",
+        "Keep your working elbow slightly bent and palm facing inward.",
+        "Open the arm outward within a comfortable shoulder range without rotating your torso.",
+        "Bring the weight back above the chest along the same arc.",
+        "Finish the set, then switch arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_incline_dumbbell_press": {
+      "instructions": [
+        "Lie back on an incline bench with feet planted and one dumbbell beside your upper chest.",
+        "Turn your palm toward your feet and keep the forearm beneath the weight.",
+        "Press the dumbbell above your chest without rotating your torso.",
+        "Lower slowly, then complete the set before switching arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_one_arm_incline_lateral_raise": {
       "instructions": [
         "Lie on your side against an incline bench with your feet planted for support.",
@@ -1242,6 +2931,17 @@
         "Keep a slight elbow bend as you lift the arm outward until it points nearly straight upward.",
         "Lower slowly along the same arc without rolling your torso.",
         "Complete the set, then change sides."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_kettlebell_floor_press": {
+      "instructions": [
+        "Lie on your back with both legs straight and your free hand resting on your abdomen.",
+        "Hold a kettlebell beside your chest with your working upper arm resting lightly on the floor.",
+        "Press the kettlebell above your chest until your arm is straight.",
+        "Lower slowly until the upper arm touches the floor gently.",
+        "Complete the set before changing arms."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1268,6 +2968,40 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_one_arm_kettlebell_rolling_floor_press": {
+      "instructions": [
+        "Lie on your back with straight legs spread wide and the free arm extended on the floor.",
+        "Hold a kettlebell beside one shoulder with the elbow bent.",
+        "Press the bell upward while turning slightly toward the opposite side and lifting the working shoulder.",
+        "Reverse the torso turn as you lower the bell, returning the upper arm toward the floor.",
+        "Keep the movement controlled and change arms after the set."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_kettlebell_row": {
+      "instructions": [
+        "Hold a kettlebell in one hand, place the opposite foot forward and lean forward from your hips with your knees slightly bent.",
+        "Rest your free hand on your front thigh and keep your back steady as the loaded arm hangs beneath your shoulder.",
+        "Pull the bell toward your lower ribs with the elbow close to your torso.",
+        "Lower until your arm extends without twisting your body.",
+        "Complete the set, then change arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_landmine_lateral_raise": {
+      "instructions": [
+        "Secure one end of a barbell in a landmine attachment and stand beside the free end.",
+        "Hold the free end with one hand low across the front of the opposite hip.",
+        "Keep a small, steady elbow bend and raise the bar end outward toward the working side.",
+        "Continue until your hand is above shoulder height within a comfortable range, without leaning your torso.",
+        "Lower through the same arc with control.",
+        "Complete the set before changing arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_one_arm_lat_pulldown": {
       "instructions": [
         "Sit on a flat bench beneath a high cable handle with your feet planted.",
@@ -1275,6 +3009,51 @@
         "Pull your working elbow down toward your side while keeping your torso steady.",
         "Let the handle rise slowly until your arm extends again.",
         "Complete your repetitions and switch arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_long_bar_row": {
+      "instructions": [
+        "Secure one end of a barbell in a landmine anchor and stand beside the loaded end.",
+        "Push your hips back and lean forward with your knees slightly bent.",
+        "Grip the bar just below the weight plate with the nearer hand.",
+        "Pull the bar toward your hip by driving your elbow back, keeping your torso steady.",
+        "Lower until your arm extends.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_one_arm_medicine_ball_slam": {
+      "instructions": [
+        "Stand with your feet apart and hold a medicine ball in one hand.",
+        "Raise that arm overhead while gently tightening your abdomen.",
+        "Drive the ball down to the floor, bending your hips and knees with the throw.",
+        "Recover the ball under control and stand to reset.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_one_arm_plate_loaded_high_row": {
+      "instructions": [
+        "Sit facing the machine with your chest on the pad and your feet on the supports.",
+        "Hold one overhead handle while your other hand steadies you on the machine.",
+        "Draw your working elbow down and back to bring the handle beside your ribs.",
+        "Let your arm lengthen slowly without turning your torso.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_one_arm_seated_cable_row": {
+      "instructions": [
+        "Sit on a flat bench facing the cable pulley with your feet planted on the floor.",
+        "Hold a single handle in one hand and reach your arm forward. Rest your other hand on your thigh.",
+        "Pull your elbow back beside your body and bring the handle toward your waist.",
+        "Reach forward slowly again, keeping your torso steady rather than twisting to pull.",
+        "Complete the repetitions with one arm, then switch hands."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1290,6 +3069,208 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_one_arm_stability_ball_dumbbell_press": {
+      "instructions": [
+        "Rest your upper back on a stability ball, plant your feet, and raise your hips in line with your torso. Keep your neck steady.",
+        "Hold a dumbbell beside one side of your chest, palm facing toward your feet.",
+        "Press the weight above your chest without letting your body rotate.",
+        "Lower with control until the weight is beside your chest again.",
+        "Finish the set, then switch arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_straight_arm_cable_pulldown": {
+      "instructions": [
+        "Stand facing a high pulley and hold its handle in one hand with your arm raised.",
+        "Keep your feet planted, your torso upright and a small bend in the working elbow.",
+        "Sweep your arm downward until your hand reaches the front of your thigh, keeping the elbow bend steady.",
+        "Let the arm return upward slowly without leaning backward.",
+        "Complete the set, then repeat with the other arm."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_arm_triceps_pushdown": {
+      "instructions": [
+        "Stand facing a high pulley and hold its single handle with your palm facing down.",
+        "Start with the working elbow bent and your upper arm close to your side.",
+        "Straighten that elbow to press the handle down toward your thigh without moving your shoulder.",
+        "Bend the elbow slowly to return.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_one_arm_underhand_incline_dumbbell_row": {
+      "instructions": [
+        "Rest your chest on an incline bench with feet planted and use your free hand to steady yourself on the bench.",
+        "Let the working arm hang with the palm facing forward.",
+        "Pull the dumbbell toward your waist with the elbow near your torso.",
+        "Lower slowly without lifting your chest or twisting.",
+        "Complete the set and change arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_one_leg_barbell_squat": {
+      "instructions": [
+        "Hold a barbell across your upper back and stand in front of a stable flat bench.",
+        "Place the top of one foot on the bench behind you, with your front foot far enough forward to lower between your legs.",
+        "Bend your front knee and lower your hips while keeping that heel planted.",
+        "Push through your front foot to stand.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_one_legged_cable_kickback": {
+      "instructions": [
+        "Fasten an ankle strap to a low cable and stand facing the pulley.",
+        "Hold the machine frame for balance. Keep your supporting knee slightly bent and your working leg nearly straight.",
+        "Move the strapped leg backward from your hip while keeping your pelvis facing forward.",
+        "Stop before you need to arch your lower back to move farther.",
+        "Bring the leg forward slowly, then complete the repetitions and switch legs."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_otis_up": {
+      "instructions": [
+        "Lie on your back with your knees bent and your feet flat, holding a weight plate against your chest.",
+        "Gently tighten your abdomen.",
+        "Sit up while pressing the plate overhead.",
+        "Finish upright with your arms reaching toward the ceiling.",
+        "Lower your torso and bring the plate back to your chest with control."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_overhand_machine_rear_delt_fly": {
+      "instructions": [
+        "Sit facing the machine with your chest against the pad and feet planted.",
+        "Grasp the handles with palms facing down and keep a small bend in your elbows.",
+        "Open both arms out to the sides and back while keeping your chest on the pad.",
+        "Bring the handles forward slowly without changing the elbow bend."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_overhand_machine_row": {
+      "instructions": [
+        "Sit with your chest against the support pad and feet on the machine supports.",
+        "Hold the handles with palms facing down and your arms extended forward.",
+        "Pull the handles toward your ribs as your elbows move behind you.",
+        "Return slowly, allowing your arms to lengthen while your chest stays on the pad."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_overhead_handle_machine_crunch": {
+      "instructions": [
+        "Sit with your hips in the seat and feet on the machine supports.",
+        "Reach up to hold the handles beside your head and keep your elbows bent.",
+        "Curl your upper body toward your thighs by drawing your ribs toward your pelvis.",
+        "Let the lever return slowly until you are upright, keeping your hips on the seat."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_overhead_slam": {
+      "instructions": [
+        "Stand with your feet apart and raise a medicine ball overhead.",
+        "Gently tighten your abdomen and drive the ball down toward the floor in front of you.",
+        "Bend through your hips and knees as you follow the throw, keeping your balance.",
+        "Regain control of the ball after it lands and stand to reset."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_pendlay_row": {
+      "instructions": [
+        "Stand over the bar with your feet apart and bend your hips and knees until your torso is nearly parallel to the floor.",
+        "Grip the bar with your palms facing back and hands just wider than shoulder width.",
+        "Keep your torso angle steady and pull the bar toward your upper abdomen.",
+        "Lower it to the floor and let it settle before beginning the next pull."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_pike_to_cobra_push_up": {
+      "instructions": [
+        "Start on your hands and feet with your hips raised into a pike.",
+        "Bend your elbows and sweep your chest forward just above the floor.",
+        "Lower your hips as you straighten your arms and lift your chest, keeping your shoulders away from your ears.",
+        "Lift your hips up and back with control to return to the pike.",
+        "Use a range that lets you control your shoulders and lower back."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_plank_to_side_plank_rotation": {
+      "instructions": [
+        "Start in a forearm plank with your elbows beneath your shoulders and body straight.",
+        "Shift onto one forearm and rotate your chest to the side, turning your feet with your body.",
+        "Reach the free arm upward while keeping your hips lifted.",
+        "Return that forearm to the floor with control.",
+        "Complete the repetitions on this side, then change sides."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_plank_with_opposite_arm_and_leg_raise": {
+      "instructions": [
+        "Start in a high plank with your hands under your shoulders and your feet apart.",
+        "Raise one arm forward and the opposite leg behind you together.",
+        "Keep your hips level and your torso steady while the diagonal is raised.",
+        "Return the arm and leg to the floor under control.",
+        "Change the working diagonal and continue alternating."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_plate_loaded_lat_pulldown": {
+      "instructions": [
+        "Sit beneath the handles with your thighs held under the pads and feet planted.",
+        "Take the overhead handles with palms facing forward.",
+        "Keep your torso steady as you draw your elbows down beside your body and bring the handles toward your upper chest.",
+        "Allow your arms to lengthen slowly as the handles return overhead."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_plie_dumbbell_squat": {
+      "instructions": [
+        "Stand with your feet wider than shoulder width and toes turned slightly outward.",
+        "Hold one dumbbell securely with both hands in front of your hips.",
+        "Bend your hips and knees to lower between your legs, keeping the knees aligned with your toes.",
+        "Keep your feet planted and stand by extending your knees and hips.",
+        "Lower with control for the next repetition."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_plyo_kettlebell_pushups": {
+      "instructions": [
+        "Set one stable kettlebell on the floor and start in a plank with one hand on its handle and the other on the floor.",
+        "Bend both elbows to lower your chest.",
+        "Push forcefully and shift your body across the kettlebell, exchanging hand positions.",
+        "Land with the opposite hand on the handle and the other on the floor, bending your elbows to absorb the change.",
+        "Continue controlled side changes while keeping your body aligned."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_plyo_push_up": {
+      "instructions": [
+        "Start in a high plank with hands slightly wider than shoulder-width.",
+        "Bend your elbows and lower your chest while keeping your body aligned.",
+        "Press explosively until your hands briefly leave the floor.",
+        "Land on both hands with elbows soft and lower under control before the next repetition."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_preacher_curl": {
       "instructions": [
         "Sit at a preacher bench with both upper arms resting on the pad.",
@@ -1300,12 +3281,54 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_preacher_hammer_dumbbell_curl": {
+      "instructions": [
+        "Sit at a preacher bench with both upper arms resting on the pad.",
+        "Hold the dumbbells with your palms facing each other.",
+        "Curl both weights upward without lifting the upper arms from the pad.",
+        "Lower slowly without forcing the elbows straight."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_prone_swimmer": {
+      "instructions": [
+        "Lie face down with your arms extended overhead and legs long.",
+        "Tighten your abdomen gently and keep your gaze toward the floor.",
+        "Lift one arm and the opposite leg a short distance while keeping the other pair lower.",
+        "Lower that pair as you lift the opposite arm and leg.",
+        "Continue alternating without jerking your neck or forcing your lower back."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_pull_through": {
+      "instructions": [
+        "Attach a rope to a low pulley and stand facing away from it with your feet apart.",
+        "Hold the rope ends between your legs and step forward to take up the cable slack.",
+        "Keep a small knee bend as you push your hips backward and let the rope travel between your thighs.",
+        "Press through your feet and bring your hips forward to stand tall without leaning backward."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_pullups": {
       "instructions": [
         "Hang from a pull-up bar with your palms facing away from you and arms straight.",
         "Gently tighten your abdomen and draw your shoulders down away from your ears.",
         "Bend your elbows to pull your body up until your chin clears the bar.",
         "Lower slowly to straight arms without swinging."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_push_up_plus": {
+      "instructions": [
+        "Set up in a high plank with your hands slightly wider than your shoulders.",
+        "Bend your elbows to lower your chest toward the floor while keeping your trunk aligned.",
+        "Press back to straight arms.",
+        "Keep your elbows straight and push the floor away a little farther so your shoulder blades spread across your upper back.",
+        "Let your shoulder blades move back to their starting position, then begin the next push-up."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1333,6 +3356,38 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_push_up_with_arm_reach": {
+      "instructions": [
+        "Begin on your hands and toes with your body straight, then lower into a push-up.",
+        "Press up and reach one arm forward while keeping your hips level.",
+        "Replace that hand on the floor and lower into the next push-up.",
+        "Finish the repetitions, then raise the other arm for the next set."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_push_up_with_kick_through": {
+      "instructions": [
+        "Start with your hands and toes on the floor and your body straight.",
+        "Bend your elbows to lower into a push-up while turning your hips and threading one leg beneath your torso toward the opposite side.",
+        "Keep both hands planted as the leg reaches across.",
+        "Press back up and return that foot to the starting position.",
+        "Finish your repetitions, then repeat with the other leg."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_push_up_with_side_knee_tuck": {
+      "instructions": [
+        "Begin with your hands and toes on the floor and your body straight, then lower into a push-up.",
+        "Press up, turn your torso to one side and draw the upper knee forward toward your chest while keeping it bent.",
+        "Keep the supporting hand and opposite foot planted as you turn.",
+        "Return the raised foot and free hand to the push-up position and lower again.",
+        "Finish the repetitions, then repeat on the other side."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_push_ups_close_triceps_position": {
       "instructions": [
         "Place your hands close together beneath the middle of your chest and extend your legs behind you onto your toes.",
@@ -1340,6 +3395,17 @@
         "Bend your elbows back close to your sides to lower your chest toward your hands.",
         "Press through your palms to straighten your arms without letting your hips sag.",
         "Keep your hands planted as you continue the controlled lowering and pressing motion."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_push_ups_with_feet_elevated": {
+      "instructions": [
+        "Place your toes on a stable flat bench and your hands on the floor slightly wider than your shoulders.",
+        "Keep a straight line from your head to your heels with your abdomen gently tightened.",
+        "Bend your elbows to lower your chest toward the floor without letting your hips sag.",
+        "Press through your palms to straighten your arms.",
+        "Keep your feet secure on the bench and control the next descent."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1360,6 +3426,17 @@
         "Gently tighten your abdomen to keep your body straight from head to heels.",
         "Bend your elbows to lower your chest just above the floor.",
         "Press through your hands to straighten your arms while keeping your hips aligned."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_rear_foot_elevated_dumbbell_romanian_deadlift": {
+      "instructions": [
+        "Stand in front of a low step and rest your rear toes on it.",
+        "Hold one dumbbell beside the front leg, rest your free hand behind your back and keep most of your weight through the front foot.",
+        "With the front knee slightly bent, push your hips back to lower the dumbbell.",
+        "Keep the rear toes on the step and your back steady throughout.",
+        "Extend the front hip to stand upright, then complete the set before changing sides."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1404,6 +3481,16 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_reverse_ez_bar_curl": {
+      "instructions": [
+        "Stand holding an EZ bar in front of your thighs with palms toward your body.",
+        "Keep your upper arms beside your torso and curl the bar toward your shoulders, palms downward as the forearms rise.",
+        "Stop without leaning backward.",
+        "Lower slowly until the elbows are nearly straight."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_reverse_flyes": {
       "instructions": [
         "Rest your chest on an incline bench with feet planted and dumbbells hanging below the shoulders.",
@@ -1420,6 +3507,56 @@
         "Begin with the dumbbells held horizontally end to end in front of the bench and keep a comfortable bend in your elbows.",
         "Lift your upper arms out to the sides and rotate the arms so the thumb sides of your hands point upward near the top.",
         "Lower slowly, reversing the rotation to return to the starting grip."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_reverse_grip_bent_over_rows": {
+      "instructions": [
+        "Hold a barbell with your palms facing forward and your hands about shoulder-width apart.",
+        "Bend your knees slightly, push your hips back and lean forward while keeping your back shape steady.",
+        "Pull the bar toward your abdomen with your elbows traveling close to your sides.",
+        "Lower it slowly until your arms extend without changing your torso angle."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_reverse_grip_dumbbell_bench_press": {
+      "instructions": [
+        "Lie on your back on a flat bench with feet planted.",
+        "Hold the dumbbells beside your chest with palms facing toward your head.",
+        "Press both weights above your chest, keeping the elbows relatively close to your torso.",
+        "Lower slowly along the same path."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_reverse_grip_ez_bar_row": {
+      "instructions": [
+        "Stand holding the angled grips of an EZ bar with palms facing forward.",
+        "Bend your knees slightly, push your hips back and lean forward while keeping your back steady.",
+        "Pull the bar toward your lower ribs with your elbows near your sides.",
+        "Lower slowly until your arms extend without changing your torso angle."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_reverse_grip_incline_barbell_bench_press": {
+      "instructions": [
+        "Lie back on an incline bench with your feet on the floor.",
+        "Take a secure grip on the bar slightly wider than shoulder width with your palms facing toward your head.",
+        "Hold the bar above your upper torso and lower it toward your chest with your elbows close to your sides.",
+        "Press upward under control without letting the bar roll in your hands."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_reverse_grip_skull_crusher": {
+      "instructions": [
+        "Lie on a flat bench with your feet planted and hold the bar above your chest with your palms toward your head.",
+        "Keep your grip secure, wrists steady and upper arms nearly upright.",
+        "Bend your elbows to lower the bar toward your forehead without touching it.",
+        "Straighten the elbows to lift the bar back to the start."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1444,6 +3581,16 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_reverse_machine_flyes": {
+      "instructions": [
+        "Sit facing the chest pad with both feet on the floor.",
+        "Hold the upright handles with palms facing each other and elbows slightly bent.",
+        "Draw your arms outward and backward, keeping your torso against the pad.",
+        "Return the handles forward slowly while maintaining the same elbow bend."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_reverse_triceps_bench_press": {
       "instructions": [
         "Lie on a flat bench with your feet planted and grip the racked bar around shoulder width with your palms toward your head.",
@@ -1464,6 +3611,49 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_rope_lat_pulldown": {
+      "instructions": [
+        "Place a flat bench under a high pulley with a rope attached and sit facing the pulley with your feet planted.",
+        "Hold one rope end in each hand with your palms facing each other and your arms extended overhead.",
+        "Pull the rope toward your upper chest, bringing your elbows down and slightly back.",
+        "Let your arms extend overhead slowly while keeping your torso steady."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_rope_straight_arm_pulldown": {
+      "instructions": [
+        "Attach a rope to a high pulley and stand facing it with your feet planted.",
+        "Hold the rope ends with your palms facing each other and reach your arms forward and upward.",
+        "Keep a slight bend in your elbows and pull your upper arms down, bringing the rope ends beside your hips.",
+        "Let your arms rise slowly toward the pulley without bending your elbows more.",
+        "Keep your torso steady rather than leaning backward to finish the pull."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_rotating_grip_dumbbell_bench_press": {
+      "instructions": [
+        "Lie on your back on a flat bench with feet planted.",
+        "Hold the dumbbells beside your chest with palms facing each other.",
+        "Press both weights upward while rotating the forearms until your palms face toward your feet.",
+        "Lower slowly while reversing the rotation.",
+        "Keep wrists straight and your torso supported throughout."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_rotating_grip_dumbbell_row": {
+      "instructions": [
+        "Stand with a dumbbell in each hand, bend your knees slightly, and hinge forward at the hips.",
+        "Let the arms hang below your shoulders with the palms facing backward.",
+        "Pull the weights toward your waist while turning the palms forward.",
+        "Keep your torso still and your elbows near your sides.",
+        "Lower slowly, reversing the hand rotation."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_russian_twist": {
       "instructions": [
         "Sit with knees bent and both feet resting on the floor.",
@@ -1480,6 +3670,80 @@
         "Draw your shoulder blades down to lift your body a short distance.",
         "Keep your arms straight and avoid swinging.",
         "Release slowly back to the full hang."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_seated_alternating_neutral_grip_dumbbell_press": {
+      "instructions": [
+        "Sit against an upright bench backrest with feet planted.",
+        "Hold the dumbbells in front of your shoulders with palms facing each other and elbows pointing forward.",
+        "Press one dumbbell overhead while the other stays at shoulder level.",
+        "Lower it with control, then press the other one.",
+        "Continue alternating while keeping your back supported."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_seated_band_chest_press": {
+      "instructions": [
+        "Sit tall on a bench and route the band behind your upper back, below your shoulders.",
+        "Hold an end in each hand at chest height with your elbows bent.",
+        "Press both hands forward until your arms are nearly straight.",
+        "Return both hands slowly toward your chest while keeping your torso steady."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_seated_band_concentration_curl": {
+      "instructions": [
+        "Sit on a bench or box with your knees apart and your feet planted.",
+        "Secure the band beneath the working-side foot and hold its handle with your palm facing up.",
+        "Lean forward and brace the back of your upper arm against the inside of your thigh.",
+        "Curl the handle toward your shoulder without lifting your elbow away from the thigh.",
+        "Lower slowly.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_seated_band_hip_abduction": {
+      "instructions": [
+        "Sit upright on a flat bench with a loop band above your knees and your feet below them.",
+        "Hold the sides of the bench and keep your trunk still.",
+        "Move both knees apart against the band, allowing your lower legs to follow the movement.",
+        "Bring your knees inward slowly, keeping tension in the band."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_seated_band_rotation": {
+      "instructions": [
+        "Secure a band beside you at about the height of your hands when seated.",
+        "Sit on the floor with your legs extended and hold the band with both hands in front of your chest, arms extended.",
+        "Keep your hips facing forward and turn your chest and hands away from the anchor.",
+        "Return slowly toward the anchor.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_seated_band_shoulder_press": {
+      "instructions": [
+        "Sit tall on a bench with a band securely routed beneath the seat.",
+        "Hold the band ends at shoulder height with your palms forward.",
+        "Press both hands overhead without arching your lower back.",
+        "Lower slowly to shoulder height."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_seated_barbell_twist": {
+      "instructions": [
+        "Sit on a flat bench with your feet planted and a light barbell across your upper back.",
+        "Hold the bar steady and keep your hips facing forward.",
+        "Turn your chest slowly to one side through a comfortable range without pulling yourself farther with the bar.",
+        "Return to the center under control. Complete the repetitions, then turn toward the other side."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1515,6 +3779,38 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_seated_cable_rear_delt_row": {
+      "instructions": [
+        "Sit at a low cable row station with feet braced and hold one handle in each hand.",
+        "Begin with arms extended toward the pulley and your torso upright.",
+        "Pull the handles toward your upper chest, opening your elbows out to the sides.",
+        "Extend your arms slowly without rocking your torso."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_seated_cable_rope_row": {
+      "instructions": [
+        "Attach a rope to the low pulley of a seated row station. Sit with your feet on the footrests and your knees slightly bent.",
+        "Hold the rope ends with your palms facing each other and reach forward with your arms.",
+        "Pull your elbows back beside your body and bring the rope toward your abdomen as you sit tall.",
+        "Let your arms straighten slowly, allowing your shoulder blades to move forward without rounding your lower back.",
+        "Continue with a controlled pull and return, avoiding a forceful swing of your torso."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_seated_cable_rotation": {
+      "instructions": [
+        "Sit on a bench sideways to a cable pulley set at about chest height, with your feet planted.",
+        "Hold the handle in both hands and extend your arms in front of your chest with a slight bend in your elbows.",
+        "Rotate your chest and arms away from the pulley, keeping your hips facing forward.",
+        "Return slowly toward the pulley without letting the weight jerk your arms back.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_seated_cable_rows": {
       "instructions": [
         "Sit on the cable-row bench and place your feet on the supports with your knees slightly bent.",
@@ -1535,12 +3831,32 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_seated_close_grip_band_pulldown": {
+      "instructions": [
+        "Secure the bands to a high anchor and sit on a bench or box facing it.",
+        "Plant your feet and hold the handles close together with your arms extended upward.",
+        "Pull your elbows down beside your torso, bringing the handles toward your upper chest.",
+        "Let your arms extend upward slowly without lifting off the seat."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_seated_close_grip_concentration_barbell_curl": {
       "instructions": [
         "Sit near the end of a flat bench with your feet wide apart and lean forward.",
         "Hold a barbell with your palms up and hands close together, resting your upper arms against your inner thighs.",
         "Keep your arms braced and bend your elbows to curl the bar upward.",
         "Lower it slowly without lifting your torso or swinging the bar."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_seated_double_kettlebell_overhead_press": {
+      "instructions": [
+        "Sit tall on a flat bench with your feet planted.",
+        "Hold a kettlebell beside each shoulder with palms facing forward.",
+        "Press both bells overhead until your arms are straight.",
+        "Lower slowly to shoulder level while keeping your torso steady."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1565,6 +3881,36 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_seated_dumbbell_palms_down_wrist_curl": {
+      "instructions": [
+        "Sit on a flat bench with feet planted.",
+        "Rest your forearms on your thighs with wrists beyond the knees, holding dumbbells palms down.",
+        "Lift the backs of your hands without moving your forearms.",
+        "Lower the weights slowly through a comfortable range."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_seated_dumbbell_palms_up_wrist_curl": {
+      "instructions": [
+        "Sit on a flat bench with feet planted and a dumbbell in each hand.",
+        "Rest your forearms along your thighs with palms up and wrists beyond your knees.",
+        "Curl the palms upward without lifting your forearms.",
+        "Lower the dumbbells slowly through a comfortable wrist range."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_seated_dumbbell_press": {
+      "instructions": [
+        "Sit against an upright bench backrest with both feet planted.",
+        "Hold a dumbbell beside each shoulder with palms forward.",
+        "Press both weights overhead while keeping your torso steady.",
+        "Lower slowly to shoulder height."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_seated_good_mornings": {
       "instructions": [
         "Sit on a stable flat bench with your feet apart and planted, holding a barbell across your upper back.",
@@ -1585,6 +3931,27 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_seated_one_arm_band_row_with_rotation": {
+      "instructions": [
+        "Anchor the band in front of you near seated chest height.",
+        "Sit on the floor with your legs extended and hold the handle in one hand.",
+        "Pull your elbow backward and turn your shoulders toward the working side as the handle approaches your ribs.",
+        "Reach forward and turn back toward the anchor under control.",
+        "Complete the set and switch hands."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_seated_overhead_barbell_triceps_extension": {
+      "instructions": [
+        "Sit tall on a flat bench with your feet on the floor and hold a barbell overhead with your hands about shoulder-width apart.",
+        "Keep your upper arms close to your head and your torso steady.",
+        "Bend your elbows to lower the bar behind your head within a comfortable range.",
+        "Straighten the elbows to raise the bar without arching your lower back."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_seated_side_lateral_raise": {
       "instructions": [
         "Sit upright on a flat bench with your feet planted and a dumbbell beside each hip.",
@@ -1593,6 +3960,37 @@
         "Lower slowly to your sides."
       ],
       "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_seated_triceps_press": {
+      "instructions": [
+        "Sit upright on a flat bench with both feet planted.",
+        "Hold one dumbbell securely in both hands and lift it overhead.",
+        "Keep your upper arms beside your head as you bend the elbows to lower the dumbbell behind it.",
+        "Straighten your elbows to return the weight overhead without arching your back."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_seated_underhand_band_pulldown": {
+      "instructions": [
+        "Anchor the bands overhead and sit on a bench or box facing them.",
+        "Take the handles with your palms facing toward you and extend your arms upward.",
+        "Keep your torso steady as you pull your elbows down and bring your hands toward your upper chest.",
+        "Return your arms upward slowly while keeping your feet planted."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_shotgun_row": {
+      "instructions": [
+        "Stand facing a cable pulley, bend your knees slightly and lean forward from your hips.",
+        "Hold the handle in one hand with your palm facing down and rest your free hand on your thigh.",
+        "Pull the handle toward your lower ribs, turning your working palm upward as your elbow bends.",
+        "Extend your arm and turn your palm down under control.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_shoulder_press_with_bands": {
@@ -1605,12 +4003,113 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_shoulder_tap_push_up": {
+      "instructions": [
+        "Start on your hands and toes with your body straight.",
+        "Bend your elbows to lower your chest, keeping your elbows close to your sides.",
+        "Press up and lift one hand to tap the opposite shoulder.",
+        "Return that hand to the floor before the next push-up, keeping your hips steady.",
+        "Finish the repetitions, then tap with the other hand for the next set."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_side_lateral_raise": {
       "instructions": [
         "Stand holding a dumbbell beside each thigh with palms inward.",
         "Keep a small bend in your elbows and your torso steady.",
         "Raise both arms out to the sides to about shoulder height.",
         "Lower the weights slowly without shrugging or swinging."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_side_laterals_to_front_raise": {
+      "instructions": [
+        "Stand with dumbbells beside your thighs and elbows slightly bent.",
+        "Raise the weights out to the sides to about shoulder height.",
+        "Keeping the arms raised, bring both dumbbells together in front of your chest.",
+        "Lower them slowly in front of your thighs.",
+        "Repeat the outward raise and inward sweep without swinging."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_side_leg_raises": {
+      "instructions": [
+        "Stand tall with your feet close together and transfer your weight onto one leg.",
+        "Keep your pelvis level and the other knee nearly straight.",
+        "Lift the free leg out to the side without leaning your torso away.",
+        "Lower the leg slowly back beside the standing leg.",
+        "Repeat on the same side, then change legs."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_side_lying_dumbbell_external_rotation": {
+      "instructions": [
+        "Lie on your side on the floor with your head comfortably supported by the lower arm.",
+        "Hold a light dumbbell in the upper hand, keeping that elbow bent and tucked against your side.",
+        "Rotate the upper arm so the forearm lifts away from your abdomen without moving the elbow.",
+        "Lower slowly through a comfortable range.",
+        "Complete the set, then turn over and change arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_side_lying_dumbbell_lateral_raise": {
+      "instructions": [
+        "Lie on your side on a flat bench with your head supported by your lower arm.",
+        "Hold a dumbbell in the upper hand near the outside of your top thigh.",
+        "Keep a small elbow bend and lift the arm away from your side toward the ceiling.",
+        "Lower slowly toward your thigh without rolling your torso.",
+        "Complete the set and change sides."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_side_lying_hip_abduction": {
+      "instructions": [
+        "Lie on your side and prop your upper body on your straight lower arm, with that hand on the floor.",
+        "Bend your lower knee and place your top hand on the floor in front of you.",
+        "Keep the top leg straight and your hips stacked.",
+        "Lift the top leg without rolling your pelvis backward.",
+        "Lower it slowly.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_side_lying_hip_adduction": {
+      "instructions": [
+        "Lie on your side and prop your upper body on your straight lower arm, with that hand on the floor.",
+        "Bend your top knee and plant that foot on the floor in front of your lower leg.",
+        "Keep your bottom leg straight and lift it toward the ceiling through a small range.",
+        "Lower it slowly without moving the top leg.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_side_plank_with_leg_raise": {
+      "instructions": [
+        "Lie on your side with your legs straight and stacked, supporting your upper body on your straight lower arm with that hand on the floor.",
+        "Rest your top hand on your hip.",
+        "Press through your hand and lower foot to lift your hips while raising your top leg.",
+        "Keep your top knee nearly straight and avoid rolling backward.",
+        "Lower your top leg and hips together with control.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_side_to_side_chins": {
+      "instructions": [
+        "Hang from a pull-up bar with a wide grip and your palms facing away from you.",
+        "Tighten your abdomen and pull your torso toward one hand, bending that elbow more than the opposite elbow.",
+        "Rise until your upper chest approaches the working hand without craning your neck.",
+        "Lower to the centered hanging position under control.",
+        "Complete your repetitions, then work toward the other hand."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1632,6 +4131,50 @@
         "Gently tighten your abdomen and bend the supporting elbow to lower your chest.",
         "Press back up without letting your hips sag or twist excessively.",
         "Complete the set and switch arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_single_leg_calf_raise": {
+      "instructions": [
+        "Stand on the floor on one leg with the other foot lifted.",
+        "Keep your trunk upright and the working knee nearly straight.",
+        "Rise onto the ball of the standing foot.",
+        "Lower your heel slowly to the floor.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_single_leg_dumbbell_calf_raise": {
+      "instructions": [
+        "Stand holding a dumbbell at your side and shift your weight onto the same-side foot.",
+        "Bend the other knee to lift that foot clear of the floor.",
+        "Raise the working heel to balance on the ball of the foot without hopping.",
+        "Lower the heel slowly to the floor.",
+        "Complete the set and change sides."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_single_leg_tuck_sit_up": {
+      "instructions": [
+        "Lie on your back with one knee bent and that foot planted, the other leg extended, and arms overhead.",
+        "Curl your torso upward as you bend and raise the extended leg toward your chest.",
+        "Reach both arms forward toward the raised knee without pulling your neck.",
+        "Lower your torso and extend the working leg under control.",
+        "Complete the set and change legs."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_single_leg_v_up": {
+      "instructions": [
+        "Lie on your back with one knee bent and foot planted, the other leg straight, and arms overhead.",
+        "Raise the straight leg as you curl your torso upward.",
+        "Reach both hands toward the raised foot without forcing contact.",
+        "Lower your torso and straight leg under control.",
+        "Complete the set and change legs."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1668,6 +4211,17 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_smith_machine_front_squat": {
+      "instructions": [
+        "Set the Smith bar at upper-chest height and position the safety stops.",
+        "Rest the bar across the fronts of your shoulders and cross your arms over it, elbows lifted.",
+        "Stand with your feet about shoulder-width apart and release the hooks.",
+        "Keep your heels down as you bend your knees and hips into a squat, keeping your elbows lifted.",
+        "Push through your feet to stand, then rehook the bar when you finish."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_smith_machine_incline_bench_press": {
       "instructions": [
         "Secure an incline bench beneath the Smith bar and set the safety stops.",
@@ -1691,6 +4245,50 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_smith_machine_rear_delt_row": {
+      "instructions": [
+        "Stand facing the low Smith bar with your feet planted and knees slightly bent.",
+        "Push your hips back and lean forward and grip the bar wider than shoulder width with your palms toward your legs.",
+        "Pull the bar toward your upper abdomen or lower chest, letting your elbows travel outward.",
+        "Keep your torso still as you draw your shoulder blades together.",
+        "Lower slowly until your arms extend and repeat."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_smith_machine_reverse_grip_bench_press": {
+      "instructions": [
+        "Place a flat bench beneath the Smith bar and set the safety stops.",
+        "Lie on your back with your feet planted and take a grip just wider than shoulder width with palms facing your head.",
+        "Release the hooks and lower the bar toward your chest with your elbows close to your torso.",
+        "Press upward while keeping your wrists aligned with your forearms and your back supported.",
+        "Repeat under control, then secure the hooks."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_smith_machine_reverse_grip_incline_press": {
+      "instructions": [
+        "Place an incline bench under the Smith bar and set the safety stops.",
+        "Lie back on the bench with your feet on the floor.",
+        "Take a grip slightly wider than shoulder width with your palms facing your head, and release the bar hooks.",
+        "Lower the bar toward your upper chest with your wrists supported over your forearms and elbows close to your sides.",
+        "Press upward along the rails without lifting your back from the bench.",
+        "Repeat and secure the hooks when finished."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_smith_machine_shrug": {
+      "instructions": [
+        "Stand with your feet about shoulder-width apart and hold the Smith bar in front of your thighs with your palms toward you.",
+        "Release the hooks and keep your elbows straight.",
+        "Raise your shoulders toward your ears without rolling them or bending your elbows.",
+        "Lower your shoulders slowly, then secure the bar after the set."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_smith_machine_squat": {
       "instructions": [
         "Set the Smith bar near shoulder height and adjust the safety stops below your planned squat depth.",
@@ -1699,6 +4297,17 @@
         "Bend your hips and knees to lower while keeping your heels down and abdomen firm.",
         "Drive through both feet to stand tall without forcefully locking your knees.",
         "Repeat and secure the hooks before stepping away."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_smith_machine_underhand_row": {
+      "instructions": [
+        "Stand facing the low Smith bar and grip it about shoulder width apart with your palms facing forward.",
+        "Bend your knees slightly and push your hips back and lean forward, keeping your back steady.",
+        "Pull the bar toward your upper abdomen with your elbows close to your sides.",
+        "Pause briefly without lifting your torso, then extend your arms to lower the bar.",
+        "Repeat with controlled movement."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1726,6 +4335,17 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_spider_crawl": {
+      "instructions": [
+        "Support yourself on your palms and toes with your elbows bent and chest held close to the floor.",
+        "Keep your abdomen firm and lift one foot from the floor.",
+        "Bring that knee outward toward the elbow on the same side while maintaining the low upper-body position.",
+        "Extend the leg back to the starting position under control.",
+        "Repeat the knee drive and then work the other side, keeping your hips level."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_split_squat_with_dumbbells": {
       "instructions": [
         "Stand facing away from a flat bench with a dumbbell in each hand.",
@@ -1737,12 +4357,179 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_stability_ball_back_extension": {
+      "instructions": [
+        "Lie face down over a stability ball with your abdomen and hips supported and your feet planted behind you.",
+        "Rest your hands lightly behind your head.",
+        "Lift your chest until your torso forms a line with your legs, keeping your neck in line with your back.",
+        "Lower your chest around the ball under control."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_stability_ball_back_extension_with_rotation": {
+      "instructions": [
+        "Lie face down over a stability ball with your toes on the floor.",
+        "Keep both arms alongside your torso.",
+        "Lift your chest and turn your upper torso toward one side, keeping your hips supported.",
+        "Return slowly to face the floor and lower over the ball.",
+        "Complete the set and change sides."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_stability_ball_cable_chest_press": {
+      "instructions": [
+        "Position a stability ball between two low cable pulleys and hold one handle in each hand.",
+        "Rest your upper back on the ball, plant both feet and lift your hips to support a nearly horizontal torso.",
+        "Start with elbows bent beside your chest and press the handles upward toward each other.",
+        "Lower the handles slowly while keeping the ball and hips steady."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_stability_ball_dumbbell_fly": {
+      "instructions": [
+        "Position your upper back on a stability ball with feet planted and hips lifted.",
+        "Keep your neck steady and hold a dumbbell in each hand above your chest, palms facing each other.",
+        "With elbows slightly bent, open your arms in a wide arc.",
+        "Stop within a comfortable shoulder range, then bring the weights together above your chest.",
+        "Keep the ball and your torso steady throughout."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_stability_ball_dumbbell_press": {
+      "instructions": [
+        "Rest your upper back on a stability ball with feet planted and hips raised in line with your torso. Keep your neck steady.",
+        "Hold the dumbbells beside your chest with palms facing toward your feet.",
+        "Press both weights upward above your chest while keeping the ball steady.",
+        "Lower slowly beside your chest."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_stability_ball_dumbbell_pullover": {
+      "instructions": [
+        "Rest your upper back on a stability ball, plant both feet, and keep the hips raised. Keep your neck steady.",
+        "Hold one dumbbell securely with both hands above your chest.",
+        "With a slight elbow bend, lower the weight toward the space behind your head.",
+        "Bring it back above your chest while keeping your torso steady."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_stability_ball_incline_cable_fly": {
+      "instructions": [
+        "Position a stability ball between two low cable pulleys and hold one handle in each hand.",
+        "Recline your upper back on the ball with your feet planted wide enough for balance and hips slightly lower than your shoulders.",
+        "Keep a small bend in your elbows as you open your arms out to the sides.",
+        "Sweep the handles together above your chest while keeping the ball and torso steady."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_stability_ball_incline_dumbbell_fly": {
+      "instructions": [
+        "Sit on a stability ball holding dumbbells close to your torso.",
+        "Walk your feet forward until your back rests diagonally against the ball, keeping both feet planted and hips below your shoulders.",
+        "Hold the dumbbells above your chest, palms inward and elbows slightly bent.",
+        "Open the arms outward within a comfortable range without rolling the ball.",
+        "Bring the weights back together above your chest."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_stability_ball_incline_dumbbell_press": {
+      "instructions": [
+        "Sit on the ball with dumbbells held close to your chest.",
+        "Walk forward until your back rests at an incline against the ball and keep both feet planted.",
+        "Hold the dumbbells beside the upper chest, palms facing toward your feet.",
+        "Press both weights above your chest without changing your torso angle.",
+        "Lower slowly to the starting position."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_stability_ball_prone_rotation": {
+      "instructions": [
+        "Lean your chest onto a stability ball and place your hands around its sides with elbows bent.",
+        "Extend your legs behind you and spread your feet on the floor for a stable base.",
+        "Rotate your upper body to one side, rolling the ball a short distance beneath your chest and arms.",
+        "Reverse the movement to the other side while keeping your feet planted and hips controlled.",
+        "Continue slowly through a range you can control."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_stability_ball_push_up": {
+      "instructions": [
+        "Place both hands shoulder-width apart on a stable exercise ball.",
+        "Extend your legs behind you and balance on your toes.",
+        "Gently tighten your abdomen and bend your elbows to lower your chest toward the ball, keeping your body straight.",
+        "Press back to straight arms while keeping the ball steady."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_stability_ball_push_up_to_pike": {
+      "instructions": [
+        "Start in a high plank with your hands on the floor and your toes on a stability ball.",
+        "Bend your elbows to lower your chest, then press back to a high plank.",
+        "Keep your arms and legs straight and lift your hips toward the ceiling to form an inverted V.",
+        "Lower your hips slowly back to the high plank.",
+        "Keep the ball steady and repeat the push-up and pike under control."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_standing_band_crunch": {
+      "instructions": [
+        "Secure a band high behind you and stand facing away from the anchor.",
+        "Hold the band beside your head with your elbows bent and your knees slightly bent.",
+        "Keep your hips fairly still and curl your ribs toward your pelvis, bringing your upper body forward.",
+        "Uncurl slowly to the starting position without leaning backward."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_standing_band_twisting_crunch": {
+      "instructions": [
+        "Anchor a band high behind you and stand facing away from it with your feet apart.",
+        "Hold the band beside your head and keep your knees softly bent.",
+        "Curl your upper body forward and turn one shoulder toward the opposite hip without pulling on your neck.",
+        "Return slowly to standing.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_standing_barbell_calf_raise": {
       "instructions": [
         "Stand with a barbell across your upper back and both feet flat on the floor.",
         "Keep your knees nearly straight and hold the bar steady.",
         "Press through the balls of your feet to lift your heels.",
         "Lower your heels back to the floor under control."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_standing_barbell_rollout": {
+      "instructions": [
+        "Stand behind a barbell fitted with round rolling plates, then bend forward from your hips to grip it on the floor.",
+        "Keep your feet planted and your abdomen tight as you roll the bar away from your feet.",
+        "Extend only as far as you can control without letting your lower back sag or knees touch the floor.",
+        "Pull the bar back toward your feet as your hips rise to the bent-over starting position."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_standing_barbell_twist": {
+      "instructions": [
+        "Stand with your feet apart and place a light barbell across your upper back.",
+        "Hold the bar securely and keep your knees relaxed.",
+        "Turn your chest to one side through a comfortable range without forcing the rotation.",
+        "Return to the center under control. Complete the repetitions, then turn toward the other side."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1776,6 +4563,50 @@
         "Lower slowly until your arms extend again."
       ],
       "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_standing_cable_crunch": {
+      "instructions": [
+        "Attach a short bar to a high pulley. Stand facing away from it with your feet about hip-width apart and your knees slightly bent.",
+        "Hold the bar with both hands just above your head, keeping your elbows bent.",
+        "Gently tighten your abdomen and curl your ribs toward your pelvis, lowering your chest toward your thighs.",
+        "Keep your arms in the same position relative to your head rather than pulling the bar down with your elbows.",
+        "Uncurl slowly to stand tall without leaning backward."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_standing_cable_rotation": {
+      "instructions": [
+        "Stand sideways to a pulley set around chest height with your feet about shoulder-width apart.",
+        "Hold the handle in both hands and extend your arms in front of your chest with a slight bend in your elbows.",
+        "Turn your chest and arms away from the pulley, keeping your feet planted and your hips steady.",
+        "Return slowly toward the pulley without letting the cable jerk you around.",
+        "Finish the repetitions, then turn around to work the other side."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_standing_cable_row": {
+      "instructions": [
+        "Attach a V-handle to a cable around lower-chest height and stand facing it.",
+        "Hold the handle with your palms facing each other. Step back with your arms extended and your knees slightly bent.",
+        "Pull your elbows back beside your body to bring the handle toward your abdomen.",
+        "Keep your chest upright and avoid leaning backward to finish the pull.",
+        "Straighten your arms slowly and let your shoulder blades move forward."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_standing_cable_twisting_crunch": {
+      "instructions": [
+        "Stand facing away from a high pulley with your feet apart and hold the attachment beside one shoulder with both hands.",
+        "Keep your knees relaxed and the attachment close to your shoulder.",
+        "Curl and turn your torso forward and diagonally downward without throwing your arms or straightening your elbows.",
+        "Return upright slowly.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_standing_cable_wood_chop": {
@@ -1820,12 +4651,33 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_standing_dumbbell_external_rotation": {
+      "instructions": [
+        "Stand holding one light dumbbell and raise the upper arm out to the side to shoulder level.",
+        "Bend the elbow so the forearm angles downward in front of you, staying within a comfortable shoulder range.",
+        "Keep the upper arm still and rotate at the shoulder to bring the forearm upright.",
+        "Reverse slowly toward the starting forearm position without dropping the elbow.",
+        "Complete the set and switch arms."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_standing_dumbbell_reverse_curl": {
       "instructions": [
         "Stand with dumbbells in front of your thighs and palms facing backward.",
         "Keep the upper arms still and curl both weights upward with palms down.",
         "Pause briefly near shoulder level without leaning back.",
         "Lower slowly until the elbows are extended."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_standing_dumbbell_straight_arm_front_delt_raise_above_head": {
+      "instructions": [
+        "Stand upright holding dumbbells in front of your thighs with palms facing backward.",
+        "Keep a small elbow bend and raise both arms forward, continuing overhead through a comfortable range.",
+        "Keep your ribs down rather than leaning backward.",
+        "Lower the weights slowly along the same path."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1870,6 +4722,17 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_standing_low_pulley_deltoid_raise": {
+      "instructions": [
+        "Stand sideways to a low pulley and hold its handle in the hand farther from the machine.",
+        "Begin with the handle in front of your hips and the cable crossing your body.",
+        "Keep a slight elbow bend as you raise that arm out to the side to about shoulder height.",
+        "Lower slowly to the starting position.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_standing_low_pulley_one_arm_triceps_extension": {
       "instructions": [
         "Stand facing away from a low cable pulley and hold its handle in one hand behind your head.",
@@ -1879,6 +4742,16 @@
         "Complete all reps on one side, then switch."
       ],
       "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_standing_machine_chest_press": {
+      "instructions": [
+        "Stand on the machine platform with your back against the pad.",
+        "Grip the handles at chest height and gently tighten your abdomen.",
+        "Press the handles forward until your arms are nearly straight.",
+        "Keep your back against the pad as you slowly bend your elbows and return the handles toward your chest."
+      ],
+      "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
     "fx_standing_military_press": {
@@ -1934,6 +4807,16 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_standing_palms_in_dumbbell_press": {
+      "instructions": [
+        "Stand holding dumbbells beside your shoulders with palms facing each other.",
+        "Keep your elbows pointing forward and your torso steady.",
+        "Press both weights overhead without arching your back.",
+        "Lower slowly to shoulder level."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_standing_rope_crunch": {
       "instructions": [
         "Attach a rope to a high pulley. Stand facing away from the machine with your feet planted and your knees slightly bent.",
@@ -1941,6 +4824,17 @@
         "Curl your upper body forward, bringing your ribs toward your pelvis and your chest toward your thighs.",
         "Keep your hands beside your head and avoid turning the movement into an arm pull.",
         "Return slowly to an upright position without arching backward."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_standing_smith_machine_shoulder_press": {
+      "instructions": [
+        "Stand under the Smith bar with your feet about shoulder-width apart and your abdomen gently tightened.",
+        "Hold the bar just wider than shoulder-width with your palms facing forward and release the hooks.",
+        "Lower the bar in front of your face toward shoulder level.",
+        "Press upward until your arms are nearly straight, keeping your torso steady.",
+        "Lower under control and secure the hooks after the set."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -1965,6 +4859,38 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_straight_arm_pulldown": {
+      "instructions": [
+        "Stand facing a high pulley and hold its bar with palms facing down.",
+        "Begin with arms reaching forward and upward and a small bend in both elbows.",
+        "Keep that elbow bend steady as you draw the bar down toward your thighs.",
+        "Let the bar rise slowly without leaning backward or turning the movement into a triceps pushdown."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_straight_leg_band_sit_up": {
+      "instructions": [
+        "Secure the band behind your head and lie on your back with both legs straight on the floor.",
+        "Hold the handles with your arms extended overhead behind your head.",
+        "Curl your torso up to sitting while bringing your hands forward to chest height.",
+        "Lower your torso slowly and let your arms return overhead.",
+        "Keep your heels on the floor and control the band throughout."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_straight_leg_reach_crunch": {
+      "instructions": [
+        "Lie on your back with your legs straight on the floor and your arms along your sides.",
+        "Gently tighten your abdomen.",
+        "Lift your head, shoulders and upper back, reaching your hands toward your knees.",
+        "Stop before sitting fully upright.",
+        "Lower slowly to the floor."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_sumo_deadlift": {
       "instructions": [
         "Take a wide stance over the bar with your toes turned outward.",
@@ -1973,6 +4899,17 @@
         "Move your hips back and bend your knees to return the bar to the floor under control."
       ],
       "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_supported_one_arm_cable_row": {
+      "instructions": [
+        "Place one knee and the same-side hand on the station pads, with your other foot on the floor.",
+        "Grip the low cable handle with your free hand and keep your back steady.",
+        "Pull the handle toward your waist by driving your elbow behind you.",
+        "Let your working arm straighten slowly without twisting your torso.",
+        "Complete all reps on one side, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_suspended_reverse_crunch": {
@@ -1997,12 +4934,43 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_svend_press": {
+      "instructions": [
+        "Stand tall and press a weight plate between your palms in front of your chest.",
+        "Keep inward pressure on the plate as you extend both arms forward.",
+        "Stop with your arms nearly straight without shrugging or leaning backward.",
+        "Bend your elbows to bring the plate back toward your chest while maintaining the squeeze.",
+        "Repeat at a controlled pace."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_t_bar_row_with_handle": {
       "instructions": [
         "Secure the bar in its pivot and place the V-bar handle beneath the loaded end.",
         "Straddle the bar, bend your knees and lean forward from your hips to take both handles with palms facing each other.",
         "Hold your torso still as you draw your elbows back and pull the handle toward your abdomen.",
         "Lower the weight under control without rounding your back."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_thigh_abductor": {
+      "instructions": [
+        "Sit against the backrest with your feet on the supports and the pads against the outsides of your thighs.",
+        "Hold the side handles and keep your hips in the seat.",
+        "Push your knees apart against the pads without rocking your torso.",
+        "Bring the legs together slowly until you reach the starting position."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_thigh_adductor": {
+      "instructions": [
+        "Sit against the backrest with the pads against the insides of your thighs and your feet on the supports.",
+        "Set a comfortable starting width and hold the side handles.",
+        "Bring your knees toward each other by pressing inward against the pads.",
+        "Open the legs slowly to the starting width without letting the weight drop."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -2060,6 +5028,49 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_two_arm_kettlebell_military_press": {
+      "instructions": [
+        "Stand with feet apart and a kettlebell supported beside each shoulder.",
+        "Gently tighten your abdomen and keep your knees still.",
+        "Press both kettlebells overhead until your arms are straight.",
+        "Lower with control to shoulder level."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_two_arm_kettlebell_row": {
+      "instructions": [
+        "Hold a kettlebell in each hand, bend your knees slightly and lean forward from your hips.",
+        "Let your arms extend below your shoulders while keeping your back steady.",
+        "Pull both bells toward your lower ribs with elbows close to your sides.",
+        "Draw your shoulder blades together without lifting your torso.",
+        "Lower the weights until your arms extend."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_two_up_one_down_lying_leg_curl": {
+      "instructions": [
+        "Lie face down on the leg curl machine with the roller behind both lower legs and hold the handles.",
+        "Curl the roller up with both legs while keeping your hips on the pad.",
+        "Move one leg clear of the roller.",
+        "Lower the roller slowly with your working leg only.",
+        "Bring both legs back under the roller for the next rep.",
+        "Lower with the same leg for all reps, then switch."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
+    "fx_underhand_bent_over_dumbbell_row": {
+      "instructions": [
+        "Stand with knees slightly bent and hinge forward while keeping your back steady.",
+        "Hold the dumbbells below your shoulders with palms facing forward.",
+        "Pull both weights toward your waist with elbows near your torso.",
+        "Lower slowly without changing your torso angle."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_underhand_cable_pulldowns": {
       "instructions": [
         "Sit on a flat bench facing a high cable pulley with a long bar attached, feet flat on the floor.",
@@ -2071,12 +5082,74 @@
       "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
+    "fx_underhand_incline_dumbbell_row": {
+      "instructions": [
+        "Rest your chest on an incline bench and plant your feet.",
+        "Let both dumbbells hang below your shoulders with palms forward.",
+        "Pull the weights toward your waist, keeping elbows near your torso.",
+        "Lower slowly until your arms are extended without lifting your chest."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_underhand_machine_row": {
+      "instructions": [
+        "Sit facing the machine with your chest against the pad and feet supported.",
+        "Grasp both handles with palms facing up.",
+        "Pull the handles toward your ribs, moving your elbows back close to your sides.",
+        "Return the handles forward slowly while keeping your chest supported."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_underhand_plate_loaded_lat_pulldown": {
+      "instructions": [
+        "Sit with your thighs beneath the pads and feet flat.",
+        "Hold the overhead handles with your palms facing you.",
+        "Keep your trunk steady as you pull the handles toward your upper chest.",
+        "Allow your elbows to straighten slowly on the return."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_upright_barbell_row": {
+      "instructions": [
+        "Stand holding a light barbell near your upper abdomen with an overhand grip and your elbows bent.",
+        "Lift the bar close to your body while moving your elbows outward.",
+        "Continue only through a comfortable range as your forearms turn upward and the bar approaches face level.",
+        "Reverse the movement slowly and lower the bar toward your upper abdomen."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_upright_cable_row": {
+      "instructions": [
+        "Attach a short bar to a low pulley and stand facing it with your feet planted.",
+        "Hold the bar in front of your thighs with your palms facing your body.",
+        "Raise your elbows outward and upward, letting the bar travel close to your torso.",
+        "Stop around upper-chest height or earlier if needed to keep the movement comfortable.",
+        "Lower the bar slowly to your thighs without shrugging sharply or rocking your torso."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_v_bar_pulldown": {
       "instructions": [
         "Sit at the high-pulley station with your thighs secured beneath the pads and feet planted.",
         "Grip the V-bar with your palms facing each other and arms extended overhead.",
         "Keep your chest lifted and pull the handle toward your upper chest with your elbows close to your sides.",
         "Let the handle rise slowly without swinging your torso."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_v_bar_pullup": {
+      "instructions": [
+        "Grip a pair of close parallel pull-up handles with your palms facing each other.",
+        "Hang with your arms extended and your feet off the floor.",
+        "Pull your elbows down beside your body to bring your upper chest toward the handles.",
+        "Lower yourself slowly until your arms are extended again.",
+        "Keep your legs steady and avoid swinging to start the pull."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -2112,12 +5185,65 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_wide_grip_plate_loaded_shoulder_press": {
+      "instructions": [
+        "Sit with your back against the pad and feet on the floor.",
+        "Take the wide handles with palms facing forward and elbows below your hands.",
+        "Press the handles upward until your arms are long, keeping your torso supported.",
+        "Lower them slowly to the starting height."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_wide_grip_pull_up": {
+      "instructions": [
+        "Grip a pull-up bar wider than shoulder width with your palms facing away.",
+        "Hang with your arms extended and feet clear of the floor.",
+        "Pull your body upward by bringing your upper arms toward your sides.",
+        "Raise your chin above the bar without craning your neck.",
+        "Lower slowly until your arms extend and repeat."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_wide_grip_seated_cable_row": {
+      "instructions": [
+        "Attach a wide bar to a low cable row station. Sit with your feet on the footrests and your knees slightly bent.",
+        "Hold the bar with your hands wider than your shoulders and your palms facing down.",
+        "Sit tall and pull the bar toward your lower chest, letting your elbows move outward and back.",
+        "Bring your shoulder blades toward each other without shrugging your shoulders.",
+        "Straighten your arms slowly to return the bar, keeping your torso controlled."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_wide_grip_smith_machine_bench_press": {
+      "instructions": [
+        "Lie on a flat bench beneath the Smith bar with your feet planted.",
+        "Grip well outside shoulder-width with your palms toward your feet and wrists aligned above your forearms.",
+        "Release the hooks and lower the bar slowly toward your chest, letting your elbows move outward.",
+        "Press the bar up until your arms are nearly straight.",
+        "Secure the hooks before getting up."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_wide_grip_standing_barbell_curl": {
       "instructions": [
         "Hold a barbell in front of your thighs with a wide grip and palms facing forward.",
         "Keep your elbows near your sides and your wrists steady.",
         "Curl the bar toward your chest without leaning backward.",
         "Lower it slowly until your arms are nearly straight."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_wide_reverse_grip_barbell_bench_press": {
+      "instructions": [
+        "Lie on a flat bench with your feet planted and take a wide grip with your palms facing toward your head.",
+        "Keep your thumbs around the bar and lift it from the rack over your chest.",
+        "Lower with control, keeping the bar balanced over your forearms.",
+        "Press back above your chest without lifting your hips from the bench."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -2132,6 +5258,16 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_zercher_squats": {
+      "instructions": [
+        "Hold a barbell in the bends of both elbows.",
+        "Keep your forearms raised and the bar close to your torso, standing with your feet apart.",
+        "Bend your hips and knees to squat between your feet while keeping the bar steady in your elbows.",
+        "Push through both feet to stand."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
     "fx_zottman_curl": {
       "instructions": [
         "Stand with dumbbells at your sides and palms forward.",
@@ -2139,6 +5275,17 @@
         "Rotate the forearms at the top until your palms face down.",
         "Lower slowly with palms down.",
         "Turn the palms forward again at the bottom before repeating."
+      ],
+      "instructionsSource": "vendor_pack",
+      "contentVersion": 1
+    },
+    "fx_zottman_preacher_curl": {
+      "instructions": [
+        "Sit at a preacher bench with both upper arms on the pad and palms facing up.",
+        "Curl both weights toward your shoulders.",
+        "Turn the forearms at the top until your palms face down.",
+        "Lower slowly with palms down without forcing the elbows straight.",
+        "Turn the palms up at the bottom before repeating."
       ],
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
@@ -2302,5 +5449,5 @@
       "contentVersion": 1
     }
   },
-  "sha256": "9a3956fef3e1a5cacc2c76632d99e702b7dcb6bfc98408a6a5947399168a8577"
+  "sha256": "5e816799f303bdfad082705d4e9bc09f124d14552f4cf9797f232a2aa1339ed1"
 }

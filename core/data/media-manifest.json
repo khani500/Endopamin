@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "mediaVersion": 1,
-  "recordCount": 220,
+  "recordCount": 517,
   "media": {
     "fx_alternate_hammer_curl": {
       "provider": "exercisedb",
@@ -17,12 +17,187 @@
       "animationPath": "V1/exercisedb/0318/0318-360.gif",
       "thumbnailPath": "V1/exercisedb/0318/0318-180.gif"
     },
+    "fx_alternating_dumbbell_front_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0415",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0415/0415-360.gif",
+      "thumbnailPath": "V1/exercisedb/0415/0415-180.gif"
+    },
+    "fx_alternating_incline_dumbbell_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "3545",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3545/3545-360.gif",
+      "thumbnailPath": "V1/exercisedb/3545/3545-180.gif"
+    },
+    "fx_alternating_machine_leg_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "2287",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2287/2287-360.gif",
+      "thumbnailPath": "V1/exercisedb/2287/2287-180.gif"
+    },
+    "fx_alternating_machine_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0571",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0571/0571-360.gif",
+      "thumbnailPath": "V1/exercisedb/0571/0571-180.gif"
+    },
+    "fx_alternating_neutral_grip_dumbbell_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0414",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0414/0414-360.gif",
+      "thumbnailPath": "V1/exercisedb/0414/0414-180.gif"
+    },
+    "fx_alternating_renegade_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0521",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0521/0521-360.gif",
+      "thumbnailPath": "V1/exercisedb/0521/0521-180.gif"
+    },
+    "fx_arm_pad_machine_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "1452",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1452/1452-360.gif",
+      "thumbnailPath": "V1/exercisedb/1452/1452-180.gif"
+    },
+    "fx_arnold_dumbbell_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "2137",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2137/2137-360.gif",
+      "thumbnailPath": "V1/exercisedb/2137/2137-180.gif"
+    },
+    "fx_around_the_worlds": {
+      "provider": "exercisedb",
+      "externalMediaId": "0288",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0288/0288-360.gif",
+      "thumbnailPath": "V1/exercisedb/0288/0288-180.gif"
+    },
+    "fx_assisted_bodyweight_squat": {
+      "provider": "exercisedb",
+      "externalMediaId": "3132",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3132/3132-360.gif",
+      "thumbnailPath": "V1/exercisedb/3132/3132-180.gif"
+    },
+    "fx_back_flyes_with_bands": {
+      "provider": "exercisedb",
+      "externalMediaId": "0993",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0993/0993-360.gif",
+      "thumbnailPath": "V1/exercisedb/0993/0993-180.gif"
+    },
     "fx_band_assisted_pull_up": {
       "provider": "exercisedb",
       "externalMediaId": "0970",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0970/0970-360.gif",
       "thumbnailPath": "V1/exercisedb/0970/0970-180.gif"
+    },
+    "fx_band_bicycle_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "0972",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0972/0972-360.gif",
+      "thumbnailPath": "V1/exercisedb/0972/0972-180.gif"
+    },
+    "fx_band_front_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0978",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0978/0978-360.gif",
+      "thumbnailPath": "V1/exercisedb/0978/0978-180.gif"
+    },
+    "fx_band_overhead_pallof_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1015",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1015/1015-360.gif",
+      "thumbnailPath": "V1/exercisedb/1015/1015-180.gif"
+    },
+    "fx_band_pallof_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0979",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0979/0979-360.gif",
+      "thumbnailPath": "V1/exercisedb/0979/0979-180.gif"
+    },
+    "fx_band_pull_through": {
+      "provider": "exercisedb",
+      "externalMediaId": "0991",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0991/0991-360.gif",
+      "thumbnailPath": "V1/exercisedb/0991/0991-180.gif"
+    },
+    "fx_band_rear_delt_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1022",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1022/1022-360.gif",
+      "thumbnailPath": "V1/exercisedb/1022/1022-180.gif"
+    },
+    "fx_band_shrug": {
+      "provider": "exercisedb",
+      "externalMediaId": "1018",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1018/1018-360.gif",
+      "thumbnailPath": "V1/exercisedb/1018/1018-180.gif"
+    },
+    "fx_band_squat_to_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1003",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1003/1003-360.gif",
+      "thumbnailPath": "V1/exercisedb/1003/1003-180.gif"
+    },
+    "fx_band_stiff_leg_deadlift": {
+      "provider": "exercisedb",
+      "externalMediaId": "1009",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1009/1009-360.gif",
+      "thumbnailPath": "V1/exercisedb/1009/1009-180.gif"
+    },
+    "fx_band_v_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "1014",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1014/1014-360.gif",
+      "thumbnailPath": "V1/exercisedb/1014/1014-180.gif"
+    },
+    "fx_band_y_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "1017",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1017/1017-360.gif",
+      "thumbnailPath": "V1/exercisedb/1017/1017-180.gif"
+    },
+    "fx_banded_lateral_walk": {
+      "provider": "exercisedb",
+      "externalMediaId": "4241",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/4241/4241-360.gif",
+      "thumbnailPath": "V1/exercisedb/4241/4241-180.gif"
+    },
+    "fx_bar_muscle_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "1401",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1401/1401-360.gif",
+      "thumbnailPath": "V1/exercisedb/1401/1401-180.gif"
+    },
+    "fx_barbell_ab_rollout_on_knees": {
+      "provider": "exercisedb",
+      "externalMediaId": "0084",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0084/0084-360.gif",
+      "thumbnailPath": "V1/exercisedb/0084/0084-180.gif"
     },
     "fx_barbell_bench_press_medium_grip": {
       "provider": "exercisedb",
@@ -44,6 +219,13 @@
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0032/0032-360.gif",
       "thumbnailPath": "V1/exercisedb/0032/0032-180.gif"
+    },
+    "fx_barbell_front_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0041",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0041/0041-360.gif",
+      "thumbnailPath": "V1/exercisedb/0041/0041-180.gif"
     },
     "fx_barbell_glute_bridge": {
       "provider": "exercisedb",
@@ -87,6 +269,13 @@
       "animationPath": "V1/exercisedb/0076/0076-360.gif",
       "thumbnailPath": "V1/exercisedb/0076/0076-180.gif"
     },
+    "fx_barbell_reverse_lunge": {
+      "provider": "exercisedb",
+      "externalMediaId": "0078",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0078/0078-360.gif",
+      "thumbnailPath": "V1/exercisedb/0078/0078-180.gif"
+    },
     "fx_barbell_rollout_from_bench": {
       "provider": "exercisedb",
       "externalMediaId": "0083",
@@ -101,12 +290,33 @@
       "animationPath": "V1/exercisedb/0091/0091-360.gif",
       "thumbnailPath": "V1/exercisedb/0091/0091-180.gif"
     },
+    "fx_barbell_shrug": {
+      "provider": "exercisedb",
+      "externalMediaId": "0095",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0095/0095-360.gif",
+      "thumbnailPath": "V1/exercisedb/0095/0095-180.gif"
+    },
+    "fx_barbell_side_bend": {
+      "provider": "exercisedb",
+      "externalMediaId": "0096",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0096/0096-360.gif",
+      "thumbnailPath": "V1/exercisedb/0096/0096-180.gif"
+    },
     "fx_barbell_side_split_squat": {
       "provider": "exercisedb",
       "externalMediaId": "0097",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0097/0097-360.gif",
       "thumbnailPath": "V1/exercisedb/0097/0097-180.gif"
+    },
+    "fx_barbell_single_leg_romanian_deadlift": {
+      "provider": "exercisedb",
+      "externalMediaId": "1756",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1756/1756-360.gif",
+      "thumbnailPath": "V1/exercisedb/1756/1756-180.gif"
     },
     "fx_barbell_squat": {
       "provider": "exercisedb",
@@ -115,12 +325,61 @@
       "animationPath": "V1/exercisedb/1436/1436-360.gif",
       "thumbnailPath": "V1/exercisedb/1436/1436-180.gif"
     },
+    "fx_barbell_squat_to_a_bench": {
+      "provider": "exercisedb",
+      "externalMediaId": "0026",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0026/0026-360.gif",
+      "thumbnailPath": "V1/exercisedb/0026/0026-180.gif"
+    },
+    "fx_barbell_step_calf_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0108",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0108/0108-360.gif",
+      "thumbnailPath": "V1/exercisedb/0108/0108-180.gif"
+    },
+    "fx_bench_dips": {
+      "provider": "exercisedb",
+      "externalMediaId": "1399",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1399/1399-360.gif",
+      "thumbnailPath": "V1/exercisedb/1399/1399-180.gif"
+    },
     "fx_bench_press_with_bands": {
       "provider": "exercisedb",
       "externalMediaId": "1254",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/1254/1254-360.gif",
       "thumbnailPath": "V1/exercisedb/1254/1254-180.gif"
+    },
+    "fx_bench_supported_side_plank": {
+      "provider": "exercisedb",
+      "externalMediaId": "3544",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3544/3544-360.gif",
+      "thumbnailPath": "V1/exercisedb/3544/3544-180.gif"
+    },
+    "fx_bent_arm_barbell_pullover": {
+      "provider": "exercisedb",
+      "externalMediaId": "0073",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0073/0073-360.gif",
+      "thumbnailPath": "V1/exercisedb/0073/0073-180.gif"
+    },
+    "fx_bent_knee_bench_dip": {
+      "provider": "exercisedb",
+      "externalMediaId": "0129",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0129/0129-360.gif",
+      "thumbnailPath": "V1/exercisedb/0129/0129-180.gif"
+    },
+    "fx_bent_knee_windshield_wiper": {
+      "provider": "exercisedb",
+      "externalMediaId": "3639",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3639/3639-360.gif",
+      "thumbnailPath": "V1/exercisedb/3639/3639-180.gif"
     },
     "fx_bent_over_barbell_row": {
       "provider": "exercisedb",
@@ -129,6 +388,20 @@
       "animationPath": "V1/exercisedb/0027/0027-360.gif",
       "thumbnailPath": "V1/exercisedb/0027/0027-180.gif"
     },
+    "fx_bent_over_cable_rear_delt_fly": {
+      "provider": "exercisedb",
+      "externalMediaId": "0154",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0154/0154-360.gif",
+      "thumbnailPath": "V1/exercisedb/0154/0154-180.gif"
+    },
+    "fx_bent_over_dumbbell_rear_delt_fly": {
+      "provider": "exercisedb",
+      "externalMediaId": "0380",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0380/0380-360.gif",
+      "thumbnailPath": "V1/exercisedb/0380/0380-180.gif"
+    },
     "fx_bent_over_dumbbell_rear_delt_raise_with_head_on_bench": {
       "provider": "exercisedb",
       "externalMediaId": "0379",
@@ -136,12 +409,26 @@
       "animationPath": "V1/exercisedb/0379/0379-360.gif",
       "thumbnailPath": "V1/exercisedb/0379/0379-180.gif"
     },
+    "fx_bent_over_one_arm_cable_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0189",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0189/0189-360.gif",
+      "thumbnailPath": "V1/exercisedb/0189/0189-180.gif"
+    },
     "fx_bent_over_two_dumbbell_row_with_palms_in": {
       "provider": "exercisedb",
       "externalMediaId": "0293",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0293/0293-360.gif",
       "thumbnailPath": "V1/exercisedb/0293/0293-180.gif"
+    },
+    "fx_bodyweight_forward_lunge": {
+      "provider": "exercisedb",
+      "externalMediaId": "3470",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3470/3470-360.gif",
+      "thumbnailPath": "V1/exercisedb/3470/3470-180.gif"
     },
     "fx_bodyweight_split_squat": {
       "provider": "exercisedb",
@@ -157,6 +444,13 @@
       "animationPath": "V1/exercisedb/3119/3119-360.gif",
       "thumbnailPath": "V1/exercisedb/3119/3119-180.gif"
     },
+    "fx_bodyweight_step_calf_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "1490",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1490/1490-360.gif",
+      "thumbnailPath": "V1/exercisedb/1490/1490-180.gif"
+    },
     "fx_bodyweight_walking_lunge": {
       "provider": "exercisedb",
       "externalMediaId": "1460",
@@ -170,6 +464,20 @@
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/3013/3013-360.gif",
       "thumbnailPath": "V1/exercisedb/3013/3013-180.gif"
+    },
+    "fx_butterfly_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "0469",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0469/0469-360.gif",
+      "thumbnailPath": "V1/exercisedb/0469/0469-180.gif"
+    },
+    "fx_cable_bar_front_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0162",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0162/0162-360.gif",
+      "thumbnailPath": "V1/exercisedb/0162/0162-180.gif"
     },
     "fx_cable_chest_press": {
       "provider": "exercisedb",
@@ -199,6 +507,20 @@
       "animationPath": "V1/exercisedb/0157/0157-360.gif",
       "thumbnailPath": "V1/exercisedb/0157/0157-180.gif"
     },
+    "fx_cable_drag_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "1632",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1632/1632-360.gif",
+      "thumbnailPath": "V1/exercisedb/1632/1632-180.gif"
+    },
+    "fx_cable_flat_bench_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0151",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0151/0151-360.gif",
+      "thumbnailPath": "V1/exercisedb/0151/0151-180.gif"
+    },
     "fx_cable_hammer_curls_rope_attachment": {
       "provider": "exercisedb",
       "externalMediaId": "0165",
@@ -206,12 +528,40 @@
       "animationPath": "V1/exercisedb/0165/0165-360.gif",
       "thumbnailPath": "V1/exercisedb/0165/0165-180.gif"
     },
+    "fx_cable_hip_adduction": {
+      "provider": "exercisedb",
+      "externalMediaId": "0168",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0168/0168-360.gif",
+      "thumbnailPath": "V1/exercisedb/0168/0168-180.gif"
+    },
+    "fx_cable_incline_bench_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0169",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0169/0169-360.gif",
+      "thumbnailPath": "V1/exercisedb/0169/0169-180.gif"
+    },
     "fx_cable_incline_triceps_extension": {
       "provider": "exercisedb",
       "externalMediaId": "0173",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0173/0173-360.gif",
       "thumbnailPath": "V1/exercisedb/0173/0173-180.gif"
+    },
+    "fx_cable_internal_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "0216",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0216/0216-360.gif",
+      "thumbnailPath": "V1/exercisedb/0216/0216-180.gif"
+    },
+    "fx_cable_kayak_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "2464",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2464/2464-360.gif",
+      "thumbnailPath": "V1/exercisedb/2464/2464-180.gif"
     },
     "fx_cable_one_arm_tricep_extension": {
       "provider": "exercisedb",
@@ -276,6 +626,27 @@
       "animationPath": "V1/exercisedb/0219/0219-360.gif",
       "thumbnailPath": "V1/exercisedb/0219/0219-180.gif"
     },
+    "fx_cable_shrugs": {
+      "provider": "exercisedb",
+      "externalMediaId": "0220",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0220/0220-360.gif",
+      "thumbnailPath": "V1/exercisedb/0220/0220-180.gif"
+    },
+    "fx_cable_side_bend": {
+      "provider": "exercisedb",
+      "externalMediaId": "0222",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0222/0222-360.gif",
+      "thumbnailPath": "V1/exercisedb/0222/0222-180.gif"
+    },
+    "fx_cable_wrist_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0247",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0247/0247-360.gif",
+      "thumbnailPath": "V1/exercisedb/0247/0247-180.gif"
+    },
     "fx_calf_press": {
       "provider": "exercisedb",
       "externalMediaId": "2289",
@@ -289,6 +660,41 @@
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/1369/1369-360.gif",
       "thumbnailPath": "V1/exercisedb/1369/1369-180.gif"
+    },
+    "fx_chest_height_cable_fly": {
+      "provider": "exercisedb",
+      "externalMediaId": "0188",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0188/0188-360.gif",
+      "thumbnailPath": "V1/exercisedb/0188/0188-180.gif"
+    },
+    "fx_chest_supported_barbell_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0049",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0049/0049-360.gif",
+      "thumbnailPath": "V1/exercisedb/0049/0049-180.gif"
+    },
+    "fx_chest_supported_cable_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1318",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1318/1318-360.gif",
+      "thumbnailPath": "V1/exercisedb/1318/1318-180.gif"
+    },
+    "fx_chest_supported_underhand_barbell_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1317",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1317/1317-360.gif",
+      "thumbnailPath": "V1/exercisedb/1317/1317-180.gif"
+    },
+    "fx_chest_tap_plyo_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "3216",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3216/3216-360.gif",
+      "thumbnailPath": "V1/exercisedb/3216/3216-180.gif"
     },
     "fx_chin_up": {
       "provider": "exercisedb",
@@ -304,12 +710,40 @@
       "animationPath": "V1/exercisedb/0030/0030-360.gif",
       "thumbnailPath": "V1/exercisedb/0030/0030-180.gif"
     },
+    "fx_close_grip_dumbbell_bench_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1731",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1731/1731-360.gif",
+      "thumbnailPath": "V1/exercisedb/1731/1731-180.gif"
+    },
     "fx_close_grip_ez_bar_curl": {
       "provider": "exercisedb",
       "externalMediaId": "0446",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0446/0446-360.gif",
       "thumbnailPath": "V1/exercisedb/0446/0446-180.gif"
+    },
+    "fx_close_grip_knee_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "2398",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2398/2398-360.gif",
+      "thumbnailPath": "V1/exercisedb/2398/2398-180.gif"
+    },
+    "fx_close_grip_machine_chest_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1301",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1301/1301-360.gif",
+      "thumbnailPath": "V1/exercisedb/1301/1301-180.gif"
+    },
+    "fx_close_grip_pull_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0140",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0140/0140-360.gif",
+      "thumbnailPath": "V1/exercisedb/0140/0140-180.gif"
     },
     "fx_close_grip_standing_barbell_curl": {
       "provider": "exercisedb",
@@ -318,12 +752,33 @@
       "animationPath": "V1/exercisedb/0106/0106-360.gif",
       "thumbnailPath": "V1/exercisedb/0106/0106-180.gif"
     },
+    "fx_close_grip_wall_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0659",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0659/0659-360.gif",
+      "thumbnailPath": "V1/exercisedb/0659/0659-180.gif"
+    },
+    "fx_cocoons": {
+      "provider": "exercisedb",
+      "externalMediaId": "0260",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0260/0260-360.gif",
+      "thumbnailPath": "V1/exercisedb/0260/0260-180.gif"
+    },
     "fx_concentration_curls": {
       "provider": "exercisedb",
       "externalMediaId": "0297",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0297/0297-360.gif",
       "thumbnailPath": "V1/exercisedb/0297/0297-180.gif"
+    },
+    "fx_crab_toe_touch": {
+      "provider": "exercisedb",
+      "externalMediaId": "1468",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1468/1468-360.gif",
+      "thumbnailPath": "V1/exercisedb/1468/1468-180.gif"
     },
     "fx_cross_body_crunch": {
       "provider": "exercisedb",
@@ -353,12 +808,47 @@
       "animationPath": "V1/exercisedb/0274/0274-360.gif",
       "thumbnailPath": "V1/exercisedb/0274/0274-180.gif"
     },
+    "fx_cuban_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "2136",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2136/2136-360.gif",
+      "thumbnailPath": "V1/exercisedb/2136/2136-180.gif"
+    },
+    "fx_curl_up_with_one_leg_extended": {
+      "provider": "exercisedb",
+      "externalMediaId": "3016",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3016/3016-360.gif",
+      "thumbnailPath": "V1/exercisedb/3016/3016-180.gif"
+    },
     "fx_dead_bug": {
       "provider": "exercisedb",
       "externalMediaId": "0276",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0276/0276-360.gif",
       "thumbnailPath": "V1/exercisedb/0276/0276-180.gif"
+    },
+    "fx_decline_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "0277",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0277/0277-360.gif",
+      "thumbnailPath": "V1/exercisedb/0277/0277-180.gif"
+    },
+    "fx_deep_dumbbell_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "1274",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1274/1274-360.gif",
+      "thumbnailPath": "V1/exercisedb/1274/1274-180.gif"
+    },
+    "fx_dip_machine": {
+      "provider": "exercisedb",
+      "externalMediaId": "1451",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1451/1451-360.gif",
+      "thumbnailPath": "V1/exercisedb/1451/1451-180.gif"
     },
     "fx_double_kettlebell_push_press": {
       "provider": "exercisedb",
@@ -374,12 +864,40 @@
       "animationPath": "V1/exercisedb/0038/0038-360.gif",
       "thumbnailPath": "V1/exercisedb/0038/0038-180.gif"
     },
+    "fx_dual_cable_front_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0164",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0164/0164-360.gif",
+      "thumbnailPath": "V1/exercisedb/0164/0164-180.gif"
+    },
+    "fx_dual_cable_lateral_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0178",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0178/0178-360.gif",
+      "thumbnailPath": "V1/exercisedb/0178/0178-180.gif"
+    },
+    "fx_dual_cable_tuck_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "0242",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0242/0242-360.gif",
+      "thumbnailPath": "V1/exercisedb/0242/0242-180.gif"
+    },
     "fx_dumbbell_alternate_bicep_curl": {
       "provider": "exercisedb",
       "externalMediaId": "0285",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0285/0285-360.gif",
       "thumbnailPath": "V1/exercisedb/0285/0285-180.gif"
+    },
+    "fx_dumbbell_around_the_world_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "2143",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2143/2143-360.gif",
+      "thumbnailPath": "V1/exercisedb/2143/2143-180.gif"
     },
     "fx_dumbbell_bench_press": {
       "provider": "exercisedb",
@@ -402,6 +920,13 @@
       "animationPath": "V1/exercisedb/0294/0294-360.gif",
       "thumbnailPath": "V1/exercisedb/0294/0294-180.gif"
     },
+    "fx_dumbbell_deadlift": {
+      "provider": "exercisedb",
+      "externalMediaId": "0300",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0300/0300-360.gif",
+      "thumbnailPath": "V1/exercisedb/0300/0300-180.gif"
+    },
     "fx_dumbbell_flyes": {
       "provider": "exercisedb",
       "externalMediaId": "0308",
@@ -423,12 +948,26 @@
       "animationPath": "V1/exercisedb/0327/0327-360.gif",
       "thumbnailPath": "V1/exercisedb/0327/0327-180.gif"
     },
+    "fx_dumbbell_low_to_high_wood_chop": {
+      "provider": "exercisedb",
+      "externalMediaId": "0777",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0777/0777-360.gif",
+      "thumbnailPath": "V1/exercisedb/0777/0777-180.gif"
+    },
     "fx_dumbbell_lunges": {
       "provider": "exercisedb",
       "externalMediaId": "0336",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0336/0336-360.gif",
       "thumbnailPath": "V1/exercisedb/0336/0336-180.gif"
+    },
+    "fx_dumbbell_lying_leg_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0339",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0339/0339-360.gif",
+      "thumbnailPath": "V1/exercisedb/0339/0339-180.gif"
     },
     "fx_dumbbell_one_arm_shoulder_press": {
       "provider": "exercisedb",
@@ -444,12 +983,26 @@
       "animationPath": "V1/exercisedb/0363/0363-360.gif",
       "thumbnailPath": "V1/exercisedb/0363/0363-180.gif"
     },
+    "fx_dumbbell_plank_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "3664",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3664/3664-360.gif",
+      "thumbnailPath": "V1/exercisedb/3664/3664-180.gif"
+    },
     "fx_dumbbell_prone_incline_curl": {
       "provider": "exercisedb",
       "externalMediaId": "0374",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0374/0374-360.gif",
       "thumbnailPath": "V1/exercisedb/0374/0374-180.gif"
+    },
+    "fx_dumbbell_push_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1700",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1700/1700-360.gif",
+      "thumbnailPath": "V1/exercisedb/1700/1700-180.gif"
     },
     "fx_dumbbell_rear_lunge": {
       "provider": "exercisedb",
@@ -458,12 +1011,54 @@
       "animationPath": "V1/exercisedb/0381/0381-360.gif",
       "thumbnailPath": "V1/exercisedb/0381/0381-180.gif"
     },
+    "fx_dumbbell_scaption": {
+      "provider": "exercisedb",
+      "externalMediaId": "0311",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0311/0311-360.gif",
+      "thumbnailPath": "V1/exercisedb/0311/0311-180.gif"
+    },
+    "fx_dumbbell_scott_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "2397",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2397/2397-360.gif",
+      "thumbnailPath": "V1/exercisedb/2397/2397-180.gif"
+    },
     "fx_dumbbell_seated_one_leg_calf_raise": {
       "provider": "exercisedb",
       "externalMediaId": "0400",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0400/0400-360.gif",
       "thumbnailPath": "V1/exercisedb/0400/0400-180.gif"
+    },
+    "fx_dumbbell_shrug": {
+      "provider": "exercisedb",
+      "externalMediaId": "0406",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0406/0406-360.gif",
+      "thumbnailPath": "V1/exercisedb/0406/0406-180.gif"
+    },
+    "fx_dumbbell_side_bend": {
+      "provider": "exercisedb",
+      "externalMediaId": "0407",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0407/0407-360.gif",
+      "thumbnailPath": "V1/exercisedb/0407/0407-180.gif"
+    },
+    "fx_dumbbell_squat": {
+      "provider": "exercisedb",
+      "externalMediaId": "0413",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0413/0413-360.gif",
+      "thumbnailPath": "V1/exercisedb/0413/0413-180.gif"
+    },
+    "fx_dumbbell_squat_to_a_bench": {
+      "provider": "exercisedb",
+      "externalMediaId": "0291",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0291/0291-360.gif",
+      "thumbnailPath": "V1/exercisedb/0291/0291-180.gif"
     },
     "fx_dumbbell_step_ups": {
       "provider": "exercisedb",
@@ -479,12 +1074,47 @@
       "animationPath": "V1/exercisedb/0373/0373-360.gif",
       "thumbnailPath": "V1/exercisedb/0373/0373-180.gif"
     },
+    "fx_dumbbell_w_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0438",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0438/0438-360.gif",
+      "thumbnailPath": "V1/exercisedb/0438/0438-180.gif"
+    },
+    "fx_dumbbell_waiter_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "5201",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/5201/5201-360.gif",
+      "thumbnailPath": "V1/exercisedb/5201/5201-180.gif"
+    },
+    "fx_elbow_to_knee": {
+      "provider": "exercisedb",
+      "externalMediaId": "2312",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2312/2312-360.gif",
+      "thumbnailPath": "V1/exercisedb/2312/2312-180.gif"
+    },
     "fx_exercise_ball_crunch": {
       "provider": "exercisedb",
       "externalMediaId": "0271",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0271/0271-360.gif",
       "thumbnailPath": "V1/exercisedb/0271/0271-180.gif"
+    },
+    "fx_exercise_ball_pull_in": {
+      "provider": "exercisedb",
+      "externalMediaId": "0650",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0650/0650-360.gif",
+      "thumbnailPath": "V1/exercisedb/0650/0650-180.gif"
+    },
+    "fx_external_rotation_with_cable": {
+      "provider": "exercisedb",
+      "externalMediaId": "0235",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0235/0235-360.gif",
+      "thumbnailPath": "V1/exercisedb/0235/0235-180.gif"
     },
     "fx_ez_bar_curl": {
       "provider": "exercisedb",
@@ -507,6 +1137,20 @@
       "animationPath": "V1/exercisedb/0233/0233-360.gif",
       "thumbnailPath": "V1/exercisedb/0233/0233-180.gif"
     },
+    "fx_farmer_s_walk": {
+      "provider": "exercisedb",
+      "externalMediaId": "2133",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2133/2133-360.gif",
+      "thumbnailPath": "V1/exercisedb/2133/2133-180.gif"
+    },
+    "fx_feet_elevated_glute_bridge": {
+      "provider": "exercisedb",
+      "externalMediaId": "3523",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3523/3523-360.gif",
+      "thumbnailPath": "V1/exercisedb/3523/3523-180.gif"
+    },
     "fx_flat_bench_cable_flyes": {
       "provider": "exercisedb",
       "externalMediaId": "0185",
@@ -514,12 +1158,47 @@
       "animationPath": "V1/exercisedb/0185/0185-360.gif",
       "thumbnailPath": "V1/exercisedb/0185/0185-180.gif"
     },
+    "fx_flat_bench_leg_pull_in": {
+      "provider": "exercisedb",
+      "externalMediaId": "0570",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0570/0570-360.gif",
+      "thumbnailPath": "V1/exercisedb/0570/0570-180.gif"
+    },
+    "fx_floor_glute_ham_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0696",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0696/0696-360.gif",
+      "thumbnailPath": "V1/exercisedb/0696/0696-180.gif"
+    },
+    "fx_forearm_plank_pike": {
+      "provider": "exercisedb",
+      "externalMediaId": "0870",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0870/0870-360.gif",
+      "thumbnailPath": "V1/exercisedb/0870/0870-180.gif"
+    },
+    "fx_forward_lunge_with_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "1688",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1688/1688-360.gif",
+      "thumbnailPath": "V1/exercisedb/1688/1688-180.gif"
+    },
     "fx_frog_sit_ups": {
       "provider": "exercisedb",
       "externalMediaId": "2429",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/2429/2429-360.gif",
       "thumbnailPath": "V1/exercisedb/2429/2429-180.gif"
+    },
+    "fx_front_barbell_squat_to_a_bench": {
+      "provider": "exercisedb",
+      "externalMediaId": "0024",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0024/0024-360.gif",
+      "thumbnailPath": "V1/exercisedb/0024/0024-180.gif"
     },
     "fx_front_cable_raise": {
       "provider": "exercisedb",
@@ -556,6 +1235,20 @@
       "animationPath": "V1/exercisedb/0533/0533-360.gif",
       "thumbnailPath": "V1/exercisedb/0533/0533-180.gif"
     },
+    "fx_glute_bridge_march": {
+      "provider": "exercisedb",
+      "externalMediaId": "3561",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3561/3561-360.gif",
+      "thumbnailPath": "V1/exercisedb/3561/3561-180.gif"
+    },
+    "fx_glute_bridge_with_reach": {
+      "provider": "exercisedb",
+      "externalMediaId": "1466",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1466/1466-360.gif",
+      "thumbnailPath": "V1/exercisedb/1466/1466-180.gif"
+    },
     "fx_goblet_squat": {
       "provider": "exercisedb",
       "externalMediaId": "0534",
@@ -570,12 +1263,33 @@
       "animationPath": "V1/exercisedb/0044/0044-360.gif",
       "thumbnailPath": "V1/exercisedb/0044/0044-180.gif"
     },
+    "fx_gorilla_chin_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "0467",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0467/0467-360.gif",
+      "thumbnailPath": "V1/exercisedb/0467/0467-180.gif"
+    },
     "fx_hack_squat": {
       "provider": "exercisedb",
       "externalMediaId": "0743",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0743/0743-360.gif",
       "thumbnailPath": "V1/exercisedb/0743/0743-180.gif"
+    },
+    "fx_half_kneeling_cable_face_pull": {
+      "provider": "exercisedb",
+      "externalMediaId": "3697",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3697/3697-360.gif",
+      "thumbnailPath": "V1/exercisedb/3697/3697-180.gif"
+    },
+    "fx_half_kneeling_one_arm_cable_triceps_extension": {
+      "provider": "exercisedb",
+      "externalMediaId": "0152",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0152/0152-360.gif",
+      "thumbnailPath": "V1/exercisedb/0152/0152-180.gif"
     },
     "fx_half_kneeling_single_arm_band_pulldown": {
       "provider": "exercisedb",
@@ -598,6 +1312,41 @@
       "animationPath": "V1/exercisedb/0321/0321-360.gif",
       "thumbnailPath": "V1/exercisedb/0321/0321-180.gif"
     },
+    "fx_hanging_knee_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "1764",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1764/1764-360.gif",
+      "thumbnailPath": "V1/exercisedb/1764/1764-180.gif"
+    },
+    "fx_hanging_oblique_knee_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "1761",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1761/1761-360.gif",
+      "thumbnailPath": "V1/exercisedb/1761/1761-180.gif"
+    },
+    "fx_high_cable_rope_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0232",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0232/0232-360.gif",
+      "thumbnailPath": "V1/exercisedb/0232/0232-180.gif"
+    },
+    "fx_hip_extension_with_bands": {
+      "provider": "exercisedb",
+      "externalMediaId": "0980",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0980/0980-360.gif",
+      "thumbnailPath": "V1/exercisedb/0980/0980-180.gif"
+    },
+    "fx_inchworm_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "1471",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1471/1471-360.gif",
+      "thumbnailPath": "V1/exercisedb/1471/1471-180.gif"
+    },
     "fx_incline_barbell_triceps_extension": {
       "provider": "exercisedb",
       "externalMediaId": "0449",
@@ -612,6 +1361,13 @@
       "animationPath": "V1/exercisedb/0171/0171-360.gif",
       "thumbnailPath": "V1/exercisedb/0171/0171-180.gif"
     },
+    "fx_incline_close_grip_barbell_bench_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1719",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1719/1719-360.gif",
+      "thumbnailPath": "V1/exercisedb/1719/1719-180.gif"
+    },
     "fx_incline_dumbbell_curl": {
       "provider": "exercisedb",
       "externalMediaId": "0315",
@@ -619,12 +1375,33 @@
       "animationPath": "V1/exercisedb/0315/0315-360.gif",
       "thumbnailPath": "V1/exercisedb/0315/0315-180.gif"
     },
+    "fx_incline_dumbbell_fly_with_twist": {
+      "provider": "exercisedb",
+      "externalMediaId": "0331",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0331/0331-360.gif",
+      "thumbnailPath": "V1/exercisedb/0331/0331-180.gif"
+    },
     "fx_incline_dumbbell_flyes": {
       "provider": "exercisedb",
       "externalMediaId": "0316",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0316/0316-360.gif",
       "thumbnailPath": "V1/exercisedb/0316/0316-180.gif"
+    },
+    "fx_incline_dumbbell_rear_delt_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1328",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1328/1328-360.gif",
+      "thumbnailPath": "V1/exercisedb/1328/1328-180.gif"
+    },
+    "fx_incline_dumbbell_y_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "3541",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3541/3541-360.gif",
+      "thumbnailPath": "V1/exercisedb/3541/3541-180.gif"
     },
     "fx_incline_hammer_curls": {
       "provider": "exercisedb",
@@ -640,6 +1417,27 @@
       "animationPath": "V1/exercisedb/0322/0322-360.gif",
       "thumbnailPath": "V1/exercisedb/0322/0322-180.gif"
     },
+    "fx_incline_low_to_high_dumbbell_fly": {
+      "provider": "exercisedb",
+      "externalMediaId": "3234",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3234/3234-360.gif",
+      "thumbnailPath": "V1/exercisedb/3234/3234-180.gif"
+    },
+    "fx_incline_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0493",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0493/0493-360.gif",
+      "thumbnailPath": "V1/exercisedb/0493/0493-180.gif"
+    },
+    "fx_isometric_chest_squeezes": {
+      "provider": "exercisedb",
+      "externalMediaId": "1297",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1297/1297-360.gif",
+      "thumbnailPath": "V1/exercisedb/1297/1297-180.gif"
+    },
     "fx_jackknife_sit_up": {
       "provider": "exercisedb",
       "externalMediaId": "0507",
@@ -654,12 +1452,89 @@
       "animationPath": "V1/exercisedb/0523/0523-360.gif",
       "thumbnailPath": "V1/exercisedb/0523/0523-180.gif"
     },
+    "fx_kettlebell_figure_8": {
+      "provider": "exercisedb",
+      "externalMediaId": "0532",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0532/0532-360.gif",
+      "thumbnailPath": "V1/exercisedb/0532/0532-180.gif"
+    },
+    "fx_kettlebell_sumo_high_pull": {
+      "provider": "exercisedb",
+      "externalMediaId": "0548",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0548/0548-360.gif",
+      "thumbnailPath": "V1/exercisedb/0548/0548-180.gif"
+    },
+    "fx_kettlebell_windmill": {
+      "provider": "exercisedb",
+      "externalMediaId": "0554",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0554/0554-360.gif",
+      "thumbnailPath": "V1/exercisedb/0554/0554-180.gif"
+    },
+    "fx_kneeling_band_hip_thrust": {
+      "provider": "exercisedb",
+      "externalMediaId": "3236",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3236/3236-360.gif",
+      "thumbnailPath": "V1/exercisedb/3236/3236-180.gif"
+    },
+    "fx_kneeling_band_twisting_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "0985",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0985/0985-360.gif",
+      "thumbnailPath": "V1/exercisedb/0985/0985-180.gif"
+    },
+    "fx_kneeling_bodyweight_triceps_extension": {
+      "provider": "exercisedb",
+      "externalMediaId": "1771",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1771/1771-360.gif",
+      "thumbnailPath": "V1/exercisedb/1771/1771-180.gif"
+    },
+    "fx_kneeling_cable_high_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0167",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0167/0167-360.gif",
+      "thumbnailPath": "V1/exercisedb/0167/0167-180.gif"
+    },
     "fx_kneeling_cable_triceps_extension": {
       "provider": "exercisedb",
       "externalMediaId": "0176",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0176/0176-360.gif",
       "thumbnailPath": "V1/exercisedb/0176/0176-180.gif"
+    },
+    "fx_kneeling_plank_shoulder_tap": {
+      "provider": "exercisedb",
+      "externalMediaId": "3239",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3239/3239-360.gif",
+      "thumbnailPath": "V1/exercisedb/3239/3239-180.gif"
+    },
+    "fx_kneeling_single_arm_high_pulley_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0193",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0193/0193-360.gif",
+      "thumbnailPath": "V1/exercisedb/0193/0193-180.gif"
+    },
+    "fx_kneeling_single_leg_machine_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0582",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0582/0582-360.gif",
+      "thumbnailPath": "V1/exercisedb/0582/0582-180.gif"
+    },
+    "fx_l_sit_hold": {
+      "provider": "exercisedb",
+      "externalMediaId": "3419",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3419/3419-360.gif",
+      "thumbnailPath": "V1/exercisedb/3419/3419-180.gif"
     },
     "fx_leg_extensions": {
       "provider": "exercisedb",
@@ -674,6 +1549,20 @@
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0739/0739-360.gif",
       "thumbnailPath": "V1/exercisedb/0739/0739-180.gif"
+    },
+    "fx_leg_press_to_calf_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1385",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1385/1385-360.gif",
+      "thumbnailPath": "V1/exercisedb/1385/1385-180.gif"
+    },
+    "fx_leverage_chest_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0576",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0576/0576-360.gif",
+      "thumbnailPath": "V1/exercisedb/0576/0576-180.gif"
     },
     "fx_leverage_deadlift": {
       "provider": "exercisedb",
@@ -717,6 +1606,13 @@
       "animationPath": "V1/exercisedb/0587/0587-360.gif",
       "thumbnailPath": "V1/exercisedb/0587/0587-180.gif"
     },
+    "fx_leverage_shrug": {
+      "provider": "exercisedb",
+      "externalMediaId": "0604",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0604/0604-360.gif",
+      "thumbnailPath": "V1/exercisedb/0604/0604-180.gif"
+    },
     "fx_low_cable_crossover": {
       "provider": "exercisedb",
       "externalMediaId": "1270",
@@ -724,12 +1620,40 @@
       "animationPath": "V1/exercisedb/1270/1270-360.gif",
       "thumbnailPath": "V1/exercisedb/1270/1270-180.gif"
     },
+    "fx_low_push_up_side_shift": {
+      "provider": "exercisedb",
+      "externalMediaId": "0500",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0500/0500-360.gif",
+      "thumbnailPath": "V1/exercisedb/0500/0500-180.gif"
+    },
+    "fx_low_to_high_cable_wood_chop": {
+      "provider": "exercisedb",
+      "externalMediaId": "0230",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0230/0230-360.gif",
+      "thumbnailPath": "V1/exercisedb/0230/0230-180.gif"
+    },
     "fx_lunge_pass_through": {
       "provider": "exercisedb",
       "externalMediaId": "0536",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0536/0536-360.gif",
       "thumbnailPath": "V1/exercisedb/0536/0536-180.gif"
+    },
+    "fx_lying_cable_rear_delt_fly": {
+      "provider": "exercisedb",
+      "externalMediaId": "0240",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0240/0240-360.gif",
+      "thumbnailPath": "V1/exercisedb/0240/0240-180.gif"
+    },
+    "fx_lying_cable_rope_pullover": {
+      "provider": "exercisedb",
+      "externalMediaId": "0184",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0184/0184-360.gif",
+      "thumbnailPath": "V1/exercisedb/0184/0184-180.gif"
     },
     "fx_lying_close_grip_bar_curl_on_high_pulley": {
       "provider": "exercisedb",
@@ -759,12 +1683,40 @@
       "animationPath": "V1/exercisedb/0586/0586-360.gif",
       "thumbnailPath": "V1/exercisedb/0586/0586-180.gif"
     },
+    "fx_lying_rear_delt_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0348",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0348/0348-360.gif",
+      "thumbnailPath": "V1/exercisedb/0348/0348-180.gif"
+    },
     "fx_lying_t_bar_row": {
       "provider": "exercisedb",
       "externalMediaId": "0606",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0606/0606-360.gif",
       "thumbnailPath": "V1/exercisedb/0606/0606-180.gif"
+    },
+    "fx_machine_assisted_chest_dip": {
+      "provider": "exercisedb",
+      "externalMediaId": "0009",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0009/0009-360.gif",
+      "thumbnailPath": "V1/exercisedb/0009/0009-180.gif"
+    },
+    "fx_machine_assisted_pull_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0572",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0572/0572-360.gif",
+      "thumbnailPath": "V1/exercisedb/0572/0572-180.gif"
+    },
+    "fx_machine_back_extension": {
+      "provider": "exercisedb",
+      "externalMediaId": "0573",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0573/0573-360.gif",
+      "thumbnailPath": "V1/exercisedb/0573/0573-180.gif"
     },
     "fx_machine_bench_press": {
       "provider": "exercisedb",
@@ -773,12 +1725,26 @@
       "animationPath": "V1/exercisedb/0577/0577-360.gif",
       "thumbnailPath": "V1/exercisedb/0577/0577-180.gif"
     },
+    "fx_machine_lateral_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0584",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0584/0584-360.gif",
+      "thumbnailPath": "V1/exercisedb/0584/0584-180.gif"
+    },
     "fx_machine_preacher_curls": {
       "provider": "exercisedb",
       "externalMediaId": "1614",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/1614/1614-360.gif",
       "thumbnailPath": "V1/exercisedb/1614/1614-180.gif"
+    },
+    "fx_machine_pullover": {
+      "provider": "exercisedb",
+      "externalMediaId": "2285",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2285/2285-360.gif",
+      "thumbnailPath": "V1/exercisedb/2285/2285-180.gif"
     },
     "fx_machine_shoulder_military_press": {
       "provider": "exercisedb",
@@ -794,12 +1760,54 @@
       "animationPath": "V1/exercisedb/0607/0607-360.gif",
       "thumbnailPath": "V1/exercisedb/0607/0607-180.gif"
     },
+    "fx_middle_back_shrug": {
+      "provider": "exercisedb",
+      "externalMediaId": "0305",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0305/0305-360.gif",
+      "thumbnailPath": "V1/exercisedb/0305/0305-180.gif"
+    },
+    "fx_mixed_grip_chin": {
+      "provider": "exercisedb",
+      "externalMediaId": "0627",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0627/0627-360.gif",
+      "thumbnailPath": "V1/exercisedb/0627/0627-180.gif"
+    },
+    "fx_modified_hindu_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "3217",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3217/3217-360.gif",
+      "thumbnailPath": "V1/exercisedb/3217/3217-180.gif"
+    },
     "fx_narrow_stance_hack_squats": {
       "provider": "exercisedb",
       "externalMediaId": "0741",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0741/0741-360.gif",
       "thumbnailPath": "V1/exercisedb/0741/0741-180.gif"
+    },
+    "fx_neutral_grip_dumbbell_upright_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0376",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0376/0376-360.gif",
+      "thumbnailPath": "V1/exercisedb/0376/0376-180.gif"
+    },
+    "fx_neutral_grip_pull_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0651",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0651/0651-360.gif",
+      "thumbnailPath": "V1/exercisedb/0651/0651-180.gif"
+    },
+    "fx_oblique_crunches": {
+      "provider": "exercisedb",
+      "externalMediaId": "1495",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1495/1495-360.gif",
+      "thumbnailPath": "V1/exercisedb/1495/1495-180.gif"
     },
     "fx_oblique_crunches_on_the_floor": {
       "provider": "exercisedb",
@@ -808,12 +1816,96 @@
       "animationPath": "V1/exercisedb/0635/0635-360.gif",
       "thumbnailPath": "V1/exercisedb/0635/0635-180.gif"
     },
+    "fx_offset_dumbbell_forward_lunge": {
+      "provider": "exercisedb",
+      "externalMediaId": "3635",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3635/3635-360.gif",
+      "thumbnailPath": "V1/exercisedb/3635/3635-180.gif"
+    },
+    "fx_offset_medicine_ball_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0663",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0663/0663-360.gif",
+      "thumbnailPath": "V1/exercisedb/0663/0663-180.gif"
+    },
+    "fx_one_arm_band_front_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0977",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0977/0977-360.gif",
+      "thumbnailPath": "V1/exercisedb/0977/0977-180.gif"
+    },
+    "fx_one_arm_band_high_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0986",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0986/0986-360.gif",
+      "thumbnailPath": "V1/exercisedb/0986/0986-180.gif"
+    },
+    "fx_one_arm_band_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0988",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0988/0988-360.gif",
+      "thumbnailPath": "V1/exercisedb/0988/0988-180.gif"
+    },
+    "fx_one_arm_bent_over_cable_fly": {
+      "provider": "exercisedb",
+      "externalMediaId": "0191",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0191/0191-360.gif",
+      "thumbnailPath": "V1/exercisedb/0191/0191-180.gif"
+    },
+    "fx_one_arm_cable_kickback": {
+      "provider": "exercisedb",
+      "externalMediaId": "0860",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0860/0860-360.gif",
+      "thumbnailPath": "V1/exercisedb/0860/0860-180.gif"
+    },
+    "fx_one_arm_cable_reverse_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "1413",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1413/1413-360.gif",
+      "thumbnailPath": "V1/exercisedb/1413/1413-180.gif"
+    },
+    "fx_one_arm_cable_row_with_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "0244",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0244/0244-360.gif",
+      "thumbnailPath": "V1/exercisedb/0244/0244-180.gif"
+    },
     "fx_one_arm_dumbbell_bench_press": {
       "provider": "exercisedb",
       "externalMediaId": "0343",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0343/0343-360.gif",
       "thumbnailPath": "V1/exercisedb/0343/0343-180.gif"
+    },
+    "fx_one_arm_dumbbell_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "1670",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1670/1670-360.gif",
+      "thumbnailPath": "V1/exercisedb/1670/1670-180.gif"
+    },
+    "fx_one_arm_dumbbell_preacher_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0372",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0372/0372-360.gif",
+      "thumbnailPath": "V1/exercisedb/0372/0372-180.gif"
+    },
+    "fx_one_arm_dumbbell_rear_delt_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0377",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0377/0377-360.gif",
+      "thumbnailPath": "V1/exercisedb/0377/0377-180.gif"
     },
     "fx_one_arm_dumbbell_row": {
       "provider": "exercisedb",
@@ -829,12 +1921,47 @@
       "animationPath": "V1/exercisedb/1285/1285-360.gif",
       "thumbnailPath": "V1/exercisedb/1285/1285-180.gif"
     },
+    "fx_one_arm_high_pulley_cable_side_bends": {
+      "provider": "exercisedb",
+      "externalMediaId": "0223",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0223/0223-360.gif",
+      "thumbnailPath": "V1/exercisedb/0223/0223-180.gif"
+    },
+    "fx_one_arm_incline_bench_cable_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1265",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1265/1265-360.gif",
+      "thumbnailPath": "V1/exercisedb/1265/1265-180.gif"
+    },
+    "fx_one_arm_incline_dumbbell_fly": {
+      "provider": "exercisedb",
+      "externalMediaId": "1279",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1279/1279-360.gif",
+      "thumbnailPath": "V1/exercisedb/1279/1279-180.gif"
+    },
+    "fx_one_arm_incline_dumbbell_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1281",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1281/1281-360.gif",
+      "thumbnailPath": "V1/exercisedb/1281/1281-180.gif"
+    },
     "fx_one_arm_incline_lateral_raise": {
       "provider": "exercisedb",
       "externalMediaId": "0323",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0323/0323-360.gif",
       "thumbnailPath": "V1/exercisedb/0323/0323-180.gif"
+    },
+    "fx_one_arm_kettlebell_floor_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1298",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1298/1298-360.gif",
+      "thumbnailPath": "V1/exercisedb/1298/1298-180.gif"
     },
     "fx_one_arm_kettlebell_military_press_to_the_side": {
       "provider": "exercisedb",
@@ -850,12 +1977,61 @@
       "animationPath": "V1/exercisedb/0540/0540-360.gif",
       "thumbnailPath": "V1/exercisedb/0540/0540-180.gif"
     },
+    "fx_one_arm_kettlebell_rolling_floor_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0531",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0531/0531-360.gif",
+      "thumbnailPath": "V1/exercisedb/0531/0531-180.gif"
+    },
+    "fx_one_arm_kettlebell_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0541",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0541/0541-360.gif",
+      "thumbnailPath": "V1/exercisedb/0541/0541-180.gif"
+    },
+    "fx_one_arm_landmine_lateral_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "3237",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3237/3237-360.gif",
+      "thumbnailPath": "V1/exercisedb/3237/3237-180.gif"
+    },
     "fx_one_arm_lat_pulldown": {
       "provider": "exercisedb",
       "externalMediaId": "0007",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0007/0007-360.gif",
       "thumbnailPath": "V1/exercisedb/0007/0007-180.gif"
+    },
+    "fx_one_arm_long_bar_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0064",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0064/0064-360.gif",
+      "thumbnailPath": "V1/exercisedb/0064/0064-180.gif"
+    },
+    "fx_one_arm_medicine_ball_slam": {
+      "provider": "exercisedb",
+      "externalMediaId": "0640",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0640/0640-360.gif",
+      "thumbnailPath": "V1/exercisedb/0640/0640-180.gif"
+    },
+    "fx_one_arm_plate_loaded_high_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1356",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1356/1356-360.gif",
+      "thumbnailPath": "V1/exercisedb/1356/1356-180.gif"
+    },
+    "fx_one_arm_seated_cable_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0214",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0214/0214-360.gif",
+      "thumbnailPath": "V1/exercisedb/0214/0214-180.gif"
     },
     "fx_one_arm_side_laterals": {
       "provider": "exercisedb",
@@ -864,6 +2040,139 @@
       "animationPath": "V1/exercisedb/0356/0356-360.gif",
       "thumbnailPath": "V1/exercisedb/0356/0356-180.gif"
     },
+    "fx_one_arm_stability_ball_dumbbell_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1290",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1290/1290-360.gif",
+      "thumbnailPath": "V1/exercisedb/1290/1290-180.gif"
+    },
+    "fx_one_arm_straight_arm_cable_pulldown": {
+      "provider": "exercisedb",
+      "externalMediaId": "3563",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3563/3563-360.gif",
+      "thumbnailPath": "V1/exercisedb/3563/3563-180.gif"
+    },
+    "fx_one_arm_triceps_pushdown": {
+      "provider": "exercisedb",
+      "externalMediaId": "1723",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1723/1723-360.gif",
+      "thumbnailPath": "V1/exercisedb/1723/1723-180.gif"
+    },
+    "fx_one_arm_underhand_incline_dumbbell_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1330",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1330/1330-360.gif",
+      "thumbnailPath": "V1/exercisedb/1330/1330-180.gif"
+    },
+    "fx_one_leg_barbell_squat": {
+      "provider": "exercisedb",
+      "externalMediaId": "0068",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0068/0068-360.gif",
+      "thumbnailPath": "V1/exercisedb/0068/0068-180.gif"
+    },
+    "fx_one_legged_cable_kickback": {
+      "provider": "exercisedb",
+      "externalMediaId": "0228",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0228/0228-360.gif",
+      "thumbnailPath": "V1/exercisedb/0228/0228-180.gif"
+    },
+    "fx_otis_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0641",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0641/0641-360.gif",
+      "thumbnailPath": "V1/exercisedb/0641/0641-180.gif"
+    },
+    "fx_overhand_machine_rear_delt_fly": {
+      "provider": "exercisedb",
+      "externalMediaId": "0602",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0602/0602-360.gif",
+      "thumbnailPath": "V1/exercisedb/0602/0602-180.gif"
+    },
+    "fx_overhand_machine_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1350",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1350/1350-360.gif",
+      "thumbnailPath": "V1/exercisedb/1350/1350-180.gif"
+    },
+    "fx_overhead_handle_machine_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "3760",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3760/3760-360.gif",
+      "thumbnailPath": "V1/exercisedb/3760/3760-180.gif"
+    },
+    "fx_overhead_slam": {
+      "provider": "exercisedb",
+      "externalMediaId": "1354",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1354/1354-360.gif",
+      "thumbnailPath": "V1/exercisedb/1354/1354-180.gif"
+    },
+    "fx_pendlay_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "3017",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3017/3017-360.gif",
+      "thumbnailPath": "V1/exercisedb/3017/3017-180.gif"
+    },
+    "fx_pike_to_cobra_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "3662",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3662/3662-360.gif",
+      "thumbnailPath": "V1/exercisedb/3662/3662-180.gif"
+    },
+    "fx_plank_to_side_plank_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "0464",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0464/0464-360.gif",
+      "thumbnailPath": "V1/exercisedb/0464/0464-180.gif"
+    },
+    "fx_plank_with_opposite_arm_and_leg_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "3665",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3665/3665-360.gif",
+      "thumbnailPath": "V1/exercisedb/3665/3665-180.gif"
+    },
+    "fx_plate_loaded_lat_pulldown": {
+      "provider": "exercisedb",
+      "externalMediaId": "0579",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0579/0579-360.gif",
+      "thumbnailPath": "V1/exercisedb/0579/0579-180.gif"
+    },
+    "fx_plie_dumbbell_squat": {
+      "provider": "exercisedb",
+      "externalMediaId": "0371",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0371/0371-360.gif",
+      "thumbnailPath": "V1/exercisedb/0371/0371-180.gif"
+    },
+    "fx_plyo_kettlebell_pushups": {
+      "provider": "exercisedb",
+      "externalMediaId": "0545",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0545/0545-360.gif",
+      "thumbnailPath": "V1/exercisedb/0545/0545-180.gif"
+    },
+    "fx_plyo_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "1306",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1306/1306-360.gif",
+      "thumbnailPath": "V1/exercisedb/1306/1306-180.gif"
+    },
     "fx_preacher_curl": {
       "provider": "exercisedb",
       "externalMediaId": "1627",
@@ -871,12 +2180,40 @@
       "animationPath": "V1/exercisedb/1627/1627-360.gif",
       "thumbnailPath": "V1/exercisedb/1627/1627-180.gif"
     },
+    "fx_preacher_hammer_dumbbell_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0370",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0370/0370-360.gif",
+      "thumbnailPath": "V1/exercisedb/0370/0370-180.gif"
+    },
+    "fx_prone_swimmer": {
+      "provider": "exercisedb",
+      "externalMediaId": "3433",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3433/3433-360.gif",
+      "thumbnailPath": "V1/exercisedb/3433/3433-180.gif"
+    },
+    "fx_pull_through": {
+      "provider": "exercisedb",
+      "externalMediaId": "0196",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0196/0196-360.gif",
+      "thumbnailPath": "V1/exercisedb/0196/0196-180.gif"
+    },
     "fx_pullups": {
       "provider": "exercisedb",
       "externalMediaId": "0652",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0652/0652-360.gif",
       "thumbnailPath": "V1/exercisedb/0652/0652-180.gif"
+    },
+    "fx_push_up_plus": {
+      "provider": "exercisedb",
+      "externalMediaId": "3145",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3145/3145-360.gif",
+      "thumbnailPath": "V1/exercisedb/3145/3145-180.gif"
     },
     "fx_push_up_to_side_plank": {
       "provider": "exercisedb",
@@ -892,12 +2229,40 @@
       "animationPath": "V1/exercisedb/1311/1311-360.gif",
       "thumbnailPath": "V1/exercisedb/1311/1311-180.gif"
     },
+    "fx_push_up_with_arm_reach": {
+      "provider": "exercisedb",
+      "externalMediaId": "0666",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0666/0666-360.gif",
+      "thumbnailPath": "V1/exercisedb/0666/0666-180.gif"
+    },
+    "fx_push_up_with_kick_through": {
+      "provider": "exercisedb",
+      "externalMediaId": "0661",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0661/0661-360.gif",
+      "thumbnailPath": "V1/exercisedb/0661/0661-180.gif"
+    },
+    "fx_push_up_with_side_knee_tuck": {
+      "provider": "exercisedb",
+      "externalMediaId": "0642",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0642/0642-360.gif",
+      "thumbnailPath": "V1/exercisedb/0642/0642-180.gif"
+    },
     "fx_push_ups_close_triceps_position": {
       "provider": "exercisedb",
       "externalMediaId": "0259",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0259/0259-360.gif",
       "thumbnailPath": "V1/exercisedb/0259/0259-180.gif"
+    },
+    "fx_push_ups_with_feet_elevated": {
+      "provider": "exercisedb",
+      "externalMediaId": "0279",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0279/0279-360.gif",
+      "thumbnailPath": "V1/exercisedb/0279/0279-180.gif"
     },
     "fx_push_ups_with_feet_on_an_exercise_ball": {
       "provider": "exercisedb",
@@ -912,6 +2277,13 @@
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0662/0662-360.gif",
       "thumbnailPath": "V1/exercisedb/0662/0662-180.gif"
+    },
+    "fx_rear_foot_elevated_dumbbell_romanian_deadlift": {
+      "provider": "exercisedb",
+      "externalMediaId": "2805",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2805/2805-360.gif",
+      "thumbnailPath": "V1/exercisedb/2805/2805-180.gif"
     },
     "fx_reverse_barbell_curl": {
       "provider": "exercisedb",
@@ -941,6 +2313,13 @@
       "animationPath": "V1/exercisedb/0872/0872-360.gif",
       "thumbnailPath": "V1/exercisedb/0872/0872-180.gif"
     },
+    "fx_reverse_ez_bar_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0451",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0451/0451-360.gif",
+      "thumbnailPath": "V1/exercisedb/0451/0451-180.gif"
+    },
     "fx_reverse_flyes": {
       "provider": "exercisedb",
       "externalMediaId": "0326",
@@ -954,6 +2333,41 @@
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0386/0386-360.gif",
       "thumbnailPath": "V1/exercisedb/0386/0386-180.gif"
+    },
+    "fx_reverse_grip_bent_over_rows": {
+      "provider": "exercisedb",
+      "externalMediaId": "0118",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0118/0118-360.gif",
+      "thumbnailPath": "V1/exercisedb/0118/0118-180.gif"
+    },
+    "fx_reverse_grip_dumbbell_bench_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1624",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1624/1624-360.gif",
+      "thumbnailPath": "V1/exercisedb/1624/1624-180.gif"
+    },
+    "fx_reverse_grip_ez_bar_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1344",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1344/1344-360.gif",
+      "thumbnailPath": "V1/exercisedb/1344/1344-180.gif"
+    },
+    "fx_reverse_grip_incline_barbell_bench_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0048",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0048/0048-360.gif",
+      "thumbnailPath": "V1/exercisedb/0048/0048-180.gif"
+    },
+    "fx_reverse_grip_skull_crusher": {
+      "provider": "exercisedb",
+      "externalMediaId": "1721",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1721/1721-360.gif",
+      "thumbnailPath": "V1/exercisedb/1721/1721-180.gif"
     },
     "fx_reverse_grip_triceps_pushdown": {
       "provider": "exercisedb",
@@ -969,6 +2383,13 @@
       "animationPath": "V1/exercisedb/0593/0593-360.gif",
       "thumbnailPath": "V1/exercisedb/0593/0593-180.gif"
     },
+    "fx_reverse_machine_flyes": {
+      "provider": "exercisedb",
+      "externalMediaId": "0601",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0601/0601-360.gif",
+      "thumbnailPath": "V1/exercisedb/0601/0601-180.gif"
+    },
     "fx_reverse_triceps_bench_press": {
       "provider": "exercisedb",
       "externalMediaId": "2187",
@@ -983,6 +2404,34 @@
       "animationPath": "V1/exercisedb/0085/0085-360.gif",
       "thumbnailPath": "V1/exercisedb/0085/0085-180.gif"
     },
+    "fx_rope_lat_pulldown": {
+      "provider": "exercisedb",
+      "externalMediaId": "0177",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0177/0177-360.gif",
+      "thumbnailPath": "V1/exercisedb/0177/0177-180.gif"
+    },
+    "fx_rope_straight_arm_pulldown": {
+      "provider": "exercisedb",
+      "externalMediaId": "0237",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0237/0237-360.gif",
+      "thumbnailPath": "V1/exercisedb/0237/0237-180.gif"
+    },
+    "fx_rotating_grip_dumbbell_bench_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1743",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1743/1743-360.gif",
+      "thumbnailPath": "V1/exercisedb/1743/1743-180.gif"
+    },
+    "fx_rotating_grip_dumbbell_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1329",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1329/1329-360.gif",
+      "thumbnailPath": "V1/exercisedb/1329/1329-180.gif"
+    },
     "fx_russian_twist": {
       "provider": "exercisedb",
       "externalMediaId": "0687",
@@ -996,6 +2445,55 @@
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0688/0688-360.gif",
       "thumbnailPath": "V1/exercisedb/0688/0688-180.gif"
+    },
+    "fx_seated_alternating_neutral_grip_dumbbell_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0388",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0388/0388-360.gif",
+      "thumbnailPath": "V1/exercisedb/0388/0388-180.gif"
+    },
+    "fx_seated_band_chest_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "3124",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3124/3124-360.gif",
+      "thumbnailPath": "V1/exercisedb/3124/3124-180.gif"
+    },
+    "fx_seated_band_concentration_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0976",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0976/0976-360.gif",
+      "thumbnailPath": "V1/exercisedb/0976/0976-180.gif"
+    },
+    "fx_seated_band_hip_abduction": {
+      "provider": "exercisedb",
+      "externalMediaId": "3006",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3006/3006-360.gif",
+      "thumbnailPath": "V1/exercisedb/3006/3006-180.gif"
+    },
+    "fx_seated_band_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "1011",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1011/1011-360.gif",
+      "thumbnailPath": "V1/exercisedb/1011/1011-180.gif"
+    },
+    "fx_seated_band_shoulder_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "3122",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3122/3122-360.gif",
+      "thumbnailPath": "V1/exercisedb/3122/3122-180.gif"
+    },
+    "fx_seated_barbell_twist": {
+      "provider": "exercisedb",
+      "externalMediaId": "0094",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0094/0094-360.gif",
+      "thumbnailPath": "V1/exercisedb/0094/0094-180.gif"
     },
     "fx_seated_bent_over_one_arm_dumbbell_triceps_extension": {
       "provider": "exercisedb",
@@ -1018,6 +2516,27 @@
       "animationPath": "V1/exercisedb/1737/1737-360.gif",
       "thumbnailPath": "V1/exercisedb/1737/1737-180.gif"
     },
+    "fx_seated_cable_rear_delt_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0202",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0202/0202-360.gif",
+      "thumbnailPath": "V1/exercisedb/0202/0202-180.gif"
+    },
+    "fx_seated_cable_rope_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1323",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1323/1323-360.gif",
+      "thumbnailPath": "V1/exercisedb/1323/1323-180.gif"
+    },
+    "fx_seated_cable_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "2399",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2399/2399-360.gif",
+      "thumbnailPath": "V1/exercisedb/2399/2399-180.gif"
+    },
     "fx_seated_cable_rows": {
       "provider": "exercisedb",
       "externalMediaId": "0180",
@@ -1032,12 +2551,26 @@
       "animationPath": "V1/exercisedb/0594/0594-360.gif",
       "thumbnailPath": "V1/exercisedb/0594/0594-180.gif"
     },
+    "fx_seated_close_grip_band_pulldown": {
+      "provider": "exercisedb",
+      "externalMediaId": "0974",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0974/0974-360.gif",
+      "thumbnailPath": "V1/exercisedb/0974/0974-180.gif"
+    },
     "fx_seated_close_grip_concentration_barbell_curl": {
       "provider": "exercisedb",
       "externalMediaId": "0089",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0089/0089-360.gif",
       "thumbnailPath": "V1/exercisedb/0089/0089-180.gif"
+    },
+    "fx_seated_double_kettlebell_overhead_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1438",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1438/1438-360.gif",
+      "thumbnailPath": "V1/exercisedb/1438/1438-180.gif"
     },
     "fx_seated_dumbbell_curl": {
       "provider": "exercisedb",
@@ -1053,6 +2586,27 @@
       "animationPath": "V1/exercisedb/0393/0393-360.gif",
       "thumbnailPath": "V1/exercisedb/0393/0393-180.gif"
     },
+    "fx_seated_dumbbell_palms_down_wrist_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0385",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0385/0385-360.gif",
+      "thumbnailPath": "V1/exercisedb/0385/0385-180.gif"
+    },
+    "fx_seated_dumbbell_palms_up_wrist_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0401",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0401/0401-360.gif",
+      "thumbnailPath": "V1/exercisedb/0401/0401-180.gif"
+    },
+    "fx_seated_dumbbell_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0405",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0405/0405-360.gif",
+      "thumbnailPath": "V1/exercisedb/0405/0405-180.gif"
+    },
     "fx_seated_good_mornings": {
       "provider": "exercisedb",
       "externalMediaId": "0090",
@@ -1067,12 +2621,47 @@
       "animationPath": "V1/exercisedb/0599/0599-360.gif",
       "thumbnailPath": "V1/exercisedb/0599/0599-180.gif"
     },
+    "fx_seated_one_arm_band_row_with_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "0990",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0990/0990-360.gif",
+      "thumbnailPath": "V1/exercisedb/0990/0990-180.gif"
+    },
+    "fx_seated_overhead_barbell_triceps_extension": {
+      "provider": "exercisedb",
+      "externalMediaId": "0092",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0092/0092-360.gif",
+      "thumbnailPath": "V1/exercisedb/0092/0092-180.gif"
+    },
     "fx_seated_side_lateral_raise": {
       "provider": "exercisedb",
       "externalMediaId": "0396",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0396/0396-360.gif",
       "thumbnailPath": "V1/exercisedb/0396/0396-180.gif"
+    },
+    "fx_seated_triceps_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0389",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0389/0389-360.gif",
+      "thumbnailPath": "V1/exercisedb/0389/0389-180.gif"
+    },
+    "fx_seated_underhand_band_pulldown": {
+      "provider": "exercisedb",
+      "externalMediaId": "3116",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3116/3116-360.gif",
+      "thumbnailPath": "V1/exercisedb/3116/3116-180.gif"
+    },
+    "fx_shotgun_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1319",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1319/1319-360.gif",
+      "thumbnailPath": "V1/exercisedb/1319/1319-180.gif"
     },
     "fx_shoulder_press_with_bands": {
       "provider": "exercisedb",
@@ -1081,12 +2670,75 @@
       "animationPath": "V1/exercisedb/0997/0997-360.gif",
       "thumbnailPath": "V1/exercisedb/0997/0997-180.gif"
     },
+    "fx_shoulder_tap_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0699",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0699/0699-360.gif",
+      "thumbnailPath": "V1/exercisedb/0699/0699-180.gif"
+    },
     "fx_side_lateral_raise": {
       "provider": "exercisedb",
       "externalMediaId": "0334",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0334/0334-360.gif",
       "thumbnailPath": "V1/exercisedb/0334/0334-180.gif"
+    },
+    "fx_side_laterals_to_front_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0335",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0335/0335-360.gif",
+      "thumbnailPath": "V1/exercisedb/0335/0335-180.gif"
+    },
+    "fx_side_leg_raises": {
+      "provider": "exercisedb",
+      "externalMediaId": "1427",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1427/1427-360.gif",
+      "thumbnailPath": "V1/exercisedb/1427/1427-180.gif"
+    },
+    "fx_side_lying_dumbbell_external_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "0863",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0863/0863-360.gif",
+      "thumbnailPath": "V1/exercisedb/0863/0863-180.gif"
+    },
+    "fx_side_lying_dumbbell_lateral_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0408",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0408/0408-360.gif",
+      "thumbnailPath": "V1/exercisedb/0408/0408-180.gif"
+    },
+    "fx_side_lying_hip_abduction": {
+      "provider": "exercisedb",
+      "externalMediaId": "0710",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0710/0710-360.gif",
+      "thumbnailPath": "V1/exercisedb/0710/0710-180.gif"
+    },
+    "fx_side_lying_hip_adduction": {
+      "provider": "exercisedb",
+      "externalMediaId": "3667",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3667/3667-360.gif",
+      "thumbnailPath": "V1/exercisedb/3667/3667-180.gif"
+    },
+    "fx_side_plank_with_leg_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "1774",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1774/1774-360.gif",
+      "thumbnailPath": "V1/exercisedb/1774/1774-180.gif"
+    },
+    "fx_side_to_side_chins": {
+      "provider": "exercisedb",
+      "externalMediaId": "3293",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3293/3293-360.gif",
+      "thumbnailPath": "V1/exercisedb/3293/3293-180.gif"
     },
     "fx_single_arm_band_biceps_curl": {
       "provider": "exercisedb",
@@ -1101,6 +2753,34 @@
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0725/0725-360.gif",
       "thumbnailPath": "V1/exercisedb/0725/0725-180.gif"
+    },
+    "fx_single_leg_calf_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "1387",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1387/1387-360.gif",
+      "thumbnailPath": "V1/exercisedb/1387/1387-180.gif"
+    },
+    "fx_single_leg_dumbbell_calf_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0409",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0409/0409-360.gif",
+      "thumbnailPath": "V1/exercisedb/0409/0409-180.gif"
+    },
+    "fx_single_leg_tuck_sit_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0456",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0456/0456-360.gif",
+      "thumbnailPath": "V1/exercisedb/0456/0456-180.gif"
+    },
+    "fx_single_leg_v_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0457",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0457/0457-360.gif",
+      "thumbnailPath": "V1/exercisedb/0457/0457-180.gif"
     },
     "fx_smith_machine_bench_press": {
       "provider": "exercisedb",
@@ -1123,6 +2803,13 @@
       "animationPath": "V1/exercisedb/0751/0751-360.gif",
       "thumbnailPath": "V1/exercisedb/0751/0751-180.gif"
     },
+    "fx_smith_machine_front_squat": {
+      "provider": "exercisedb",
+      "externalMediaId": "1433",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1433/1433-360.gif",
+      "thumbnailPath": "V1/exercisedb/1433/1433-180.gif"
+    },
     "fx_smith_machine_incline_bench_press": {
       "provider": "exercisedb",
       "externalMediaId": "0757",
@@ -1137,12 +2824,47 @@
       "animationPath": "V1/exercisedb/0765/0765-360.gif",
       "thumbnailPath": "V1/exercisedb/0765/0765-180.gif"
     },
+    "fx_smith_machine_rear_delt_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0762",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0762/0762-360.gif",
+      "thumbnailPath": "V1/exercisedb/0762/0762-180.gif"
+    },
+    "fx_smith_machine_reverse_grip_bench_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0764",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0764/0764-360.gif",
+      "thumbnailPath": "V1/exercisedb/0764/0764-180.gif"
+    },
+    "fx_smith_machine_reverse_grip_incline_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0758",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0758/0758-360.gif",
+      "thumbnailPath": "V1/exercisedb/0758/0758-180.gif"
+    },
+    "fx_smith_machine_shrug": {
+      "provider": "exercisedb",
+      "externalMediaId": "0767",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0767/0767-360.gif",
+      "thumbnailPath": "V1/exercisedb/0767/0767-180.gif"
+    },
     "fx_smith_machine_squat": {
       "provider": "exercisedb",
       "externalMediaId": "0770",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0770/0770-360.gif",
       "thumbnailPath": "V1/exercisedb/0770/0770-180.gif"
+    },
+    "fx_smith_machine_underhand_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1361",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1361/1361-360.gif",
+      "thumbnailPath": "V1/exercisedb/1361/1361-180.gif"
     },
     "fx_smith_machine_upright_row": {
       "provider": "exercisedb",
@@ -1158,6 +2880,13 @@
       "animationPath": "V1/exercisedb/0768/0768-360.gif",
       "thumbnailPath": "V1/exercisedb/0768/0768-180.gif"
     },
+    "fx_spider_crawl": {
+      "provider": "exercisedb",
+      "externalMediaId": "0778",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0778/0778-360.gif",
+      "thumbnailPath": "V1/exercisedb/0778/0778-180.gif"
+    },
     "fx_split_squat_with_dumbbells": {
       "provider": "exercisedb",
       "externalMediaId": "0410",
@@ -1165,12 +2894,124 @@
       "animationPath": "V1/exercisedb/0410/0410-360.gif",
       "thumbnailPath": "V1/exercisedb/0410/0410-180.gif"
     },
+    "fx_stability_ball_back_extension": {
+      "provider": "exercisedb",
+      "externalMediaId": "1314",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1314/1314-360.gif",
+      "thumbnailPath": "V1/exercisedb/1314/1314-180.gif"
+    },
+    "fx_stability_ball_back_extension_with_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "1336",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1336/1336-360.gif",
+      "thumbnailPath": "V1/exercisedb/1336/1336-180.gif"
+    },
+    "fx_stability_ball_cable_chest_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1268",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1268/1268-360.gif",
+      "thumbnailPath": "V1/exercisedb/1268/1268-180.gif"
+    },
+    "fx_stability_ball_dumbbell_fly": {
+      "provider": "exercisedb",
+      "externalMediaId": "1277",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1277/1277-360.gif",
+      "thumbnailPath": "V1/exercisedb/1277/1277-180.gif"
+    },
+    "fx_stability_ball_dumbbell_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1293",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1293/1293-360.gif",
+      "thumbnailPath": "V1/exercisedb/1293/1293-180.gif"
+    },
+    "fx_stability_ball_dumbbell_pullover": {
+      "provider": "exercisedb",
+      "externalMediaId": "1295",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1295/1295-360.gif",
+      "thumbnailPath": "V1/exercisedb/1295/1295-180.gif"
+    },
+    "fx_stability_ball_incline_cable_fly": {
+      "provider": "exercisedb",
+      "externalMediaId": "0170",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0170/0170-360.gif",
+      "thumbnailPath": "V1/exercisedb/0170/0170-180.gif"
+    },
+    "fx_stability_ball_incline_dumbbell_fly": {
+      "provider": "exercisedb",
+      "externalMediaId": "1278",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1278/1278-360.gif",
+      "thumbnailPath": "V1/exercisedb/1278/1278-180.gif"
+    },
+    "fx_stability_ball_incline_dumbbell_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1283",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1283/1283-360.gif",
+      "thumbnailPath": "V1/exercisedb/1283/1283-180.gif"
+    },
+    "fx_stability_ball_prone_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "1707",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1707/1707-360.gif",
+      "thumbnailPath": "V1/exercisedb/1707/1707-180.gif"
+    },
+    "fx_stability_ball_push_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0655",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0655/0655-360.gif",
+      "thumbnailPath": "V1/exercisedb/0655/0655-180.gif"
+    },
+    "fx_stability_ball_push_up_to_pike": {
+      "provider": "exercisedb",
+      "externalMediaId": "1296",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1296/1296-360.gif",
+      "thumbnailPath": "V1/exercisedb/1296/1296-180.gif"
+    },
+    "fx_standing_band_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "1005",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1005/1005-360.gif",
+      "thumbnailPath": "V1/exercisedb/1005/1005-180.gif"
+    },
+    "fx_standing_band_twisting_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "1007",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1007/1007-360.gif",
+      "thumbnailPath": "V1/exercisedb/1007/1007-180.gif"
+    },
     "fx_standing_barbell_calf_raise": {
       "provider": "exercisedb",
       "externalMediaId": "0111",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0111/0111-360.gif",
       "thumbnailPath": "V1/exercisedb/0111/0111-180.gif"
+    },
+    "fx_standing_barbell_rollout": {
+      "provider": "exercisedb",
+      "externalMediaId": "0103",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0103/0103-360.gif",
+      "thumbnailPath": "V1/exercisedb/0103/0103-180.gif"
+    },
+    "fx_standing_barbell_twist": {
+      "provider": "exercisedb",
+      "externalMediaId": "0112",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0112/0112-360.gif",
+      "thumbnailPath": "V1/exercisedb/0112/0112-180.gif"
     },
     "fx_standing_bent_over_one_arm_dumbbell_triceps_extension": {
       "provider": "exercisedb",
@@ -1192,6 +3033,34 @@
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0868/0868-360.gif",
       "thumbnailPath": "V1/exercisedb/0868/0868-180.gif"
+    },
+    "fx_standing_cable_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "0226",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0226/0226-360.gif",
+      "thumbnailPath": "V1/exercisedb/0226/0226-180.gif"
+    },
+    "fx_standing_cable_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "0243",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0243/0243-360.gif",
+      "thumbnailPath": "V1/exercisedb/0243/0243-180.gif"
+    },
+    "fx_standing_cable_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0234",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0234/0234-360.gif",
+      "thumbnailPath": "V1/exercisedb/0234/0234-180.gif"
+    },
+    "fx_standing_cable_twisting_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "0174",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0174/0174-360.gif",
+      "thumbnailPath": "V1/exercisedb/0174/0174-180.gif"
     },
     "fx_standing_cable_wood_chop": {
       "provider": "exercisedb",
@@ -1221,12 +3090,26 @@
       "animationPath": "V1/exercisedb/0421/0421-360.gif",
       "thumbnailPath": "V1/exercisedb/0421/0421-180.gif"
     },
+    "fx_standing_dumbbell_external_rotation": {
+      "provider": "exercisedb",
+      "externalMediaId": "0864",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0864/0864-360.gif",
+      "thumbnailPath": "V1/exercisedb/0864/0864-180.gif"
+    },
     "fx_standing_dumbbell_reverse_curl": {
       "provider": "exercisedb",
       "externalMediaId": "0429",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0429/0429-360.gif",
       "thumbnailPath": "V1/exercisedb/0429/0429-180.gif"
+    },
+    "fx_standing_dumbbell_straight_arm_front_delt_raise_above_head": {
+      "provider": "exercisedb",
+      "externalMediaId": "0419",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0419/0419-360.gif",
+      "thumbnailPath": "V1/exercisedb/0419/0419-180.gif"
     },
     "fx_standing_dumbbell_triceps_extension": {
       "provider": "exercisedb",
@@ -1256,12 +3139,26 @@
       "animationPath": "V1/exercisedb/2321/2321-360.gif",
       "thumbnailPath": "V1/exercisedb/2321/2321-180.gif"
     },
+    "fx_standing_low_pulley_deltoid_raise": {
+      "provider": "exercisedb",
+      "externalMediaId": "0192",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0192/0192-360.gif",
+      "thumbnailPath": "V1/exercisedb/0192/0192-180.gif"
+    },
     "fx_standing_low_pulley_one_arm_triceps_extension": {
       "provider": "exercisedb",
       "externalMediaId": "0149",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0149/0149-360.gif",
       "thumbnailPath": "V1/exercisedb/0149/0149-180.gif"
+    },
+    "fx_standing_machine_chest_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "3758",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3758/3758-360.gif",
+      "thumbnailPath": "V1/exercisedb/3758/3758-180.gif"
     },
     "fx_standing_military_press": {
       "provider": "exercisedb",
@@ -1298,12 +3195,26 @@
       "animationPath": "V1/exercisedb/0109/0109-360.gif",
       "thumbnailPath": "V1/exercisedb/0109/0109-180.gif"
     },
+    "fx_standing_palms_in_dumbbell_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0427",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0427/0427-360.gif",
+      "thumbnailPath": "V1/exercisedb/0427/0427-180.gif"
+    },
     "fx_standing_rope_crunch": {
       "provider": "exercisedb",
       "externalMediaId": "0874",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0874/0874-360.gif",
       "thumbnailPath": "V1/exercisedb/0874/0874-180.gif"
+    },
+    "fx_standing_smith_machine_shoulder_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0774",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0774/0774-360.gif",
+      "thumbnailPath": "V1/exercisedb/0774/0774-180.gif"
     },
     "fx_stiff_legged_barbell_deadlift": {
       "provider": "exercisedb",
@@ -1319,12 +3230,40 @@
       "animationPath": "V1/exercisedb/0432/0432-360.gif",
       "thumbnailPath": "V1/exercisedb/0432/0432-180.gif"
     },
+    "fx_straight_arm_pulldown": {
+      "provider": "exercisedb",
+      "externalMediaId": "0199",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0199/0199-360.gif",
+      "thumbnailPath": "V1/exercisedb/0199/0199-180.gif"
+    },
+    "fx_straight_leg_band_sit_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "0992",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0992/0992-360.gif",
+      "thumbnailPath": "V1/exercisedb/0992/0992-180.gif"
+    },
+    "fx_straight_leg_reach_crunch": {
+      "provider": "exercisedb",
+      "externalMediaId": "3201",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3201/3201-360.gif",
+      "thumbnailPath": "V1/exercisedb/3201/3201-180.gif"
+    },
     "fx_sumo_deadlift": {
       "provider": "exercisedb",
       "externalMediaId": "0117",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0117/0117-360.gif",
       "thumbnailPath": "V1/exercisedb/0117/0117-180.gif"
+    },
+    "fx_supported_one_arm_cable_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1313",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1313/1313-360.gif",
+      "thumbnailPath": "V1/exercisedb/1313/1313-180.gif"
     },
     "fx_suspended_reverse_crunch": {
       "provider": "exercisedb",
@@ -1340,12 +3279,33 @@
       "animationPath": "V1/exercisedb/0809/0809-360.gif",
       "thumbnailPath": "V1/exercisedb/0809/0809-180.gif"
     },
+    "fx_svend_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0856",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0856/0856-360.gif",
+      "thumbnailPath": "V1/exercisedb/0856/0856-180.gif"
+    },
     "fx_t_bar_row_with_handle": {
       "provider": "exercisedb",
       "externalMediaId": "3200",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/3200/3200-360.gif",
       "thumbnailPath": "V1/exercisedb/3200/3200-180.gif"
+    },
+    "fx_thigh_abductor": {
+      "provider": "exercisedb",
+      "externalMediaId": "0597",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0597/0597-360.gif",
+      "thumbnailPath": "V1/exercisedb/0597/0597-180.gif"
+    },
+    "fx_thigh_adductor": {
+      "provider": "exercisedb",
+      "externalMediaId": "0598",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0598/0598-360.gif",
+      "thumbnailPath": "V1/exercisedb/0598/0598-180.gif"
     },
     "fx_trap_bar_deadlift": {
       "provider": "exercisedb",
@@ -1382,6 +3342,34 @@
       "animationPath": "V1/exercisedb/0871/0871-360.gif",
       "thumbnailPath": "V1/exercisedb/0871/0871-180.gif"
     },
+    "fx_two_arm_kettlebell_military_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0553",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0553/0553-360.gif",
+      "thumbnailPath": "V1/exercisedb/0553/0553-180.gif"
+    },
+    "fx_two_arm_kettlebell_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1345",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1345/1345-360.gif",
+      "thumbnailPath": "V1/exercisedb/1345/1345-180.gif"
+    },
+    "fx_two_up_one_down_lying_leg_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "3195",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/3195/3195-360.gif",
+      "thumbnailPath": "V1/exercisedb/3195/3195-180.gif"
+    },
+    "fx_underhand_bent_over_dumbbell_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "2327",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2327/2327-360.gif",
+      "thumbnailPath": "V1/exercisedb/2327/2327-180.gif"
+    },
     "fx_underhand_cable_pulldowns": {
       "provider": "exercisedb",
       "externalMediaId": "0245",
@@ -1389,12 +3377,54 @@
       "animationPath": "V1/exercisedb/0245/0245-360.gif",
       "thumbnailPath": "V1/exercisedb/0245/0245-180.gif"
     },
+    "fx_underhand_incline_dumbbell_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1331",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1331/1331-360.gif",
+      "thumbnailPath": "V1/exercisedb/1331/1331-180.gif"
+    },
+    "fx_underhand_machine_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "1348",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1348/1348-360.gif",
+      "thumbnailPath": "V1/exercisedb/1348/1348-180.gif"
+    },
+    "fx_underhand_plate_loaded_lat_pulldown": {
+      "provider": "exercisedb",
+      "externalMediaId": "0673",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0673/0673-360.gif",
+      "thumbnailPath": "V1/exercisedb/0673/0673-180.gif"
+    },
+    "fx_upright_barbell_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0119",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0119/0119-360.gif",
+      "thumbnailPath": "V1/exercisedb/0119/0119-180.gif"
+    },
+    "fx_upright_cable_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0246",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0246/0246-360.gif",
+      "thumbnailPath": "V1/exercisedb/0246/0246-180.gif"
+    },
     "fx_v_bar_pulldown": {
       "provider": "exercisedb",
       "externalMediaId": "2616",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/2616/2616-360.gif",
       "thumbnailPath": "V1/exercisedb/2616/2616-180.gif"
+    },
+    "fx_v_bar_pullup": {
+      "provider": "exercisedb",
+      "externalMediaId": "0253",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0253/0253-360.gif",
+      "thumbnailPath": "V1/exercisedb/0253/0253-180.gif"
     },
     "fx_weighted_crunches": {
       "provider": "exercisedb",
@@ -1417,12 +3447,47 @@
       "animationPath": "V1/exercisedb/0150/0150-360.gif",
       "thumbnailPath": "V1/exercisedb/0150/0150-180.gif"
     },
+    "fx_wide_grip_plate_loaded_shoulder_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "0869",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0869/0869-360.gif",
+      "thumbnailPath": "V1/exercisedb/0869/0869-180.gif"
+    },
+    "fx_wide_grip_pull_up": {
+      "provider": "exercisedb",
+      "externalMediaId": "1429",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1429/1429-360.gif",
+      "thumbnailPath": "V1/exercisedb/1429/1429-180.gif"
+    },
+    "fx_wide_grip_seated_cable_row": {
+      "provider": "exercisedb",
+      "externalMediaId": "0218",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0218/0218-360.gif",
+      "thumbnailPath": "V1/exercisedb/0218/0218-180.gif"
+    },
+    "fx_wide_grip_smith_machine_bench_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1308",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1308/1308-360.gif",
+      "thumbnailPath": "V1/exercisedb/1308/1308-180.gif"
+    },
     "fx_wide_grip_standing_barbell_curl": {
       "provider": "exercisedb",
       "externalMediaId": "1629",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/1629/1629-360.gif",
       "thumbnailPath": "V1/exercisedb/1629/1629-180.gif"
+    },
+    "fx_wide_reverse_grip_barbell_bench_press": {
+      "provider": "exercisedb",
+      "externalMediaId": "1258",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1258/1258-360.gif",
+      "thumbnailPath": "V1/exercisedb/1258/1258-180.gif"
     },
     "fx_wide_stance_barbell_squat": {
       "provider": "exercisedb",
@@ -1431,12 +3496,26 @@
       "animationPath": "V1/exercisedb/0124/0124-360.gif",
       "thumbnailPath": "V1/exercisedb/0124/0124-180.gif"
     },
+    "fx_zercher_squats": {
+      "provider": "exercisedb",
+      "externalMediaId": "1545",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/1545/1545-360.gif",
+      "thumbnailPath": "V1/exercisedb/1545/1545-180.gif"
+    },
     "fx_zottman_curl": {
       "provider": "exercisedb",
       "externalMediaId": "0439",
       "mediaVersion": 1,
       "animationPath": "V1/exercisedb/0439/0439-360.gif",
       "thumbnailPath": "V1/exercisedb/0439/0439-180.gif"
+    },
+    "fx_zottman_preacher_curl": {
+      "provider": "exercisedb",
+      "externalMediaId": "2294",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/2294/2294-360.gif",
+      "thumbnailPath": "V1/exercisedb/2294/2294-180.gif"
     },
     "gx_archer_push_up": {
       "provider": "exercisedb",
@@ -1544,5 +3623,5 @@
       "thumbnailPath": "V1/exercisedb/0658/0658-180.gif"
     }
   },
-  "sha256": "371a590970ca05c167042ac9cfbace327187cf99bcecac8a96043e9e2f7fca0b"
+  "sha256": "4ed9bad6b55cb052725dbb2525e90108027855417e5fcf2189b45efd6e7bf49d"
 }

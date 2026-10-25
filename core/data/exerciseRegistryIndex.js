@@ -6,7 +6,7 @@
 
 export const SCHEMA_VERSION = "5.8";
 export const PLAN_POLICY_REASON_CODES = ["equipment_vocabulary_gap","alternative_setup_unmodeled","equipment_setup_ambiguous","household_object_dependency","partner_dependency","context_restricted_selection","superseded_by_canonical"];
-export const REGISTRY_TOTAL = 982;
+export const REGISTRY_TOTAL = 1192;
 export const EXERCISE_REGISTRY = [
  {
   "id": "fx_3_4_sit_up",
@@ -1093,6 +1093,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "One-Arm Kettlebell Renegade Row",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
   "hasCues": false
  },
  {
@@ -1395,6 +1400,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Dumbbell Arnold Press",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
   "hasCues": true
  },
  {
@@ -1449,6 +1460,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Dumbbell Around the World",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -1735,7 +1752,12 @@ export const EXERCISE_REGISTRY = [
    "status": "excluded",
    "reasonCode": "equipment_vocabulary_gap"
   },
-  "catalogVisibility": "hidden",
+  "catalogVisibility": "visible",
+  "displayName": "Band Reverse Fly",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
   "hasCues": false
  },
  {
@@ -2439,6 +2461,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Kneeling Barbell Rollout",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell"
+  ],
   "hasCues": false
  },
  {
@@ -3521,6 +3548,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Barbell Shrug",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell"
+  ],
   "hasCues": false
  },
  {
@@ -3625,6 +3657,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Barbell Side Bend",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell"
+  ],
   "hasCues": false
  },
  {
@@ -3830,6 +3867,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Barbell Squat to Bench",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -4180,7 +4223,12 @@ export const EXERCISE_REGISTRY = [
    "status": "excluded",
    "reasonCode": "equipment_vocabulary_gap"
   },
-  "catalogVisibility": "hidden",
+  "catalogVisibility": "visible",
+  "displayName": "Bench Dip",
+  "libraryEquipment": [
+   "bodyweight",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -4590,6 +4638,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Bent-Arm Barbell Pullover",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -6840,6 +6894,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Cable Hip Adduction",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -7004,6 +7063,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Seated Cable Internal Rotation",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -7804,6 +7868,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Cable Shrug",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -7857,6 +7926,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Seated Cable Wrist Curl",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -10612,6 +10687,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Cocoon Crunch",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
   "hasCues": false
  },
  {
@@ -11243,6 +11323,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Dumbbell Cuban Press",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
   "hasCues": false
  },
  {
@@ -11672,7 +11757,12 @@ export const EXERCISE_REGISTRY = [
    "status": "excluded",
    "reasonCode": "equipment_vocabulary_gap"
   },
-  "catalogVisibility": "hidden",
+  "catalogVisibility": "visible",
+  "displayName": "Decline Crunch",
+  "libraryEquipment": [
+   "bodyweight",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -12357,6 +12447,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Seated Machine Dip",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "machine"
+  ],
   "hasCues": false
  },
  {
@@ -14381,6 +14476,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Dumbbell Scaption",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
   "hasCues": false
  },
  {
@@ -14623,6 +14723,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Dumbbell Shrug",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
   "hasCues": false
  },
  {
@@ -14669,6 +14774,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Dumbbell Side Bend",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
   "hasCues": false
  },
  {
@@ -14736,6 +14846,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Dumbbell Squat",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
   "hasCues": false
  },
  {
@@ -14803,6 +14918,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Dumbbell Squat to Bench",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -15242,6 +15363,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Figure-Four Cross-Body Crunch",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
   "hasCues": false
  },
  {
@@ -15550,6 +15676,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Stability Ball Knee Tuck",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "stability_ball"
+  ],
   "hasCues": false
  },
  {
@@ -15771,6 +15902,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Cable External Rotation",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -15893,6 +16029,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Dumbbell Farmer's Carry",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
   "hasCues": false
  },
  {
@@ -16117,6 +16258,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Bench Knee Tuck",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -16285,6 +16432,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Hand-Assisted Nordic Curl",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -16959,6 +17112,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Cross-Arm Front Squat to Bench",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -18105,6 +18264,12 @@ export const EXERCISE_REGISTRY = [
   ],
   "isHybrid": true,
   "resolverDefaultEligible": false,
+  "displayName": "Chin-Up with Knee Raise",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
   "hasCues": false
  },
  {
@@ -19314,6 +19479,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Band Standing Hip Extension",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
   "hasCues": false
  },
  {
@@ -20669,7 +20840,12 @@ export const EXERCISE_REGISTRY = [
    "status": "excluded",
    "reasonCode": "alternative_setup_unmodeled"
   },
-  "catalogVisibility": "hidden",
+  "catalogVisibility": "visible",
+  "displayName": "Incline Push-Up",
+  "libraryEquipment": [
+   "bodyweight",
+   "step_platform"
+  ],
   "hasCues": true
  },
  {
@@ -21458,6 +21634,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Isometric Chest Squeeze",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
   "hasCues": false
  },
  {
@@ -22283,6 +22464,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Kettlebell Figure 8",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
   "hasCues": false
  },
  {
@@ -22757,6 +22943,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Kettlebell Sumo High Pull",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
   "hasCues": false
  },
  {
@@ -23015,6 +23206,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Kettlebell Windmill",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
   "hasCues": false
  },
  {
@@ -23709,6 +23905,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Kneeling One-Arm Cable High Row",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -24612,6 +24813,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Plate-Loaded Seated Chest Press",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "machine"
+  ],
   "hasCues": true
  },
  {
@@ -25050,6 +25256,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Machine Shrug",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "machine"
+  ],
   "hasCues": false
  },
  {
@@ -26809,6 +27020,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Prone Dumbbell Rear Delt Fly",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -27521,6 +27738,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Chest-Supported Dumbbell Shrug",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -27622,6 +27845,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Mixed-Grip Pull-Up",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
   "hasCues": false
  },
  {
@@ -28342,6 +28571,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Feet-Elevated Oblique Crunch",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -28732,6 +28967,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "High-Cable Side Crunch",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -28985,6 +29225,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "One-Arm Kettlebell Floor Press",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
   "hasCues": false
  },
  {
@@ -29264,6 +29509,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "One-Arm Kettlebell Row",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
   "hasCues": false
  },
  {
@@ -29572,6 +29822,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "One-Arm Landmine Row",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell",
+   "landmine"
+  ],
   "hasCues": false
  },
  {
@@ -29627,6 +29883,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "One-Arm Medicine Ball Slam",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "medicine_ball"
+  ],
   "hasCues": false
  },
  {
@@ -29940,6 +30201,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Cable Glute Kickback",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -30167,7 +30433,12 @@ export const EXERCISE_REGISTRY = [
    "status": "excluded",
    "reasonCode": "alternative_setup_unmodeled"
   },
-  "catalogVisibility": "hidden",
+  "catalogVisibility": "visible",
+  "displayName": "One-Arm Dumbbell Preacher Curl",
+  "libraryEquipment": [
+   "dumbbell",
+   "preacher_bench"
+  ],
   "hasCues": false
  },
  {
@@ -30615,6 +30886,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Barbell Bulgarian Split Squat",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -30732,6 +31009,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Otis Sit-Up",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "weight_plate"
+  ],
   "hasCues": false
  },
  {
@@ -30894,6 +31176,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Medicine Ball Slam",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "medicine_ball"
+  ],
   "hasCues": false
  },
  {
@@ -32044,6 +32331,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Dumbbell Sumo Squat",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
   "hasCues": false
  },
  {
@@ -32110,6 +32402,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Kettlebell Crossover Push-Up",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
   "hasCues": false
  },
  {
@@ -32178,6 +32475,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Plyometric Push-Up",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
   "hasCues": false
  },
  {
@@ -32807,7 +33109,12 @@ export const EXERCISE_REGISTRY = [
    "status": "excluded",
    "reasonCode": "equipment_vocabulary_gap"
   },
-  "catalogVisibility": "hidden",
+  "catalogVisibility": "visible",
+  "displayName": "Dumbbell Preacher Hammer Curl",
+  "libraryEquipment": [
+   "dumbbell",
+   "preacher_bench"
+  ],
   "hasCues": false
  },
  {
@@ -33038,6 +33345,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Cable Pull-Through",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -33296,7 +33608,12 @@ export const EXERCISE_REGISTRY = [
    "status": "excluded",
    "reasonCode": "equipment_vocabulary_gap"
   },
-  "catalogVisibility": "hidden",
+  "catalogVisibility": "visible",
+  "displayName": "Decline Push-Up",
+  "libraryEquipment": [
+   "bodyweight",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -35028,6 +35345,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Underhand Barbell Row",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell"
+  ],
   "hasCues": false
  },
  {
@@ -35201,6 +35523,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Neutral-Grip Machine Rear Delt Fly",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "machine"
+  ],
   "hasCues": false
  },
  {
@@ -36078,6 +36405,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Straight-Arm Rope Pulldown",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -36749,6 +37081,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Seated Barbell Twist",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -37439,6 +37777,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Seated Dumbbell Reverse Wrist Curl",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -37493,6 +37837,12 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Seated Dumbbell Wrist Curl",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -37547,6 +37897,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Seated Dumbbell Shoulder Press",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -38493,6 +38849,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Seated Overhead Dumbbell Triceps Extension",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
   "hasCues": false
  },
  {
@@ -38650,6 +39012,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "One-Arm Cable Row with Rotating Grip",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -39184,6 +39551,11 @@ export const EXERCISE_REGISTRY = [
   ],
   "isHybrid": true,
   "resolverDefaultEligible": false,
+  "displayName": "Dumbbell Lateral-to-Front Raise",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
   "hasCues": false
  },
  {
@@ -39231,6 +39603,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Standing Hip Abduction",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
   "hasCues": false
  },
  {
@@ -39446,6 +39823,12 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Archer Pull-Up",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
   "hasCues": false
  },
  {
@@ -42893,6 +43276,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Low Plank Spider Knee Drive",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
   "hasCues": false
  },
  {
@@ -44762,6 +45150,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Dumbbell Front Raise to Overhead",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
   "hasCues": false
  },
  {
@@ -45469,6 +45862,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "One-Arm Cable Lateral Raise",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -45987,6 +46385,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Standing Neutral-Grip Dumbbell Shoulder Press",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
   "hasCues": false
  },
  {
@@ -46905,6 +47308,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Straight-Arm Cable Pulldown",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -47879,6 +48287,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Plate Svend Press",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "weight_plate"
+  ],
   "hasCues": false
  },
  {
@@ -48110,6 +48523,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Machine Hip Abduction",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "machine"
+  ],
   "hasCues": false
  },
  {
@@ -48171,6 +48589,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Machine Hip Adduction",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "machine"
+  ],
   "hasCues": false
  },
  {
@@ -49126,6 +49549,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Double Kettlebell Overhead Press",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
   "hasCues": false
  },
  {
@@ -49175,6 +49603,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Double Kettlebell Bent-Over Row",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
   "hasCues": false
  },
  {
@@ -49380,6 +49813,11 @@ export const EXERCISE_REGISTRY = [
   "isHybrid": false,
   "resolverDefaultEligible": true,
   "planEligibility": "eligible",
+  "displayName": "Barbell Upright Row",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell"
+  ],
   "hasCues": false
  },
  {
@@ -49428,6 +49866,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Cable Upright Row",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "cable"
+  ],
   "hasCues": false
  },
  {
@@ -49645,7 +50088,12 @@ export const EXERCISE_REGISTRY = [
    "status": "excluded",
    "reasonCode": "equipment_vocabulary_gap"
   },
-  "catalogVisibility": "hidden",
+  "catalogVisibility": "visible",
+  "displayName": "V-Bar Pull-Up",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
   "hasCues": false
  },
  {
@@ -51283,6 +51731,11 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": false,
+  "displayName": "Zercher Squat",
+  "catalogVisibility": "visible",
+  "libraryEquipment": [
+   "barbell"
+  ],
   "hasCues": false
  },
  {
@@ -51401,7 +51854,12 @@ export const EXERCISE_REGISTRY = [
    "status": "excluded",
    "reasonCode": "alternative_setup_unmodeled"
   },
-  "catalogVisibility": "hidden",
+  "catalogVisibility": "visible",
+  "displayName": "Zottman Preacher Curl",
+  "libraryEquipment": [
+   "dumbbell",
+   "preacher_bench"
+  ],
   "hasCues": false
  },
  {
@@ -57878,6 +58336,4249 @@ export const EXERCISE_REGISTRY = [
   ],
   "catalogVisibility": "visible",
   "hasCues": true
+ },
+ {
+  "id": "fx_alternating_dumbbell_front_raise",
+  "name": "fx_alternating_dumbbell_front_raise",
+  "displayName": "Alternating Dumbbell Front Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_alternating_incline_dumbbell_press",
+  "name": "fx_alternating_incline_dumbbell_press",
+  "displayName": "Alternating Incline Dumbbell Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_alternating_machine_leg_press",
+  "name": "fx_alternating_machine_leg_press",
+  "displayName": "Alternating Machine Leg Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "quadriceps"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "adductors"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_alternating_machine_row",
+  "name": "fx_alternating_machine_row",
+  "displayName": "Alternating Machine Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "shoulders"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_alternating_neutral_grip_dumbbell_press",
+  "name": "fx_alternating_neutral_grip_dumbbell_press",
+  "displayName": "Alternating Neutral-Grip Dumbbell Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "abdominals"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_arm_pad_machine_crunch",
+  "name": "fx_arm_pad_machine_crunch",
+  "displayName": "Arm-Pad Machine Crunch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_assisted_bodyweight_squat",
+  "name": "fx_assisted_bodyweight_squat",
+  "displayName": "Assisted Bodyweight Squat",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "quadriceps"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "adductors"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_band_bicycle_crunch",
+  "name": "fx_band_bicycle_crunch",
+  "displayName": "Band Bicycle Crunch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_band_front_raise",
+  "name": "fx_band_front_raise",
+  "displayName": "Band Front Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_band_overhead_pallof_press",
+  "name": "fx_band_overhead_pallof_press",
+  "displayName": "Band Overhead Pallof Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_band_pallof_press",
+  "name": "fx_band_pallof_press",
+  "displayName": "Band Pallof Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_band_pull_through",
+  "name": "fx_band_pull_through",
+  "displayName": "Band Pull-Through",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "glutes"
+  ],
+  "secondaryMuscles": [
+   "hamstrings",
+   "lower back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_band_rear_delt_row",
+  "name": "fx_band_rear_delt_row",
+  "displayName": "Band Rear Delt Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_band_shrug",
+  "name": "fx_band_shrug",
+  "displayName": "Band Shrug",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "traps"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_band_squat_to_row",
+  "name": "fx_band_squat_to_row",
+  "displayName": "Band Squat to Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "quadriceps"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "middle back",
+   "lats",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_band_stiff_leg_deadlift",
+  "name": "fx_band_stiff_leg_deadlift",
+  "displayName": "Band Stiff-Leg Deadlift",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "hamstrings"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "lower back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_band_v_up",
+  "name": "fx_band_v_up",
+  "displayName": "Band V-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_band_y_raise",
+  "name": "fx_band_y_raise",
+  "displayName": "Band Y-Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_banded_lateral_walk",
+  "name": "fx_banded_lateral_walk",
+  "displayName": "Banded Lateral Walk",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abductors"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "quadriceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_bar_muscle_up",
+  "name": "fx_bar_muscle_up",
+  "displayName": "Bar Muscle-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "chest",
+   "triceps",
+   "biceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_barbell_front_raise",
+  "name": "fx_barbell_front_raise",
+  "displayName": "Barbell Front Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "chest"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_barbell_reverse_lunge",
+  "name": "fx_barbell_reverse_lunge",
+  "displayName": "Barbell Reverse Lunge",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "quadriceps"
+  ],
+  "secondaryMuscles": [
+   "glutes"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_barbell_single_leg_romanian_deadlift",
+  "name": "fx_barbell_single_leg_romanian_deadlift",
+  "displayName": "Barbell Single-Leg Romanian Deadlift",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "hamstrings"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "lower back",
+   "abductors"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_barbell_step_calf_raise",
+  "name": "fx_barbell_step_calf_raise",
+  "displayName": "Barbell Step Calf Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "calves"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "barbell",
+   "step_platform"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_bench_supported_side_plank",
+  "name": "fx_bench_supported_side_plank",
+  "displayName": "Bench-Supported Side Plank",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals",
+   "shoulders",
+   "abductors"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_bent_knee_bench_dip",
+  "name": "fx_bent_knee_bench_dip",
+  "displayName": "Bent-Knee Bench Dip",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "triceps"
+  ],
+  "secondaryMuscles": [
+   "chest",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_bent_knee_windshield_wiper",
+  "name": "fx_bent_knee_windshield_wiper",
+  "displayName": "Bent-Knee Windshield Wiper",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_bent_over_cable_rear_delt_fly",
+  "name": "fx_bent_over_cable_rear_delt_fly",
+  "displayName": "Bent-Over Cable Rear Delt Fly",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "traps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_bent_over_dumbbell_rear_delt_fly",
+  "name": "fx_bent_over_dumbbell_rear_delt_fly",
+  "displayName": "Bent-Over Dumbbell Rear Delt Fly",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "middle back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_bent_over_one_arm_cable_row",
+  "name": "fx_bent_over_one_arm_cable_row",
+  "displayName": "Bent-Over One-Arm Cable Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "forearms"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_bodyweight_forward_lunge",
+  "name": "fx_bodyweight_forward_lunge",
+  "displayName": "Bodyweight Forward Lunge",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "quadriceps"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "adductors"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_bodyweight_step_calf_raise",
+  "name": "fx_bodyweight_step_calf_raise",
+  "displayName": "Bodyweight Step Calf Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "calves"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight",
+   "step_platform"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_butterfly_crunch",
+  "name": "fx_butterfly_crunch",
+  "displayName": "Butterfly Crunch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_cable_bar_front_raise",
+  "name": "fx_cable_bar_front_raise",
+  "displayName": "Cable Bar Front Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_cable_drag_curl",
+  "name": "fx_cable_drag_curl",
+  "displayName": "Cable Drag Curl",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "biceps"
+  ],
+  "secondaryMuscles": [
+   "forearms",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_cable_flat_bench_press",
+  "name": "fx_cable_flat_bench_press",
+  "displayName": "Cable Flat Bench Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_cable_incline_bench_press",
+  "name": "fx_cable_incline_bench_press",
+  "displayName": "Cable Incline Bench Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_cable_kayak_row",
+  "name": "fx_cable_kayak_row",
+  "displayName": "Cable Kayak Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "obliques",
+   "middle back",
+   "triceps"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_cable_side_bend",
+  "name": "fx_cable_side_bend",
+  "displayName": "Cable Side Bend",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_chest_height_cable_fly",
+  "name": "fx_chest_height_cable_fly",
+  "displayName": "Chest-Height Cable Fly",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_chest_supported_barbell_row",
+  "name": "fx_chest_supported_barbell_row",
+  "displayName": "Chest-Supported Barbell Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_chest_supported_cable_row",
+  "name": "fx_chest_supported_cable_row",
+  "displayName": "Chest-Supported Cable Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_chest_supported_underhand_barbell_row",
+  "name": "fx_chest_supported_underhand_barbell_row",
+  "displayName": "Chest-Supported Underhand Barbell Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_chest_tap_plyo_push_up",
+  "name": "fx_chest_tap_plyo_push_up",
+  "displayName": "Chest-Tap Plyo Push-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_close_grip_dumbbell_bench_press",
+  "name": "fx_close_grip_dumbbell_bench_press",
+  "displayName": "Close-Grip Dumbbell Bench Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "triceps"
+  ],
+  "secondaryMuscles": [
+   "chest",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_close_grip_knee_push_up",
+  "name": "fx_close_grip_knee_push_up",
+  "displayName": "Close-Grip Knee Push-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "triceps"
+  ],
+  "secondaryMuscles": [
+   "chest",
+   "shoulders",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_close_grip_machine_chest_press",
+  "name": "fx_close_grip_machine_chest_press",
+  "displayName": "Close-Grip Machine Chest Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_close_grip_pull_up",
+  "name": "fx_close_grip_pull_up",
+  "displayName": "Close-Grip Pull-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "biceps",
+   "middle back",
+   "forearms"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_close_grip_wall_push_up",
+  "name": "fx_close_grip_wall_push_up",
+  "displayName": "Close-Grip Wall Push-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_crab_toe_touch",
+  "name": "fx_crab_toe_touch",
+  "displayName": "Crab Toe Touch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques",
+   "glutes",
+   "shoulders"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_curl_up_with_one_leg_extended",
+  "name": "fx_curl_up_with_one_leg_extended",
+  "displayName": "Curl-Up with One Leg Extended",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_deep_dumbbell_push_up",
+  "name": "fx_deep_dumbbell_push_up",
+  "displayName": "Deep Dumbbell Push-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dual_cable_front_raise",
+  "name": "fx_dual_cable_front_raise",
+  "displayName": "Dual-Cable Front Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "chest",
+   "traps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dual_cable_lateral_raise",
+  "name": "fx_dual_cable_lateral_raise",
+  "displayName": "Dual-Cable Lateral Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dual_cable_tuck_crunch",
+  "name": "fx_dual_cable_tuck_crunch",
+  "displayName": "Dual-Cable Tuck Crunch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dumbbell_around_the_world_raise",
+  "name": "fx_dumbbell_around_the_world_raise",
+  "displayName": "Dumbbell Around-the-World Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dumbbell_deadlift",
+  "name": "fx_dumbbell_deadlift",
+  "displayName": "Dumbbell Deadlift",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "glutes"
+  ],
+  "secondaryMuscles": [
+   "hamstrings",
+   "quadriceps",
+   "lower back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dumbbell_low_to_high_wood_chop",
+  "name": "fx_dumbbell_low_to_high_wood_chop",
+  "displayName": "Dumbbell Low-to-High Wood Chop",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals",
+   "shoulders"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dumbbell_lying_leg_curl",
+  "name": "fx_dumbbell_lying_leg_curl",
+  "displayName": "Dumbbell Lying Leg Curl",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "hamstrings"
+  ],
+  "secondaryMuscles": [
+   "calves"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dumbbell_plank_rotation",
+  "name": "fx_dumbbell_plank_rotation",
+  "displayName": "Dumbbell Plank Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "obliques",
+   "abdominals"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dumbbell_push_press",
+  "name": "fx_dumbbell_push_press",
+  "displayName": "Dumbbell Push Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "quadriceps",
+   "glutes"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dumbbell_scott_press",
+  "name": "fx_dumbbell_scott_press",
+  "displayName": "Dumbbell Scott Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps",
+   "middle back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dumbbell_w_press",
+  "name": "fx_dumbbell_w_press",
+  "displayName": "Dumbbell W Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "triceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_dumbbell_waiter_curl",
+  "name": "fx_dumbbell_waiter_curl",
+  "displayName": "Dumbbell Waiter Curl",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "biceps"
+  ],
+  "secondaryMuscles": [
+   "forearms"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_feet_elevated_glute_bridge",
+  "name": "fx_feet_elevated_glute_bridge",
+  "displayName": "Feet-Elevated Glute Bridge",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "glutes"
+  ],
+  "secondaryMuscles": [
+   "hamstrings",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_forearm_plank_pike",
+  "name": "fx_forearm_plank_pike",
+  "displayName": "Forearm Plank Pike",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_forward_lunge_with_rotation",
+  "name": "fx_forward_lunge_with_rotation",
+  "displayName": "Forward Lunge with Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "quadriceps"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "obliques",
+   "abdominals"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_glute_bridge_march",
+  "name": "fx_glute_bridge_march",
+  "displayName": "Glute Bridge March",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "glutes"
+  ],
+  "secondaryMuscles": [
+   "hamstrings",
+   "abdominals"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_glute_bridge_with_reach",
+  "name": "fx_glute_bridge_with_reach",
+  "displayName": "Glute Bridge with Reach",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "glutes"
+  ],
+  "secondaryMuscles": [
+   "hamstrings",
+   "obliques",
+   "shoulders"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_half_kneeling_cable_face_pull",
+  "name": "fx_half_kneeling_cable_face_pull",
+  "displayName": "Half-Kneeling Cable Face Pull",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_half_kneeling_one_arm_cable_triceps_extension",
+  "name": "fx_half_kneeling_one_arm_cable_triceps_extension",
+  "displayName": "Half-Kneeling One-Arm Cable Triceps Extension",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "triceps"
+  ],
+  "secondaryMuscles": [
+   "forearms"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_hanging_knee_raise",
+  "name": "fx_hanging_knee_raise",
+  "displayName": "Hanging Knee Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_hanging_oblique_knee_raise",
+  "name": "fx_hanging_oblique_knee_raise",
+  "displayName": "Hanging Oblique Knee Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_high_cable_rope_curl",
+  "name": "fx_high_cable_rope_curl",
+  "displayName": "High Cable Rope Curl",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "biceps"
+  ],
+  "secondaryMuscles": [
+   "forearms",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_inchworm_push_up",
+  "name": "fx_inchworm_push_up",
+  "displayName": "Inchworm Push-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "chest",
+   "triceps",
+   "shoulders",
+   "hamstrings"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_incline_close_grip_barbell_bench_press",
+  "name": "fx_incline_close_grip_barbell_bench_press",
+  "displayName": "Incline Close-Grip Barbell Bench Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "triceps"
+  ],
+  "secondaryMuscles": [
+   "chest",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_incline_dumbbell_fly_with_twist",
+  "name": "fx_incline_dumbbell_fly_with_twist",
+  "displayName": "Incline Dumbbell Fly with Twist",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_incline_dumbbell_rear_delt_row",
+  "name": "fx_incline_dumbbell_rear_delt_row",
+  "displayName": "Incline Dumbbell Rear Delt Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_incline_dumbbell_y_raise",
+  "name": "fx_incline_dumbbell_y_raise",
+  "displayName": "Incline Dumbbell Y-Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "traps"
+  ],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_incline_low_to_high_dumbbell_fly",
+  "name": "fx_incline_low_to_high_dumbbell_fly",
+  "displayName": "Incline Low-to-High Dumbbell Fly",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_kneeling_band_hip_thrust",
+  "name": "fx_kneeling_band_hip_thrust",
+  "displayName": "Kneeling Band Hip Thrust",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "glutes"
+  ],
+  "secondaryMuscles": [
+   "hamstrings",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_kneeling_band_twisting_crunch",
+  "name": "fx_kneeling_band_twisting_crunch",
+  "displayName": "Kneeling Band Twisting Crunch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_kneeling_bodyweight_triceps_extension",
+  "name": "fx_kneeling_bodyweight_triceps_extension",
+  "displayName": "Kneeling Bodyweight Triceps Extension",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "triceps"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_kneeling_cable_high_row",
+  "name": "fx_kneeling_cable_high_row",
+  "displayName": "Kneeling Cable High Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_kneeling_plank_shoulder_tap",
+  "name": "fx_kneeling_plank_shoulder_tap",
+  "displayName": "Kneeling Plank Shoulder Tap",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "obliques"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_kneeling_single_leg_machine_curl",
+  "name": "fx_kneeling_single_leg_machine_curl",
+  "displayName": "Kneeling Single-Leg Machine Curl",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "hamstrings"
+  ],
+  "secondaryMuscles": [
+   "calves"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_l_sit_hold",
+  "name": "fx_l_sit_hold",
+  "displayName": "L-Sit Hold",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_leg_press_to_calf_press",
+  "name": "fx_leg_press_to_calf_press",
+  "displayName": "Leg Press to Calf Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "quadriceps"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "calves"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_low_push_up_side_shift",
+  "name": "fx_low_push_up_side_shift",
+  "displayName": "Low Push-Up Side Shift",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps",
+   "abdominals"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_low_to_high_cable_wood_chop",
+  "name": "fx_low_to_high_cable_wood_chop",
+  "displayName": "Low-to-High Cable Wood Chop",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals",
+   "shoulders"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_lying_cable_rear_delt_fly",
+  "name": "fx_lying_cable_rear_delt_fly",
+  "displayName": "Lying Cable Rear Delt Fly",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "traps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_lying_cable_rope_pullover",
+  "name": "fx_lying_cable_rope_pullover",
+  "displayName": "Lying Cable Rope Pullover",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "chest",
+   "triceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_machine_assisted_chest_dip",
+  "name": "fx_machine_assisted_chest_dip",
+  "displayName": "Machine-Assisted Chest Dip",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_machine_assisted_pull_up",
+  "name": "fx_machine_assisted_pull_up",
+  "displayName": "Machine-Assisted Pull-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "biceps",
+   "forearms"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_machine_back_extension",
+  "name": "fx_machine_back_extension",
+  "displayName": "Machine Back Extension",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lower back"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_machine_lateral_raise",
+  "name": "fx_machine_lateral_raise",
+  "displayName": "Machine Lateral Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_machine_pullover",
+  "name": "fx_machine_pullover",
+  "displayName": "Machine Pullover",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "chest",
+   "triceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_modified_hindu_push_up",
+  "name": "fx_modified_hindu_push_up",
+  "displayName": "Modified Hindu Push-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_neutral_grip_dumbbell_upright_row",
+  "name": "fx_neutral_grip_dumbbell_upright_row",
+  "displayName": "Neutral-Grip Dumbbell Upright Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_neutral_grip_pull_up",
+  "name": "fx_neutral_grip_pull_up",
+  "displayName": "Neutral-Grip Pull-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "biceps",
+   "forearms",
+   "middle back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_offset_dumbbell_forward_lunge",
+  "name": "fx_offset_dumbbell_forward_lunge",
+  "displayName": "Offset Dumbbell Forward Lunge",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "quadriceps"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "adductors",
+   "abdominals"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_offset_medicine_ball_push_up",
+  "name": "fx_offset_medicine_ball_push_up",
+  "displayName": "Offset Medicine Ball Push-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "medicine_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_band_front_raise",
+  "name": "fx_one_arm_band_front_raise",
+  "displayName": "One-Arm Band Front Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_band_high_curl",
+  "name": "fx_one_arm_band_high_curl",
+  "displayName": "One-Arm Band High Curl",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "biceps"
+  ],
+  "secondaryMuscles": [
+   "forearms"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_band_row",
+  "name": "fx_one_arm_band_row",
+  "displayName": "One-Arm Band Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "shoulders"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_bent_over_cable_fly",
+  "name": "fx_one_arm_bent_over_cable_fly",
+  "displayName": "One-Arm Bent-Over Cable Fly",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_cable_kickback",
+  "name": "fx_one_arm_cable_kickback",
+  "displayName": "One-Arm Cable Kickback",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "triceps"
+  ],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_cable_reverse_curl",
+  "name": "fx_one_arm_cable_reverse_curl",
+  "displayName": "One-Arm Cable Reverse Curl",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "biceps"
+  ],
+  "secondaryMuscles": [
+   "forearms"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_cable_row_with_rotation",
+  "name": "fx_one_arm_cable_row_with_rotation",
+  "displayName": "One-Arm Cable Row with Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "biceps",
+   "obliques"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_dumbbell_curl",
+  "name": "fx_one_arm_dumbbell_curl",
+  "displayName": "One-Arm Dumbbell Curl",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "biceps"
+  ],
+  "secondaryMuscles": [
+   "forearms"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_dumbbell_rear_delt_row",
+  "name": "fx_one_arm_dumbbell_rear_delt_row",
+  "displayName": "One-Arm Dumbbell Rear Delt Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "biceps"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_incline_bench_cable_press",
+  "name": "fx_one_arm_incline_bench_cable_press",
+  "displayName": "One-Arm Incline Bench Cable Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_incline_dumbbell_fly",
+  "name": "fx_one_arm_incline_dumbbell_fly",
+  "displayName": "One-Arm Incline Dumbbell Fly",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_incline_dumbbell_press",
+  "name": "fx_one_arm_incline_dumbbell_press",
+  "displayName": "One-Arm Incline Dumbbell Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_kettlebell_rolling_floor_press",
+  "name": "fx_one_arm_kettlebell_rolling_floor_press",
+  "displayName": "One-Arm Kettlebell Rolling Floor Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "obliques"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "kettlebell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_landmine_lateral_raise",
+  "name": "fx_one_arm_landmine_lateral_raise",
+  "displayName": "One-Arm Landmine Lateral Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "landmine",
+   "barbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_plate_loaded_high_row",
+  "name": "fx_one_arm_plate_loaded_high_row",
+  "displayName": "One-Arm Plate-Loaded High Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "shoulders"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_seated_cable_row",
+  "name": "fx_one_arm_seated_cable_row",
+  "displayName": "One-Arm Seated Cable Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_stability_ball_dumbbell_press",
+  "name": "fx_one_arm_stability_ball_dumbbell_press",
+  "displayName": "One-Arm Stability Ball Dumbbell Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "abdominals",
+   "glutes"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_straight_arm_cable_pulldown",
+  "name": "fx_one_arm_straight_arm_cable_pulldown",
+  "displayName": "One-Arm Straight-Arm Cable Pulldown",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_triceps_pushdown",
+  "name": "fx_one_arm_triceps_pushdown",
+  "displayName": "One-Arm Triceps Pushdown",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "triceps"
+  ],
+  "secondaryMuscles": [
+   "forearms"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_one_arm_underhand_incline_dumbbell_row",
+  "name": "fx_one_arm_underhand_incline_dumbbell_row",
+  "displayName": "One-Arm Underhand Incline Dumbbell Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "shoulders"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_overhand_machine_rear_delt_fly",
+  "name": "fx_overhand_machine_rear_delt_fly",
+  "displayName": "Overhand Machine Rear Delt Fly",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "traps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_overhand_machine_row",
+  "name": "fx_overhand_machine_row",
+  "displayName": "Overhand Machine Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "forearms"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_overhead_handle_machine_crunch",
+  "name": "fx_overhead_handle_machine_crunch",
+  "displayName": "Overhead-Handle Machine Crunch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_pendlay_row",
+  "name": "fx_pendlay_row",
+  "displayName": "Pendlay Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "lower back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_pike_to_cobra_push_up",
+  "name": "fx_pike_to_cobra_push_up",
+  "displayName": "Pike-to-Cobra Push-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_plank_to_side_plank_rotation",
+  "name": "fx_plank_to_side_plank_rotation",
+  "displayName": "Plank to Side Plank Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals",
+   "shoulders"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_plank_with_opposite_arm_and_leg_raise",
+  "name": "fx_plank_with_opposite_arm_and_leg_raise",
+  "displayName": "Plank with Opposite Arm and Leg Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques",
+   "shoulders",
+   "glutes"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_plate_loaded_lat_pulldown",
+  "name": "fx_plate_loaded_lat_pulldown",
+  "displayName": "Plate-Loaded Lat Pulldown",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "biceps",
+   "middle back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_prone_swimmer",
+  "name": "fx_prone_swimmer",
+  "displayName": "Prone Swimmer",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lower back"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "hamstrings",
+   "shoulders"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_push_up_plus",
+  "name": "fx_push_up_plus",
+  "displayName": "Push-Up Plus",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_push_up_with_arm_reach",
+  "name": "fx_push_up_with_arm_reach",
+  "displayName": "Push-Up with Arm Reach",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_push_up_with_kick_through",
+  "name": "fx_push_up_with_kick_through",
+  "displayName": "Push-Up with Kick-Through",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "obliques"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_push_up_with_side_knee_tuck",
+  "name": "fx_push_up_with_side_knee_tuck",
+  "displayName": "Push-Up with Side Knee Tuck",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "obliques",
+   "glutes"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_rear_foot_elevated_dumbbell_romanian_deadlift",
+  "name": "fx_rear_foot_elevated_dumbbell_romanian_deadlift",
+  "displayName": "Rear-Foot-Elevated Dumbbell Romanian Deadlift",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "hamstrings"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "lower back",
+   "forearms"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "step_platform"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_reverse_ez_bar_curl",
+  "name": "fx_reverse_ez_bar_curl",
+  "displayName": "Reverse EZ-Bar Curl",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "biceps"
+  ],
+  "secondaryMuscles": [
+   "forearms"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "ez_bar"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_reverse_grip_dumbbell_bench_press",
+  "name": "fx_reverse_grip_dumbbell_bench_press",
+  "displayName": "Reverse-Grip Dumbbell Bench Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_reverse_grip_ez_bar_row",
+  "name": "fx_reverse_grip_ez_bar_row",
+  "displayName": "Reverse-Grip EZ-Bar Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "ez_bar"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_reverse_grip_incline_barbell_bench_press",
+  "name": "fx_reverse_grip_incline_barbell_bench_press",
+  "displayName": "Reverse-Grip Incline Barbell Bench Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_reverse_grip_skull_crusher",
+  "name": "fx_reverse_grip_skull_crusher",
+  "displayName": "Reverse-Grip Skull Crusher",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "triceps"
+  ],
+  "secondaryMuscles": [
+   "forearms"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_rope_lat_pulldown",
+  "name": "fx_rope_lat_pulldown",
+  "displayName": "Rope Lat Pulldown",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "biceps",
+   "middle back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_rotating_grip_dumbbell_bench_press",
+  "name": "fx_rotating_grip_dumbbell_bench_press",
+  "displayName": "Rotating-Grip Dumbbell Bench Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_rotating_grip_dumbbell_row",
+  "name": "fx_rotating_grip_dumbbell_row",
+  "displayName": "Rotating-Grip Dumbbell Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_alternating_neutral_grip_dumbbell_press",
+  "name": "fx_seated_alternating_neutral_grip_dumbbell_press",
+  "displayName": "Seated Alternating Neutral-Grip Dumbbell Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "triceps"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_band_chest_press",
+  "name": "fx_seated_band_chest_press",
+  "displayName": "Seated Band Chest Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_band_concentration_curl",
+  "name": "fx_seated_band_concentration_curl",
+  "displayName": "Seated Band Concentration Curl",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "biceps"
+  ],
+  "secondaryMuscles": [
+   "forearms"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "band",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_band_hip_abduction",
+  "name": "fx_seated_band_hip_abduction",
+  "displayName": "Seated Band Hip Abduction",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abductors"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_band_rotation",
+  "name": "fx_seated_band_rotation",
+  "displayName": "Seated Band Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_band_shoulder_press",
+  "name": "fx_seated_band_shoulder_press",
+  "displayName": "Seated Band Shoulder Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "traps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_cable_rear_delt_row",
+  "name": "fx_seated_cable_rear_delt_row",
+  "displayName": "Seated Cable Rear Delt Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_cable_rope_row",
+  "name": "fx_seated_cable_rope_row",
+  "displayName": "Seated Cable Rope Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_cable_rotation",
+  "name": "fx_seated_cable_rotation",
+  "displayName": "Seated Cable Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_close_grip_band_pulldown",
+  "name": "fx_seated_close_grip_band_pulldown",
+  "displayName": "Seated Close-Grip Band Pulldown",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "biceps",
+   "middle back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_double_kettlebell_overhead_press",
+  "name": "fx_seated_double_kettlebell_overhead_press",
+  "displayName": "Seated Double Kettlebell Overhead Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "kettlebell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_one_arm_band_row_with_rotation",
+  "name": "fx_seated_one_arm_band_row_with_rotation",
+  "displayName": "Seated One-Arm Band Row with Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "shoulders",
+   "obliques"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_overhead_barbell_triceps_extension",
+  "name": "fx_seated_overhead_barbell_triceps_extension",
+  "displayName": "Seated Overhead Barbell Triceps Extension",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "triceps"
+  ],
+  "secondaryMuscles": [
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_seated_underhand_band_pulldown",
+  "name": "fx_seated_underhand_band_pulldown",
+  "displayName": "Seated Underhand Band Pulldown",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "biceps",
+   "middle back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_shoulder_tap_push_up",
+  "name": "fx_shoulder_tap_push_up",
+  "displayName": "Shoulder Tap Push-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "abdominals",
+   "obliques"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_side_lying_dumbbell_external_rotation",
+  "name": "fx_side_lying_dumbbell_external_rotation",
+  "displayName": "Side-Lying Dumbbell External Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_side_lying_dumbbell_lateral_raise",
+  "name": "fx_side_lying_dumbbell_lateral_raise",
+  "displayName": "Side-Lying Dumbbell Lateral Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "traps"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_side_lying_hip_abduction",
+  "name": "fx_side_lying_hip_abduction",
+  "displayName": "Side-Lying Hip Abduction",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abductors"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_side_lying_hip_adduction",
+  "name": "fx_side_lying_hip_adduction",
+  "displayName": "Side-Lying Hip Adduction",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "adductors"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_side_plank_with_leg_raise",
+  "name": "fx_side_plank_with_leg_raise",
+  "displayName": "Side Plank with Leg Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abductors"
+  ],
+  "secondaryMuscles": [
+   "obliques",
+   "shoulders"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_single_leg_calf_raise",
+  "name": "fx_single_leg_calf_raise",
+  "displayName": "Single-Leg Calf Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "calves"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_single_leg_dumbbell_calf_raise",
+  "name": "fx_single_leg_dumbbell_calf_raise",
+  "displayName": "Single-Leg Dumbbell Calf Raise",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "calves"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_single_leg_tuck_sit_up",
+  "name": "fx_single_leg_tuck_sit_up",
+  "displayName": "Single-Leg Tuck Sit-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_single_leg_v_up",
+  "name": "fx_single_leg_v_up",
+  "displayName": "Single-Leg V-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_smith_machine_front_squat",
+  "name": "fx_smith_machine_front_squat",
+  "displayName": "Smith Machine Front Squat",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "quadriceps"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "smith_machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_smith_machine_rear_delt_row",
+  "name": "fx_smith_machine_rear_delt_row",
+  "displayName": "Smith Machine Rear Delt Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "smith_machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_smith_machine_reverse_grip_bench_press",
+  "name": "fx_smith_machine_reverse_grip_bench_press",
+  "displayName": "Smith Machine Reverse-Grip Bench Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "smith_machine",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_smith_machine_reverse_grip_incline_press",
+  "name": "fx_smith_machine_reverse_grip_incline_press",
+  "displayName": "Smith Machine Reverse-Grip Incline Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "smith_machine",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_smith_machine_shrug",
+  "name": "fx_smith_machine_shrug",
+  "displayName": "Smith Machine Shrug",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "traps"
+  ],
+  "secondaryMuscles": [
+   "forearms"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "smith_machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_smith_machine_underhand_row",
+  "name": "fx_smith_machine_underhand_row",
+  "displayName": "Smith Machine Underhand Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "middle back",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "smith_machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_back_extension",
+  "name": "fx_stability_ball_back_extension",
+  "displayName": "Stability Ball Back Extension",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lower back"
+  ],
+  "secondaryMuscles": [
+   "glutes",
+   "hamstrings"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_back_extension_with_rotation",
+  "name": "fx_stability_ball_back_extension_with_rotation",
+  "displayName": "Stability Ball Back Extension with Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lower back"
+  ],
+  "secondaryMuscles": [
+   "obliques",
+   "glutes",
+   "hamstrings"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_cable_chest_press",
+  "name": "fx_stability_ball_cable_chest_press",
+  "displayName": "Stability Ball Cable Chest Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "abdominals",
+   "glutes"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable",
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_dumbbell_fly",
+  "name": "fx_stability_ball_dumbbell_fly",
+  "displayName": "Stability Ball Dumbbell Fly",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "abdominals",
+   "glutes"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_dumbbell_press",
+  "name": "fx_stability_ball_dumbbell_press",
+  "displayName": "Stability Ball Dumbbell Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps",
+   "abdominals",
+   "glutes"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_dumbbell_pullover",
+  "name": "fx_stability_ball_dumbbell_pullover",
+  "displayName": "Stability Ball Dumbbell Pullover",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "triceps",
+   "abdominals",
+   "glutes"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_incline_cable_fly",
+  "name": "fx_stability_ball_incline_cable_fly",
+  "displayName": "Stability Ball Incline Cable Fly",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable",
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_incline_dumbbell_fly",
+  "name": "fx_stability_ball_incline_dumbbell_fly",
+  "displayName": "Stability Ball Incline Dumbbell Fly",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_incline_dumbbell_press",
+  "name": "fx_stability_ball_incline_dumbbell_press",
+  "displayName": "Stability Ball Incline Dumbbell Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_prone_rotation",
+  "name": "fx_stability_ball_prone_rotation",
+  "displayName": "Stability Ball Prone Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals",
+   "shoulders"
+  ],
+  "laterality": "alternating",
+  "libraryEquipment": [
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_push_up",
+  "name": "fx_stability_ball_push_up",
+  "displayName": "Stability Ball Push-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_stability_ball_push_up_to_pike",
+  "name": "fx_stability_ball_push_up_to_pike",
+  "displayName": "Stability Ball Push-Up to Pike",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "triceps",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "stability_ball"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_standing_band_crunch",
+  "name": "fx_standing_band_crunch",
+  "displayName": "Standing Band Crunch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_standing_band_twisting_crunch",
+  "name": "fx_standing_band_twisting_crunch",
+  "displayName": "Standing Band Twisting Crunch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_standing_barbell_rollout",
+  "name": "fx_standing_barbell_rollout",
+  "displayName": "Standing Barbell Rollout",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_standing_barbell_twist",
+  "name": "fx_standing_barbell_twist",
+  "displayName": "Standing Barbell Twist",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "barbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_standing_cable_crunch",
+  "name": "fx_standing_cable_crunch",
+  "displayName": "Standing Cable Crunch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "obliques"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_standing_cable_rotation",
+  "name": "fx_standing_cable_rotation",
+  "displayName": "Standing Cable Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_standing_cable_row",
+  "name": "fx_standing_cable_row",
+  "displayName": "Standing Cable Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_standing_cable_twisting_crunch",
+  "name": "fx_standing_cable_twisting_crunch",
+  "displayName": "Standing Cable Twisting Crunch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "obliques"
+  ],
+  "secondaryMuscles": [
+   "abdominals"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_standing_dumbbell_external_rotation",
+  "name": "fx_standing_dumbbell_external_rotation",
+  "displayName": "Standing Dumbbell External Rotation",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_standing_machine_chest_press",
+  "name": "fx_standing_machine_chest_press",
+  "displayName": "Standing Machine Chest Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_standing_smith_machine_shoulder_press",
+  "name": "fx_standing_smith_machine_shoulder_press",
+  "displayName": "Standing Smith Machine Shoulder Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "abdominals"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "smith_machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_straight_leg_band_sit_up",
+  "name": "fx_straight_leg_band_sit_up",
+  "displayName": "Straight-Leg Band Sit-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "chest"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_straight_leg_reach_crunch",
+  "name": "fx_straight_leg_reach_crunch",
+  "displayName": "Straight-Leg Reach Crunch",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "abdominals"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_supported_one_arm_cable_row",
+  "name": "fx_supported_one_arm_cable_row",
+  "displayName": "Supported One-Arm Cable Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "shoulders"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_two_up_one_down_lying_leg_curl",
+  "name": "fx_two_up_one_down_lying_leg_curl",
+  "displayName": "Two-Up One-Down Lying Leg Curl",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "hamstrings"
+  ],
+  "secondaryMuscles": [
+   "calves"
+  ],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_underhand_bent_over_dumbbell_row",
+  "name": "fx_underhand_bent_over_dumbbell_row",
+  "displayName": "Underhand Bent-Over Dumbbell Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_underhand_incline_dumbbell_row",
+  "name": "fx_underhand_incline_dumbbell_row",
+  "displayName": "Underhand Incline Dumbbell Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_underhand_machine_row",
+  "name": "fx_underhand_machine_row",
+  "displayName": "Underhand Machine Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "lats",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_underhand_plate_loaded_lat_pulldown",
+  "name": "fx_underhand_plate_loaded_lat_pulldown",
+  "displayName": "Underhand Plate-Loaded Lat Pulldown",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "biceps",
+   "middle back"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_wide_grip_plate_loaded_shoulder_press",
+  "name": "fx_wide_grip_plate_loaded_shoulder_press",
+  "displayName": "Wide-Grip Plate-Loaded Shoulder Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "shoulders"
+  ],
+  "secondaryMuscles": [
+   "triceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "machine"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_wide_grip_pull_up",
+  "name": "fx_wide_grip_pull_up",
+  "displayName": "Wide-Grip Pull-Up",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "lats"
+  ],
+  "secondaryMuscles": [
+   "biceps",
+   "middle back",
+   "forearms"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "bodyweight",
+   "pullup_bar"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_wide_grip_seated_cable_row",
+  "name": "fx_wide_grip_seated_cable_row",
+  "displayName": "Wide-Grip Seated Cable Row",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "middle back"
+  ],
+  "secondaryMuscles": [
+   "shoulders",
+   "biceps"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "cable"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_wide_grip_smith_machine_bench_press",
+  "name": "fx_wide_grip_smith_machine_bench_press",
+  "displayName": "Wide-Grip Smith Machine Bench Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "smith_machine",
+   "bench"
+  ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_wide_reverse_grip_barbell_bench_press",
+  "name": "fx_wide_reverse_grip_barbell_bench_press",
+  "displayName": "Wide Reverse-Grip Barbell Bench Press",
+  "catalogVisibility": "visible",
+  "planEligibility": "library_only",
+  "resolverDefaultEligible": false,
+  "primaryMuscles": [
+   "chest"
+  ],
+  "secondaryMuscles": [
+   "triceps",
+   "shoulders"
+  ],
+  "laterality": "bilateral",
+  "libraryEquipment": [
+   "barbell",
+   "bench"
+  ],
+  "hasCues": false
  }
 ];
 export function getExerciseById(id) { return EXERCISE_REGISTRY.find((e) => e.id === id) || null; }
