@@ -4,7 +4,7 @@
  * Detail-only fields live in exercise_details.json, served from Supabase.
  */
 
-export const SCHEMA_VERSION = "5.7";
+export const SCHEMA_VERSION = "5.8";
 export const PLAN_POLICY_REASON_CODES = ["equipment_vocabulary_gap","alternative_setup_unmodeled","equipment_setup_ambiguous","household_object_dependency","partner_dependency","context_restricted_selection","superseded_by_canonical"];
 export const REGISTRY_TOTAL = 982;
 export const EXERCISE_REGISTRY = [

@@ -5,7 +5,7 @@
  "files": [
   {
    "path": "data/exerciseRegistryIndex.js",
-   "sha256": "d26ff159f3c972a3a0485d6e269eefb5564557b2713cca9df88702255fe22488",
+   "sha256": "c1b43c966bc04ea5fdcfd9035e9ba8262a97a8fd6188c485ab7619460a4b163d",
    "bytes": 1239097
   },
   {
@@ -54,5 +54,5 @@
    "bytes": 6147
   }
  ],
- "coreHash": "f6f31b60de52165f694d752c4d1de996b600da614564952356460d3e4263a019"
+ "coreHash": "9cd22f33ab030a29723362b07820b1ba9013c581e9014f735f2cd5aad0ff98cc"
 }
