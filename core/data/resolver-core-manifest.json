@@ -59,6 +59,16 @@
    "bytes": 448
   },
   {
+   "path": "lib/plan/sessionDurationV3.js",
+   "sha256": "5aea20d86c2f4e6015b1d2a93c25ec0f2d3ec952d1748641197e17302015e548",
+   "bytes": 660
+  },
+  {
+   "path": "lib/plan/sessionRepairV3.js",
+   "sha256": "8bb89d4a2d84796c92dfd59a9ee9e4ca46120cfd17eed2a660a62f92990a62e0",
+   "bytes": 14629
+  },
+  {
    "path": "lib/plan/sessionTiming.js",
    "sha256": "d22c9d618aee425256e0ee97ff197e506a7a3becac30bf85eb914948cd81b3d4",
    "bytes": 5222
@@ -74,10 +84,35 @@
    "bytes": 6147
   },
   {
+   "path": "lib/plan/templateVolumeAllocatorV3.js",
+   "sha256": "6a006f84ce587c73cb66b8a5ea9eb07f4d977e3201a904ac3afd273ab599ecc2",
+   "bytes": 18940
+  },
+  {
+   "path": "lib/plan/templateWeekAllocator.js",
+   "sha256": "1e51ac8a6ff948fbff35be6f42fae0c6bf80e3ff1cb4800bd5696e1255c543ab",
+   "bytes": 30316
+  },
+  {
+   "path": "lib/plan/v3ShadowDelivery.js",
+   "sha256": "05720acf661e707e05ed75183a50b67464c0241ca9c7f1616cb6fbce4dc982b9",
+   "bytes": 13860
+  },
+  {
+   "path": "lib/plan/volumePrescriptionV3.js",
+   "sha256": "15d38d6cef5f845d8a0299a7c408b56158087034b78538ae7129916f345c988b",
+   "bytes": 1333
+  },
+  {
    "path": "lib/plan/weeklyCoverageV3.js",
    "sha256": "a87de3b26416b1a0045d3936f501d0eab9bacf2259f2437ae43a7f8e4b5034d2",
    "bytes": 10970
+  },
+  {
+   "path": "lib/plan/weeklyTemplateV3.js",
+   "sha256": "757ba50db18d310ef2d66a8988285021477825fcf3d6d04fc69cda7156720744",
+   "bytes": 19339
   }
  ],
- "coreHash": "a98afa4a755a323bfdf43c69a4b854474575d5a213360f1a2dc3473f4a8fea84"
+ "coreHash": "06d6d4e4b05f79e01aea328b74af701dd496485268123e7bd85c5d61dfe641e1"
 }
