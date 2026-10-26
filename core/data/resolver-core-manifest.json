@@ -29,9 +29,19 @@
    "bytes": 3073
   },
   {
+   "path": "lib/plan/muscleVolumeGroups.js",
+   "sha256": "642e1a321746d2b341f73449d585e882530078af248b5d2cb082235c07d22ee1",
+   "bytes": 6614
+  },
+  {
    "path": "lib/plan/prescriptionResolver.js",
    "sha256": "6cdc41da97a176632635f4a76884e69968d59df834f19e1504369a4b19437fe9",
    "bytes": 11599
+  },
+  {
+   "path": "lib/plan/resolvedSlotContract.js",
+   "sha256": "0eeefb97fb6f433e7739733725bbef1391f7c39a5a2dacc7428ff4490549a065",
+   "bytes": 5009
   },
   {
    "path": "lib/plan/reviewedPrescriptionInputs.js",
@@ -44,6 +54,16 @@
    "bytes": 755
   },
   {
+   "path": "lib/plan/sessionDeliveryPolicy.js",
+   "sha256": "fb284152dc3836f89a4e968e39c6726346a71626b37be53fc99e7cbcbcbae081",
+   "bytes": 448
+  },
+  {
+   "path": "lib/plan/sessionTiming.js",
+   "sha256": "d22c9d618aee425256e0ee97ff197e506a7a3becac30bf85eb914948cd81b3d4",
+   "bytes": 5222
+  },
+  {
    "path": "lib/plan/slotEligibility.js",
    "sha256": "331077ee66ae52af26a489438c4be5ba510fda89bfa4b1ff2df200836bca293d",
    "bytes": 5410
@@ -52,7 +72,12 @@
    "path": "lib/plan/slotPin.js",
    "sha256": "4ae9c1c0c0aa3cc72f2e73789359d189cf54dd80c6d180563cf948aa6799b1fa",
    "bytes": 6147
+  },
+  {
+   "path": "lib/plan/weeklyCoverageV3.js",
+   "sha256": "a87de3b26416b1a0045d3936f501d0eab9bacf2259f2437ae43a7f8e4b5034d2",
+   "bytes": 10970
   }
  ],
- "coreHash": "b14520c14a830cd4a6278475590f67dd121de4987015ea3e9f5ee17a800fcb12"
+ "coreHash": "a98afa4a755a323bfdf43c69a4b854474575d5a213360f1a2dc3473f4a8fea84"
 }
