@@ -14,6 +14,11 @@
    "bytes": 13355
   },
   {
+   "path": "lib/plan/engineWeekV3.js",
+   "sha256": "e54923c0fef22552cf6672d8bab6bd604850fbd8cc90b2532bd6f99a2ca881dc",
+   "bytes": 6398
+  },
+  {
    "path": "lib/plan/equipmentContract.js",
    "sha256": "d8b3ed189a97e0db536ca718dcd97f2a2edd252039d117d76ffac24cd55ac21b",
    "bytes": 6955
@@ -114,5 +119,5 @@
    "bytes": 19339
   }
  ],
- "coreHash": "06d6d4e4b05f79e01aea328b74af701dd496485268123e7bd85c5d61dfe641e1"
+ "coreHash": "000cee285c05a8eb099d5139fdac3f71c1a61d14e8445ea6a68e30de1f4b95a5"
 }
