@@ -1,6 +1,6 @@
-// Guard: no production code (api/, src/) may import anything under core/.
+// Guard: core/ imports are frozen except the exact Engine A equipment pair below.
 // core/ is publisher-owned (EndopaminRegistry scripts/publishRegistry.mjs) and
-// stays unused until an explicit activation decision. See CLAUDE.md.
+// has one unwired adapter exception; this is not activation. See CLAUDE.md.
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -54,6 +54,11 @@ function walk(node, visit) {
 
 function checkSpecifier(spec, importer, root) {
   const coreDir = path.join(root, 'core');
+  // Khani, 2026-10-25: exact importer + module pair only; no subtree exception.
+  if (path.resolve(importer) === path.join(root, 'api', '_engineProfile.js')
+    && spec === '../core/lib/plan/equipmentContract.js') {
+    return { resolved: path.join(coreDir, 'lib', 'plan', 'equipmentContract.js'), reason: null };
+  }
   if (spec === 'espree' || spec.startsWith('espree/')) {
     return { resolved: null, reason: 'production code must not import espree' };
   }
@@ -173,6 +178,10 @@ describe('analyzeSource controls (in memory)', () => {
   const deepJsx = path.join(ROOT, 'src', 'lib', 'deep', 'virtual.jsx');
 
   const mustFlag = [
+    ['adapter importing another core module', path.join(ROOT, 'api', '_engineProfile.js'),
+      "import '../core/lib/plan/slotPin.js';"],
+    ['equipment module imported from another api file', apiFile,
+      "import '../core/lib/plan/equipmentContract.js';"],
     ['static import', apiFile, "import { pin } from '../core/lib/plan/slotPin.js';"],
     ['side-effect import', deepFile, "import '../../../core/data/x.js';"],
     ['export all', apiFile, "export * from '../core/x.js';"],
@@ -195,6 +204,8 @@ describe('analyzeSource controls (in memory)', () => {
   }
 
   const mustNotFlag = [
+    ['exact Engine A equipment exception', path.join(ROOT, 'api', '_engineProfile.js'),
+      "import { resolveEquipmentCapability } from '../core/lib/plan/equipmentContract.js';"],
     ['normal relative import', apiFile, "import { v } from '../src/lib/profileValidation.js';"],
     ['data string "core"', apiFile, "export const m = { muscle: 'core' };"],
     ['commented import', apiFile, "// import x from '../core/a.js';\nexport const y = 1;"],
