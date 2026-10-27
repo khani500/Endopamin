@@ -13,6 +13,7 @@ import { classifyDeficitCause } from './templateWeekAllocator.js';
 import { MIN_MAIN_EXERCISES } from './sessionDeliveryPolicy.js';
 import { getReviewedPrescriptionInputs } from './reviewedPrescriptionInputs.js';
 import { EQUIPMENT_BUCKETS } from './equipmentContract.js';
+import { validateRequiredBudgetV3, sessionEstimateV3 } from './sessionBudgetV3.js';
 import { getExerciseById } from '../../data/exerciseRegistryIndex.js';
 
 export const V3_SHADOW_DELIVERY_VERSION = 'v3-shadow-delivery.v1';
@@ -80,6 +81,8 @@ function hardCheckReasons(week, template, { durationMinutes, tier, goal, athlete
     return reasons;
   }
   const mode = durationMinutes === 15 ? 'short_session' : 'standard';
+  const budget = validateRequiredBudgetV3(week);
+  if (!budget.ok) reasons.push({ code: budget.reason });
   const owned = new Set(athleteContext.availableEquipment);
   const pools = new Map();
   const eligibleIds = (slotKind) => {
@@ -131,8 +134,10 @@ function hardCheckReasons(week, template, { durationMinutes, tier, goal, athlete
     if (slotsValid) {
       const seconds = sessionRawSeconds(day, durationMinutes);
       if (typeof seconds !== 'number') reasons.push({ code: 'SESSION_TIMING_UNRESOLVED', slotReason: seconds.reason, ...at });
-      else if (seconds > durationMinutes * 60 + EPSILON_SECONDS)
+      else if (seconds > (budget.ok ? budget.budgetSecondsByDay[dayIndex] : durationMinutes * 60) + EPSILON_SECONDS)
         reasons.push({ code: 'SESSION_OVER_BUDGET', ...at, rawSeconds: seconds, budgetSeconds: durationMinutes * 60 });
+      if (week.requiredTimeExtension && JSON.stringify(day.timing) !== JSON.stringify(sessionEstimateV3(day, durationMinutes)))
+        reasons.push({ code: 'SESSION_ESTIMATE_MISMATCH', ...at });
     }
   }
   return reasons;

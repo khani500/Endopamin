@@ -2,6 +2,8 @@ import { MIN_MAIN_EXERCISES, targetMainExercises } from './sessionDeliveryPolicy
 import { validateResolvedSlot, slotRawSeconds, sessionRawSeconds, canPlaceResolvedSlot } from './resolvedSlotContract.js';
 import { evaluateWeeklyCoverage } from './weeklyCoverageV3.js';
 import { weeklyPrescribedGroupTotals } from './muscleVolumeGroups.js';
+import { recoveryConflictsV3, validateRequiredBudgetV3, sessionEstimateV3 } from './sessionBudgetV3.js';
+export { recoveryConflictsV3 } from './sessionBudgetV3.js';
 
 /* ---------------------------------------------------------------------------
  * Step 2k: explicit, dormant V3 whole-slot move repair. Separate from the
@@ -64,17 +66,6 @@ export function dayRegionV3(day) {
 
 const regionMatches = (slotRegion, dayRegion) => slotRegion === 'neutral' || dayRegion === 'full' || slotRegion === dayRegion;
 
-const heavyPrimary = (slot) => slot.slotKind.intent === 'structural_primary' && ['SQ', 'HG'].includes(slot.slotKind.pattern);
-
-/** D5 proxy: adjacent training-day pairs that both hold a heavy SQ/HG primary. */
-export function recoveryConflictsV3(week) {
-  let conflicts = 0;
-  for (let i = 1; i < week.days.length; i++) {
-    if (week.days[i - 1].slots.some(heavyPrimary) && week.days[i].slots.some(heavyPrimary)) conflicts++;
-  }
-  return conflicts;
-}
-
 const withoutMove = (slot) => { const { movedFrom, ...rest } = slot; return rest; };
 const slotSignatures = (week) => week.days.flatMap((d) => d.slots.map((s) => JSON.stringify(withoutMove(s)))).sort();
 
@@ -112,6 +103,8 @@ export function repairThinSessionsV3(input, options) {
   const executabilityCache = options?.executabilityCache === undefined ? new Map() : options.executabilityCache;
   const coverageBefore = evaluateWeeklyCoverage(input, { durationMinutes, executabilityCache });
   if (!coverageBefore.ok) return coverageBefore;
+  const budget = validateRequiredBudgetV3(input, { executabilityCache });
+  if (!budget.ok) return budget;
   for (const [dayIndex, day] of input.days.entries()) {
     if (!dayRegionV3(day)) return failV3('UNKNOWN_DAY_TYPE', { dayIndex });
     if (new Set(day.slots.map((s) => s.exerciseId)).size !== day.slots.length) return failV3('DUPLICATE_IN_SESSION', { dayIndex });
@@ -122,7 +115,7 @@ export function repairThinSessionsV3(input, options) {
     }
     const seconds = dayRawSecondsV3(day, durationMinutes);
     if (typeof seconds !== 'number') return { ...seconds, dayIndex };
-    if (seconds > durationMinutes * 60 + EPSILON_SECONDS) return failV3('INPUT_EXCEEDS_BUDGET', { dayIndex });
+    if (seconds > budget.budgetSecondsByDay[dayIndex] + EPSILON_SECONDS) return failV3('INPUT_EXCEEDS_BUDGET', { dayIndex });
   }
   const volumeBefore = volumeReport(input);
   if (!volumeBefore.ok) return volumeBefore;
@@ -162,6 +155,9 @@ export function repairThinSessionsV3(input, options) {
         for (const [from, donor] of week.days.entries()) {
           if (from === to) continue;
           for (const [slotIndex, slot] of donor.slots.entries()) {
+            if (slot.requiredCoveragePlacement) {
+              rejected.push(refuse(to, from, slot, 'REQUIRED_EXTENSION_PLACEMENT_LOCKED')); continue;
+            }
             // D4: a 15-minute day is exactly one lower + one upper primary; no move preserves that.
             if (short) { rejected.push(refuse(to, from, slot, 'SHORT_SESSION_STRUCTURE_LOCKED')); continue; }
             if (donor.slots.length - 1 < floor) { rejected.push(refuse(to, from, slot, 'DONOR_BELOW_FLOOR')); continue; }
@@ -211,8 +207,12 @@ export function repairThinSessionsV3(input, options) {
     for (const day of week.days) {
       day.rawSeconds = dayRawSecondsV3(day, durationMinutes);
       if (typeof day.rawSeconds !== 'number') return day.rawSeconds;
+      if (week.requiredTimeExtension) day.timing = sessionEstimateV3(day, durationMinutes);
     }
   } catch (error) { return failV3(error.message); }
+
+  const finalBudget = validateRequiredBudgetV3(week, { executabilityCache });
+  if (!finalBudget.ok) return finalBudget;
 
   // Fail closed: a move never alters a prescription or the week's prescribed volume.
   if (JSON.stringify(slotSignatures(input)) !== JSON.stringify(slotSignatures(week))) return failV3('PRESCRIPTION_CHANGED');

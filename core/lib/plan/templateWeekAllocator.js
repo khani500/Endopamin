@@ -9,6 +9,8 @@ import { resolveSlotCandidates } from './slotEligibility.js';
 import { EQUIPMENT_BUCKETS, EQUIPMENT_EXTRA_TOKENS } from './equipmentContract.js';
 import { validateResolvedSlot, slotRawSeconds, sessionRawSeconds, canPlaceResolvedSlot } from './resolvedSlotContract.js';
 import { coverageCreditForSlot, countWeeklyExposures, evaluateWeeklyCoverage } from './weeklyCoverageV3.js';
+import { selectionPreferenceIndex } from './selectionPreference.js';
+import { extendRequiredCoverageV3 } from './sessionBudgetV3.js';
 
 const fail = (reason) => ({ ok: false, reason });
 const ACC = ['ham_knee_flexion', 'lateral_delts', 'rear_delts', 'calves', 'biceps', 'triceps', 'glutes'];
@@ -136,7 +138,8 @@ export function classifyDeficitCause(key, skips, decisions, options = {}) {
 }
 
 /** Tie-break: earns any still-unmet required credit, qualifying structural credit, count of unmet required credits,
- * unused ID earlier this week, not recent, then code-point ID. No name/mechanic inference.
+ * unused ID earlier this week, not recent, authored tier-aware preference, then code-point ID.
+ * No name/mechanic inference.
  * A variation preference never outranks eligibility or required coverage. Cheaper eligible
  * alternatives are tried before a budget skip; all replacements keep authored intent.
  */
@@ -249,7 +252,9 @@ export function allocateTemplateWeek(input) {
         return [...list].sort((a, b) => {
           const x = score(a); const y = score(b);
           for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return y[i] - x[i];
-          return compareId(a.exerciseId, b.exerciseId);
+          return selectionPreferenceIndex(a.slotKind, tier, a.exerciseId)
+            - selectionPreferenceIndex(b.slotKind, tier, b.exerciseId)
+            || compareId(a.exerciseId, b.exerciseId);
         });
       };
       for (const [templateSlotIndex, authored] of authoredSlots.entries()) {
@@ -402,6 +407,15 @@ export function allocateTemplateWeek(input) {
       else skip(dayIndex, original, { protectedRequirements });
     }
     for (const [dayIndex, day] of week.days.entries()) day.slots = accepted[dayIndex];
+
+    // Required-only restoration happens after ordinary fit and before any optional volume.
+    const extension = extendRequiredCoverageV3(week, template, { executabilityCache });
+    if (!extension.ok) return extension;
+    week.days = extension.week.days;
+    if (extension.week.requiredTimeExtension) week.requiredTimeExtension = extension.week.requiredTimeExtension;
+    for (const placement of extension.placements) decisions.push({ action: 'restore_required',
+      templateId: week.days[placement.dayIndex].templateId, templateSlotIndex: placement.templateSlotIndex,
+      exerciseId: placement.exerciseId, reason: 'MISSING_REQUIRED_COVERAGE', creditsLost: [] });
 
     // Slot kinds whose approved executable candidates earn a coverage key (same kinds weeklyCoverageV3 checks).
     const COVERAGE_KINDS = [...STRUCTURAL.flatMap((pattern) =>

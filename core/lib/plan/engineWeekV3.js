@@ -10,7 +10,7 @@ import { allocateTemplateVolumeV3, PRIORITIES } from './templateVolumeAllocatorV
 import { repairThinSessionsV3 } from './sessionRepairV3.js';
 import { deliverV3Shadow } from './v3ShadowDelivery.js';
 
-export const ENGINE_WEEK_V3_VERSION = 'engine-week-v3.v1';
+export const ENGINE_WEEK_V3_VERSION = 'engine-week-v3.v3';
 const record = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)
   && [Object.prototype, null].includes(Object.getPrototypeOf(v));
 const absent = (v) => v === null || v === undefined || v === '';

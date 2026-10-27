@@ -8,6 +8,8 @@ import { canPlaceResolvedSlot, sessionRawSeconds, validateResolvedSlot } from '.
 import { coverageCreditForSlot, evaluateWeeklyCoverage } from './weeklyCoverageV3.js';
 import { groupContributionFor, weeklyPrescribedGroupTotals, MAJOR_GROUPS, SUPPORTING_GROUPS, DELT_HEAD_GROUPS } from './muscleVolumeGroups.js';
 import { buildVolumePrescriptionV3 } from './volumePrescriptionV3.js';
+import { selectionPreferenceIndex } from './selectionPreference.js';
+import { validateRequiredBudgetV3 } from './sessionBudgetV3.js';
 
 const fail = (reason) => ({ ok: false, reason });
 const clone = (v) => Array.isArray(v) ? v.map(clone) : v && typeof v === 'object'
@@ -51,6 +53,11 @@ export function allocateTemplateVolumeV3(input) {
   const durationMinutes = seed.durationMinutes;
   const baseline = evaluateWeeklyCoverage(seed, { durationMinutes, executabilityCache });
   if (!baseline.ok) return baseline;
+  const budget = validateRequiredBudgetV3(seed, { executabilityCache });
+  if (!budget.ok) return budget;
+  // An extended session has no optional headroom, even if less than the total cap was used.
+  const optionalFits = (day, slot) => !budget.extendedTemplateIds.includes(day.templateId)
+    && canPlaceResolvedSlot(day, slot, durationMinutes) === true;
   const goal = seed.equipmentContext.goal; const tier = seed.tier;
   const prescription = buildVolumePrescriptionV3({ goal, tier });
   if (!prescription.ok) return prescription;
@@ -68,7 +75,7 @@ export function allocateTemplateVolumeV3(input) {
     }
     const seconds = sessionRawSeconds(day, durationMinutes);
     if (typeof seconds !== 'number') return seconds;
-    if (seconds > durationMinutes * 60 + 60e-9) return fail('SEED_EXCEEDS_BUDGET');
+    if (seconds > budget.budgetSecondsByDay[seed.days.indexOf(day)] + 60e-9) return fail('SEED_EXCEEDS_BUDGET');
   }
   const week = clone(seed); const decisions = []; const poolCache = new Map();
   const additionsPerDay = week.days.map(() => 0);
@@ -135,7 +142,7 @@ export function allocateTemplateVolumeV3(input) {
     const eligible = kinds.flatMap(pool).filter((s) => credits(s)[requirement]);
     return proposal.days.filter((day) => day.slots.some((s) => credits(s)[requirement])
       || eligible.some((s) => !day.slots.some((existing) => existing.exerciseId === s.exerciseId)
-        && canPlaceResolvedSlot(day, s, durationMinutes) === true)).length;
+        && optionalFits(day, s))).length;
   };
   const preservesRequiredSpace = (dayIndex, slot, replaceIndex) => {
     if (!pendingRequirements.length) return true;
@@ -151,7 +158,7 @@ export function allocateTemplateVolumeV3(input) {
       if (!direct(slot, group) || !frontAllowed(slot) || !qualifying(slot)) continue;
       for (const [dayIndex, day] of week.days.entries()) {
         if (!dayAllowed(dayIndex) || day.slots.some((s) => s.exerciseId === slot.exerciseId)) continue;
-        if (canPlaceResolvedSlot(day, slot, durationMinutes) === true && preservesRequiredSpace(dayIndex, slot)) options.push({ dayIndex, slot });
+        if (optionalFits(day, slot) && preservesRequiredSpace(dayIndex, slot)) options.push({ dayIndex, slot });
       }
     }
     return options;
@@ -167,6 +174,8 @@ export function allocateTemplateVolumeV3(input) {
         || dayCredit(a.dayIndex) - dayCredit(b.dayIndex)
         || week.days[a.dayIndex].rawSeconds - week.days[b.dayIndex].rawSeconds
         || a.dayIndex - b.dayIndex || kindOrder(a.slot.slotKind) - kindOrder(b.slot.slotKind)
+        || selectionPreferenceIndex(a.slot.slotKind, tier, a.slot.exerciseId)
+          - selectionPreferenceIndex(b.slot.slotKind, tier, b.slot.exerciseId)
         || (a.slot.exerciseId < b.slot.exerciseId ? -1 : a.slot.exerciseId > b.slot.exerciseId ? 1 : 0);
     })[0];
   };
@@ -231,7 +240,7 @@ export function allocateTemplateVolumeV3(input) {
             const slot = { ...current, sets: current.sets + 1 };
             const before = groupContributionFor(current); const after = groupContributionFor(slot);
             if (!after.ok || after.groups[group] <= before.groups[group]) continue;
-            if (canPlaceResolvedSlot({ slots: day.slots.filter((_, i) => i !== slotIndex) }, slot, durationMinutes) === true
+            if (optionalFits({ ...day, slots: day.slots.filter((_, i) => i !== slotIndex) }, slot)
               && preservesRequiredSpace(dayIndex, slot, slotIndex))
               options.push({ dayIndex, slotIndex, slot });
           }

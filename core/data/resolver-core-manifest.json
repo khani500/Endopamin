@@ -1,6 +1,6 @@
 {
  "manifestSchema": 1,
- "resolverContractVersion": 2,
+ "resolverContractVersion": 4,
  "hashAlgorithm": "sha256",
  "files": [
   {
@@ -15,7 +15,7 @@
   },
   {
    "path": "lib/plan/engineWeekV3.js",
-   "sha256": "e54923c0fef22552cf6672d8bab6bd604850fbd8cc90b2532bd6f99a2ca881dc",
+   "sha256": "7cbfc34c2155c68f4d548ca083ba1985f2aa557989ecfac4c72521e1070fd7bb",
    "bytes": 6398
   },
   {
@@ -59,6 +59,16 @@
    "bytes": 755
   },
   {
+   "path": "lib/plan/selectionPreference.js",
+   "sha256": "4306164d47b116a8d411fccf72565069f45c3ebc9a2db5f6ce5f7a1f882b0b03",
+   "bytes": 13686
+  },
+  {
+   "path": "lib/plan/sessionBudgetV3.js",
+   "sha256": "05a80f2a9c0b0398c16a98a37ab07ad4821575cce36aee6ecbd78f04e166f852",
+   "bytes": 11584
+  },
+  {
    "path": "lib/plan/sessionDeliveryPolicy.js",
    "sha256": "fb284152dc3836f89a4e968e39c6726346a71626b37be53fc99e7cbcbcbae081",
    "bytes": 448
@@ -70,8 +80,8 @@
   },
   {
    "path": "lib/plan/sessionRepairV3.js",
-   "sha256": "8bb89d4a2d84796c92dfd59a9ee9e4ca46120cfd17eed2a660a62f92990a62e0",
-   "bytes": 14629
+   "sha256": "3655c0e4e1c483dfafc3362605c2289165a4fe7742c43892d4bf4ed72bb3f906",
+   "bytes": 14842
   },
   {
    "path": "lib/plan/sessionTiming.js",
@@ -90,18 +100,18 @@
   },
   {
    "path": "lib/plan/templateVolumeAllocatorV3.js",
-   "sha256": "6a006f84ce587c73cb66b8a5ea9eb07f4d977e3201a904ac3afd273ab599ecc2",
-   "bytes": 18940
+   "sha256": "9f55a66d8ffa5bfdc1cebea9d84d4860611bc57ad2d07c3fa35ce443e5984263",
+   "bytes": 19522
   },
   {
    "path": "lib/plan/templateWeekAllocator.js",
-   "sha256": "1e51ac8a6ff948fbff35be6f42fae0c6bf80e3ff1cb4800bd5696e1255c543ab",
-   "bytes": 30316
+   "sha256": "5bc4f29f63761a03dd717ada26e6f5bf25d8617f07f5bf64624c929c1094db88",
+   "bytes": 31300
   },
   {
    "path": "lib/plan/v3ShadowDelivery.js",
-   "sha256": "05720acf661e707e05ed75183a50b67464c0241ca9c7f1616cb6fbce4dc982b9",
-   "bytes": 13860
+   "sha256": "ce476d089cded537e76b79e1f508fc519dd74b66cd2172494be9f469d4aeb544",
+   "bytes": 14298
   },
   {
    "path": "lib/plan/volumePrescriptionV3.js",
@@ -119,5 +129,5 @@
    "bytes": 19339
   }
  ],
- "coreHash": "000cee285c05a8eb099d5139fdac3f71c1a61d14e8445ea6a68e30de1f4b95a5"
+ "coreHash": "d0af943d959c6a4d933fdfd76bfd29ee3f4c834ca8d4dd82d7e43296b67fe052"
 }
