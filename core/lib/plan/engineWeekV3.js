@@ -8,9 +8,10 @@ import { buildWeeklyTemplateV3 } from './weeklyTemplateV3.js';
 import { allocateTemplateWeek } from './templateWeekAllocator.js';
 import { allocateTemplateVolumeV3, PRIORITIES } from './templateVolumeAllocatorV3.js';
 import { repairThinSessionsV3 } from './sessionRepairV3.js';
+import { applySlotPriorityV3 } from './slotPriorityV3.js';
 import { deliverV3Shadow } from './v3ShadowDelivery.js';
 
-export const ENGINE_WEEK_V3_VERSION = 'engine-week-v3.v3';
+export const ENGINE_WEEK_V3_VERSION = 'engine-week-v3.v4';
 const record = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)
   && [Object.prototype, null].includes(Object.getPrototypeOf(v));
 const absent = (v) => v === null || v === undefined || v === '';
@@ -86,10 +87,13 @@ export function engineWeekV3(input) {
       if (stages.allocation.ok) {
         stages.volume = allocateTemplateVolumeV3({ week: stages.allocation.week, priorityMuscles: priorities,
           deload: false, executabilityCache });
-        if (stages.volume.ok) stages.repair = repairThinSessionsV3(stages.volume.week, { executabilityCache });
+        if (stages.volume.ok) {
+          stages.slotPriority = applySlotPriorityV3({ week: stages.volume.week, priorityMuscles: priorities });
+          if (stages.slotPriority.ok) stages.repair = repairThinSessionsV3(stages.slotPriority.week, { executabilityCache });
+        }
       }
     }
-    return finish(deliverV3Shadow({ ...stages, context: ctx, executabilityCache }));
+    return finish(deliverV3Shadow({ ...stages, context: ctx, executabilityCache, requireSlotPriority: true }));
   } catch {
     return finish(refuse([{ code: 'RUNNER_ERROR' }]));
   }

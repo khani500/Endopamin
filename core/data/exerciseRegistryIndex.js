@@ -877,7 +877,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -5778,7 +5780,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -12644,7 +12648,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -12714,7 +12720,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "vertical_push",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -12770,7 +12778,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "vertical_push",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -12830,7 +12840,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -13469,7 +13481,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -16815,7 +16829,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "gold",
   "primaryPattern": "squat",
   "exerciseType": "plyometric",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -22348,7 +22364,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "gold",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -22477,7 +22495,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -29040,7 +29060,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -29107,7 +29129,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -29238,7 +29262,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "vertical_push",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -29408,7 +29434,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "vertical_push",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -29522,7 +29550,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -29591,7 +29621,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "vertical_push",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -29648,7 +29680,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -29713,7 +29747,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -29836,7 +29872,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "rotation",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -29896,7 +29934,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -30900,7 +30940,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -32344,7 +32386,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "horizontal_push",
   "exerciseType": "plyometric",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -32535,7 +32579,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -41814,7 +41860,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -42799,7 +42847,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -43792,7 +43842,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "squat",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -49378,7 +49430,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -49446,7 +49500,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "vertical_push",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -50446,7 +50502,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "verified",
   "primaryPattern": "squat",
   "exerciseType": "plyometric",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -52279,7 +52337,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "gold",
   "primaryPattern": "hinge",
   "exerciseType": "resistance",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -55108,7 +55168,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "gold",
   "primaryPattern": "lunge",
   "exerciseType": "plyometric",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
@@ -56188,7 +56250,9 @@ export const EXERCISE_REGISTRY = [
   "tier": "gold",
   "primaryPattern": "squat",
   "exerciseType": "plyometric",
-  "intentTags": [],
+  "intentTags": [
+   "power"
+  ],
   "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [

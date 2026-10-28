@@ -4,6 +4,7 @@ import { resolveSlotCandidates } from './slotEligibility.js';
 import { evaluateWeeklyCoverage, coverageCreditForSlot } from './weeklyCoverageV3.js';
 import { buildWeeklyTemplateV3 } from './weeklyTemplateV3.js';
 import { selectionPreferenceIndex } from './selectionPreference.js';
+import { validateSlotPriorityV3 } from './slotPriorityV3.js';
 
 const VERSION = 'required-session-extension.v1';
 const EPSILON = 60e-9;
@@ -107,7 +108,7 @@ export function extendRequiredCoverageV3(input, template, options = {}) {
 }
 
 /** Rebuild approved seed packets and replay REQUIRED gains. Caller-supplied cap fields grant nothing. */
-export function validateRequiredBudgetV3(week, options = {}) {
+export function validateRequiredExtensionV3(week, options = {}) {
   const selected = week.durationMinutes;
   const ordinary = { ok: true, budgetSecondsByDay: week.days.map(() => selected * 60), extendedTemplateIds: [] };
   const proof = week.requiredTimeExtension;
@@ -178,6 +179,14 @@ export function validateRequiredBudgetV3(week, options = {}) {
     }
     return { ok: true, budgetSecondsByDay, extendedTemplateIds };
   } catch { return fail(); }
+}
+
+/** Budget authority also verifies any post-2j transaction proof, including on
+ * ordinary non-extended weeks. 2k is allowed to move whole packets only. */
+export function validateRequiredBudgetV3(week, options = {}) {
+  const proof = validateSlotPriorityV3(week, { final: true });
+  if (!proof.ok) return proof;
+  return validateRequiredExtensionV3(week, options);
 }
 
 export function sessionEstimateV3(day, selectedMinutes) {

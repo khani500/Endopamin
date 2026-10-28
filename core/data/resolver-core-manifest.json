@@ -5,8 +5,8 @@
  "files": [
   {
    "path": "data/exerciseRegistryIndex.js",
-   "sha256": "0f2299e6232e6b28ba92f1e084cb875db336d95c95377a8f3f489b898310d7a7",
-   "bytes": 1341742
+   "sha256": "eeb3033bbfbbc0a7c2b990bd4ce91aee9bb996d9a72c630a88772da0a89225d0",
+   "bytes": 1342190
   },
   {
    "path": "lib/plan/capabilityMap.js",
@@ -15,8 +15,8 @@
   },
   {
    "path": "lib/plan/engineWeekV3.js",
-   "sha256": "7cbfc34c2155c68f4d548ca083ba1985f2aa557989ecfac4c72521e1070fd7bb",
-   "bytes": 6398
+   "sha256": "53c98dcc19e7863e8be038a955d41e7a8ea819a2379dab02c531255e2f783489",
+   "bytes": 6652
   },
   {
    "path": "lib/plan/equipmentContract.js",
@@ -65,8 +65,8 @@
   },
   {
    "path": "lib/plan/sessionBudgetV3.js",
-   "sha256": "05a80f2a9c0b0398c16a98a37ab07ad4821575cce36aee6ecbd78f04e166f852",
-   "bytes": 11584
+   "sha256": "2bd7797da799770e2cf8f4dc51dd5b5daf546800f656e12361257a53a2f7e394",
+   "bytes": 12018
   },
   {
    "path": "lib/plan/sessionDeliveryPolicy.js",
@@ -99,6 +99,11 @@
    "bytes": 6147
   },
   {
+   "path": "lib/plan/slotPriorityV3.js",
+   "sha256": "31de7964eec7a98d20415f3e626d1ba55aec180a9460db5354daf9fb1da4eb4b",
+   "bytes": 37672
+  },
+  {
    "path": "lib/plan/templateVolumeAllocatorV3.js",
    "sha256": "9f55a66d8ffa5bfdc1cebea9d84d4860611bc57ad2d07c3fa35ce443e5984263",
    "bytes": 19522
@@ -110,8 +115,8 @@
   },
   {
    "path": "lib/plan/v3ShadowDelivery.js",
-   "sha256": "ce476d089cded537e76b79e1f508fc519dd74b66cd2172494be9f469d4aeb544",
-   "bytes": 14298
+   "sha256": "cf200ecfbe8b7aa36210c5b7138fa01c84d446180bfc8eb636085362f5712484",
+   "bytes": 15280
   },
   {
    "path": "lib/plan/volumePrescriptionV3.js",
@@ -129,5 +134,5 @@
    "bytes": 19339
   }
  ],
- "coreHash": "d0af943d959c6a4d933fdfd76bfd29ee3f4c834ca8d4dd82d7e43296b67fe052"
+ "coreHash": "a319f01d25168c30dd39a81d83b41ee527f91e3aeaa06baac5f395567e30c090"
 }

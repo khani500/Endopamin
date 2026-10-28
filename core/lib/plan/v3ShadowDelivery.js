@@ -15,6 +15,7 @@ import { getReviewedPrescriptionInputs } from './reviewedPrescriptionInputs.js';
 import { EQUIPMENT_BUCKETS } from './equipmentContract.js';
 import { validateRequiredBudgetV3, sessionEstimateV3 } from './sessionBudgetV3.js';
 import { getExerciseById } from '../../data/exerciseRegistryIndex.js';
+import { validateSlotPriorityV3 } from './slotPriorityV3.js';
 
 export const V3_SHADOW_DELIVERY_VERSION = 'v3-shadow-delivery.v1';
 // Same raw-time float tolerance as 2j/2k; never a minutes allowance.
@@ -189,8 +190,19 @@ export function deliverV3Shadow(input) {
   try {
     if (!object(input)) return refuse([{ code: 'INVALID_INPUT' }]);
     const { template, allocation, volume, repair, context } = input;
+    const requiresPriority = input.requireSlotPriority || input.slotPriority !== undefined || repair?.week?.slotPriorityRequired !== undefined;
+    let priorityDiagnostics;
+    if (requiresPriority) {
+      if (!input.slotPriority?.ok) return refuse([{ code: input.slotPriority?.reason || 'STAGE_MISSING', stage: 'slotPriority',
+        ...(Array.isArray(input.slotPriority?.reasons) ? { details: input.slotPriority.reasons } : {}) }]);
+    }
     const stageFailures = stageReasons({ template, allocation, volume, repair });
     if (stageFailures.length) return refuse(stageFailures);
+    if (requiresPriority) {
+      const checked = validateSlotPriorityV3(repair.week, { expectedBaseline: volume.week, required: true, final: true });
+      if (!checked.ok) return refuse(checked.reasons?.length ? checked.reasons : [{ code: checked.reason, stage: 'slotPriority' }]);
+      priorityDiagnostics = checked.diagnostics;
+    }
     const contextResult = contextReasons(context, template);
     if (contextResult.reasons.length) return refuse(contextResult.reasons);
     const { tier, goal } = context;
@@ -210,7 +222,7 @@ export function deliverV3Shadow(input) {
     const coverage = evaluateWeeklyCoverage(week, { durationMinutes, executabilityCache });
     if (!coverage.ok) return refuse([{ code: 'COVERAGE_UNEVALUABLE', coverageReason: coverage.reason }], { templateLimitations });
     const limitations = finalLimitations(coverage, allocation, template, { goal, tier, mode: coverage.mode, athleteContext });
-    const diagnostics = {};
+    const diagnostics = priorityDiagnostics ? { slotPriority: priorityDiagnostics } : {};
     // D-5: diagnostic only, never a refusal (template v3 §11 TIME_BUDGET exception).
     if (isFullGym(athleteContext.availableEquipment)) {
       const violations = limitations.filter((l) => l.reason !== 'TIME_BUDGET').map((l) => ({ requirement: l.requirement, reason: l.reason }));
@@ -218,7 +230,8 @@ export function deliverV3Shadow(input) {
     }
     return { version: V3_SHADOW_DELIVERY_VERSION, verdict: 'deliver', status: limitations.length ? 'limited' : 'full',
       reasons: limitations.map((l) => ({ code: l.reason, requirement: l.requirement })),
-      week, coverage, limitations, templateLimitations, notes: noteCodes(volume, repair), diagnostics };
+      week, coverage, limitations, templateLimitations,
+      notes: noteCodes(input.slotPriority ? { ...volume, notes: input.slotPriority.notes } : volume, repair), diagnostics };
   } catch {
     return refuse([{ code: 'DELIVERY_CHECK_ERROR' }]);
   }
