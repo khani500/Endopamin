@@ -12,7 +12,7 @@ import { validateRequiredExtensionV3, sessionEstimateV3, recoveryConflictsV3 } f
 import { resolveSlotCandidates } from './slotEligibility.js';
 import { selectionPreferenceIndex } from './selectionPreference.js';
 
-export const SLOT_PRIORITY_VERSION = 'slot-priority.v1';
+export const SLOT_PRIORITY_VERSION = 'slot-priority.v2';
 import { getExerciseById } from '../../data/exerciseRegistryIndex.js';
 const DEADLIFT_FAMILIES=new Set(['fam.deadlift_conventional','fam.deadlift_trapbar','fam.deadlift_romanian','fam.deadlift_sumo']);
 const EPS = 60e-9;
@@ -85,12 +85,12 @@ const gcd=(a,b)=>b?gcd(b,a%b):a;
  * Selection preference resolves objective ties; rule 9 is a commit veto.
  */
 
-// Rule 6: authored template identity is the day authority. CORE is allowed on
-// lower/full days; the requested upper-day rule does not admit neutral CORE.
+// Rule 6: authored template identity is the day authority. CORE is region-neutral;
+// structural and accessory slots retain their authored upper/lower regions.
 function regionFits(slot,authoredDay) {
   const day=dayRegionV3(authoredDay),region=slotRegionV3(slot);
   if(!day||!region)throw Error('STOP: unknown authored day/slot region');
-  return day==='full'||region===day||(day==='lower'&&region==='neutral');
+  return day==='full'||region===day||region==='neutral';
 }
 const identity=s=>JSON.stringify([s.exerciseId,s.slotKind]);
 function fillsFit(w,baseline,template) {
@@ -520,7 +520,7 @@ export function auditSlotPriorityTransactionV3({ baseline, before, after, phase,
     const context = contextOf(baseline), template = ok(buildWeeklyTemplateV3(context));
     if (receiver) {
       const region = slotRegionV3(receiver), day = dayRegionV3(template.days[dayIndex]);
-      if (!(day === 'full' || region === day || (day === 'lower' && region === 'neutral'))) reject(6);
+      if (!(day && region && (day === 'full' || region === day || region === 'neutral'))) reject(6);
     }
     if (phase === 'mandatory_rule7') {
       const oldDay = before.days[dayIndex], newDay = after.days[dayIndex];
