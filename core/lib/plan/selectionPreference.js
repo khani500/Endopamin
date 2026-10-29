@@ -263,6 +263,8 @@ export const SELECTION_PREFERENCES = Object.freeze({
     'fx_standing_one_arm_dumbbell_triceps_extension',
     'fx_standing_bent_over_two_arm_dumbbell_triceps_extension',
     'fx_standing_bent_over_one_arm_dumbbell_triceps_extension',
+    'fx_kneeling_bodyweight_triceps_extension',
+    'fx_close_grip_knee_push_up',
   ]),
   'ACC:lateral_delts': Object.freeze([
     'fx_side_lateral_raise',
@@ -403,6 +405,12 @@ export const BEGINNER_SELECTION_PREFERENCES = Object.freeze({
 
 export const SELECTION_PREFERENCE_TIER_OVERRIDES = Object.freeze({
   beginner: BEGINNER_SELECTION_PREFERENCES,
+  // Migration 067: 1771 remains the last advanced triceps preference. Eligibility handles 2398's cap.
+  advanced: Object.freeze({ 'ACC:triceps': Object.freeze([
+    ...SELECTION_PREFERENCES['ACC:triceps'].slice(0, -2),
+    'fx_close_grip_knee_push_up',
+    'fx_kneeling_bodyweight_triceps_extension',
+  ]) }),
 });
 
 export function selectionPreferenceKey(slotKind) {

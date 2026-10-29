@@ -59300,20 +59300,71 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_close_grip_knee_push_up",
   "displayName": "Close-Grip Knee Push-Up",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "triceps"
   ],
   "secondaryMuscles": [
    "chest",
-   "shoulders",
-   "abdominals"
+   "shoulders"
   ],
   "laterality": "bilateral",
   "libraryEquipment": [
    "bodyweight"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "horizontal_push loads the shoulder directly"
+   },
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "horizontal_push loads the elbow directly"
+   },
+   {
+    "region": "wrist",
+    "action": "exclude",
+    "reason": "horizontal_push loads the wrist directly"
+   }
+  ],
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "primaryPattern": "arms_push",
+  "exerciseType": "resistance",
+  "intentTags": [],
+  "isolation": false,
+  "mechanic": "compound",
+  "force": "push",
+  "equipment": [
+   "bodyweight"
+  ],
+  "primaryFamilyId": "fam.push_up",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "coreFunctions": [],
+  "regionTags": [
+   "triceps"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-20",
+   "rest": "90-120s"
+  },
+  "maxPrimaryVolumeTier": "intermediate",
   "hasCues": false
  },
  {
@@ -60044,19 +60095,57 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_kneeling_bodyweight_triceps_extension",
   "displayName": "Kneeling Bodyweight Triceps Extension",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "triceps"
   ],
-  "secondaryMuscles": [
-   "shoulders",
-   "abdominals"
-  ],
+  "secondaryMuscles": [],
   "laterality": "bilateral",
   "libraryEquipment": [
    "bodyweight"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "arms_push loads the elbow directly"
+   }
+  ],
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "primaryPattern": "arms_push",
+  "exerciseType": "resistance",
+  "intentTags": [],
+  "isolation": true,
+  "mechanic": "isolation",
+  "force": "push",
+  "equipment": [
+   "bodyweight"
+  ],
+  "primaryFamilyId": "fam.triceps_extension",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "coreFunctions": [],
+  "regionTags": [
+   "triceps"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-20",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
