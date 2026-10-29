@@ -6,7 +6,7 @@
 
 export const SCHEMA_VERSION = "5.8";
 export const PLAN_POLICY_REASON_CODES = ["equipment_vocabulary_gap","alternative_setup_unmodeled","equipment_setup_ambiguous","household_object_dependency","partner_dependency","context_restricted_selection","superseded_by_canonical"];
-export const REGISTRY_TOTAL = 1192;
+export const REGISTRY_TOTAL = 1193;
 export const EXERCISE_REGISTRY = [
  {
   "id": "fx_3_4_sit_up",
@@ -61617,8 +61617,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_seated_close_grip_band_pulldown",
   "displayName": "Seated Close-Grip Band Pulldown",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "lats"
   ],
@@ -61632,6 +61632,43 @@ export const EXERCISE_REGISTRY = [
    "door_anchor",
    "bench"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "primaryPattern": "vertical_pull",
+  "exerciseType": "resistance",
+  "intentTags": [],
+  "isolation": false,
+  "mechanic": "compound",
+  "force": "pull",
+  "equipment": [
+   "bands",
+   "door_anchor",
+   "bench"
+  ],
+  "primaryFamilyId": "fam.lat_pulldown",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "coreFunctions": [],
+  "regionTags": [
+   "lats"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -62755,6 +62792,66 @@ export const EXERCISE_REGISTRY = [
    "barbell",
    "bench"
   ],
+  "hasCues": false
+ },
+ {
+  "id": "fx_single_arm_lateral_band_triceps_extension",
+  "name": "fx_single_arm_lateral_band_triceps_extension",
+  "displayName": "Single-Arm Lateral Band Triceps Extension",
+  "catalogVisibility": "visible",
+  "primaryMuscles": [
+   "triceps"
+  ],
+  "secondaryMuscles": [],
+  "laterality": "unilateral",
+  "libraryEquipment": [
+   "band",
+   "door_anchor"
+  ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "arms_push loads the elbow directly"
+   }
+  ],
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
+  "primaryPattern": "arms_push",
+  "exerciseType": "resistance",
+  "intentTags": [],
+  "isolation": true,
+  "mechanic": "isolation",
+  "force": "push",
+  "equipment": [
+   "bands",
+   "door_anchor"
+  ],
+  "primaryFamilyId": "fam.triceps_extension",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "coreFunctions": [],
+  "regionTags": [
+   "triceps"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  }
 ];

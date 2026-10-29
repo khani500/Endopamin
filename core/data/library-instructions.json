@@ -1,6 +1,6 @@
 {
   "artifactVersion": 1,
-  "recordCount": 517,
+  "recordCount": 518,
   "entries": {
     "fx_alternate_hammer_curl": {
       "instructions": [
@@ -4124,6 +4124,17 @@
       "instructionsSource": "vendor_pack",
       "contentVersion": 1
     },
+    "fx_single_arm_lateral_band_triceps_extension": {
+      "instructions": [
+        "Secure the band to a door anchor at about shoulder height and stand with the anchor to one side.",
+        "Hold the handle in the hand farther from the anchor. Raise that upper arm out to the side and bend the elbow so the hand is near your shoulder.",
+        "Keep your torso and upper arm steady. Straighten only the elbow to move your hand outward, away from the anchor.",
+        "Bend the elbow slowly to return without letting the band snap back.",
+        "Complete the prescribed repetitions on one side, then turn and change arms."
+      ],
+      "instructionsSource": "endopamin_reviewed",
+      "contentVersion": 1
+    },
     "fx_single_arm_push_up": {
       "instructions": [
         "Set one palm on the floor beneath your shoulder and spread your feet for balance.",
@@ -5449,5 +5460,5 @@
       "contentVersion": 1
     }
   },
-  "sha256": "5e816799f303bdfad082705d4e9bc09f124d14552f4cf9797f232a2aa1339ed1"
+  "sha256": "dba61f5967b764ff093b8e18eb145ff0ddb0cce9de6db2f33c334f8efbce3b6a"
 }

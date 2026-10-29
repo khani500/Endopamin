@@ -230,9 +230,10 @@ describe('exercise-media request gates', () => {
     }
   });
 
-  it('loads and validates the committed 517-record manifest', () => {
+  // Registry 068 adds media for fx_single_arm_lateral_band_triceps_extension (pack 0998): 517 -> 518.
+  it('loads and validates the committed 518-record manifest', () => {
     const manifest = readMediaManifest();
-    expect(manifest.recordCount).toBe(517);
-    expect(Object.keys(manifest.media)).toHaveLength(517);
+    expect(manifest.recordCount).toBe(518);
+    expect(Object.keys(manifest.media)).toHaveLength(518);
   });
 });

@@ -1,7 +1,7 @@
 {
   "manifestVersion": 1,
   "mediaVersion": 1,
-  "recordCount": 517,
+  "recordCount": 518,
   "media": {
     "fx_alternate_hammer_curl": {
       "provider": "exercisedb",
@@ -2747,6 +2747,13 @@
       "animationPath": "V1/exercisedb/0968/0968-360.gif",
       "thumbnailPath": "V1/exercisedb/0968/0968-180.gif"
     },
+    "fx_single_arm_lateral_band_triceps_extension": {
+      "provider": "exercisedb",
+      "externalMediaId": "0998",
+      "mediaVersion": 1,
+      "animationPath": "V1/exercisedb/0998/0998-360.gif",
+      "thumbnailPath": "V1/exercisedb/0998/0998-180.gif"
+    },
     "fx_single_arm_push_up": {
       "provider": "exercisedb",
       "externalMediaId": "0725",
@@ -3623,5 +3630,5 @@
       "thumbnailPath": "V1/exercisedb/0658/0658-180.gif"
     }
   },
-  "sha256": "4ed9bad6b55cb052725dbb2525e90108027855417e5fcf2189b45efd6e7bf49d"
+  "sha256": "e5832a3f13a9d33deb71737f8bc5fbd6816d168292442041d0378a4cccc8f8b3"
 }
