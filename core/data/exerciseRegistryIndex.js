@@ -1691,28 +1691,29 @@ export const EXERCISE_REGISTRY = [
   "id": "fx_back_flyes_with_bands",
   "name": "Back Flyes - With Bands",
   "tier": "verified",
-  "primaryPattern": "horizontal_push",
+  "primaryPattern": "shoulder_iso",
   "exerciseType": "resistance",
   "intentTags": [],
-  "isolation": false,
+  "isolation": true,
   "classifierVersion": "3.0",
   "primaryMuscles": [
    "shoulders"
   ],
   "secondaryMuscles": [
    "middle back",
-   "triceps"
+   "traps"
   ],
   "equipment": [
-   "bands"
+   "bands",
+   "door_anchor"
   ],
-  "mechanic": "compound",
+  "mechanic": "isolation",
   "force": "pull",
   "skillTier": "beginner",
   "defaultPrescription": {
    "sets": 3,
-   "reps": "8-12",
-   "rest": "90s"
+   "reps": "10-12",
+   "rest": "75s"
   },
   "minSkillTier": "beginner",
   "requiresSupervision": false,
@@ -1720,17 +1721,7 @@ export const EXERCISE_REGISTRY = [
    {
     "region": "shoulder",
     "action": "exclude",
-    "reason": "horizontal_push loads the shoulder directly"
-   },
-   {
-    "region": "elbow",
-    "action": "exclude",
-    "reason": "horizontal_push loads the elbow directly"
-   },
-   {
-    "region": "wrist",
-    "action": "exclude",
-    "reason": "horizontal_push loads the wrist directly"
+    "reason": "shoulder_iso loads the shoulder directly"
    }
   ],
   "secondaryPatterns": [],
@@ -1743,23 +1734,20 @@ export const EXERCISE_REGISTRY = [
    "shoulders"
   ],
   "classification": {
-   "confidence": 0.9,
-   "reviewStatus": "migrated"
+   "confidence": 1,
+   "reviewStatus": "approved"
   },
-  "primaryFamilyId": "fam.chest_fly",
+  "primaryFamilyId": "fam.rear_delt_fly",
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
-  "planPolicy": {
-   "status": "excluded",
-   "reasonCode": "equipment_vocabulary_gap"
-  },
   "catalogVisibility": "visible",
   "displayName": "Band Reverse Fly",
   "libraryEquipment": [
    "band",
    "door_anchor"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -60499,8 +60487,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_one_arm_band_row",
   "displayName": "One-Arm Band Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -60514,6 +60502,42 @@ export const EXERCISE_REGISTRY = [
    "band",
    "door_anchor"
   ],
+  "primaryPattern": "horizontal_pull",
+  "exerciseType": "resistance",
+  "intentTags": [],
+  "isolation": false,
+  "classifierVersion": "3.0",
+  "mechanic": "compound",
+  "force": "pull",
+  "contraindicationRules": [],
+  "secondaryPatterns": [],
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "coreFunctions": [],
+  "regionTags": [
+   "back"
+  ],
+  "primaryFamilyId": "fam.cable_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "defaultPrescription": {
+   "sets": 3,
+   "reps": "10-12",
+   "rest": "75s"
+  },
+  "equipment": [
+   "bands",
+   "door_anchor"
+  ],
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
   "hasCues": false
  },
  {
