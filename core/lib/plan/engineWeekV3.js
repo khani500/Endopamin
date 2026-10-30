@@ -11,7 +11,7 @@ import { repairThinSessionsV3 } from './sessionRepairV3.js';
 import { applySlotPriorityV3 } from './slotPriorityV3.js';
 import { deliverV3Shadow } from './v3ShadowDelivery.js';
 
-export const ENGINE_WEEK_V3_VERSION = 'engine-week-v3.v4';
+export const ENGINE_WEEK_V3_VERSION = 'engine-week-v3.v5';
 const record = (v) => v !== null && typeof v === 'object' && !Array.isArray(v)
   && [Object.prototype, null].includes(Object.getPrototypeOf(v));
 const absent = (v) => v === null || v === undefined || v === '';

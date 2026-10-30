@@ -4,6 +4,7 @@
  * A refusal means only "this shadow week is not delivered; use legacy". It never states or
  * implies that no valid week exists. Machine codes only; display copy is deferred (D8).
  */
+import { suggestedPullEquipment, accessoryEquipmentNotes } from './equipmentCapabilityV3.js';
 import { normalizeSessionDurationV3 } from './sessionDurationV3.js';
 import { validateWeeklyTemplate } from './weeklyTemplateV3.js';
 import { resolveSlotCandidates } from './slotEligibility.js';
@@ -17,7 +18,7 @@ import { validateRequiredBudgetV3, sessionEstimateV3 } from './sessionBudgetV3.j
 import { getExerciseById } from '../../data/exerciseRegistryIndex.js';
 import { validateSlotPriorityV3 } from './slotPriorityV3.js';
 
-export const V3_SHADOW_DELIVERY_VERSION = 'v3-shadow-delivery.v1';
+export const V3_SHADOW_DELIVERY_VERSION = 'v3-shadow-delivery.v2';
 // Same raw-time float tolerance as 2j/2k; never a minutes allowance.
 const EPSILON_SECONDS = 60e-9;
 const GOALS = ['muscle_gain', 'fat_loss', 'endurance'];
@@ -222,6 +223,14 @@ export function deliverV3Shadow(input) {
     const coverage = evaluateWeeklyCoverage(week, { durationMinutes, executabilityCache });
     if (!coverage.ok) return refuse([{ code: 'COVERAGE_UNEVALUABLE', coverageReason: coverage.reason }], { templateLimitations });
     const limitations = finalLimitations(coverage, allocation, template, { goal, tier, mode: coverage.mode, athleteContext });
+    const capabilityContext = { goal, tier, mode: coverage.mode, athleteContext: week.equipmentContext };
+    const pullLimitation = limitations.find((entry) => entry.requirement === 'pull' && entry.reason === 'NOT_EXECUTABLE');
+    if (pullLimitation) {
+      const suggestedEquipment = suggestedPullEquipment(capabilityContext);
+      if (suggestedEquipment.length) pullLimitation.capabilityReason = {
+        code: 'EQUIPMENT_CAPABILITY_LIMITED', requirement: 'pull', pattern: 'pull', suggestedEquipment,
+      };
+    }
     const diagnostics = priorityDiagnostics ? { slotPriority: priorityDiagnostics } : {};
     // D-5: diagnostic only, never a refusal (template v3 §11 TIME_BUDGET exception).
     if (isFullGym(athleteContext.availableEquipment)) {
@@ -231,7 +240,8 @@ export function deliverV3Shadow(input) {
     return { version: V3_SHADOW_DELIVERY_VERSION, verdict: 'deliver', status: limitations.length ? 'limited' : 'full',
       reasons: limitations.map((l) => ({ code: l.reason, requirement: l.requirement })),
       week, coverage, limitations, templateLimitations,
-      notes: noteCodes(input.slotPriority ? { ...volume, notes: input.slotPriority.notes } : volume, repair), diagnostics };
+      notes: [...noteCodes(input.slotPriority ? { ...volume, notes: input.slotPriority.notes } : volume, repair),
+        ...accessoryEquipmentNotes(capabilityContext)], diagnostics };
   } catch {
     return refuse([{ code: 'DELIVERY_CHECK_ERROR' }]);
   }

@@ -15,8 +15,13 @@
   },
   {
    "path": "lib/plan/engineWeekV3.js",
-   "sha256": "53c98dcc19e7863e8be038a955d41e7a8ea819a2379dab02c531255e2f783489",
+   "sha256": "3f9fb328fd4082681eddb651f652d976463ef15a40c1442ef369ec0479e24588",
    "bytes": 6652
+  },
+  {
+   "path": "lib/plan/equipmentCapabilityV3.js",
+   "sha256": "cf85625b31e9cccfae428f929db6d364c3e5a41f2b147884d830859f3317db27",
+   "bytes": 3463
   },
   {
    "path": "lib/plan/equipmentContract.js",
@@ -115,8 +120,8 @@
   },
   {
    "path": "lib/plan/v3ShadowDelivery.js",
-   "sha256": "cf200ecfbe8b7aa36210c5b7138fa01c84d446180bfc8eb636085362f5712484",
-   "bytes": 15280
+   "sha256": "e37aeb0717df5c2a0e519d6a9177948f526fed15c1fc6302dfa82fb3c8d92fe7",
+   "bytes": 15957
   },
   {
    "path": "lib/plan/volumePrescriptionV3.js",
@@ -134,5 +139,5 @@
    "bytes": 19339
   }
  ],
- "coreHash": "1e722f3179bbf3805ae3b423da61e6b5459dd72a892cd4df809b113642f11ec8"
+ "coreHash": "79065db97e28256bd11f0c3b945bd34243dcebf9ba2dafcf4432c7afd3db046e"
 }
