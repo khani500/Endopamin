@@ -5,9 +5,10 @@
  * implies that no valid week exists. Machine codes only; display copy is deferred (D8).
  */
 import { suggestedPullEquipment, accessoryEquipmentNotes } from './equipmentCapabilityV3.js';
-import { normalizeSessionDurationV3 } from './sessionDurationV3.js';
+import { normalizeSessionDurationV3, sessionDurationPolicyV3, sessionModeV3, SHORT_SESSION_MINUTES_V3 } from './sessionDurationV3.js';
 import { validateWeeklyTemplate } from './weeklyTemplateV3.js';
-import { resolveSlotCandidates } from './slotEligibility.js';
+import { resolveSlotCandidates, isLowerBodyCompoundV3 } from './slotEligibility.js';
+import { resolvePrescription } from './prescriptionResolver.js';
 import { validateResolvedSlot, sessionRawSeconds } from './resolvedSlotContract.js';
 import { evaluateWeeklyCoverage } from './weeklyCoverageV3.js';
 import { classifyDeficitCause } from './templateWeekAllocator.js';
@@ -18,7 +19,7 @@ import { validateRequiredBudgetV3, sessionEstimateV3 } from './sessionBudgetV3.j
 import { getExerciseById } from '../../data/exerciseRegistryIndex.js';
 import { validateSlotPriorityV3 } from './slotPriorityV3.js';
 
-export const V3_SHADOW_DELIVERY_VERSION = 'v3-shadow-delivery.v2';
+export const V3_SHADOW_DELIVERY_VERSION = 'v3-shadow-delivery.v3';
 // Same raw-time float tolerance as 2j/2k; never a minutes allowance.
 const EPSILON_SECONDS = 60e-9;
 const GOALS = ['muscle_gain', 'fat_loss', 'endurance'];
@@ -68,6 +69,69 @@ function contextReasons(context, template) {
   return { reasons, durationMinutes: duration.ok ? duration.sessionMinutes : null };
 }
 
+const LOWER_PRIMARY_PATTERNS = ['SQ', 'LU', 'HG'];
+const UPPER_PRIMARY_PATTERNS = ['HPU', 'VPU', 'HPL', 'VPL'];
+const THIRD_SLOT_ACCESSORIES = ['biceps', 'triceps', 'lateral_delts', 'rear_delts', 'calves', 'ham_knee_flexion', 'glutes'];
+const allowedThirdSlotKind = (kind) => (kind?.intent === 'structural_secondary' && UPPER_PRIMARY_PATTERNS.includes(kind.pattern))
+  || (kind?.pattern === 'ACC' && kind.intent === 'accessory' && THIRD_SLOT_ACCESSORIES.includes(kind.accessoryKind))
+  || (kind?.pattern === 'CORE' && kind.intent === 'core');
+
+const samePacket = (a, b) => {
+  if (Object.is(a, b)) return true;
+  if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object' || Array.isArray(a) !== Array.isArray(b)) return false;
+  const keys = Object.keys(a);
+  return keys.length === Object.keys(b).length && keys.every((key) => Object.hasOwn(b, key) && samePacket(a[key], b[key]));
+};
+
+/** Contract §6 final validator. Recomputed from the final week only; no producer flag or proof is read.
+ * Any reason refuses the week: it is never Limited. */
+export function shortSessionStructureReasons(week) {
+  const policy = sessionDurationPolicyV3(SHORT_SESSION_MINUTES_V3);
+  const budgetSeconds = SHORT_SESSION_MINUTES_V3 * 60;
+  const reasons = [];
+  for (const [dayIndex, day] of week.days.entries()) {
+    const at = { dayIndex, templateId: day.templateId };
+    if (day.slots.length > policy.maxMainExercises)
+      reasons.push({ code: 'SHORT_SESSION_TOO_MANY_SLOTS', ...at, slotCount: day.slots.length, max: policy.maxMainExercises });
+    const primaries = day.slots.filter((slot) => slot?.slotKind?.intent === 'structural_primary');
+    const lower = primaries.filter((slot) => LOWER_PRIMARY_PATTERNS.includes(slot.slotKind.pattern)).length;
+    const upper = primaries.filter((slot) => UPPER_PRIMARY_PATTERNS.includes(slot.slotKind.pattern)).length;
+    if (primaries.length !== 2 || lower !== 1 || upper !== 1)
+      reasons.push({ code: 'SHORT_SESSION_PRIMARY_STRUCTURE', ...at, primaries: primaries.length, lower, upper });
+    for (const [slotIndex, slot] of day.slots.entries()) {
+      if (slot?.slotKind?.intent !== 'structural_primary' && !allowedThirdSlotKind(slot?.slotKind))
+        reasons.push({ code: 'SHORT_SESSION_THIRD_SLOT_KIND', ...at, slotIndex });
+      if (slot?.sets !== 2) reasons.push({ code: 'SHORT_SESSION_SETS', ...at, slotIndex, sets: slot?.sets });
+    }
+    const lowerCompounds = day.slots.filter((slot) => isLowerBodyCompoundV3(slot?.exerciseId)).length;
+    if (lowerCompounds > 1) reasons.push({ code: 'SHORT_SESSION_SECOND_LOWER_COMPOUND', ...at, lowerCompounds });
+    // Every supplied packet must equal a freshly resolved one; the budget reads only the fresh values.
+    const approved = day.slots.map((slot, slotIndex) => {
+      const fresh = resolvePrescription({ exerciseId: slot?.exerciseId, slotKind: slot?.slotKind,
+        goal: week.equipmentContext?.goal, tier: week.tier, mode: policy.mode });
+      if (fresh?.ok !== true || !samePacket(slot?.resolvedPrescription, fresh))
+        reasons.push({ code: 'SHORT_SESSION_PRESCRIPTION_MISMATCH', ...at, slotIndex });
+      return fresh?.ok === true ? { ...slot, mode: policy.mode, sets: fresh.sets.min, resolvedPrescription: fresh } : null;
+    });
+    if (approved.every(Boolean)) {
+      const seconds = sessionRawSeconds({ ...day, slots: approved }, SHORT_SESSION_MINUTES_V3);
+      if (typeof seconds !== 'number') reasons.push({ code: 'SHORT_SESSION_TIMING_UNRESOLVED', ...at, slotReason: seconds.reason });
+      else if (seconds > budgetSeconds + EPSILON_SECONDS)
+        reasons.push({ code: 'SHORT_SESSION_OVER_BUDGET', ...at, rawSeconds: seconds, budgetSeconds });
+    }
+  }
+  return reasons;
+}
+
+/** Truthful short-mode notes, derived from the final week alone. An empty list emits no note. */
+function shortSessionNotes(week) {
+  const hasThird = (day) => day.slots.some((slot) => slot.slotKind.intent !== 'structural_primary');
+  const dayIndexes = (test) => week.days.flatMap((day, index) => test(day) ? [index] : []);
+  const without = dayIndexes((day) => !hasThird(day)), withThird = dayIndexes(hasThird);
+  return [...(without.length ? [{ code: 'SHORT_SESSION_NO_ADDITIONS', dayIndexes: without }] : []),
+    ...(withThird.length ? [{ code: 'SHORT_SESSION_THIRD_SLOT', dayIndexes: withThird }] : [])];
+}
+
 /** D-6 hard checks plus D-3, each failure with its own code and day/slot location. */
 function hardCheckReasons(week, template, { durationMinutes, tier, goal, athleteContext }) {
   const reasons = [];
@@ -82,7 +146,7 @@ function hardCheckReasons(week, template, { durationMinutes, tier, goal, athlete
     reasons.push({ code: 'WEEK_DAY_STRUCTURE_MISMATCH' });
     return reasons;
   }
-  const mode = durationMinutes === 15 ? 'short_session' : 'standard';
+  const mode = sessionModeV3(durationMinutes);
   const budget = validateRequiredBudgetV3(week);
   if (!budget.ok) reasons.push({ code: budget.reason });
   const owned = new Set(athleteContext.availableEquipment);
@@ -142,6 +206,7 @@ function hardCheckReasons(week, template, { durationMinutes, tier, goal, athlete
         reasons.push({ code: 'SESSION_ESTIMATE_MISMATCH', ...at });
     }
   }
+  if (mode === 'short_session') reasons.push(...shortSessionStructureReasons(week));
   return reasons;
 }
 
@@ -175,7 +240,9 @@ function noteCodes(volume, repair) {
   }
   for (const entry of repair.belowTarget) notes.push({ code: 'BELOW_TARGET_EXERCISE_COUNT', dayIndex: entry.dayIndex,
     templateId: entry.templateId, slotCount: entry.slotCount, target: entry.target });
-  if (code(volume.skipped)) notes.push({ code: volume.skipped });
+  // The volume stage's short-mode marker describes that stage only; the final week decides the notes.
+  if (sessionModeV3(repair.week.durationMinutes) === 'short_session') notes.push(...shortSessionNotes(repair.week));
+  else if (code(volume.skipped)) notes.push({ code: volume.skipped });
   return notes;
 }
 

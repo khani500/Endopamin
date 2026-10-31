@@ -1,6 +1,7 @@
 /** Step 2g: dormant resolved-slot boundary; eligibility belongs to slotEligibility. */
 import { validateSlotKind } from './slotEligibility.js';
 import { estimateSlotSeconds, estimateSessionSeconds, warmupSeconds, fitsSessionBudget } from './sessionTiming.js';
+import { sessionModeV3 } from './sessionDurationV3.js';
 
 const refuse = (reason) => ({ ok: false, reason });
 const object = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -56,7 +57,7 @@ export function sessionRawSeconds(session, durationMinutes) {
   const warmup = warmupSeconds(durationMinutes);
   if (typeof warmup !== 'number') return warmup;
   if (!object(session) || !Array.isArray(session.slots)) return refuse('INVALID_RESOLVED_SESSION');
-  const mode = durationMinutes === 15 ? 'short_session' : 'standard';
+  const mode = sessionModeV3(durationMinutes);
   const estimates = [];
   for (const slot of session.slots) {
     const seconds = slotRawSeconds(slot);

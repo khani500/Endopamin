@@ -10,6 +10,7 @@ import { groupContributionFor, weeklyPrescribedGroupTotals, MAJOR_GROUPS, SUPPOR
 import { buildVolumePrescriptionV3 } from './volumePrescriptionV3.js';
 import { selectionPreferenceIndex } from './selectionPreference.js';
 import { validateRequiredBudgetV3 } from './sessionBudgetV3.js';
+import { sessionModeV3 } from './sessionDurationV3.js';
 
 const fail = (reason) => ({ ok: false, reason });
 const clone = (v) => Array.isArray(v) ? v.map(clone) : v && typeof v === 'object'
@@ -62,7 +63,7 @@ export function allocateTemplateVolumeV3(input) {
   const prescription = buildVolumePrescriptionV3({ goal, tier });
   if (!prescription.ok) return prescription;
   const priority = priorityMuscles.length ? PRIORITIES[priorityMuscles[0]] : null;
-  const mode = durationMinutes === 15 ? 'short_session' : 'standard';
+  const mode = sessionModeV3(durationMinutes);
   for (const day of seed.days) {
     if (day.slots.length < 2) return fail('SESSION_EXERCISE_FLOOR_NOT_MET');
     if (new Set(day.slots.map((s) => s.exerciseId)).size !== day.slots.length) return fail('DUPLICATE_IN_SESSION');

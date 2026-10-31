@@ -5,6 +5,8 @@
  * Prescriptions must already contain the resolver's final approved §8 values.
  * These accounting estimates are not tempo cues or measured time guarantees.
  */
+import { sessionDurationPolicyV3 } from './sessionDurationV3.js';
+
 const fail = (reason) => ({ ok: false, reason });
 const MODES = ['standard', 'short_session'];
 const RAW_SECONDS_EPSILON = 60 * 1e-9; // Contract's 1e-9 minutes, converted once.
@@ -60,14 +62,7 @@ export function estimateSlotSeconds(resolvedPrescription, sets, options) {
 
 /** Total preparation allowance, including ramp-up; no separate surcharge. */
 export function warmupSeconds(selectedMinutes) {
-  switch (selectedMinutes) {
-    case 15: return 180;
-    case 30: return 300;
-    case 45:
-    case 60:
-    case 75: return 480;
-    default: return fail('UNSUPPORTED_DURATION');
-  }
+  return sessionDurationPolicyV3(selectedMinutes)?.warmupSeconds ?? fail('UNSUPPORTED_DURATION');
 }
 
 /** Main-slot estimates only. Optional cooldown is outside this API/promise. */

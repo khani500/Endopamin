@@ -1,5 +1,5 @@
 /** Template v3 §3 and D4/D5. Dormant structure only: no IDs, sets, costing or calendar. */
-import { normalizeSessionDurationV3 } from './sessionDurationV3.js';
+import { normalizeSessionDurationV3, SUPPORTED_SESSION_MINUTES_V3, sessionModeV3 } from './sessionDurationV3.js';
 import { validateSlotKind, resolveSlotCandidates } from './slotEligibility.js';
 import { getReviewedPrescriptionInputs } from './reviewedPrescriptionInputs.js';
 
@@ -61,7 +61,7 @@ function availability(context) {
     if (!cache.has(key)) {
       const result = resolveSlotCandidates({
         slotKind: { pattern, intent }, goal: context.equipmentContext.goal, tier: context.tier,
-        mode: context.durationMinutes === 15 ? 'short_session' : 'standard',
+        mode: sessionModeV3(context.durationMinutes),
         athleteContext: context.equipmentContext,
       });
       if (!result.ok) throw new Error(result.reason);
@@ -136,7 +136,7 @@ const OTHER_FAMILY = { knee: 'hinge', hinge: 'knee', push: 'pull', pull: 'push' 
 export function buildShortSessionTemplate(input) {
   const context = inputs(input);
   if (!context.ok) return context;
-  if (context.durationMinutes !== 15) return fail('SHORT_SESSION_REQUIRES_15_MINUTES');
+  if (sessionModeV3(context.durationMinutes) !== 'short_session') return fail('SHORT_SESSION_REQUIRES_20_MINUTES');
   const candidatesFor = availability(context);
   // Count actual family appearances, including substitutions. An unavailable orientation
   // falls back within its family; availability still comes exclusively from 2d.
@@ -197,7 +197,7 @@ const upperTooShallow = (depth) => UPPER_DAYS.some((templateId) => depth[templat
 export function buildWeeklyTemplateV3(input) {
   const context = inputs(input);
   if (!context.ok) return context;
-  if (context.durationMinutes === 15) return buildShortSessionTemplate(input);
+  if (sessionModeV3(context.durationMinutes) === 'short_session') return buildShortSessionTemplate(input);
   let sequence = WEEKS[context.daysPerWeek];
   let split = context.daysPerWeek <= 3 ? 'full_body' : context.daysPerWeek === 5 ? 'upper_lower_full_body' : 'upper_lower';
   let pplDepth;
@@ -225,9 +225,9 @@ const validUpperDepth = (depth) => depth !== null && typeof depth === 'object' &
 function validateTemplateStructure(template) {
   if (!template || template.ok !== true || template.version !== VERSION || template.kind !== 'structure_only') return fail('INVALID_WEEKLY_TEMPLATE');
   if (!Number.isInteger(template.daysPerWeek) || template.daysPerWeek < 2 || template.daysPerWeek > 6) return fail('INVALID_DAYS_PER_WEEK');
-  if (![15, 30, 45, 60, 75].includes(template.durationMinutes)) return fail('INVALID_TEMPLATE_DURATION');
+  if (!SUPPORTED_SESSION_MINUTES_V3.includes(template.durationMinutes)) return fail('INVALID_TEMPLATE_DURATION');
   if (!Array.isArray(template.days) || template.days.length !== template.daysPerWeek) return fail('INVALID_TEMPLATE_DAY_COUNT');
-  const short = template.durationMinutes === 15;
+  const short = sessionModeV3(template.durationMinutes) === 'short_session';
   let sequence;
   if (short) {
     if (template.split !== 'short_session') return fail('INVALID_TEMPLATE_SPLIT');

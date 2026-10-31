@@ -5,6 +5,7 @@ import { evaluateWeeklyCoverage, coverageCreditForSlot } from './weeklyCoverageV
 import { buildWeeklyTemplateV3 } from './weeklyTemplateV3.js';
 import { selectionPreferenceIndex } from './selectionPreference.js';
 import { validateSlotPriorityV3 } from './slotPriorityV3.js';
+import { sessionDurationPolicyV3, sessionModeV3 } from './sessionDurationV3.js';
 
 const VERSION = 'required-session-extension.v1';
 const EPSILON = 60e-9;
@@ -22,8 +23,7 @@ const lost = (before, after) => Object.entries(before.requirements).some(([k, r]
   && after.requirements[k].achieved < Math.min(r.achieved, r.target));
 
 export function requiredExtensionCapSeconds(selectedMinutes) {
-  return selectedMinutes === 30 || selectedMinutes === 45 ? 300
-    : selectedMinutes === 60 || selectedMinutes === 75 ? 600 : 0;
+  return sessionDurationPolicyV3(selectedMinutes)?.requiredExtensionCapSeconds ?? 0;
 }
 
 /** Existing D5 proxy; shared with repair, not a new calendar/fatigue clearance. */
@@ -39,7 +39,7 @@ function approved(week, kind, cache) {
   const key = JSON.stringify(kind);
   if (!cache.has(key)) {
     const result = resolveSlotCandidates({ slotKind: kind, goal: week.equipmentContext.goal,
-      tier: week.tier, mode: week.durationMinutes === 15 ? 'short_session' : 'standard',
+      tier: week.tier, mode: sessionModeV3(week.durationMinutes),
       athleteContext: week.equipmentContext });
     if (!result.ok) throw new Error(result.reason);
     cache.set(key, result.candidates);

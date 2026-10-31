@@ -3,6 +3,7 @@ import { validateResolvedSlot, slotRawSeconds, sessionRawSeconds, canPlaceResolv
 import { evaluateWeeklyCoverage } from './weeklyCoverageV3.js';
 import { weeklyPrescribedGroupTotals } from './muscleVolumeGroups.js';
 import { recoveryConflictsV3, validateRequiredBudgetV3, sessionEstimateV3 } from './sessionBudgetV3.js';
+import { sessionModeV3 } from './sessionDurationV3.js';
 export { recoveryConflictsV3 } from './sessionBudgetV3.js';
 
 /* ---------------------------------------------------------------------------
@@ -16,7 +17,7 @@ export { recoveryConflictsV3 } from './sessionBudgetV3.js';
  * created, dropped, shortened or re-prescribed.
  *
  * Floor and targets come from sessionDeliveryPolicy: a day below its target is
- * a receiver; targets never block (ok:false only while a day is below the floor). At 15 minutes the D4 two-primary day is the
+ * a receiver; targets never block (ok:false only while a day is below the floor). At 20 minutes the D4 two-primary day is the
  * approved shape, so only a day below the floor is a receiver there, and every
  * move is refused because it would break the lower + upper structure.
  * All timing is resolvedSlotContract (warm-up once per session).
@@ -98,7 +99,7 @@ export function repairThinSessionsV3(input, options) {
   const durationMinutes = input.durationMinutes;
   const target = targetMainExercises(durationMinutes);
   if (typeof target !== 'number') return failV3(target.reason);
-  const short = durationMinutes === 15;
+  const short = sessionModeV3(durationMinutes) === 'short_session';
   const floor = MIN_MAIN_EXERCISES;
   const executabilityCache = options?.executabilityCache === undefined ? new Map() : options.executabilityCache;
   const coverageBefore = evaluateWeeklyCoverage(input, { durationMinutes, executabilityCache });
@@ -158,7 +159,7 @@ export function repairThinSessionsV3(input, options) {
             if (slot.requiredCoveragePlacement) {
               rejected.push(refuse(to, from, slot, 'REQUIRED_EXTENSION_PLACEMENT_LOCKED')); continue;
             }
-            // D4: a 15-minute day is exactly one lower + one upper primary; no move preserves that.
+            // D4: a 20-minute day has exactly one lower + one upper primary; no move preserves that.
             if (short) { rejected.push(refuse(to, from, slot, 'SHORT_SESSION_STRUCTURE_LOCKED')); continue; }
             if (donor.slots.length - 1 < floor) { rejected.push(refuse(to, from, slot, 'DONOR_BELOW_FLOOR')); continue; }
             // Termination guard: a move must not leave the donor thinner than the receiver becomes.

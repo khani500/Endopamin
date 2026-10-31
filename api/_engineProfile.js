@@ -62,7 +62,7 @@ export function normalizeEngineProfile(row) {
     add('days_per_week', 'invalid_frequency');
   }
   if (!missing.has('session_duration')
-    && ![15, 30, 45, 60, 75, 90].includes(row.session_duration)) {
+    && ![20, 30, 45, 60, 75, 90].includes(row.session_duration)) {
     add('session_duration', 'unsupported_duration');
   }
   const equipment = resolveEquipmentCapability(row.equipment, row.equipment_extras);

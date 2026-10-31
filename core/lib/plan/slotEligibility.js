@@ -4,6 +4,7 @@ import { resolvePrescription } from './prescriptionResolver.js';
 import {
   REVIEWED_PRESCRIPTION_INPUTS_VERSION,
   REVIEWED_PRESCRIPTION_INPUTS_SOURCES,
+  getReviewedPrescriptionInputs,
 } from './reviewedPrescriptionInputs.js';
 
 const STRUCTURAL = ['SQ', 'HG', 'LU', 'HPU', 'HPL', 'VPU', 'VPL'];
@@ -25,6 +26,17 @@ export function validateSlotKind(slotKind) {
       : slotKind.pattern === 'ACC' && slotKind.intent === 'accessory'
         && ACCESSORIES.includes(slotKind.accessoryKind) && shape === 'accessoryKind,intent,pattern';
   return valid ? { ok: true, slotKind: { ...slotKind } } : refuse('INVALID_SLOT_KIND');
+}
+
+const LOWER_BODY_COMPOUND_PATTERNS = ['SQ', 'LU', 'HG'];
+/** 20-minute third-slot planning restriction (contract §6, C3), not a candidate rule: approved
+ * eligibility for SQ, LU or HG. Fails closed: without readable reviewed data the answer is true. */
+export function isLowerBodyCompoundV3(exerciseId) {
+  const eligibility = getReviewedPrescriptionInputs(exerciseId)?.eligibility;
+  if (!Array.isArray(eligibility)) return true;
+  if (eligibility.some((entry) => typeof entry?.slotKind?.pattern !== 'string')) return true;
+  return eligibility.some((entry) => LOWER_BODY_COMPOUND_PATTERNS.includes(entry.slotKind.pattern)
+    && entry.reviewStatus === 'approved' && entry.movementEligibility === 'eligible');
 }
 
 /** Track C hook: pass-through metadata only. Insufficient information is never clearance. */

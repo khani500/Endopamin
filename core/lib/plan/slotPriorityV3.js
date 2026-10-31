@@ -9,10 +9,11 @@ import { MAJOR_GROUPS, groupContributionFor, weeklyPrescribedGroupTotals } from 
 import { coverageCreditForSlot, evaluateWeeklyCoverage } from './weeklyCoverageV3.js';
 import { slotRawSeconds, sessionRawSeconds, validateResolvedSlot } from './resolvedSlotContract.js';
 import { validateRequiredExtensionV3, sessionEstimateV3, recoveryConflictsV3 } from './sessionBudgetV3.js';
-import { resolveSlotCandidates } from './slotEligibility.js';
+import { resolveSlotCandidates, isLowerBodyCompoundV3 } from './slotEligibility.js';
+import { sessionDurationPolicyV3, sessionModeV3 } from './sessionDurationV3.js';
 import { selectionPreferenceIndex } from './selectionPreference.js';
 
-export const SLOT_PRIORITY_VERSION = 'slot-priority.v2';
+export const SLOT_PRIORITY_VERSION = 'slot-priority.v3';
 import { getExerciseById } from '../../data/exerciseRegistryIndex.js';
 const DEADLIFT_FAMILIES=new Set(['fam.deadlift_conventional','fam.deadlift_trapbar','fam.deadlift_romanian','fam.deadlift_sumo']);
 const EPS = 60e-9;
@@ -23,6 +24,8 @@ const acc = accessoryKind => ({pattern:'ACC',intent:'accessory',accessoryKind});
 const kinds = [...['SQ','HPU','HPL','HG','VPU','VPL','LU'].map(secondary),
   ...['ham_knee_flexion','lateral_delts','rear_delts','calves','biceps','triceps','glutes'].map(acc),
   {pattern:'CORE',intent:'core'}];
+// Contract §6 third slot. isLowerBodyCompoundV3 still overrides any kind listed here.
+const SHORT_THIRD_SLOT_KINDS = kinds.filter(k=>['HPU','VPU','HPL','VPL','ACC','CORE'].includes(k.pattern));
 // Per-call caches are passed explicitly; no retained caller-owned state.
 
 const signature = s => JSON.stringify(s);
@@ -64,7 +67,7 @@ function ledger(w) {
   return {totals,muscles,exposures,direct};
 }
 function pool(kind,context) {
-  const mode=context.durationMinutes===15?'short_session':'standard';
+  const mode=sessionModeV3(context.durationMinutes);
   const key=JSON.stringify([kind,context.tier,context.goal,mode,context.equipmentContext]);
   if(!poolCache.has(key)) {
     const r=ok(resolveSlotCandidates({slotKind:kind,goal:context.goal,tier:context.tier,mode,
@@ -119,11 +122,15 @@ function dayLimits(day) {
 function limitSeverity(w) {return w.days.reduce((n,d)=>n+dayLimits(d).severity,0);}
 
   const duration=original.durationMinutes;
+  // Short mode is additive only: no donor, swap, repair phase or set growth; every addition is capped per day.
+  const durationPolicy=sessionDurationPolicyV3(duration),short=durationPolicy?.mode==='short_session';
   const template=ok(buildWeeklyTemplateV3(context));
   const prescription=ok(buildVolumePrescriptionV3({goal:context.goal,tier:context.tier}));
   const before=ledger(original),coverage=ok(evaluateWeeklyCoverage(original,{durationMinutes:duration}));
   const required=Object.entries(coverage.requirements).filter(([,r])=>r.required)
     .map(([key,r])=>({key,floor:Math.min(r.target,r.achieved)}));
+  const requiredTargets=Object.entries(coverage.requirements).filter(([,r])=>r.required).map(([key,r])=>({key,target:r.target}));
+  const requiredMissing=l=>requiredTargets.filter(r=>(l.exposures[r.key]||0)<r.target).length;
   const budget=ok(validateRequiredExtensionV3(original));
   const mandatoryDirect=Object.fromEntries(['calves','lateral_delts'].map(g=>[g,before.direct[g]>0?1:0]));
   const protectedDirect=s=>s.slotKind.pattern==='ACC'&&['calves','lateral_delts'].includes(s.slotKind.accessoryKind);
@@ -162,7 +169,7 @@ function limitSeverity(w) {return w.days.reduce((n,d)=>n+dayLimits(d).severity,0
   const deficitDonor=(s,l)=>MAJOR_GROUPS.some(g=>meta(s).groups[g]===s.sets
     &&(l.totals[g]||0)<prescription.groups[g].target.min);
   const pins=original.days.map((d,di)=>d.slots.filter((s,si)=>{
-    const sole=soleExposure(s,originalPatterns),vpuException=sole&&isVPU(s);
+    const sole=soleExposure(s,originalPatterns),vpuException=!short&&sole&&isVPU(s);
     if((sole&&!vpuException)||protectedDirect(s)
       ||(s.slotKind.intent==='structural_primary'&&!vpuException)
       ||s.requiredCoveragePlacement||budget.extendedTemplateIds.includes(d.templateId))return true;
@@ -183,12 +190,14 @@ function limitSeverity(w) {return w.days.reduce((n,d)=>n+dayLimits(d).severity,0
     return compareSlotPriorityChoicesV3(a,b);
   }
 
-  function dayOptions(tier,repairLimits) {
+  function dayOptions(tier,repairLimits,requiredGap=false) {
     const state=ledger(week),oldScore=score(state),oldSeverity=limitSeverity(week),counts=patternCounts(week);
     const bestByDay=new Map();
     for(const [di,day]of week.days.entries()) {
       if(budget.extendedTemplateIds.includes(day.templateId))continue;
-      const mutable=day.slots.filter(s=>!pins[di].includes(s)&&!protectedDirect(s)
+      if(short&&(day.slots.length>=durationPolicy.maxMainExercises
+        ||day.slots.filter(s=>s.source==='optional_addition').length>=durationPolicy.thirdSlotCap))continue;
+      const mutable=short?[]:day.slots.filter(s=>!pins[di].includes(s)&&!protectedDirect(s)
         &&(!soleExposure(s,counts)||isVPU(s))&&!deficitDonor(s,state));
       const arms=mutable.filter(s=>s.slotKind.pattern==='ACC'&&['biceps','triceps'].includes(s.slotKind.accessoryKind));
       const others=mutable.filter(s=>!arms.includes(s));
@@ -204,7 +213,15 @@ function limitSeverity(w) {return w.days.reduce((n,d)=>n+dayLimits(d).severity,0
         if(incoming)for(const [g,n]of Object.entries(meta(incoming).groups))projected[g]=(projected[g]||0)+n;
         const sc=score({totals:projected});
         if(sc.max>baselineScore.max||sc.max>oldScore.max)return;
-        if(!acceptSlotPriorityScoreV3(oldScore,sc,repairLimits?'mandatory_rule7':'optional'))return;
+        const phase=repairLimits?'mandatory_rule7':requiredGap?'required_gap':'optional';
+        let beforeScore=oldScore,requiredGain=0;
+        if(requiredGap) {
+          const missingBefore=requiredMissing(state);
+          sc.requiredMissing=requiredMissing(ledger({...week,days:week.days.map((d,i)=>i===di?{...d,slots:[...day.slots,incoming]}:d)}));
+          requiredGain=missingBefore-sc.requiredMissing;
+          beforeScore={...oldScore,requiredMissing:missingBefore};
+        }
+        if(!acceptSlotPriorityScoreV3(beforeScore,sc,phase))return;
         if(donors.some(s=>isVPU(s)&&(soleExposure(s,counts)||isBaselineSoleVPU(s)))&&(projected.front_delts||0)<frontMin)return;
         if(['calves','side_delts'].some(g=>(projected[g]||0)<(before.totals[g]||0)))return;
         if(repairLimits&&(donors.length!==1||outgoing.length!==1||!incoming
@@ -221,7 +238,7 @@ function limitSeverity(w) {return w.days.reduce((n,d)=>n+dayLimits(d).severity,0
         if(repairLimits?severity>=oldSeverity:severity!==0)return;
         const pick={score:sc,di,donors,receiver:incoming,severity,repairPower:Number(repairLimits&&context.goal==='muscle_gain'&&isPower(incoming)),
           kindRank:kindOrder(incoming),preference:incoming?selectionPreferenceIndex(incoming.slotKind,context.tier,incoming.exerciseId):-1,
-          receiverId:incoming?.exerciseId??'',phase:repairLimits?'mandatory_rule7':'optional'};
+          receiverId:incoming?.exerciseId??'',phase,requiredGain};
         const best=bestByDay.get(di);
         // Objective bound only: a pair unable to beat an already-validated
         // daily winner cannot affect the result. No first-admissible shortcut.
@@ -252,7 +269,7 @@ function limitSeverity(w) {return w.days.reduce((n,d)=>n+dayLimits(d).severity,0
           bundles.push([arms[i]]);
           for(let j=i+1;j<arms.length;j++)bundles.push([arms[i],arms[j]]);
         }
-        if(!repairLimits&&duration!==15)for(const s of mutable) {
+        if(!repairLimits&&!short)for(const s of mutable) {
           if(s.sets<s.resolvedPrescription.sets.max)offer([s],{...s,sets:s.sets+1},[],true);
         }
       } else {
@@ -267,11 +284,14 @@ function limitSeverity(w) {return w.days.reduce((n,d)=>n+dayLimits(d).severity,0
         const kept=day.slots.filter(s=>!donation.includes(s));
         if(kept.length+1<2)continue;
         if(repairLimits&&donation.length&&kept.length>=2)offer(donation,null,donation);
-        for(const kind of kinds)for(const candidate of pool(kind,context)) {
+        for(const kind of short?SHORT_THIRD_SLOT_KINDS:kinds)for(const candidate of pool(kind,context)) {
           if(kept.some(s=>s.exerciseId===candidate.exerciseId)||!regionFits(candidate,template.days[di]))continue;
+          if(short&&isLowerBodyCompoundV3(candidate.exerciseId))continue;
           for(let n=candidate.resolvedPrescription.sets.min;n<=candidate.resolvedPrescription.sets.max;n++) {
             const slot={...candidate,sets:n},m=meta(slot);
-            if(!repairLimits&&!MAJOR_GROUPS.some((g,i)=>(state.totals[g]||0)<bounds[i]/2&&m.groups[g]>0))continue;
+            if(requiredGap) {
+              if(!requiredTargets.some(r=>m.credit[r.key]&&(state.exposures[r.key]||0)<r.target))continue;
+            } else if(!repairLimits&&!MAJOR_GROUPS.some((g,i)=>(state.totals[g]||0)<bounds[i]/2&&m.groups[g]>0))continue;
             if(warmup[di]+kept.reduce((sum,s)=>sum+meta(s).seconds,0)+m.seconds>selectedSeconds+EPS)continue;
             offer(donation,slot,donation);
           }
@@ -281,8 +301,8 @@ function limitSeverity(w) {return w.days.reduce((n,d)=>n+dayLimits(d).severity,0
     return bestByDay;
   }
 
-  function choose(repairLimits) {
-    const arms=dayOptions(0,repairLimits),other=dayOptions(1,repairLimits),daily=[];
+  function choose(repairLimits,requiredGap=false) {
+    const arms=dayOptions(0,repairLimits,requiredGap),other=dayOptions(1,repairLimits,requiredGap),daily=[];
     for(let di=0;di<week.days.length;di++) {
       const a=arms.get(di),b=other.get(di);
       const pick=chooseSlotPriorityDonorTierV3(a,b,repairLimits);
@@ -305,8 +325,14 @@ function limitSeverity(w) {return w.days.reduce((n,d)=>n+dayLimits(d).severity,0
     coachingTransitions.push({before:week,after:pick.week,dayIndex:pick.di,donors:pick.donors,receiver:pick.receiver,phase:pick.phase});
     week=pick.week;transactions++;if(pick.phase==='mandatory_rule7')mandatoryRepairs++;
   };
-  for(let n=0;n<8&&limitSeverity(week)>0;n++) {
+  for(let n=0;n<8&&!short&&limitSeverity(week)>0;n++) {
     const pick=choose(true);
+    if(!pick)break;
+    accept(pick);
+  }
+  // Contract §6 selection order: a REQUIRED gap first, then the MAJOR minimax phase below.
+  for(let n=0;n<week.days.length&&short;n++) {
+    const pick=choose(false,true);
     if(!pick)break;
     accept(pick);
   }
@@ -509,7 +535,8 @@ export function auditSlotPriorityTransactionV3({ baseline, before, after, phase,
     const base = facts(baseline), a = facts(before), b = facts(after);
     const objective = f => {
       const ds = MAJOR_GROUPS.map(g => Math.max(0,rx.groups[g].target.min-(f.total[g] || 0))/rx.groups[g].target.min);
-      return { max: Math.max(...ds), sum: ds.reduce((n,v) => n+v,0) };
+      return { max: Math.max(...ds), sum: ds.reduce((n,v) => n+v,0),
+        requiredMissing: Object.values(f.coverage.requirements).filter(r => r.required && r.achieved < r.target).length };
     };
     if (Object.entries(base.coverage.requirements).some(([k,r]) => r.required
       && b.coverage.requirements[k].achieved < Math.min(r.target,r.achieved))) reject(1);
@@ -540,11 +567,21 @@ export function auditSlotPriorityTransactionV3({ baseline, before, after, phase,
       if (MAJOR_GROUPS.some(g => groups[g] === donor.sets && a.total[g] < rx.groups[g].target.min)) reject(10);
     }
     if (Math.max(0,b.total.chest-b.total.back) > Math.max(0,base.total.chest-base.total.back)) reject(9);
-    if (phase === 'optional' && receiver && ['SQ','HG','LU','HPU','HPL','VPU','VPL'].includes(receiver.slotKind.pattern)) {
+    if (['optional','required_gap'].includes(phase) && receiver && ['SQ','HG','LU','HPU','HPL','VPU','VPL'].includes(receiver.slotKind.pattern)) {
       const growth = before.days[dayIndex].slots.some(s => s.exerciseId === receiver.exerciseId && equal(s.slotKind,receiver.slotKind));
       if (!growth && (before.days[dayIndex].slots.some(s => s.slotKind.pattern === receiver.slotKind.pattern)
           || removedStructural.includes(receiver.slotKind.pattern))) reject(11);
     }
+    // Rule 12: short mode is additive only, within its allowed kinds and per-day cap.
+    const policy = sessionDurationPolicyV3(baseline.durationMinutes);
+    if (policy?.mode === 'short_session') {
+      const oldSlots = before.days[dayIndex].slots, newSlots = after.days[dayIndex].slots;
+      if (!['required_gap','optional'].includes(phase) || donors.length || !receiver
+          || !equal(newSlots,[...oldSlots,receiver]) || newSlots.length > policy.maxMainExercises
+          || newSlots.filter(s => s.source === 'optional_addition').length > policy.thirdSlotCap
+          || !SHORT_THIRD_SLOT_KINDS.some(kind => equal(kind,receiver.slotKind))
+          || isLowerBodyCompoundV3(receiver.exerciseId) || receiver.sets !== 2) reject(12);
+    } else if (phase === 'required_gap') reject(12);
     if (before.days.some((day,i) => i !== dayIndex && !equal(day,after.days[i]))) return failure();
     return { ok: reasons.length === 0, reasons };
   } catch { return failure(); }
@@ -552,13 +589,15 @@ export function auditSlotPriorityTransactionV3({ baseline, before, after, phase,
 
 export function acceptSlotPriorityScoreV3(before, after, phase, tolerance = 0) {
   if (![before?.max,before?.sum,after?.max,after?.sum,tolerance].every(Number.isFinite) || tolerance < 0) return false;
+  if (phase === 'required_gap') return Number.isInteger(before.requiredMissing) && Number.isInteger(after.requiredMissing)
+    && after.requiredMissing < before.requiredMissing && after.max <= before.max + tolerance;
   return phase === 'mandatory_rule7' ? after.max <= before.max + tolerance
     : phase === 'optional' && (after.max < before.max - tolerance
       || (Math.abs(after.max-before.max) <= tolerance && after.sum < before.sum - tolerance));
 }
 
 export function compareSlotPriorityChoicesV3(a,b) {
-  return (a.repairPower??0)-(b.repairPower??0)||a.score.max-b.score.max||a.score.sum-b.score.sum||a.severity-b.severity
+  return (a.repairPower??0)-(b.repairPower??0)||(b.requiredGain??0)-(a.requiredGain??0)||a.score.max-b.score.max||a.score.sum-b.score.sum||a.severity-b.severity
     ||a.donors.length-b.donors.length||a.kindRank-b.kindRank||a.preference-b.preference
     ||(a.receiverId<b.receiverId?-1:a.receiverId>b.receiverId?1:0)||a.di-b.di;
 }

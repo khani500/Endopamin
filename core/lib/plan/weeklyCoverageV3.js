@@ -5,6 +5,7 @@
  * Evaluation also needs week.tier and week.equipmentContext (canonical tokens + explicit goal).
  */
 import { resolvePrescription } from './prescriptionResolver.js';
+import { SUPPORTED_SESSION_MINUTES_V3, sessionModeV3 } from './sessionDurationV3.js';
 import { resolveSlotCandidates } from './slotEligibility.js';
 import { getReviewedPrescriptionInputs } from './reviewedPrescriptionInputs.js';
 import { getExerciseById } from '../../data/exerciseRegistryIndex.js';
@@ -97,7 +98,7 @@ export function evaluateWeeklyCoverage(week, options) {
   const executabilityCache = options?.executabilityCache;
   if (executabilityCache !== undefined && !(executabilityCache instanceof Map)) return fail('INVALID_EXECUTABILITY_CACHE');
   const durationMinutes = options?.durationMinutes;
-  if (![15, 30, 45, 60, 75].includes(durationMinutes)) return fail('INVALID_DURATION');
+  if (!SUPPORTED_SESSION_MINUTES_V3.includes(durationMinutes)) return fail('INVALID_DURATION');
   if (week?.durationMinutes !== undefined && week.durationMinutes !== durationMinutes) return fail('DURATION_CONTEXT_MISMATCH');
   const tier = week?.tier;
   const context = week?.equipmentContext;
@@ -107,7 +108,7 @@ export function evaluateWeeklyCoverage(week, options) {
   if (!['muscle_gain', 'fat_loss', 'endurance'].includes(context.goal)) return fail('INVALID_GOAL');
   const ledger = countWeeklyExposures(week);
   if (!ledger.ok) return ledger;
-  const mode = durationMinutes === 15 ? 'short_session' : 'standard';
+  const mode = sessionModeV3(durationMinutes);
   const executable = emptyCounts();
   try {
     const cacheKey = executabilityCache ? JSON.stringify([tier, mode, week.equipmentContext]) : null;
@@ -150,7 +151,7 @@ export function evaluateWeeklyCoverage(week, options) {
       entry.executable = Object.freeze({ ...executable });
     }
   } catch (error) { return fail(error.message); }
-  const short = durationMinutes === 15;
+  const short = mode === 'short_session';
   const reduced = short || ledger.capacity < 10;
   const optionalReason = short ? 'OPTIONAL_IN_SHORT_MODE' : 'OPTIONAL_BELOW_CAPACITY_10';
   const requirements = {};
@@ -172,7 +173,7 @@ export function evaluateWeeklyCoverage(week, options) {
   requirement('pull', reduced ? 1 : 2);
   requirement('hamstring_primary', 1, true);
   for (const pattern of STRUCTURAL) {
-    // §6's SQ subtarget at 3+ days remains in reduced standard mode. The 15-min
+    // §6's SQ subtarget at 3+ days remains in reduced standard mode. The 20-min
     // exception removes standard orientation/all-pattern subtargets at every capacity.
     const requiredSQ = pattern === 'SQ' && !short && ledger.trainingDays >= 3;
     requirement(pattern, !reduced || requiredSQ ? 1 : 0, true, 'PATTERN_NOT_REQUIRED_IN_REDUCED_MODE');

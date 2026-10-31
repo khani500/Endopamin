@@ -11,6 +11,7 @@ import { validateResolvedSlot, slotRawSeconds, sessionRawSeconds, canPlaceResolv
 import { coverageCreditForSlot, countWeeklyExposures, evaluateWeeklyCoverage } from './weeklyCoverageV3.js';
 import { selectionPreferenceIndex } from './selectionPreference.js';
 import { extendRequiredCoverageV3 } from './sessionBudgetV3.js';
+import { sessionModeV3 } from './sessionDurationV3.js';
 
 const fail = (reason) => ({ ok: false, reason });
 const ACC = ['ham_knee_flexion', 'lateral_delts', 'rear_delts', 'calves', 'biceps', 'triceps', 'glutes'];
@@ -158,7 +159,7 @@ export function allocateTemplateWeek(input) {
   const valid = validateWeeklyTemplate(template, { daysPerWeek, durationMinutes, tier,
     equipmentContext: { ...athleteContext, goal } });
   if (!valid.ok) return valid;
-  const mode = durationMinutes === 15 ? 'short_session' : 'standard';
+  const mode = sessionModeV3(durationMinutes);
   const short = mode === 'short_session';
   const week = { durationMinutes, tier, equipmentContext: { ...athleteContext, goal }, split: template.split,
     days: template.days.map((day) => ({ ...day, slots: [] })) };
@@ -209,7 +210,7 @@ export function allocateTemplateWeek(input) {
   const countsOf = (sets) => { const counts = Object.fromEntries(Object.keys(coverage.requirements).map((k) => [k, 0])); for (const set of sets) for (const k of set) counts[k] = (counts[k] || 0) + 1; return counts; };
   const insertInOrder = (slots, slot) => { const at = slots.findIndex((s) => s.templateSlotIndex > slot.templateSlotIndex);
     if (at < 0) slots.push(slot); else slots.splice(at, 0, slot); };
-  // R-D/§15: protection always uses the STANDARD regime (never the provisional reduced one); 15-minute
+  // R-D/§15: protection always uses the STANDARD regime (never the provisional reduced one); 20-minute
   // weeks always use their approved reduced regime. Executability is week-independent (weeklyCoverageV3).
   let standard = null;
   const STRUCTURAL = ['SQ', 'HG', 'LU', 'HPU', 'HPL', 'VPU', 'VPL'];

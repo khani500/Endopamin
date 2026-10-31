@@ -64,7 +64,7 @@ describe('Engine A stored profile contract (input validation, never safety clear
   });
 
   it('supports each duration and normalizes only stored 90 to internal 75', () => {
-    for (const [stored, normalized] of [[15, 15], [30, 30], [45, 45], [60, 60], [75, 75], [90, 75]]) {
+    for (const [stored, normalized] of [[20, 20], [30, 30], [45, 45], [60, 60], [75, 75], [90, 75]]) {
       const row = { ...profile(), session_duration: stored };
       const want = expected();
       want.context.durationMinutes = normalized;
@@ -125,7 +125,7 @@ describe('Engine A stored profile contract (input validation, never safety clear
   });
 
   it('rejects unsupported and incorrectly typed durations', () => {
-    for (const duration of [0, 20, 89, 91, 120, '60', 45.5, true, [], NaN]) {
+    for (const duration of [0, 15, 89, 91, 120, '60', 45.5, true, [], NaN]) {
       expect(normalizeEngineProfile({ ...profile(), session_duration: duration })).toEqual(rejected('session_duration', 'unsupported_duration'));
     }
   });
