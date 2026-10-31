@@ -116,7 +116,7 @@ function fakeRes() {
 function fakeAdmin({
   gender = 'female', age = 28, daysPerWeek = FIXTURE_DAYS_PER_WEEK, userId = 'user-1',
   rpcError = null, rpcData = null, storedOperation = null, storedReadError = null,
-  attemptRow = null, attemptReadError = null,
+  attemptRow = null, attemptReadError = null, profileExtra = {},
 } = {}) {
   const calls = { rpc: [], from: [] };
   return {
@@ -150,7 +150,7 @@ function fakeAdmin({
                 if (attemptReadError) return { data: null, error: attemptReadError };
                 return { data: attemptRow, error: null };
               }
-              return { data: { gender, age, days_per_week: daysPerWeek }, error: null };
+              return { data: { gender, age, days_per_week: daysPerWeek, ...profileExtra }, error: null };
             },
           };
           return query;
@@ -183,11 +183,11 @@ function fakeAdmin({
 async function postReplace(payload, {
   gender = 'female', age = 28, daysPerWeek = FIXTURE_DAYS_PER_WEEK, useRealReportMessage = false,
   rpcError = null, rpcData = null, storedOperation = null, storedReadError = null,
-  attemptRow = null, attemptReadError = null, headers = {},
+  attemptRow = null, attemptReadError = null, headers = {}, profileExtra = {},
 } = {}) {
   const admin = fakeAdmin({
     gender, age, daysPerWeek, rpcError, rpcData, storedOperation, storedReadError,
-    attemptRow, attemptReadError,
+    attemptRow, attemptReadError, profileExtra,
   });
   const res = fakeRes();
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -477,6 +477,83 @@ describe('handleRequest stored and RPC shape', () => {
       key: 'vendorId',
     });
     expect(events[0][1]).not.toHaveProperty('planSchemaVersion');
+  });
+});
+
+describe('handleRequest session duration stamp', () => {
+  const REPLAYED = { workout_plan_id: 'wp-1', nutrition_plan_id: null, replayed: true };
+  const stored = (admin) => admin.calls.rpc[0].args.p_workout_plan_data;
+  const profileRead = (admin) => admin.calls.from.find(({ table }) => table === 'profiles');
+
+  it('reads session_duration from the profile', async () => {
+    const { admin } = await postReplace(body(), { profileExtra: { session_duration: 45 } });
+    expect(profileRead(admin).ops[0].cols).toBe('gender, age, days_per_week, session_duration');
+  });
+
+  it.each([20, 30, 45, 60, 75, 90])('stamps an allowed duration: %s', async (minutes) => {
+    const { res, admin } = await postReplace(body(), { profileExtra: { session_duration: minutes } });
+    expect(res.statusCode).toBe(200);
+    expect(Object.keys(stored(admin))).toEqual(['coachId', 'days', 'gender', 'sessionDuration']);
+    expect(stored(admin).sessionDuration).toBe(minutes);
+  });
+
+  it.each([
+    ['15', 15], ['21', 21], ['120', 120], ['null', null], ['string 20', '20'], ['empty', ''], ['20.5', 20.5],
+  ])('omits the key for %s and still saves', async (_label, value) => {
+    const { res, admin } = await postReplace(body(), { profileExtra: { session_duration: value } });
+    expect(res.statusCode).toBe(200);
+    expect(stored(admin)).not.toHaveProperty('sessionDuration');
+    expect(Object.keys(stored(admin))).toEqual(['coachId', 'days', 'gender']);
+  });
+
+  it('omits the key when the profile has no session_duration', async () => {
+    const { res, admin } = await postReplace(body());
+    expect(res.statusCode).toBe(200);
+    expect(Object.keys(stored(admin))).toEqual(['coachId', 'days', 'gender']);
+  });
+
+  it('rejects a top-level sessionDuration as an unknown field, with no save', async () => {
+    const { res, admin } = await postReplace(
+      body({ sessionDuration: 20 }),
+      { profileExtra: { session_duration: 45 } },
+    );
+    expect(res.statusCode).toBe(400);
+    expect(res.body.field).toBe('sessionDuration');
+    expect(admin.calls.rpc).toHaveLength(0);
+  });
+
+  it('rejects sessionDuration on a day as an unknown field, with no save', async () => {
+    const injected = days();
+    injected[0].sessionDuration = 20;
+    const { res, admin } = await postReplace(body({ workoutPlan: { days: injected } }));
+    expect(res.statusCode).toBe(400);
+    expect(res.body.field).toBe('workoutPlan.days[0].sessionDuration');
+    expect(admin.calls.rpc).toHaveLength(0);
+  });
+
+  it('drops workoutPlan.sessionDuration: the profile value is stamped, or nothing', async () => {
+    const workoutPlan = { days: days(), sessionDuration: 20 };
+    const withProfile = await postReplace(body({ workoutPlan }), { profileExtra: { session_duration: 45 } });
+    expect(withProfile.res.statusCode).toBe(200);
+    expect(stored(withProfile.admin).sessionDuration).toBe(45);
+    const without = await postReplace(body({ workoutPlan }), { profileExtra: { session_duration: 15 } });
+    expect(without.res.statusCode).toBe(200);
+    expect(stored(without.admin)).not.toHaveProperty('sessionDuration');
+  });
+
+  it('replay: same response and no table write, even after the profile duration changed', async () => {
+    const { res, admin } = await postReplace(body(), {
+      rpcData: REPLAYED,
+      storedOperation: 'initial_setup',
+      attemptRow: { id: 'wp-1' },
+      profileExtra: { session_duration: 45 },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ workoutPlanId: 'wp-1', nutritionPlanId: null, replayed: true });
+    expect(admin.calls.rpc).toHaveLength(1);
+    const writes = admin.calls.from.flatMap(({ ops }) => ops)
+      .filter(({ op }) => ['insert', 'update', 'delete'].includes(op));
+    expect(writes).toEqual([]);
   });
 });
 

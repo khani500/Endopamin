@@ -21,6 +21,8 @@ const MAX_BODY_BYTES = 256 * 1024;
 const COACH_IDS = new Set(['aria', 'kane', 'blaze', 'nova', 'zara']);
 const PLAN_TYPES = new Set(['weekly']);
 const GENDERS = new Set(['male', 'female']);
+// Durations stamped onto a saved plan. Anything else is left off, never guessed.
+const STAMPED_SESSION_DURATIONS = new Set([20, 30, 45, 60, 75, 90]);
 
 const WEEK_START_MIN_DAYS = -14;
 const WEEK_START_MAX_DAYS = 60;
@@ -783,7 +785,7 @@ export async function handleRequest(req, res, requestId, deps = {}) {
   // a destructive archive path on read.
   const { data: profile, error: profileErr } = await admin
     .from('profiles')
-    .select('gender, age, days_per_week')
+    .select('gender, age, days_per_week, session_duration')
     .eq('id', userId)
     .maybeSingle();
 
@@ -829,7 +831,16 @@ export async function handleRequest(req, res, requestId, deps = {}) {
     if (countError) return sendStructureRejection(req, res, requestId, countError.error);
   }
 
-  const workoutPlanData = { coachId: input.coachId, days: input.workoutPlan.days, gender };
+  // sessionDuration comes from the profile only, like gender. The RPC returns
+  // before its insert on a replay, so a saved plan is never re-stamped.
+  const workoutPlanData = {
+    coachId: input.coachId,
+    days: input.workoutPlan.days,
+    gender,
+    ...(STAMPED_SESSION_DURATIONS.has(profile?.session_duration)
+      ? { sessionDuration: profile.session_duration }
+      : {}),
+  };
 
   // p_operation exists only after migration C
   // (20261002120000_plan_operation_cooldown.sql), which is applied. This
