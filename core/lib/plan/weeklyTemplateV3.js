@@ -2,6 +2,7 @@
 import { normalizeSessionDurationV3, SUPPORTED_SESSION_MINUTES_V3, sessionModeV3 } from './sessionDurationV3.js';
 import { validateSlotKind, resolveSlotCandidates } from './slotEligibility.js';
 import { getReviewedPrescriptionInputs } from './reviewedPrescriptionInputs.js';
+import { equipmentContractFor, equipmentContractForContext, EQUIPMENT_CONTRACT_REVISION_CURRENT } from './equipmentContract.js';
 
 const VERSION = 'weekly-template.v3';
 const SP = 'structural_primary';
@@ -51,7 +52,10 @@ function inputs(input) {
   // §1 requires a goal. Availability uses its approved prescription, never an invented default.
   if (!['muscle_gain', 'fat_loss', 'endurance'].includes(equipmentContext.goal)) return fail('INVALID_GOAL');
   if (equipmentContext.athleteTier !== undefined && equipmentContext.athleteTier !== tier) return fail('TIER_CONTEXT_MISMATCH');
-  return { ok: true, daysPerWeek, durationMinutes: duration.sessionMinutes, equipmentContext, tier };
+  const contract = equipmentContractForContext(equipmentContext);
+  if (contract.ok === false) return fail('EQUIPMENT_CONTRACT_REVISION_UNKNOWN');
+  return { ok: true, daysPerWeek, durationMinutes: duration.sessionMinutes, equipmentContext, tier,
+    equipmentContractRevision: contract.revision };
 }
 
 function availability(context) {
@@ -100,6 +104,9 @@ function shell(context, split, days) {
     // actual heavy loading and calendar spacing remain unknown until selection/scheduling.
     recovery: { preference: 'avoid_consecutive_heavy_SQ_HG', tieBreak: 'authored_order', calendarAssigned: false },
     injuryEnforcement: 'not_implemented',
+    // Recorded only for a non-current revision, so current templates keep their shape.
+    ...(context.equipmentContractRevision === EQUIPMENT_CONTRACT_REVISION_CURRENT ? {}
+      : { equipmentContractRevision: context.equipmentContractRevision }),
   };
 }
 
@@ -322,6 +329,10 @@ export function validateWeeklyTemplate(template, context) {
   if (!structural.ok) return structural;
   const validatedContext = inputs(context);
   if (!validatedContext.ok) return { ...fail('INVALID_TEMPLATE_CONTEXT'), contextReason: validatedContext.reason };
+  // The template's revision must agree with the context's, not merely be a known name.
+  const templateContract = equipmentContractFor(template.equipmentContractRevision);
+  if (templateContract.ok === false) return fail('EQUIPMENT_CONTRACT_REVISION_UNKNOWN');
+  if (templateContract.revision !== validatedContext.equipmentContractRevision) return fail('EQUIPMENT_CONTRACT_REVISION_MISMATCH');
   const rebuilt = buildWeeklyTemplateV3(context);
   if (!rebuilt.ok) return { ...fail('TEMPLATE_REBUILD_FAILED'), rebuildReason: rebuilt.reason };
   return sameTemplateData(template, rebuilt) ? { ok: true } : fail('TEMPLATE_CONTEXT_MISMATCH');

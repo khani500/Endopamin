@@ -3,7 +3,8 @@
  * Legacy fallback is a shadow diagnostic only, not an Engine A serving policy.
  */
 import { normalizeSessionDurationV3 } from './sessionDurationV3.js';
-import { resolveEquipmentCapability, EQUIPMENT_STATUS_OK, EQUIPMENT_EXTRA_TOKENS } from './equipmentContract.js';
+import { resolveEquipmentCapability, equipmentContractFor, equipmentContractForContext, EQUIPMENT_STATUS_OK,
+  EQUIPMENT_EXTRA_TOKENS, EQUIPMENT_CONTRACT_REVISION_CURRENT } from './equipmentContract.js';
 import { buildWeeklyTemplateV3 } from './weeklyTemplateV3.js';
 import { allocateTemplateWeek } from './templateWeekAllocator.js';
 import { allocateTemplateVolumeV3, PRIORITIES } from './templateVolumeAllocatorV3.js';
@@ -46,7 +47,8 @@ export function engineWeekV3(input) {
     }
     const source = envelope.context;
     if (!record(source)) return finish(refuse([...reasons, { code: 'INVALID_CONTEXT', field: 'context' }]));
-    const { tier, daysPerWeek, durationMinutes, goal, equipmentBucket, equipmentContext, priorityMuscles } = source;
+    const { tier, daysPerWeek, durationMinutes, goal, equipmentBucket, equipmentContext, priorityMuscles,
+      equipmentContractRevision } = source;
     if (absent(tier)) reasons.push({ code: 'MISSING_TIER', field: 'experience' });
     else if (!['beginner', 'intermediate', 'advanced'].includes(tier)) reasons.push({ code: 'INVALID_TIER', field: 'experience' });
     if (absent(daysPerWeek)) reasons.push({ code: 'MISSING_DAYS_PER_WEEK', field: 'days_per_week' });
@@ -59,9 +61,15 @@ export function engineWeekV3(input) {
     else if (!['muscle_gain', 'fat_loss', 'endurance'].includes(goal)) reasons.push({ code: 'UNSUPPORTED_GOAL', field: 'goal' });
     const available = record(equipmentContext) ? equipmentContext.availableEquipment : null;
     const extras = Array.isArray(available) ? available.filter((token) => EQUIPMENT_EXTRA_TOKENS.includes(token)) : [];
-    const equipment = resolveEquipmentCapability(equipmentBucket, extras);
+    // context.equipmentContractRevision is the single revision source; omitted means current.
+    const equipment = resolveEquipmentCapability(equipmentBucket, extras, { revision: equipmentContractRevision });
+    const revision = equipmentContractFor(equipmentContractRevision).revision;
     if (equipment.equipmentStatus !== EQUIPMENT_STATUS_OK) {
       reasons.push({ code: equipment.equipmentReasonCode || equipment.equipmentStatus, field: 'equipment' });
+    } else if (record(equipmentContext) && equipmentContext.equipmentContractRevision !== undefined
+        && equipmentContractForContext(equipmentContext).revision !== revision) {
+      // A supplied nested revision must agree before the context is canonicalized; absent asserts nothing.
+      reasons.push({ code: 'EQUIPMENT_CONTRACT_REVISION_MISMATCH', field: 'equipmentContext' });
     } else if (!record(equipmentContext) || equipmentContext.goal !== goal || !Array.isArray(available)
         || available.length !== equipment.availableEquipment.length
         || available.some((token, index) => token !== equipment.availableEquipment[index])) {
@@ -77,8 +85,10 @@ export function engineWeekV3(input) {
     if (!priorities) reasons.push({ code: 'INVALID_PRIORITY', field: 'priority_muscle' });
     if (reasons.length) return finish(refuse(reasons));
     // Copy capability tokens: no caller-owned arrays are passed into the stages.
+    // Omitted and explicit current build the same shape; only another revision is stamped.
     const ctx = { daysPerWeek, durationMinutes: duration.sessionMinutes, tier, goal,
-      equipmentContext: { availableEquipment: [...available], goal } };
+      equipmentContext: { availableEquipment: [...available], goal,
+        ...(revision === EQUIPMENT_CONTRACT_REVISION_CURRENT ? {} : { equipmentContractRevision: revision }) } };
     const executabilityCache = new Map();
     const stages = { template: buildWeeklyTemplateV3(ctx) };
     if (stages.template.ok) {

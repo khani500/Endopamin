@@ -14,7 +14,7 @@ import { evaluateWeeklyCoverage } from './weeklyCoverageV3.js';
 import { classifyDeficitCause } from './templateWeekAllocator.js';
 import { MIN_MAIN_EXERCISES } from './sessionDeliveryPolicy.js';
 import { getReviewedPrescriptionInputs } from './reviewedPrescriptionInputs.js';
-import { EQUIPMENT_BUCKETS } from './equipmentContract.js';
+import { equipmentContractForContext } from './equipmentContract.js';
 import { validateRequiredBudgetV3, sessionEstimateV3 } from './sessionBudgetV3.js';
 import { getExerciseById } from '../../data/exerciseRegistryIndex.js';
 import { validateSlotPriorityV3 } from './slotPriorityV3.js';
@@ -65,6 +65,7 @@ function contextReasons(context, template) {
   else {
     if (equipmentContext.goal !== undefined && equipmentContext.goal !== goal) reasons.push({ code: 'GOAL_CONTEXT_MISMATCH' });
     if (equipmentContext.athleteTier !== undefined && equipmentContext.athleteTier !== tier) reasons.push({ code: 'TIER_CONTEXT_MISMATCH' });
+    if (equipmentContractForContext(equipmentContext).ok === false) reasons.push({ code: 'EQUIPMENT_CONTRACT_REVISION_UNKNOWN' });
   }
   return { reasons, durationMinutes: duration.ok ? duration.sessionMinutes : null };
 }
@@ -141,6 +142,9 @@ function hardCheckReasons(week, template, { durationMinutes, tier, goal, athlete
   const weekTokens = week.equipmentContext?.availableEquipment;
   if (!Array.isArray(weekTokens) || weekTokens.length !== athleteContext.availableEquipment.length
       || weekTokens.some((token, i) => token !== athleteContext.availableEquipment[i])) reasons.push({ code: 'WEEK_EQUIPMENT_MISMATCH' });
+  // The delivered week must carry the delivery context's revision (absent on both means current).
+  if (equipmentContractForContext(week.equipmentContext).revision !== equipmentContractForContext(athleteContext).revision)
+    reasons.push({ code: 'WEEK_EQUIPMENT_CONTRACT_REVISION_MISMATCH' });
   if (!Array.isArray(week.days) || week.days.length !== template.days.length
       || week.days.some((day, i) => !object(day) || day.templateId !== template.days[i].templateId || !Array.isArray(day.slots))) {
     reasons.push({ code: 'WEEK_DAY_STRUCTURE_MISMATCH' });
@@ -247,7 +251,9 @@ function noteCodes(volume, repair) {
 }
 
 // Superset: validated extras (e.g. door_anchor) on top of full_gym still count as full_gym.
-const isFullGym = (tokens) => EQUIPMENT_BUCKETS.full_gym.every((token) => tokens.includes(token));
+// full_gym is read from the context's own contract revision.
+const isFullGym = (context) => equipmentContractForContext(context).buckets.full_gym
+  .every((token) => context.availableEquipment.includes(token));
 
 /**
  * { template: buildWeeklyTemplateV3, allocation: 2h, volume: 2j, repair: 2k,
@@ -287,7 +293,8 @@ export function deliverV3Shadow(input) {
     const hard = hardCheckReasons(week, template, { durationMinutes, tier, goal, athleteContext });
     if (hard.length) return refuse(hard, { templateLimitations });
     const executabilityCache = input.executabilityCache === undefined ? new Map() : input.executabilityCache;
-    const coverage = evaluateWeeklyCoverage(week, { durationMinutes, executabilityCache });
+    const coverage = evaluateWeeklyCoverage(week, { durationMinutes, executabilityCache,
+      equipmentContractRevision: equipmentContractForContext(athleteContext).revision });
     if (!coverage.ok) return refuse([{ code: 'COVERAGE_UNEVALUABLE', coverageReason: coverage.reason }], { templateLimitations });
     const limitations = finalLimitations(coverage, allocation, template, { goal, tier, mode: coverage.mode, athleteContext });
     const capabilityContext = { goal, tier, mode: coverage.mode, athleteContext: week.equipmentContext };
@@ -300,7 +307,7 @@ export function deliverV3Shadow(input) {
     }
     const diagnostics = priorityDiagnostics ? { slotPriority: priorityDiagnostics } : {};
     // D-5: diagnostic only, never a refusal (template v3 §11 TIME_BUDGET exception).
-    if (isFullGym(athleteContext.availableEquipment)) {
+    if (isFullGym(athleteContext)) {
       const violations = limitations.filter((l) => l.reason !== 'TIME_BUDGET').map((l) => ({ requirement: l.requirement, reason: l.reason }));
       if (violations.length) diagnostics.activationCriterionViolation = violations;
     }

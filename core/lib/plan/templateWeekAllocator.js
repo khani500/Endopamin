@@ -6,7 +6,7 @@
  */
 import { validateWeeklyTemplate } from './weeklyTemplateV3.js';
 import { resolveSlotCandidates } from './slotEligibility.js';
-import { EQUIPMENT_BUCKETS, EQUIPMENT_EXTRA_TOKENS } from './equipmentContract.js';
+import { equipmentContractForContext } from './equipmentContract.js';
 import { validateResolvedSlot, slotRawSeconds, sessionRawSeconds, canPlaceResolvedSlot } from './resolvedSlotContract.js';
 import { coverageCreditForSlot, countWeeklyExposures, evaluateWeeklyCoverage } from './weeklyCoverageV3.js';
 import { selectionPreferenceIndex } from './selectionPreference.js';
@@ -91,9 +91,7 @@ export function repickForDeadEnd(daySlots, deadEndPool, alternativesForSlot, ran
 }
 
 const DEFICIT_TIERS = ['beginner', 'intermediate', 'advanced'];
-const DEFICIT_EQUIPMENT_UNIVERSE = Object.freeze([...new Set([
-  ...Object.values(EQUIPMENT_BUCKETS).flat(), ...EQUIPMENT_EXTRA_TOKENS,
-])]);
+// The full equipment universe is per revision: the contract's tokenUniverse for the context's revision.
 
 /** Recorded causes retain precedence. Only the residual case uses canonical authored-day capacity.
  * A: credit-capable days in the full equipment universe at any tier; E: days in this context.
@@ -113,6 +111,8 @@ export function classifyDeficitCause(key, skips, decisions, options = {}) {
       || !DEFICIT_TIERS.includes(tier) || !['muscle_gain', 'fat_loss', 'endurance'].includes(goal)
       || !['standard', 'short_session'].includes(mode) || !Array.isArray(athleteContext?.availableEquipment))
     throw new Error('INVALID_DEFICIT_CONTEXT');
+  const contract = equipmentContractForContext(athleteContext);
+  if (contract.ok === false) throw new Error('INVALID_DEFICIT_CONTEXT');
   const creditKeys = (slotKind, candidateTier, context) => {
     const signature = JSON.stringify([slotKind, goal, mode, candidateTier, context]);
     if (!cache.has(signature)) {
@@ -128,7 +128,7 @@ export function classifyDeficitCause(key, skips, decisions, options = {}) {
     }
     return cache.get(signature);
   };
-  const universalContext = { availableEquipment: DEFICIT_EQUIPMENT_UNIVERSE, goal };
+  const universalContext = { availableEquipment: contract.tokenUniverse, goal };
   let A = 0; let E = 0;
   for (const day of template.days) {
     const kinds = day.slots.map(kindOf);
@@ -152,6 +152,8 @@ export function allocateTemplateWeek(input) {
   if (!['beginner', 'intermediate', 'advanced'].includes(tier)) return fail('INVALID_TIER');
   if (!athleteContext || !Array.isArray(athleteContext.availableEquipment)
       || athleteContext.availableEquipment.some((token) => typeof token !== 'string' || !token)) return fail('INVALID_EQUIPMENT_CONTEXT');
+  // Agreement with the template's revision is checked by validateWeeklyTemplate below.
+  if (equipmentContractForContext(athleteContext).ok === false) return fail('EQUIPMENT_CONTRACT_REVISION_UNKNOWN');
   if (athleteContext.goal !== undefined && athleteContext.goal !== goal) return fail('GOAL_CONTEXT_MISMATCH');
   if (athleteContext.athleteTier !== undefined && athleteContext.athleteTier !== tier) return fail('TIER_CONTEXT_MISMATCH');
   if (!Array.isArray(recentIds) || recentIds.some((id) => typeof id !== 'string' || !id)) return fail('INVALID_RECENT_IDS');

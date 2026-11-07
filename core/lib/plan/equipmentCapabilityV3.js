@@ -1,10 +1,12 @@
 /** Informational equipment diagnostics only; never changes selection or coverage. */
 import { getExerciseById } from '../../data/exerciseRegistryIndex.js';
-import { EQUIPMENT_BUCKETS, EQUIPMENT_EXTRA_TOKENS } from './equipmentContract.js';
+import { EQUIPMENT_CONTRACT_REVISIONS, equipmentContractFor, equipmentContractForContext } from './equipmentContract.js';
 import { resolveSlotCandidates } from './slotEligibility.js';
 import { coverageCreditForSlot } from './weeklyCoverageV3.js';
 
-const TOKENS = [...new Set([...Object.values(EQUIPMENT_BUCKETS).flat(), ...EQUIPMENT_EXTRA_TOKENS])].sort();
+// Canonical capabilities per contract revision; a context is read only against its own revision.
+const TOKENS_BY_REVISION = new Map(EQUIPMENT_CONTRACT_REVISIONS.map((revision) =>
+  [revision, [...equipmentContractFor(revision).tokenUniverse].sort()]));
 const PULL_KINDS = ['HPL', 'VPL'].flatMap((pattern) =>
   ['structural_primary', 'structural_secondary'].map((intent) => ({ pattern, intent })));
 const canonicalCompare = (a, b) => JSON.stringify(a) < JSON.stringify(b) ? -1 : JSON.stringify(a) > JSON.stringify(b) ? 1 : 0;
@@ -22,6 +24,9 @@ const pullCandidates = (context, tokens) => PULL_KINDS.flatMap((kind) => eligibl
  */
 export function suggestedPullEquipment(context) {
   const owned = context.athleteContext.availableEquipment;
+  const contract = equipmentContractForContext(context.athleteContext);
+  if (contract.ok === false) throw new Error('EQUIPMENT_CONTRACT_REVISION_UNKNOWN');
+  const TOKENS = TOKENS_BY_REVISION.get(contract.revision);
   if (pullCandidates(context, owned).length) return [];
   const proposals = new Map();
   // Discover with all canonical capabilities, preserving every other eligibility gate.

@@ -9,6 +9,7 @@ import { SUPPORTED_SESSION_MINUTES_V3, sessionModeV3 } from './sessionDurationV3
 import { resolveSlotCandidates } from './slotEligibility.js';
 import { getReviewedPrescriptionInputs } from './reviewedPrescriptionInputs.js';
 import { getExerciseById } from '../../data/exerciseRegistryIndex.js';
+import { equipmentContractFor, equipmentContractForContext } from './equipmentContract.js';
 
 const STRUCTURAL = ['SQ', 'HG', 'LU', 'HPU', 'HPL', 'VPU', 'VPL'];
 const KEYS = [...STRUCTURAL, 'CORE', 'knee', 'hinge', 'push', 'pull', 'hamstring_primary', 'lateral_delts', 'rear_delts'];
@@ -105,6 +106,14 @@ export function evaluateWeeklyCoverage(week, options) {
   if (!['beginner', 'intermediate', 'advanced'].includes(tier)) return fail('INVALID_TIER');
   if (!context || !Array.isArray(context.availableEquipment)
       || context.availableEquipment.some((t) => typeof t !== 'string' || !t)) return fail('INVALID_EQUIPMENT_CONTEXT');
+  const contract = equipmentContractForContext(context);
+  if (contract.ok === false) return fail('EQUIPMENT_CONTRACT_REVISION_UNKNOWN');
+  // An asserted revision (options.equipmentContractRevision) must agree with the week's.
+  if (options?.equipmentContractRevision !== undefined) {
+    const asserted = equipmentContractFor(options.equipmentContractRevision);
+    if (asserted.ok === false) return fail('EQUIPMENT_CONTRACT_REVISION_UNKNOWN');
+    if (asserted.revision !== contract.revision) return fail('EQUIPMENT_CONTRACT_REVISION_MISMATCH');
+  }
   if (!['muscle_gain', 'fat_loss', 'endurance'].includes(context.goal)) return fail('INVALID_GOAL');
   const ledger = countWeeklyExposures(week);
   if (!ledger.ok) return ledger;
