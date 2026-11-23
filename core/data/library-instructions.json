@@ -377,11 +377,11 @@
     "fx_barbell_lunge": {
       "instructions": [
         "Hold a barbell across your upper back and stand tall with your feet about hip-width apart.",
-        "Take a controlled step forward and bend both knees, lowering the back knee toward the floor.",
+        "Take a controlled step forward. Lower until your back knee is just above the floor and your front thigh is about parallel to it. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Keep the front foot planted and your torso steady as you lower.",
         "Push through the front foot to return to the start. Complete the set with the same leg, then switch legs."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_barbell_rear_delt_row": {
@@ -633,12 +633,12 @@
     "fx_bodyweight_split_squat": {
       "instructions": [
         "Set a split stance with one foot forward and one behind, keeping enough sideways space to balance.",
-        "Keep both feet in place as you bend the knees and lower your rear knee toward the floor.",
+        "Keep both feet in place. Lower until your back knee is just above the floor and your front thigh is about parallel to it. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Maintain a controlled torso and keep the front heel planted.",
         "Push through your front foot to return to the top of the split stance.",
         "Repeat, then change which foot is forward."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_bodyweight_squat": {
@@ -665,12 +665,12 @@
     "fx_bodyweight_walking_lunge": {
       "instructions": [
         "Stand with your feet shoulder-width apart.",
-        "Take a step forward with your right leg, lowering your body into a lunge position.",
+        "Step forward with your right leg. Lower until your back knee is just above the floor and your front thigh is about parallel to it. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Keep your torso controlled and guide the front knee in the same direction as your toes.",
         "Push off with your right foot and bring your left foot forward, stepping into a lunge position with your left leg.",
         "Continue alternating legs and walking forward, maintaining a controlled and steady pace."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_butt_lift_bridge": {
@@ -1394,10 +1394,10 @@
       "instructions": [
         "Stand holding one dumbbell vertically against your chest with both hands.",
         "Keep your chest lifted as you bend your knees and hips into a squat.",
-        "Lower within a comfortable range while keeping your heels on the floor and knees aligned with your toes.",
+        "Lower until your thighs are at least parallel to the floor, keeping your heels down. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Push through your feet to return to standing."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_dumbbell_incline_row": {
@@ -1424,12 +1424,12 @@
     "fx_dumbbell_lunges": {
       "instructions": [
         "Stand holding a dumbbell beside each hip with your feet together.",
-        "Step forward with one leg and bend both knees to lower into a lunge.",
+        "Step forward with one leg. Lower until your back knee is just above the floor and your front thigh is about parallel to it. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Keep your torso upright and the front foot planted.",
         "Push through the front foot to return to standing.",
         "Complete the set, then change the lead leg."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_dumbbell_lying_leg_curl": {
@@ -1499,12 +1499,12 @@
     "fx_dumbbell_rear_lunge": {
       "instructions": [
         "Stand upright holding a dumbbell in each hand at your sides.",
-        "Step one foot backward and bend both knees to lower into a lunge.",
+        "Step back and lower until your back knee is just above the floor and your front thigh is about parallel to it. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Keep the front foot planted and the front knee aligned with its toes.",
         "Push through the front foot to return to standing.",
         "Complete the repetitions, then switch legs."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_dumbbell_scaption": {
@@ -1564,10 +1564,10 @@
       "instructions": [
         "Stand with feet about shoulder-width apart and a dumbbell beside each hip.",
         "Bend your knees and hips to lower into a squat, keeping your feet planted.",
-        "Lower within a comfortable range while keeping your chest lifted and knees aligned with your toes.",
+        "Lower until your thighs are at least parallel to the floor, keeping your heels down. Keep your chest lifted. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Push through your feet to return to standing."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_dumbbell_squat_to_a_bench": {
@@ -1583,12 +1583,12 @@
     "fx_dumbbell_step_ups": {
       "instructions": [
         "Stand facing a stable bench with a dumbbell beside each hip.",
-        "Place one foot fully on the bench.",
+        "Choose a stable step that puts your raised thigh about parallel to the floor, then step up without pushing off your back foot. Keep your lead foot fully planted. Keep your knees in line with your toes.",
         "Push through that foot to rise until the lead leg is straight and the other leg comes up beside it.",
         "Lower the trailing foot back to the floor with control, keeping the lead foot on the bench.",
         "Complete the set, then step down and change the lead leg."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_dumbbell_tricep_extension_pronated_grip": {
@@ -1837,11 +1837,11 @@
       "instructions": [
         "Hold one kettlebell at each shoulder with elbows close to your torso.",
         "Stand with feet about shoulder-width apart and toes turned slightly outward.",
-        "Bend your hips and knees to squat down, keeping your heels planted and chest lifted.",
+        "Lower until your thighs are at least parallel to the floor, keeping your heels down. Keep your chest lifted. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Push through your feet to return upright.",
         "Keep the bells supported at the shoulders throughout."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_glute_bridge_march": {
@@ -4361,11 +4361,11 @@
       "instructions": [
         "Stand facing away from a flat bench with a dumbbell in each hand.",
         "Place the top of one foot behind you on the bench and keep the front foot planted.",
-        "Bend the front knee and hip to lower your body, keeping the knee aligned with your toes.",
+        "Lower until your back knee is just above the floor and your front thigh is about parallel to it. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Push through the front foot to return upright without hopping.",
         "Complete the set and change legs."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_stability_ball_back_extension": {
@@ -5460,5 +5460,5 @@
       "contentVersion": 1
     }
   },
-  "sha256": "dba61f5967b764ff093b8e18eb145ff0ddb0cce9de6db2f33c334f8efbce3b6a"
+  "sha256": "1d419a3c7cf393812c35a1d11da7f4ac07abd6a8378ce8fb53f6932757bb165e"
 }
