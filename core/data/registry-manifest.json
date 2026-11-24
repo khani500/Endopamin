@@ -1,15 +1,15 @@
 {
  "schemaVersion": "5.8",
  "recordCount": 1193,
- "fullHash": "079094ef21f1b023",
+ "fullHash": "7887140e1f64071d",
  "leanHash": "467a3fd1feb5edb0",
- "detailsHash": "8aa44956de1260b6",
+ "detailsHash": "fca280343456b1e5",
  "builderVersion": "1.0.0",
- "generatedAt": "2026-11-23T15:52:59.777Z",
+ "generatedAt": "2026-11-24T02:02:24.799Z",
  "roundTripVerified": true,
  "bytes": {
-  "full": 2260650,
+  "full": 2260505,
   "lean": 1094109,
-  "details": 914970
+  "details": 914163
  }
 }

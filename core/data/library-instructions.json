@@ -471,10 +471,10 @@
       "instructions": [
         "Set the bar on the muscular upper back just below your neck and grip it firmly.",
         "Stand with your feet about shoulder-width apart.",
-        "Lower into a squat while keeping your chest lifted, heels down and knees aligned with your feet.",
+        "Lower until your thighs are at least parallel to the floor, keeping your heels down. Keep your chest lifted. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Press through both feet to stand."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_barbell_squat_to_a_bench": {
@@ -1827,10 +1827,10 @@
       "instructions": [
         "Rest the bar on the fronts of your shoulders, with your fingers under the bar and elbows pointing forward.",
         "Set your feet about shoulder-width apart and gently tighten your abdomen.",
-        "Bend your knees and hips to lower between your feet, keeping your heels planted and elbows lifted.",
+        "Lower until your thighs are at least parallel to the floor, keeping your heels down. Keep your elbows lifted. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Push through both feet to stand."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_front_squats_with_two_kettlebells": {
@@ -1871,10 +1871,10 @@
         "Hold a kettlebell by the sides of its handle close to your chest.",
         "Stand with feet about shoulder-width apart and toes slightly outward.",
         "Bend your knees and hips to lower between your legs while keeping your feet planted.",
-        "Keep your knees aligned with your toes and stop at a controlled depth.",
+        "Lower until your thighs are at least parallel to the floor, keeping your heels down. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Push through both feet to stand upright."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_good_morning": {
@@ -4305,11 +4305,11 @@
         "Set the Smith bar near shoulder height and adjust the safety stops below your planned squat depth.",
         "Step under the bar so it rests on your upper back and hold it outside your shoulders.",
         "Release the hooks and plant your feet about shoulder width apart, toes slightly out.",
-        "Bend your hips and knees to lower while keeping your heels down and abdomen firm.",
+        "Lower until your thighs are at least parallel to the floor, keeping your heels down. Keep your abdomen firm. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Drive through both feet to stand tall without forcefully locking your knees.",
         "Repeat and secure the hooks before stepping away."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_smith_machine_underhand_row": {
@@ -4339,11 +4339,11 @@
         "Place a bench behind you inside the Smith machine and set the bar across your upper back.",
         "Grip the bar, release the hooks and place the top of one foot on the bench behind you.",
         "Keep your front foot planted far enough forward to lower into a split squat.",
-        "Bend the front knee and hip as your rear knee moves toward the floor.",
+        "Lower until your back knee is just above the floor and your front thigh is about parallel to it. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Push through your front foot to rise without moving the bench-supported rear foot.",
         "Complete the set and repeat with the other leg in front."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_spider_crawl": {
@@ -5263,10 +5263,10 @@
       "instructions": [
         "Hold the bar across your upper back and set your feet wide with your toes turned slightly outward.",
         "Tighten your abdomen and bend your hips and knees, allowing your knees to follow your toes.",
-        "Lower through a controlled range while keeping both feet planted.",
+        "Lower until your thighs are at least parallel to the floor, keeping your heels down. Keep both feet planted. Keep your knees in line with your toes. Use a smaller range if you lose control.",
         "Push through your feet to stand upright."
       ],
-      "instructionsSource": "vendor_pack",
+      "instructionsSource": "endopamin_reviewed",
       "contentVersion": 1
     },
     "fx_zercher_squats": {
@@ -5460,5 +5460,5 @@
       "contentVersion": 1
     }
   },
-  "sha256": "1d419a3c7cf393812c35a1d11da7f4ac07abd6a8378ce8fb53f6932757bb165e"
+  "sha256": "304cbbc0cc76f307ec056ca6e56d7a0bfe45505bae8d0482fdebc133fc76141b"
 }
