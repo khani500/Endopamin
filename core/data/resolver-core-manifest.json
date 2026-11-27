@@ -5,8 +5,8 @@
  "files": [
   {
    "path": "data/exerciseRegistryIndex.js",
-   "sha256": "9d556a4d2175aca565da12dbc0435e6571e825906a80f9e5d7dd04ffc675225d",
-   "bytes": 1346929
+   "sha256": "3329a9ac5a6ba2317b24002131ea4cbd795ec22e0da737e36f77d16c6bc5cb0d",
+   "bytes": 1394299
   },
   {
    "path": "lib/plan/capabilityMap.js",
@@ -55,8 +55,8 @@
   },
   {
    "path": "lib/plan/reviewedPrescriptionInputs.js",
-   "sha256": "bf2709095b1cb84193b01b46988e5484927dbb9f8dee7604b14ca156b29b17db",
-   "bytes": 48800
+   "sha256": "6e8f0d1591a61767defedae0fc18ec700aae18f8a5aa0a1cd60b5c888a0a4683",
+   "bytes": 59148
   },
   {
    "path": "lib/plan/roleTypePolicy.js",
@@ -70,8 +70,8 @@
   },
   {
    "path": "lib/plan/sessionBudgetV3.js",
-   "sha256": "020d4f27371916dbb5c3bf21860b616d2f9466a1cbde4a6de0603dbb4cffb350",
-   "bytes": 12031
+   "sha256": "ad86de30853e10258aeb8d0b3ed3b484f87badf78ec988ad367c8ae9ea0b2dd5",
+   "bytes": 18793
   },
   {
    "path": "lib/plan/sessionDeliveryPolicy.js",
@@ -115,8 +115,8 @@
   },
   {
    "path": "lib/plan/templateWeekAllocator.js",
-   "sha256": "d8df7989ddf61d923761d4069396972711ad61a4acb9e49560875810e319a2e5",
-   "bytes": 31619
+   "sha256": "1f1b1d3e3931dd518608e7bebff150889478ceeb8e333b1de0d7d3567847a6d2",
+   "bytes": 31679
   },
   {
    "path": "lib/plan/v3ShadowDelivery.js",
@@ -130,8 +130,8 @@
   },
   {
    "path": "lib/plan/weeklyCoverageV3.js",
-   "sha256": "4b30f7b300fcc3109ebf3a260633d85d35dd46232560b28e1083ced3b51dd273",
-   "bytes": 11688
+   "sha256": "282eb7772dbe53a79fadf48ed5eebcfc5d683885c06c0cfd4a66922627f3b8d1",
+   "bytes": 14215
   },
   {
    "path": "lib/plan/weeklyTemplateV3.js",
@@ -139,5 +139,5 @@
    "bytes": 20424
   }
  ],
- "coreHash": "5a3825cf028c8fd53a4ba49ef8fbdf9929cb2143d9ca27cd1f71b03cbe95f604"
+ "coreHash": "649a957c2055b3aaa1207f4e7f5d177bb22600c5578e16ef70726d0ed83c77b2"
 }

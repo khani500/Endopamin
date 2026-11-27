@@ -8,7 +8,7 @@ import { validateWeeklyTemplate } from './weeklyTemplateV3.js';
 import { resolveSlotCandidates } from './slotEligibility.js';
 import { equipmentContractForContext } from './equipmentContract.js';
 import { validateResolvedSlot, slotRawSeconds, sessionRawSeconds, canPlaceResolvedSlot } from './resolvedSlotContract.js';
-import { coverageCreditForSlot, countWeeklyExposures, evaluateWeeklyCoverage } from './weeklyCoverageV3.js';
+import { coverageCreditForSlot, countWeeklyExposures, evaluateWeeklyCoverage, isHamstringPrimaryApplicable } from './weeklyCoverageV3.js';
 import { selectionPreferenceIndex } from './selectionPreference.js';
 import { extendRequiredCoverageV3 } from './sessionBudgetV3.js';
 import { sessionModeV3 } from './sessionDurationV3.js';
@@ -222,7 +222,7 @@ export function allocateTemplateWeek(input) {
       const days = template.days.length; const exec = (k) => coverage.requirements[k].executable;
       const req = (target, whenExecutable, k) => ({ required: target > 0 && (!whenExecutable || exec(k)), target });
       standard = { knee: req(days === 2 ? 1 : 2, false), hinge: req(days === 2 ? 1 : 2, false), push: req(2, false), pull: req(2, false),
-        hamstring_primary: req(1, true, 'hamstring_primary'), CORE: req(days >= 3 ? 2 : 1, true, 'CORE'),
+        hamstring_primary: { required: isHamstringPrimaryApplicable(coverage), target: 1 }, CORE: req(days >= 3 ? 2 : 1, true, 'CORE'),
         lateral_delts: req(1, true, 'lateral_delts'), rear_delts: req(1, true, 'rear_delts') };
       for (const pattern of STRUCTURAL) standard[pattern] = req(1, true, pattern);
     }

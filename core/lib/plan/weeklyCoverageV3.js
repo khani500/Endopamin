@@ -10,6 +10,7 @@ import { resolveSlotCandidates } from './slotEligibility.js';
 import { getReviewedPrescriptionInputs } from './reviewedPrescriptionInputs.js';
 import { getExerciseById } from '../../data/exerciseRegistryIndex.js';
 import { equipmentContractFor, equipmentContractForContext } from './equipmentContract.js';
+import { buildWeeklyTemplateV3 } from './weeklyTemplateV3.js';
 
 const STRUCTURAL = ['SQ', 'HG', 'LU', 'HPU', 'HPL', 'VPU', 'VPL'];
 const KEYS = [...STRUCTURAL, 'CORE', 'knee', 'hinge', 'push', 'pull', 'hamstring_primary', 'lateral_delts', 'rear_delts'];
@@ -18,6 +19,13 @@ const fail = (reason) => ({ ok: false, reason });
 const primary = (pattern) => ({ pattern, intent: 'structural_primary' });
 const secondary = (pattern) => ({ pattern, intent: 'structural_secondary' });
 const accessory = (accessoryKind) => ({ pattern: 'ACC', intent: 'accessory', accessoryKind });
+const kindOf = (slot) => ({ pattern: slot.pattern, intent: slot.intent,
+  ...(slot.accessoryKind === undefined ? {} : { accessoryKind: slot.accessoryKind }) });
+
+/** M1's target is always one: consumers reuse applicability, never global executability. */
+export function isHamstringPrimaryApplicable(coverage) {
+  return coverage.requirements.hamstring_primary.required;
+}
 
 /** One valid resolved slot earns at most one credit for each exposure category, not sets. */
 export function coverageCreditForSlot(slot) {
@@ -96,6 +104,8 @@ export function countWeeklyExposures(week) {
 
 /** Applicability is established from executable approved resolutions, never from delivered volume. */
 export function evaluateWeeklyCoverage(week, options) {
+  const applicabilityPolicy = options?.applicabilityPolicy === undefined ? 's4' : options.applicabilityPolicy;
+  if (!['s4', 'legacy'].includes(applicabilityPolicy)) return fail('INVALID_APPLICABILITY_POLICY');
   const executabilityCache = options?.executabilityCache;
   if (executabilityCache !== undefined && !(executabilityCache instanceof Map)) return fail('INVALID_EXECUTABILITY_CACHE');
   const durationMinutes = options?.durationMinutes;
@@ -115,10 +125,16 @@ export function evaluateWeeklyCoverage(week, options) {
     if (asserted.revision !== contract.revision) return fail('EQUIPMENT_CONTRACT_REVISION_MISMATCH');
   }
   if (!['muscle_gain', 'fat_loss', 'endurance'].includes(context.goal)) return fail('INVALID_GOAL');
+  if (!Array.isArray(week?.days) || week.days.length < 2 || week.days.length > 6) return fail('INVALID_TRAINING_DAYS');
+  const template = buildWeeklyTemplateV3({ daysPerWeek: week.days.length, durationMinutes, tier, equipmentContext: context });
+  if (!template.ok) return template;
+  // Check every invocation, including warm caches. Fitted slots may be removed or moved.
+  if (week.days.some((day, i) => day?.templateId !== template.days[i].templateId)) return fail('TEMPLATE_IDENTITY_MISMATCH');
   const ledger = countWeeklyExposures(week);
   if (!ledger.ok) return ledger;
   const mode = sessionModeV3(durationMinutes);
   const executable = emptyCounts();
+  let hamstringApplicable;
   try {
     const cacheKey = executabilityCache ? JSON.stringify([tier, mode, week.equipmentContext]) : null;
     let entry = executabilityCache?.get(cacheKey);
@@ -137,6 +153,24 @@ export function evaluateWeeklyCoverage(week, options) {
       }
       return entry.idsByKind.get(key);
     };
+    const creditsFor = (kind) => {
+      const key = JSON.stringify(kind);
+      entry.creditKeysByKind ??= new Map();
+      if (!entry.creditKeysByKind.has(key)) {
+        const ids = candidatesFor(kind);
+        const resolved = candidates.get(key) ?? [...ids].map((exerciseId) => ({
+          exerciseId, resolvedPrescription: resolvePrescription({ exerciseId, slotKind: kind, goal: context.goal, tier, mode }),
+        }));
+        const keys = new Set();
+        for (const candidate of resolved) {
+          const credit = coverageCreditForSlot(candidate);
+          if (!credit.ok) throw new Error(credit.reason);
+          for (const name of KEYS) if (credit.credits[name]) keys.add(name);
+        }
+        entry.creditKeysByKind.set(key, keys);
+      }
+      return entry.creditKeysByKind.get(key);
+    };
     for (const day of week.days) for (const slot of day.slots) {
       const p = slot.resolvedPrescription;
       if (p.mode !== mode || p.goal !== context.goal || p.tier !== tier) return fail('PRESCRIPTION_CONTEXT_MISMATCH');
@@ -147,17 +181,19 @@ export function evaluateWeeklyCoverage(week, options) {
       const kinds = STRUCTURAL.flatMap((pattern) => [primary(pattern), secondary(pattern)]);
       kinds.push({ pattern: 'CORE', intent: 'core' }, accessory('lateral_delts'), accessory('rear_delts'), accessory('ham_knee_flexion'));
       for (const kind of kinds) {
-        const ids = candidatesFor(kind);
-        const resolved = candidates.get(JSON.stringify(kind)) ?? [...ids].map((exerciseId) => ({
-          exerciseId, resolvedPrescription: resolvePrescription({ exerciseId, slotKind: kind, goal: context.goal, tier, mode }),
-        }));
-        for (const candidate of resolved) {
-          const credit = coverageCreditForSlot(candidate);
-          if (!credit.ok) throw new Error(credit.reason);
-          for (const key of KEYS) if (credit.credits[key]) executable[key] = 1;
-        }
+        for (const key of creditsFor(kind)) executable[key] = 1;
       }
       entry.executable = Object.freeze({ ...executable });
+    }
+    const templateSignature = template.days.map((day) => [day.templateId, day.slots.map(kindOf)]);
+    // Namespace template results separately from the existing week-independent context entry.
+    const applicabilityKey = JSON.stringify(['template-applicability', tier, mode, context,
+      week.days.length, durationMinutes, templateSignature, applicabilityPolicy]);
+    if (executabilityCache?.has(applicabilityKey)) hamstringApplicable = executabilityCache.get(applicabilityKey);
+    else {
+      hamstringApplicable = applicabilityPolicy === 'legacy' ? executable.hamstring_primary === 1
+        : template.days.some((day) => day.slots.some((slot) => creditsFor(kindOf(slot)).has('hamstring_primary')));
+      if (executabilityCache) executabilityCache.set(applicabilityKey, hamstringApplicable);
     }
   } catch (error) { return fail(error.message); }
   const short = mode === 'short_session';
@@ -181,6 +217,9 @@ export function evaluateWeeklyCoverage(week, options) {
   requirement('push', reduced ? 1 : 2);
   requirement('pull', reduced ? 1 : 2);
   requirement('hamstring_primary', 1, true);
+  if (executable.hamstring_primary === 1 && !hamstringApplicable) {
+    Object.assign(requirements.hamstring_primary, { required: false, status: 'met', reason: 'NOT_AUTHORED_FOR_CONTEXT' });
+  }
   for (const pattern of STRUCTURAL) {
     // §6's SQ subtarget at 3+ days remains in reduced standard mode. The 20-min
     // exception removes standard orientation/all-pattern subtargets at every capacity.

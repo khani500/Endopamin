@@ -1365,7 +1365,8 @@ export const EXERCISE_REGISTRY = [
    "triceps"
   ],
   "equipment": [
-   "dumbbell"
+   "dumbbell",
+   "bench"
   ],
   "mechanic": "compound",
   "force": "push",
@@ -1398,16 +1399,17 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.9,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.overhead_press",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Dumbbell Arnold Press",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "dumbbell",
    "bench"
   ],
+  "planEligibility": "eligible",
   "hasCues": true
  },
  {
@@ -12393,7 +12395,7 @@ export const EXERCISE_REGISTRY = [
   "primaryPattern": "arms_push",
   "exerciseType": "resistance",
   "intentTags": [],
-  "isolation": true,
+  "isolation": false,
   "classifierVersion": "3.0",
   "primaryMuscles": [
    "triceps"
@@ -12435,15 +12437,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.9,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.triceps_extension",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Seated Machine Dip",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "machine"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -14796,9 +14799,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "calves",
    "glutes",
-   "hamstrings",
    "lower back"
   ],
   "equipment": [
@@ -14844,15 +14845,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.88,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.bodyweight_squat",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Dumbbell Squat",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "dumbbell"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -19425,10 +19427,10 @@ export const EXERCISE_REGISTRY = [
   "id": "fx_hip_extension_with_bands",
   "name": "Hip Extension with Bands",
   "tier": "verified",
-  "primaryPattern": "hinge",
+  "primaryPattern": "hip_extension",
   "exerciseType": "resistance",
   "intentTags": [],
-  "isolation": false,
+  "isolation": true,
   "classifierVersion": "3.0",
   "primaryMuscles": [
    "glutes"
@@ -19437,9 +19439,10 @@ export const EXERCISE_REGISTRY = [
    "hamstrings"
   ],
   "equipment": [
-   "bands"
+   "bands",
+   "door_anchor"
   ],
-  "mechanic": "compound",
+  "mechanic": "isolation",
   "force": "push",
   "skillTier": "beginner",
   "defaultPrescription": {
@@ -19467,7 +19470,7 @@ export const EXERCISE_REGISTRY = [
    }
   ],
   "secondaryPatterns": [],
-  "laterality": "bilateral",
+  "laterality": "unilateral",
   "stabilityDemand": "moderate",
   "impactLevel": "none",
   "landingSkillRequired": false,
@@ -19479,16 +19482,17 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.85,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.hip_extension_isolation",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Band Standing Hip Extension",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "band",
    "door_anchor"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -20648,9 +20652,10 @@ export const EXERCISE_REGISTRY = [
   "primaryFamilyId": "fam.bench_press",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Incline Dumbbell Press",
-  "hasCues": true
+  "planEligibility": "eligible",
+  "hasCues": false
  },
  {
   "id": "fx_incline_hammer_curls",
@@ -26995,13 +27000,13 @@ export const EXERCISE_REGISTRY = [
   ],
   "mechanic": "isolation",
   "force": "pull",
-  "skillTier": "intermediate",
+  "skillTier": "beginner",
   "defaultPrescription": {
    "sets": 3,
    "reps": "10-12",
    "rest": "75s"
   },
-  "minSkillTier": "intermediate",
+  "minSkillTier": "beginner",
   "requiresSupervision": false,
   "contraindicationRules": [
    {
@@ -29195,13 +29200,13 @@ export const EXERCISE_REGISTRY = [
   ],
   "mechanic": "compound",
   "force": "push",
-  "skillTier": "intermediate",
+  "skillTier": "beginner",
   "defaultPrescription": {
    "sets": 3,
    "reps": "8-12",
    "rest": "90s"
   },
-  "minSkillTier": "intermediate",
+  "minSkillTier": "beginner",
   "requiresSupervision": false,
   "contraindicationRules": [
    {
@@ -29233,15 +29238,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.9,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.bench_press",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "One-Arm Kettlebell Floor Press",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "kettlebell"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -29499,13 +29505,13 @@ export const EXERCISE_REGISTRY = [
   ],
   "mechanic": "compound",
   "force": "pull",
-  "skillTier": "intermediate",
+  "skillTier": "beginner",
   "defaultPrescription": {
    "sets": 3,
    "reps": "10-12",
    "rest": "75s"
   },
-  "minSkillTier": "intermediate",
+  "minSkillTier": "beginner",
   "requiresSupervision": false,
   "contraindicationRules": [],
   "secondaryPatterns": [],
@@ -29521,15 +29527,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.88,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.dumbbell_row",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "One-Arm Kettlebell Row",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "kettlebell"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -30203,13 +30210,13 @@ export const EXERCISE_REGISTRY = [
   ],
   "mechanic": "isolation",
   "force": "push",
-  "skillTier": "intermediate",
+  "skillTier": "beginner",
   "defaultPrescription": {
    "sets": 3,
    "reps": "10-15",
    "rest": "60s"
   },
-  "minSkillTier": "intermediate",
+  "minSkillTier": "beginner",
   "requiresSupervision": false,
   "contraindicationRules": [],
   "secondaryPatterns": [],
@@ -30225,15 +30232,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.9,
    "reviewStatus": "approved"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.hip_extension_isolation",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Cable Glute Kickback",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "cable"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -32309,10 +32317,7 @@ export const EXERCISE_REGISTRY = [
    "quadriceps"
   ],
   "secondaryMuscles": [
-   "abdominals",
-   "calves",
-   "glutes",
-   "hamstrings"
+   "glutes"
   ],
   "equipment": [
    "dumbbell"
@@ -32357,15 +32362,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.88,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.bodyweight_squat",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Dumbbell Sumo Squat",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "dumbbell"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -33375,15 +33381,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.85,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.pull_through",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Cable Pull-Through",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "cable"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -35375,15 +35382,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.88,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.barbell_row",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Underhand Barbell Row",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "barbell"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -35517,7 +35525,7 @@ export const EXERCISE_REGISTRY = [
   "id": "fx_reverse_machine_flyes",
   "name": "Reverse Machine Flyes",
   "tier": "verified",
-  "primaryPattern": "horizontal_pull",
+  "primaryPattern": "shoulder_iso",
   "exerciseType": "resistance",
   "intentTags": [],
   "isolation": true,
@@ -35539,7 +35547,13 @@ export const EXERCISE_REGISTRY = [
   },
   "minSkillTier": "beginner",
   "requiresSupervision": false,
-  "contraindicationRules": [],
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "shoulder_iso loads the shoulder directly"
+   }
+  ],
   "secondaryPatterns": [],
   "laterality": "bilateral",
   "stabilityDemand": "low",
@@ -35553,15 +35567,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.95,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.rear_delt_fly",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Neutral-Grip Machine Rear Delt Fly",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "machine"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -36967,7 +36982,9 @@ export const EXERCISE_REGISTRY = [
   ],
   "secondaryMuscles": [],
   "equipment": [
-   "bands"
+   "bands",
+   "door_anchor",
+   "chair"
   ],
   "mechanic": "isolation",
   "force": "pull",
@@ -37003,11 +37020,8 @@ export const EXERCISE_REGISTRY = [
   "componentFamilyIds": [],
   "isHybrid": false,
   "resolverDefaultEligible": true,
-  "planPolicy": {
-   "status": "excluded",
-   "reasonCode": "equipment_vocabulary_gap"
-  },
   "catalogVisibility": "hidden",
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -37895,7 +37909,8 @@ export const EXERCISE_REGISTRY = [
    "triceps"
   ],
   "equipment": [
-   "dumbbell"
+   "dumbbell",
+   "bench"
   ],
   "mechanic": "compound",
   "force": "push",
@@ -37927,16 +37942,17 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.85,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.overhead_press",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Seated Dumbbell Shoulder Press",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "dumbbell",
    "bench"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -38847,7 +38863,8 @@ export const EXERCISE_REGISTRY = [
   ],
   "secondaryMuscles": [],
   "equipment": [
-   "dumbbell"
+   "dumbbell",
+   "chair"
   ],
   "mechanic": "isolation",
   "force": "push",
@@ -38879,16 +38896,17 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.9,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.triceps_extension",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Seated Overhead Dumbbell Triceps Extension",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "dumbbell",
    "bench"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -45898,15 +45916,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.85,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.lateral_raise",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "One-Arm Cable Lateral Raise",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "cable"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -46393,13 +46412,13 @@ export const EXERCISE_REGISTRY = [
   ],
   "mechanic": "compound",
   "force": "push",
-  "skillTier": "intermediate",
+  "skillTier": "beginner",
   "defaultPrescription": {
    "sets": 3,
    "reps": "8-12",
    "rest": "90s"
   },
-  "minSkillTier": "intermediate",
+  "minSkillTier": "beginner",
   "requiresSupervision": false,
   "contraindicationRules": [
    {
@@ -46421,15 +46440,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.85,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.overhead_press",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Standing Neutral-Grip Dumbbell Shoulder Press",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "dumbbell"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -49621,13 +49641,13 @@ export const EXERCISE_REGISTRY = [
   ],
   "mechanic": "compound",
   "force": "pull",
-  "skillTier": "intermediate",
+  "skillTier": "beginner",
   "defaultPrescription": {
    "sets": 3,
    "reps": "10-12",
    "rest": "75s"
   },
-  "minSkillTier": "intermediate",
+  "minSkillTier": "beginner",
   "requiresSupervision": false,
   "contraindicationRules": [],
   "secondaryPatterns": [],
@@ -49643,15 +49663,16 @@ export const EXERCISE_REGISTRY = [
    "confidence": 0.88,
    "reviewStatus": "migrated"
   },
-  "primaryFamilyId": null,
+  "primaryFamilyId": "fam.dumbbell_row",
   "componentFamilyIds": [],
   "isHybrid": false,
-  "resolverDefaultEligible": false,
+  "resolverDefaultEligible": true,
   "displayName": "Double Kettlebell Bent-Over Row",
   "catalogVisibility": "visible",
   "libraryEquipment": [
    "kettlebell"
   ],
+  "planEligibility": "eligible",
   "hasCues": false
  },
  {
@@ -58495,8 +58516,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_arm_pad_machine_crunch",
   "displayName": "Arm-Pad Machine Crunch",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "abdominals"
   ],
@@ -58507,6 +58528,41 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "core",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.crunch",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "abdominals"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "45-60s"
+  },
   "hasCues": false
  },
  {
@@ -58595,8 +58651,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_band_pallof_press",
   "displayName": "Band Pallof Press",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "abdominals"
   ],
@@ -58608,6 +58664,44 @@ export const EXERCISE_REGISTRY = [
    "band",
    "door_anchor"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [
+   "anti_rotation"
+  ],
+  "primaryPattern": "core",
+  "intentTags": [],
+  "equipment": [
+   "bands",
+   "door_anchor"
+  ],
+  "primaryFamilyId": "fam.pallof_antirotation",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "abdominals"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "45-60s"
+  },
   "hasCues": false
  },
  {
@@ -58615,8 +58709,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_band_pull_through",
   "displayName": "Band Pull-Through",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "glutes"
   ],
@@ -58629,6 +58723,58 @@ export const EXERCISE_REGISTRY = [
    "band",
    "door_anchor"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "lower back",
+    "action": "exclude",
+    "reason": "hinge loads the lower back directly"
+   },
+   {
+    "region": "back",
+    "action": "exclude",
+    "reason": "hinge loads the back directly"
+   },
+   {
+    "region": "hip",
+    "action": "exclude",
+    "reason": "hinge loads the hip directly"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "hinge",
+  "intentTags": [],
+  "equipment": [
+   "bands",
+   "door_anchor"
+  ],
+  "primaryFamilyId": "fam.pull_through",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "glutes"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -58636,8 +58782,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_band_rear_delt_row",
   "displayName": "Band Rear Delt Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "shoulders"
   ],
@@ -58650,6 +58796,42 @@ export const EXERCISE_REGISTRY = [
    "band",
    "door_anchor"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "bands",
+   "door_anchor"
+  ],
+  "primaryFamilyId": "fam.rear_delt_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "shoulders"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -58697,8 +58879,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_band_stiff_leg_deadlift",
   "displayName": "Band Stiff-Leg Deadlift",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "hamstrings"
   ],
@@ -58710,6 +58892,57 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "band"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "lower back",
+    "action": "exclude",
+    "reason": "hinge loads the lower back directly"
+   },
+   {
+    "region": "back",
+    "action": "exclude",
+    "reason": "hinge loads the back directly"
+   },
+   {
+    "region": "hip",
+    "action": "exclude",
+    "reason": "hinge loads the hip directly"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "hinge",
+  "intentTags": [],
+  "equipment": [
+   "bands"
+  ],
+  "primaryFamilyId": "fam.deadlift_romanian",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "hamstrings"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -58818,8 +59051,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_barbell_reverse_lunge",
   "displayName": "Barbell Reverse Lunge",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "quadriceps"
   ],
@@ -58830,6 +59063,52 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "barbell"
   ],
+  "tier": "verified",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "knee",
+    "action": "exclude",
+    "reason": "lunge loads the knee directly"
+   },
+   {
+    "region": "hip",
+    "action": "exclude",
+    "reason": "lunge loads the hip directly"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "push",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "lunge",
+  "intentTags": [],
+  "equipment": [
+   "barbell"
+  ],
+  "primaryFamilyId": "fam.lunge_reverse",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "quadriceps"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -58938,8 +59217,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_bent_over_cable_rear_delt_fly",
   "displayName": "Bent-Over Cable Rear Delt Fly",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "shoulders"
   ],
@@ -58951,6 +59230,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "cable"
   ],
+  "tier": "verified",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "shoulder_iso loads the shoulder directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "shoulder_iso",
+  "intentTags": [],
+  "equipment": [
+   "cable"
+  ],
+  "primaryFamilyId": "fam.rear_delt_fly",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "shoulders"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -58958,8 +59278,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_bent_over_dumbbell_rear_delt_fly",
   "displayName": "Bent-Over Dumbbell Rear Delt Fly",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "shoulders"
   ],
@@ -58970,6 +59290,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "dumbbell"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "shoulder_iso loads the shoulder directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "shoulder_iso",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell"
+  ],
+  "primaryFamilyId": "fam.rear_delt_fly",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "shoulders"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -59074,8 +59435,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_cable_drag_curl",
   "displayName": "Cable Drag Curl",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "biceps"
   ],
@@ -59087,6 +59448,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "cable"
   ],
+  "tier": "verified",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "arms_pull loads the elbow directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "arms_pull",
+  "intentTags": [],
+  "equipment": [
+   "cable"
+  ],
+  "primaryFamilyId": "fam.biceps_curl",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "biceps"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -59176,8 +59578,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_chest_height_cable_fly",
   "displayName": "Chest-Height Cable Fly",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "chest"
   ],
@@ -59188,6 +59590,57 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "cable"
   ],
+  "tier": "verified",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "horizontal_push loads the shoulder directly"
+   },
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "horizontal_push loads the elbow directly"
+   },
+   {
+    "region": "wrist",
+    "action": "exclude",
+    "reason": "horizontal_push loads the wrist directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "push",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_push",
+  "intentTags": [],
+  "equipment": [
+   "cable"
+  ],
+  "primaryFamilyId": "fam.chest_fly",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "chest"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -59195,8 +59648,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_chest_supported_barbell_row",
   "displayName": "Chest-Supported Barbell Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -59209,6 +59662,42 @@ export const EXERCISE_REGISTRY = [
    "barbell",
    "bench"
   ],
+  "tier": "gold",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "barbell",
+   "bench"
+  ],
+  "primaryFamilyId": "fam.barbell_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -59216,8 +59705,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_chest_supported_cable_row",
   "displayName": "Chest-Supported Cable Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -59230,6 +59719,42 @@ export const EXERCISE_REGISTRY = [
    "cable",
    "bench"
   ],
+  "tier": "gold",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "cable",
+   "bench"
+  ],
+  "primaryFamilyId": "fam.cable_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -59279,8 +59804,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_close_grip_dumbbell_bench_press",
   "displayName": "Close-Grip Dumbbell Bench Press",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "triceps"
   ],
@@ -59293,6 +59818,58 @@ export const EXERCISE_REGISTRY = [
    "dumbbell",
    "bench"
   ],
+  "tier": "verified",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "horizontal_push loads the shoulder directly"
+   },
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "horizontal_push loads the elbow directly"
+   },
+   {
+    "region": "wrist",
+    "action": "exclude",
+    "reason": "horizontal_push loads the wrist directly"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "push",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_push",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "primaryFamilyId": "fam.close_grip_bench",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "triceps"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -59515,8 +60092,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_dual_cable_lateral_raise",
   "displayName": "Dual-Cable Lateral Raise",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "shoulders"
   ],
@@ -59527,6 +60104,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "cable"
   ],
+  "tier": "gold",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "shoulder_iso loads the shoulder directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "push",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "shoulder_iso",
+  "intentTags": [],
+  "equipment": [
+   "cable"
+  ],
+  "primaryFamilyId": "fam.lateral_raise",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "shoulders"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -59570,8 +60188,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_dumbbell_deadlift",
   "displayName": "Dumbbell Deadlift",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "glutes"
   ],
@@ -59584,6 +60202,57 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "dumbbell"
   ],
+  "tier": "verified",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "lower back",
+    "action": "exclude",
+    "reason": "hinge loads the lower back directly"
+   },
+   {
+    "region": "back",
+    "action": "exclude",
+    "reason": "hinge loads the back directly"
+   },
+   {
+    "region": "hip",
+    "action": "exclude",
+    "reason": "hinge loads the hip directly"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "hinge",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell"
+  ],
+  "primaryFamilyId": "fam.deadlift_conventional",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "glutes"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -59993,8 +60662,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_incline_dumbbell_rear_delt_row",
   "displayName": "Incline Dumbbell Rear Delt Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "shoulders"
   ],
@@ -60007,6 +60676,48 @@ export const EXERCISE_REGISTRY = [
    "dumbbell",
    "bench"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "rear-delt row: conservative per-ID product eligibility rule for loaded horizontal abduction, not a claim that rear-delt rowing harms healthy shoulders"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "primaryFamilyId": "fam.rear_delt_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "shoulders"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -60054,20 +60765,74 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_kneeling_band_hip_thrust",
   "displayName": "Kneeling Band Hip Thrust",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "glutes"
   ],
-  "secondaryMuscles": [
-   "hamstrings",
-   "abdominals"
-  ],
+  "secondaryMuscles": [],
   "laterality": "bilateral",
   "libraryEquipment": [
    "band",
    "door_anchor"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "lower back",
+    "action": "exclude",
+    "reason": "hinge loads the lower back directly"
+   },
+   {
+    "region": "back",
+    "action": "exclude",
+    "reason": "hinge loads the back directly"
+   },
+   {
+    "region": "hip",
+    "action": "exclude",
+    "reason": "hinge loads the hip directly"
+   },
+   {
+    "region": "knee",
+    "action": "exclude",
+    "reason": "kneeling execution: conservative per-ID product eligibility rule for kneeling pressure (FINAL), not a claim that kneeling harms healthy knees"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "push",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "hinge",
+  "intentTags": [],
+  "equipment": [
+   "bands",
+   "door_anchor"
+  ],
+  "primaryFamilyId": "fam.hip_thrust",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "glutes"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -60075,8 +60840,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_kneeling_band_twisting_crunch",
   "displayName": "Kneeling Band Twisting Crunch",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "abdominals"
   ],
@@ -60088,6 +60853,48 @@ export const EXERCISE_REGISTRY = [
    "band",
    "door_anchor"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "knee",
+    "action": "exclude",
+    "reason": "kneeling execution: conservative per-ID product eligibility rule for kneeling pressure (FINAL), not a claim that kneeling harms healthy knees"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "core",
+  "intentTags": [],
+  "equipment": [
+   "bands",
+   "door_anchor"
+  ],
+  "primaryFamilyId": "fam.crunch",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "abdominals"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "45-60s"
+  },
   "hasCues": false
  },
  {
@@ -60193,8 +61000,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_kneeling_single_leg_machine_curl",
   "displayName": "Kneeling Single-Leg Machine Curl",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "hamstrings"
   ],
@@ -60205,6 +61012,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "knee",
+    "action": "exclude",
+    "reason": "knee_flexion loads the knee directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "knee_flexion",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.leg_curl",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "hamstrings"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -60335,8 +61183,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_machine_assisted_chest_dip",
   "displayName": "Machine-Assisted Chest Dip",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "chest"
   ],
@@ -60348,6 +61196,62 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "verified",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "horizontal_push loads the shoulder directly"
+   },
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "horizontal_push loads the elbow directly"
+   },
+   {
+    "region": "wrist",
+    "action": "exclude",
+    "reason": "horizontal_push loads the wrist directly"
+   },
+   {
+    "region": "knee",
+    "action": "exclude",
+    "reason": "assisted-machine knee pad: conservative per-ID product eligibility rule for kneeling pressure, not a claim that kneeling harms healthy knees"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "push",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_push",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.dip_chest",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "chest"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -60355,8 +61259,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_machine_assisted_pull_up",
   "displayName": "Machine-Assisted Pull-Up",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "lats"
   ],
@@ -60368,6 +61272,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "knee",
+    "action": "exclude",
+    "reason": "assisted-machine knee pad: conservative per-ID product eligibility rule for kneeling pressure, not a claim that kneeling harms healthy knees"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "vertical_pull",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.pull_up",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "lats"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -60392,8 +61337,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_machine_lateral_raise",
   "displayName": "Machine Lateral Raise",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "shoulders"
   ],
@@ -60404,6 +61349,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "gold",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "shoulder_iso loads the shoulder directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "push",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "shoulder_iso",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.lateral_raise",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "shoulders"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -60494,20 +61480,65 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_offset_dumbbell_forward_lunge",
   "displayName": "Offset Dumbbell Forward Lunge",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "quadriceps"
   ],
   "secondaryMuscles": [
    "glutes",
-   "adductors",
-   "abdominals"
+   "adductors"
   ],
   "laterality": "unilateral",
   "libraryEquipment": [
    "dumbbell"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "knee",
+    "action": "exclude",
+    "reason": "lunge loads the knee directly"
+   },
+   {
+    "region": "hip",
+    "action": "exclude",
+    "reason": "lunge loads the hip directly"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "push",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "lunge",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell"
+  ],
+  "primaryFamilyId": "fam.lunge_forward",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "quadriceps"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -60653,8 +61684,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_one_arm_cable_kickback",
   "displayName": "One-Arm Cable Kickback",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "triceps"
   ],
@@ -60665,6 +61696,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "cable"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "arms_push loads the elbow directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "push",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "arms_push",
+  "intentTags": [],
+  "equipment": [
+   "cable"
+  ],
+  "primaryFamilyId": "fam.triceps_extension",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "triceps"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -60855,8 +61927,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_one_arm_plate_loaded_high_row",
   "displayName": "One-Arm Plate-Loaded High Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -60869,6 +61941,41 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.machine_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -60876,8 +61983,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_one_arm_seated_cable_row",
   "displayName": "One-Arm Seated Cable Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -60890,6 +61997,42 @@ export const EXERCISE_REGISTRY = [
    "cable",
    "bench"
   ],
+  "tier": "gold",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "cable",
+   "bench"
+  ],
+  "primaryFamilyId": "fam.cable_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -60940,8 +62083,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_one_arm_triceps_pushdown",
   "displayName": "One-Arm Triceps Pushdown",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "triceps"
   ],
@@ -60952,6 +62095,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "cable"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "arms_push loads the elbow directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "push",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "arms_push",
+  "intentTags": [],
+  "equipment": [
+   "cable"
+  ],
+  "primaryFamilyId": "fam.triceps_pushdown",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "triceps"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -61001,8 +62185,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_overhand_machine_row",
   "displayName": "Overhand Machine Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -61015,6 +62199,41 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.machine_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -61041,8 +62260,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_pendlay_row",
   "displayName": "Pendlay Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -61055,6 +62274,41 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "barbell"
   ],
+  "tier": "gold",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "barbell"
+  ],
+  "primaryFamilyId": "fam.barbell_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -61124,8 +62378,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_plate_loaded_lat_pulldown",
   "displayName": "Plate-Loaded Lat Pulldown",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "lats"
   ],
@@ -61137,6 +62391,41 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "vertical_pull",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.lat_pulldown",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "lats"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -61416,8 +62705,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_rotating_grip_dumbbell_row",
   "displayName": "Rotating-Grip Dumbbell Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -61430,6 +62719,41 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "dumbbell"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell"
+  ],
+  "primaryFamilyId": "fam.dumbbell_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -61457,8 +62781,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_seated_band_chest_press",
   "displayName": "Seated Band Chest Press",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "chest"
   ],
@@ -61471,6 +62795,58 @@ export const EXERCISE_REGISTRY = [
    "band",
    "bench"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "horizontal_push loads the shoulder directly"
+   },
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "horizontal_push loads the elbow directly"
+   },
+   {
+    "region": "wrist",
+    "action": "exclude",
+    "reason": "horizontal_push loads the wrist directly"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "push",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_push",
+  "intentTags": [],
+  "equipment": [
+   "bands",
+   "chair"
+  ],
+  "primaryFamilyId": "fam.bench_press",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "chest"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -61478,8 +62854,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_seated_band_concentration_curl",
   "displayName": "Seated Band Concentration Curl",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "biceps"
   ],
@@ -61491,6 +62867,48 @@ export const EXERCISE_REGISTRY = [
    "band",
    "bench"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "arms_pull loads the elbow directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "arms_pull",
+  "intentTags": [],
+  "equipment": [
+   "bands",
+   "chair"
+  ],
+  "primaryFamilyId": "fam.biceps_curl",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "biceps"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -61557,8 +62975,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_seated_cable_rear_delt_row",
   "displayName": "Seated Cable Rear Delt Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "shoulders"
   ],
@@ -61570,6 +62988,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "cable"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "rear-delt row: conservative per-ID product eligibility rule for loaded horizontal abduction, not a claim that rear-delt rowing harms healthy shoulders"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "cable"
+  ],
+  "primaryFamilyId": "fam.rear_delt_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "shoulders"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -61646,7 +63105,7 @@ export const EXERCISE_REGISTRY = [
   "equipment": [
    "bands",
    "door_anchor",
-   "bench"
+   "chair"
   ],
   "primaryFamilyId": "fam.lat_pulldown",
   "componentFamilyIds": [],
@@ -61697,8 +63156,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_seated_one_arm_band_row_with_rotation",
   "displayName": "Seated One-Arm Band Row with Rotation",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -61713,6 +63172,42 @@ export const EXERCISE_REGISTRY = [
    "band",
    "door_anchor"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "bands",
+   "door_anchor"
+  ],
+  "primaryFamilyId": "fam.cable_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -61740,8 +63235,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_seated_underhand_band_pulldown",
   "displayName": "Seated Underhand Band Pulldown",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "lats"
   ],
@@ -61755,6 +63250,43 @@ export const EXERCISE_REGISTRY = [
    "door_anchor",
    "bench"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "vertical_pull",
+  "intentTags": [],
+  "equipment": [
+   "bands",
+   "door_anchor",
+   "chair"
+  ],
+  "primaryFamilyId": "fam.lat_pulldown",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "lats"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -61892,8 +63424,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_single_leg_dumbbell_calf_raise",
   "displayName": "Single-Leg Dumbbell Calf Raise",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "calves"
   ],
@@ -61902,6 +63434,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "dumbbell"
   ],
+  "tier": "verified",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "ankle",
+    "action": "exclude",
+    "reason": "calves loads the ankle directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "push",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "calves",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell"
+  ],
+  "primaryFamilyId": "fam.calf_raise",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "calves"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -62128,21 +63701,71 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_stability_ball_dumbbell_fly",
   "displayName": "Stability Ball Dumbbell Fly",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "chest"
   ],
   "secondaryMuscles": [
-   "shoulders",
-   "abdominals",
-   "glutes"
+   "shoulders"
   ],
   "laterality": "bilateral",
   "libraryEquipment": [
    "dumbbell",
    "stability_ball"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "horizontal_push loads the shoulder directly"
+   },
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "horizontal_push loads the elbow directly"
+   },
+   {
+    "region": "wrist",
+    "action": "exclude",
+    "reason": "horizontal_push loads the wrist directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "push",
+  "stabilityDemand": "high",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_push",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell",
+   "exercise_ball"
+  ],
+  "primaryFamilyId": "fam.chest_fly",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "chest"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -62150,22 +63773,72 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_stability_ball_dumbbell_press",
   "displayName": "Stability Ball Dumbbell Press",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "chest"
   ],
   "secondaryMuscles": [
    "shoulders",
-   "triceps",
-   "abdominals",
-   "glutes"
+   "triceps"
   ],
   "laterality": "bilateral",
   "libraryEquipment": [
    "dumbbell",
    "stability_ball"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "horizontal_push loads the shoulder directly"
+   },
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "horizontal_push loads the elbow directly"
+   },
+   {
+    "region": "wrist",
+    "action": "exclude",
+    "reason": "horizontal_push loads the wrist directly"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "push",
+  "stabilityDemand": "high",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_push",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell",
+   "exercise_ball"
+  ],
+  "primaryFamilyId": "fam.bench_press",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "chest"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -62238,21 +63911,72 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_stability_ball_incline_dumbbell_press",
   "displayName": "Stability Ball Incline Dumbbell Press",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "chest"
   ],
   "secondaryMuscles": [
    "shoulders",
-   "triceps",
-   "abdominals"
+   "triceps"
   ],
   "laterality": "bilateral",
   "libraryEquipment": [
    "dumbbell",
    "stability_ball"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "horizontal_push loads the shoulder directly"
+   },
+   {
+    "region": "elbow",
+    "action": "exclude",
+    "reason": "horizontal_push loads the elbow directly"
+   },
+   {
+    "region": "wrist",
+    "action": "exclude",
+    "reason": "horizontal_push loads the wrist directly"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "push",
+  "stabilityDemand": "high",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_push",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell",
+   "exercise_ball"
+  ],
+  "primaryFamilyId": "fam.bench_press",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "chest"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -62322,8 +64046,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_standing_band_crunch",
   "displayName": "Standing Band Crunch",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "abdominals"
   ],
@@ -62335,6 +64059,42 @@ export const EXERCISE_REGISTRY = [
    "band",
    "door_anchor"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "core",
+  "intentTags": [],
+  "equipment": [
+   "bands",
+   "door_anchor"
+  ],
+  "primaryFamilyId": "fam.crunch",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "abdominals"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "45-60s"
+  },
   "hasCues": false
  },
  {
@@ -62401,8 +64161,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_standing_cable_crunch",
   "displayName": "Standing Cable Crunch",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "abdominals"
   ],
@@ -62413,6 +64173,41 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "cable"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "core",
+  "intentTags": [],
+  "equipment": [
+   "cable"
+  ],
+  "primaryFamilyId": "fam.crunch",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "abdominals"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "45-60s"
+  },
   "hasCues": false
  },
  {
@@ -62515,8 +64310,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_standing_smith_machine_shoulder_press",
   "displayName": "Standing Smith Machine Shoulder Press",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "shoulders"
   ],
@@ -62528,6 +64323,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "smith_machine"
   ],
+  "tier": "verified",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "vertical_push loads the shoulder directly"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "push",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "vertical_push",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.overhead_press",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "shoulders"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "8-12",
+   "rest": "90-120s"
+  },
   "hasCues": false
  },
  {
@@ -62594,8 +64430,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_two_up_one_down_lying_leg_curl",
   "displayName": "Two-Up One-Down Lying Leg Curl",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "hamstrings"
   ],
@@ -62606,6 +64442,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "verified",
+  "skillTier": "intermediate",
+  "minSkillTier": "intermediate",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "knee",
+    "action": "exclude",
+    "reason": "knee_flexion loads the knee directly"
+   }
+  ],
+  "mechanic": "isolation",
+  "isolation": true,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "knee_flexion",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.leg_curl",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "hamstrings"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "10-15",
+   "rest": "60-90s"
+  },
   "hasCues": false
  },
  {
@@ -62613,8 +64490,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_underhand_bent_over_dumbbell_row",
   "displayName": "Underhand Bent-Over Dumbbell Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -62627,6 +64504,41 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "dumbbell"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell"
+  ],
+  "primaryFamilyId": "fam.dumbbell_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -62634,8 +64546,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_underhand_incline_dumbbell_row",
   "displayName": "Underhand Incline Dumbbell Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -62649,6 +64561,42 @@ export const EXERCISE_REGISTRY = [
    "dumbbell",
    "bench"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "moderate",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "dumbbell",
+   "bench"
+  ],
+  "primaryFamilyId": "fam.dumbbell_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -62656,8 +64604,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_underhand_machine_row",
   "displayName": "Underhand Machine Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -62669,6 +64617,41 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.machine_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -62676,8 +64659,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_underhand_plate_loaded_lat_pulldown",
   "displayName": "Underhand Plate-Loaded Lat Pulldown",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "lats"
   ],
@@ -62689,6 +64672,41 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "verified",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "vertical_pull",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.lat_pulldown",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "lats"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -62696,8 +64714,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_wide_grip_plate_loaded_shoulder_press",
   "displayName": "Wide-Grip Plate-Loaded Shoulder Press",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "shoulders"
   ],
@@ -62708,6 +64726,47 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "machine"
   ],
+  "tier": "gold",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [
+   {
+    "region": "shoulder",
+    "action": "exclude",
+    "reason": "vertical_push loads the shoulder directly"
+   }
+  ],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "push",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "vertical_push",
+  "intentTags": [],
+  "equipment": [
+   "machine"
+  ],
+  "primaryFamilyId": "fam.overhead_press",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "shoulders"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
@@ -62737,8 +64796,8 @@ export const EXERCISE_REGISTRY = [
   "name": "fx_wide_grip_seated_cable_row",
   "displayName": "Wide-Grip Seated Cable Row",
   "catalogVisibility": "visible",
-  "planEligibility": "library_only",
-  "resolverDefaultEligible": false,
+  "planEligibility": "eligible",
+  "resolverDefaultEligible": true,
   "primaryMuscles": [
    "middle back"
   ],
@@ -62750,6 +64809,41 @@ export const EXERCISE_REGISTRY = [
   "libraryEquipment": [
    "cable"
   ],
+  "tier": "gold",
+  "skillTier": "beginner",
+  "minSkillTier": "beginner",
+  "requiresSupervision": false,
+  "contraindicationRules": [],
+  "mechanic": "compound",
+  "isolation": false,
+  "force": "pull",
+  "stabilityDemand": "low",
+  "impactLevel": "none",
+  "landingSkillRequired": false,
+  "exerciseType": "resistance",
+  "coreFunctions": [],
+  "primaryPattern": "horizontal_pull",
+  "intentTags": [],
+  "equipment": [
+   "cable"
+  ],
+  "primaryFamilyId": "fam.cable_row",
+  "componentFamilyIds": [],
+  "isHybrid": false,
+  "secondaryPatterns": [],
+  "regionTags": [
+   "middle back"
+  ],
+  "classifierVersion": "3.0",
+  "classification": {
+   "confidence": 1,
+   "reviewStatus": "approved"
+  },
+  "defaultPrescription": {
+   "sets": 2,
+   "reps": "6-10",
+   "rest": "120-180s"
+  },
   "hasCues": false
  },
  {
